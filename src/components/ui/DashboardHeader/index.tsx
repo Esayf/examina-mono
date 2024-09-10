@@ -6,20 +6,17 @@ import toast from "react-hot-toast";
 
 // Images
 import Choz from "@/icons/choz.svg";
-import Avatar from "@/icons/profile_image.svg";
 import Logout from "@/icons/arrow-right-start-on-rectangle.svg";
-import { resetSession } from "../../../../features/client/session";
-import { useDispatch } from "react-redux";
+import Link from "next/link";
 
 function DashboardHeader({ withoutNav = false }) {
   const session = useSelector((state: any) => state.session);
-  const dispatch = useDispatch();
   return (
     <div className={styles.dashboard_header}>
       <div className={styles.container}>
-        <a href="https://choz.io/">
+        <Link href="/">
           <Image src={Choz} alt="" className={styles.logo} />
-        </a>
+        </Link>
         {withoutNav === false && (
           <div className={styles.header_nav_container}>
             <p className={`${styles.header_nav_item} ${styles.header_nav_item_active}`}>Quizzes</p>

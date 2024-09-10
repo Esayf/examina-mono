@@ -1,6 +1,7 @@
 // API imports
 import { getMessage, login, signMessage } from "@/lib/Client/Auth";
-import { NetworkID } from "../types/global";
+import { NetworkID } from "../../types/global";
+import { AuthSession } from "@/features/client/session";
 
 export interface ContractStatus {
   status: "worker" | "account" | "compile" | "done";
@@ -76,7 +77,7 @@ export async function authenticateWallet(address: string) {
 
     const signedData = await signMessage({ message: message });
 
-    if (!signedData) {
+    if ("message" in signedData) {
       throw new Error("Failed to sign message! Please try again.");
     }
 
@@ -93,7 +94,7 @@ export async function authenticateWallet(address: string) {
   }
 }
 
-export async function authenticate(session: any) {
+export async function authenticate(session?: AuthSession) {
   if (session?.walletAddress) {
     return session;
   }

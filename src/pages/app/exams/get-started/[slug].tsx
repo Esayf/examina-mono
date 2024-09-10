@@ -3,12 +3,11 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { getExamDetails, startExam } from "@/lib/Client/Exam";
-import { humanize } from "../../../../../utils/formatter";
+import { humanize } from "@/utils/formatter";
 
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../../../store";
 
-import { authenticate, connectWallet } from "../../../../../hooks/auth";
+import { authenticate } from "@/hooks/auth";
 
 //! Account düzelt
 
@@ -21,7 +20,7 @@ import Clock from "@/icons/clock.svg";
 import Choz from "@/icons/choz.svg";
 import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
-import { setSession } from "../../../../../features/client/session";
+import { AuthSession, setSession } from "@/features/client/session";
 import { useEffect } from "react";
 
 function ExamDetail() {
@@ -29,9 +28,7 @@ function ExamDetail() {
   const dispatch = useDispatch();
   const examID: string = router.query.slug as string;
 
-  const session = useSelector(
-    (state: { session: { userId: string; walletAddress: string } }) => state.session
-  );
+  const session = useSelector((state: { session: AuthSession }) => state.session);
 
   const { data, isLoading, isPending, isError, refetch } = useQuery({
     queryKey: ["exam"],

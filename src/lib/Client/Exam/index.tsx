@@ -1,6 +1,6 @@
 import RequestBase from "../RequestBase";
 
-import { ExamState } from "../../../../features/client/exam";
+import { ExamState } from "@/features/client/exam";
 
 function getExamList() {
   return new Promise((resolve, reject) => {

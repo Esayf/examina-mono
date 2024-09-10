@@ -1,17 +1,15 @@
-import styles from "../styles/app/Layout.module.css";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { isMobile } from "react-device-detect";
 import toast, { Toaster } from "react-hot-toast";
 
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store";
+import { RootState } from "@/app/store";
 
 // Components
 import { useQuery } from "@tanstack/react-query";
 import { getSession, login, logout } from "@/lib/Client/Auth";
-import { resetSession, setSession } from "../../features/client/session";
-import { authenticate } from "../../hooks/auth";
+import { resetSession, setSession } from "@/features/client/session";
+import { authenticate } from "@/hooks/auth";
 
 // Custom hooks
 // ! - This is a custom hook that is not yet implemented
@@ -40,12 +38,12 @@ function Layout({ children }: Props) {
   useEffect(() => {
     setRendered(true);
     /** account change listener */
-    window.mina?.on("accountsChanged", async (accounts: string[]) => {
-      console.log("accountsChanged", accounts);
+    window.mina?.on("accountsChanged", async (accounts) => {
       if (accounts.length > 0) {
         logout().then(async () => {
-          const resetted_session = dispatch(resetSession());
-          const res = await authenticate(resetted_session);
+          dispatch(resetSession());
+          const res = await authenticate();
+          if (!res) return;
           dispatch(setSession((res as any).session));
         });
       } else {
@@ -62,8 +60,9 @@ function Layout({ children }: Props) {
           }
 
           if (accs.length > 0) {
-            const res = await authenticate(session);
-            dispatch(setSession((res as any).session));
+            const res = await authenticate();
+            if (!res) return;
+            dispatch(setSession({ session: res }));
           }
         });
         console.log("disconnect"); // handled disconnect here

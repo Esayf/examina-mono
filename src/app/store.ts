@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import examReducer from "./features/client/exam";
-import sessionReducer from "./features/client/session";
+import examReducer from "@/features/client/exam";
+import sessionReducer from "@/features/client/session";
 
 export const store = configureStore({
   reducer: {

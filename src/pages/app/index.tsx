@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { getExamList } from "@/lib/Client/Exam";
-import { formatDate } from "../../../utils/formatter";
+import { formatDate } from "@/utils/formatter";
 
 // Import Custom Components
 import DashboardHeader from "@/components/ui/DashboardHeader";
@@ -121,9 +121,11 @@ function Application() {
                         <div
                           className={styles.table_row_item_edit_container}
                           onClick={() => {
+                            const currentDomain = window.location.origin;
+
                             navigator.clipboard
-                              .writeText(`https://choz.io/app/exams/get-started/${exam?._id}`)
-                              .then(() => setCopied(exam?._id));
+                              .writeText(`https://choz.io/app/exams/get-started/${exam._id}`)
+                              .then(() => setCopied(exam._id));
                           }}
                         >
                           {/* <Image src={Copy} alt="" /> */}

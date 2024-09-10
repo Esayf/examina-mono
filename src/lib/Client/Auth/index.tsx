@@ -1,7 +1,5 @@
-// import { PublicKey } from 'o1js';
-import { setSession, resetSession } from "../../../../features/client/session";
+import { AuthSession } from "@/features/client/session";
 import RequestBase from "../RequestBase";
-import { useDispatch } from "react-redux";
 export interface SignedData {
   publicKey: string;
   data: string;
@@ -43,17 +41,16 @@ async function signMessage(data: SignMessageArgs) {
   return signResult;
 }
 
-function login(data: SignedData | ProviderError): Promise<string> {
+function login(data: SignedData): Promise<AuthSession> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
       .post("/register", {
-        walletAddress: (data as SignedData).publicKey,
-        signature: (data as SignedData).signature,
+        walletAddress: data.publicKey,
+        signature: data.signature,
       })
       .then((response) => {
-        // resolve(response.data.message.split(',')[2]);
-        resolve(response.data);
+        resolve(response.data.session);
       })
       .catch((error) => {
         reject(error);
