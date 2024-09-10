@@ -1,28 +1,28 @@
-import styles from '@/styles/app/exams/get-started/ExamDetailScreen.module.css';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
-import { getExamDetails, startExam } from '@/lib/Client/Exam';
-import { humanize } from '../../../../../utils/formatter';
+import styles from "@/styles/app/exams/get-started/ExamDetailScreen.module.css";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import { getExamDetails, startExam } from "@/lib/Client/Exam";
+import { humanize } from "../../../../../utils/formatter";
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../../../../store';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../../../store";
 
-import { authenticate, connectWallet } from '../../../../../hooks/auth';
+import { authenticate, connectWallet } from "../../../../../hooks/auth";
 
 //! Account düzelt
 
 // Custom Layout
-import Layout from '../layout';
+import Layout from "../layout";
 
 // Icons
-import ExamIcon from '@/icons/globe.svg';
-import Clock from '@/icons/clock.svg';
-import Choz from '@/icons/choz.svg';
-import { isMobile } from 'react-device-detect';
-import toast from 'react-hot-toast';
-import { setSession } from '../../../../../features/client/session';
-import { useEffect } from 'react';
+import ExamIcon from "@/icons/globe.svg";
+import Clock from "@/icons/clock.svg";
+import Choz from "@/icons/choz.svg";
+import { isMobile } from "react-device-detect";
+import toast from "react-hot-toast";
+import { setSession } from "../../../../../features/client/session";
+import { useEffect } from "react";
 
 function ExamDetail() {
   const router = useRouter();
@@ -34,7 +34,7 @@ function ExamDetail() {
   );
 
   const { data, isLoading, isPending, isError, refetch } = useQuery({
-    queryKey: ['exam'],
+    queryKey: ["exam"],
     queryFn: () => getExamDetails(examID),
     enabled: !!examID, // Only fetch data when examID is available
   });
@@ -47,10 +47,10 @@ function ExamDetail() {
   console.log(data);
 
   useEffect(() => {
-    if (data && typeof (data as any).exam?.isCompleted === 'boolean') {
+    if (data && typeof (data as any).exam?.isCompleted === "boolean") {
       if ((data as any).exam.isCompleted === true) {
-        toast.error('This exam is already completed!');
-        router.push('/app/exams/result/' + (data as any).exam._id);
+        toast.error("This exam is already completed!");
+        router.push("/app/exams/result/" + (data as any).exam._id);
       }
     }
   }, [data]);
@@ -167,7 +167,7 @@ function ExamDetail() {
                   <div className={styles.card_title}>
                     <h3 className={styles.card_title__bold}>Total Questions</h3>
                     <p className={styles.card_title__normal}>
-                      {(data as any).exam.questionCount ? (data as any).exam.questionCount : '10'}
+                      {(data as any).exam.questionCount ? (data as any).exam.questionCount : "10"}
                     </p>
                   </div>
                   <div className={styles.card_title}>
@@ -189,36 +189,36 @@ function ExamDetail() {
                   className={styles.connect_button_container}
                   onClick={async () => {
                     if (session?.walletAddress && !isMobile) {
-                      toast.loading('Starting exam...');
+                      toast.loading("Starting exam...");
                       startExam(examID)
                         .then(() => {
                           router.push(`/app/exams/${(data as any).exam._id}`);
                           toast.remove();
-                          toast.success('You are ready to start the exam. Good luck!');
+                          toast.success("You are ready to start the exam. Good luck!");
                         })
                         .catch(() => {
                           toast.remove();
-                          toast.error('Failed to start exam!');
+                          toast.error("Failed to start exam!");
                         });
                       return;
                     }
-                    const res = await authenticate(session as any);
+                    const res = await authenticate(session);
                     if (!res) {
-                      toast.error('Failed to authenticate wallet!');
+                      toast.error("Failed to authenticate wallet!");
                       return;
                     }
-                    toast.success('Successfully authenticated wallet!');
+                    toast.success("Successfully authenticated wallet!");
                     dispatch(setSession((res as any).session));
                     router.reload();
                   }}
                 >
                   <p className={styles.connect_button_text}>
-                    {session?.walletAddress ? 'Start Exam' : 'Connect Wallet'}
+                    {session?.walletAddress ? "Start Exam" : "Connect Wallet"}
                   </p>
                 </div>
                 {session?.walletAddress ? (
                   <p className={styles.connect_container_desc_connected}>
-                    You are using this wallet address:{' '}
+                    You are using this wallet address:{" "}
                     <a
                       href={`https://minascan.io/mainnet/account/${session?.walletAddress}/`}
                       target="_blank"
@@ -231,11 +231,11 @@ function ExamDetail() {
                   </p>
                 ) : isMobile ? (
                   <p className={styles.connect_container_desc}>
-                    You have to use desktop browser to join exam.{' '}
+                    You have to use desktop browser to join exam.{" "}
                   </p>
                 ) : (
                   <p className={styles.connect_container_desc}>
-                    You must have an Auro Wallet account before using it. Not there yet?{' '}
+                    You must have an Auro Wallet account before using it. Not there yet?{" "}
                     <a href="#">Create now!</a>
                   </p>
                 )}

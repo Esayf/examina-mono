@@ -16,9 +16,7 @@ const state = {
 
 const functions = {
   setActiveInstanceToBerkeley: async (args: {}) => {
-    const Berkeley = Mina.Network(
-      "https://proxy.berkeley.minaexplorer.com/graphql"
-    );
+    const Berkeley = Mina.Network("https://proxy.berkeley.minaexplorer.com/graphql");
     console.log("Berkeley Instance Created");
     Mina.setActiveInstance(Berkeley);
   },
@@ -42,7 +40,7 @@ const functions = {
     return JSON.stringify(currentNum.toJSON());
   },
   createUpdateTransaction: async (args: {}) => {
-    const transaction = await Mina.transaction(() => {
+    const transaction = await Mina.transaction(async () => {
       state.zkapp!.update();
     });
     state.transaction = transaction;
@@ -71,18 +69,15 @@ export type ZkappWorkerReponse = {
 };
 
 if (typeof window !== "undefined") {
-  addEventListener(
-    "message",
-    async (event: MessageEvent<ZkappWorkerRequest>) => {
-      const returnData = await functions[event.data.fn](event.data.args);
+  addEventListener("message", async (event: MessageEvent<ZkappWorkerRequest>) => {
+    const returnData = await functions[event.data.fn](event.data.args);
 
-      const message: ZkappWorkerReponse = {
-        id: event.data.id,
-        data: returnData,
-      };
-      postMessage(message);
-    }
-  );
+    const message: ZkappWorkerReponse = {
+      id: event.data.id,
+      data: returnData,
+    };
+    postMessage(message);
+  });
 }
 
 console.log("Web Worker Successfully Initialized.");

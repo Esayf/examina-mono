@@ -1,14 +1,14 @@
-import axios, { AxiosResponse, AxiosError, AxiosInstance } from 'axios';
-import config from '../../../config';
+import { publicEnv } from "@/env";
+import axios, { AxiosResponse, AxiosInstance } from "axios";
 
 class RequestBase {
   private instance: AxiosInstance;
 
   constructor() {
     this.instance = axios.create({
-      baseURL: config.API_ENDPOINT,
+      baseURL: publicEnv.NEXT_PUBLIC_API_ENDPOINT,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       withCredentials: true,
     });
@@ -17,14 +17,14 @@ class RequestBase {
   get(url: string): Promise<AxiosResponse> {
     return this.instance.request({
       url,
-      method: 'GET',
+      method: "GET",
     });
   }
 
   post(url: string, data?: any): Promise<AxiosResponse> {
     return this.instance.request({
       url,
-      method: 'POST',
+      method: "POST",
       data,
     });
   }

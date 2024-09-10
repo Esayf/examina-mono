@@ -1,4 +1,4 @@
-import styles from '@/styles/app/exams/Layout.module.css';
+import styles from "@/styles/app/exams/Layout.module.css";
 
 type Props = {
   children: React.ReactNode;

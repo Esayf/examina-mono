@@ -1,12 +1,12 @@
-import RequestBase from '../RequestBase';
+import RequestBase from "../RequestBase";
 
-import { ExamState } from '../../../../features/client/exam';
+import { ExamState } from "../../../../features/client/exam";
 
 function getExamList() {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get('/exams')
+      .get("/exams")
       .then((response) => {
         resolve(response.data);
       })
@@ -65,11 +65,11 @@ function createExam(exam: ExamState) {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .post('/exams/create', {
+      .post("/exams/create", {
         ...exam,
         duration: parseInt(exam.duration),
-        rootHash: '0x0',
-        secretKey: 'SIOSDajksa',
+        rootHash: "0x0",
+        secretKey: "SIOSDajksa",
       })
       .then((response) => {
         resolve(response.data);

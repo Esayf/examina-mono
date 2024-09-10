@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '../../store';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "../../store";
 
 // Define a type for the slice state
 export interface SessionSlice {
@@ -14,7 +14,7 @@ export const initialState = {
   session: {},
 } as SessionSlice;
 export const sessionSlice = createSlice({
-  name: 'session',
+  name: "session",
   initialState,
   reducers: {
     setSession: (state, action: PayloadAction<SessionSlice>) => {
@@ -24,7 +24,7 @@ export const sessionSlice = createSlice({
     },
     resetSession: (state) => {
       state.session = initialState.session;
-    }
+    },
   },
 });
 

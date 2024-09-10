@@ -1,24 +1,24 @@
-import styles from '@/styles/app/exams/get-started/ExamDetailScreen.module.css';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
+import styles from "@/styles/app/exams/get-started/ExamDetailScreen.module.css";
+import Image from "next/image";
+import { useRouter } from "next/router";
 // import { useQuery } from '@tanstack/react-query';
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
-import { sendEmail } from '@/lib/Client/Exam';
+import { sendEmail } from "@/lib/Client/Exam";
 
 // Custom Layout
-import Layout from '../layout';
+import Layout from "../layout";
 
 // Icons
-import ResultImage from '@/images/exam/result.svg';
-import MinaBell from '@/icons/mina-bell.svg';
-import Send from '@/icons/exam_send.svg';
-import Discord from '@/icons/discord.svg';
-import Telegram from '@/icons/telegram.svg';
-import Twitter from '@/icons/twitter.svg';
-import toast from 'react-hot-toast';
-import { useState } from 'react';
-// import Choz from '@/icons/choz.svg';
+import ResultImage from "@/images/exam/result.svg";
+import MinaBell from "@/icons/mina-bell.svg";
+import Send from "@/icons/exam_send.svg";
+import Discord from "@/icons/discord.svg";
+import Telegram from "@/icons/telegram.svg";
+import Twitter from "@/icons/twitter.svg";
+import toast from "react-hot-toast";
+import { useState } from "react";
+// import Choz from "@/icons/choz.svg";
 
 // API
 // import { getScore } from '@/lib/Client/Exam';
@@ -26,7 +26,7 @@ import { useState } from 'react';
 function ExamResult() {
   const router = useRouter();
 
-  const [mail, setMail] = useState('');
+  const [mail, setMail] = useState("");
   // const examID: string = router.query.slug as string;
 
   // const { data, isLoading, isPending, isError } = useQuery({
@@ -40,12 +40,12 @@ function ExamResult() {
     // other options like onSuccess, onError, etc.
     onSuccess: () => {
       //console.log(data);
-      toast.success('Email sent successfully');
-      router.replace('/app');
+      toast.success("Email sent successfully");
+      router.replace("/app");
     },
     onError: (error: any) => {
-      toast.error('Failed to send email');
-      console.log('Error', error);
+      toast.error("Failed to send email");
+      console.log("Error", error);
     },
   };
 
@@ -89,13 +89,13 @@ function ExamResult() {
                       alt=""
                       className={styles.send_icon}
                       style={{
-                        cursor: 'pointer',
-                        transition: 'all 0.3s',
+                        cursor: "pointer",
+                        transition: "all 0.3s",
                       }}
                       onClick={() => {
                         // validate email
-                        if (mail === '' || !mail.includes('@') || !mail.includes('.')) {
-                          toast.error('Please enter valid email');
+                        if (mail === "" || !mail.includes("@") || !mail.includes(".")) {
+                          toast.error("Please enter valid email");
                           return;
                         }
 

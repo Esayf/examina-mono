@@ -1,123 +1,124 @@
-'use client';
-import styles from '../styles/Landing.module.css';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
+"use client";
+import styles from "../styles/Landing.module.css";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import { RootState } from '../../store';
-import { initialState } from '../../features/client/session';
+import { useDispatch, useSelector, useStore } from "react-redux";
+import { RootState } from "../../store";
+import { initialState } from "../../features/client/session";
 // Components
-import { SidebarButton } from '@/components/ui/Buttons';
+import { SidebarButton } from "@/components/ui/Buttons";
 
 // Images
-import BG from '@/images/landing-bg.png';
-// import Team from '@/images/landing_team/team.svg';
-import Try from '@/images/landing_general/try_now.svg';
-import TryButton from '@/images/landing_general/try_button.svg';
-import Mina from '@/images/landing_general/mina.svg';
+import BG from "@/images/landing-bg.png";
+// import Team from "@/images/landing_team/team.svg";
+import Try from "@/images/landing_general/try_now.svg";
+import TryButton from "@/images/landing_general/try_button.svg";
+import Mina from "@/images/landing_general/mina.svg";
 
-import STEP1 from '@/images/landing_step_card/step_1.svg';
-import STEP2 from '@/images/landing_step_card/step_2.svg';
-import STEP3 from '@/images/landing_step_card/step_3.svg';
+import STEP1 from "@/images/landing_step_card/step_1.svg";
+import STEP2 from "@/images/landing_step_card/step_2.svg";
+import STEP3 from "@/images/landing_step_card/step_3.svg";
 
-import FEATURE1 from '@/images/landing_feature_card/feature_1.svg';
-import FEATURE2 from '@/images/landing_feature_card/feature_2.svg';
-import FEATURE3 from '@/images/landing_feature_card/feature_3.svg';
-import FEATURE4 from '@/images/landing_feature_card/feature_4.svg';
-import FEATURE5 from '@/images/landing_feature_card/feature_5.svg';
-import FEATURE6 from '@/images/landing_feature_card/feature_6.svg';
+import FEATURE1 from "@/images/landing_feature_card/feature_1.svg";
+import FEATURE2 from "@/images/landing_feature_card/feature_2.svg";
+import FEATURE3 from "@/images/landing_feature_card/feature_3.svg";
+import FEATURE4 from "@/images/landing_feature_card/feature_4.svg";
+import FEATURE5 from "@/images/landing_feature_card/feature_5.svg";
+import FEATURE6 from "@/images/landing_feature_card/feature_6.svg";
 
 // Icons
-import RightLong from '@/icons/right_long.svg';
-import RightLongPurple from '@/icons/right_long_purple.svg';
-import Choz from '@/icons/choz.svg';
-import { authenticate } from '../../hooks/auth';
-import { setSession } from '../../features/client/session';
-import { getSession } from '@/lib/Client/Auth';
+import RightLong from "@/icons/right_long.svg";
+import RightLongPurple from "@/icons/right_long_purple.svg";
+import Choz from "@/icons/choz.svg";
+import { authenticate } from "../../hooks/auth";
+import { setSession } from "../../features/client/session";
+import { getSession } from "@/lib/Client/Auth";
+import { useAppStore } from "../../hooks";
 const stepArr = [
   {
-    stepText: 'STEP 1',
-    stepTitle: 'Connect',
+    stepText: "STEP 1",
+    stepTitle: "Connect",
     stepDesc:
       "Seamlessly connect via the Auro Wallet by simply pressing the 'Connect Wallet' button.",
     stepImage: STEP1,
   },
   {
-    stepText: 'STEP 2',
-    stepTitle: 'Create',
-    stepDesc: 'Navigate to the exam creation page and fill in your questions and answers.',
+    stepText: "STEP 2",
+    stepTitle: "Create",
+    stepDesc: "Navigate to the exam creation page and fill in your questions and answers.",
     stepImage: STEP2,
   },
   {
-    stepText: 'STEP 3',
-    stepTitle: 'Publish',
-    stepDesc: 'Publish your exam and you are good to go!',
+    stepText: "STEP 3",
+    stepTitle: "Publish",
+    stepDesc: "Publish your exam and you are good to go!",
     stepImage: STEP3,
   },
 ];
 
 const featureArr = [
   {
-    featureTitle: 'Secure',
+    featureTitle: "Secure",
     featureDesc:
-      'Experience the pinnacle of security with our cutting-edge exam system fortified by next-generation blockchain technology powered by Mina Protocol',
+      "Experience the pinnacle of security with our cutting-edge exam system fortified by next-generation blockchain technology powered by Mina Protocol",
     featureImage: FEATURE1,
   },
   {
-    featureTitle: 'Fast',
+    featureTitle: "Fast",
     featureDesc:
-      'Effortless registration and exam entry: No email or password needed – just use your Auro Wallet and start your journey seamlessly!',
+      "Effortless registration and exam entry: No email or password needed – just use your Auro Wallet and start your journey seamlessly!",
     featureImage: FEATURE2,
   },
   {
-    featureTitle: 'Free',
+    featureTitle: "Free",
     featureDesc:
-      'Enjoy the freedom – register and create your exam in just a minute, absolutely free!',
+      "Enjoy the freedom – register and create your exam in just a minute, absolutely free!",
     featureImage: FEATURE3,
   },
   {
-    featureTitle: 'Private',
+    featureTitle: "Private",
     featureDesc:
-      'Your privacy is paramount to us! Rest assured, we do not retain any private information about you, encompassing your test scores and identity.',
+      "Your privacy is paramount to us! Rest assured, we do not retain any private information about you, encompassing your test scores and identity.",
     featureImage: FEATURE4,
   },
   {
-    featureTitle: 'Decentralized',
+    featureTitle: "Decentralized",
     featureDesc:
-      'Blockchain empowers secure global connectivity, enabling seamless connections to anywhere in the world.',
+      "Blockchain empowers secure global connectivity, enabling seamless connections to anywhere in the world.",
     featureImage: FEATURE5,
   },
   {
-    featureTitle: 'Smart',
+    featureTitle: "Smart",
     featureDesc:
-      'Utilize the intelligence of our Choz Smart Contract, seamlessly integrating external exams for a more efficient and technologically advanced system.',
+      "Utilize the intelligence of our Choz Smart Contract, seamlessly integrating external exams for a more efficient and technologically advanced system.",
     featureImage: FEATURE6,
   },
 ];
 
 const techArr = [
   {
-    techTitle: 'Zero Knowledge',
+    techTitle: "Zero Knowledge",
     techDesc:
-      'Leveraging Zero Knowledge, Choz empowers the creation of exams without disclosing questions, correct answers, user responses, or personal identity, ensuring utmost confidentiality.',
+      "Leveraging Zero Knowledge, Choz empowers the creation of exams without disclosing questions, correct answers, user responses, or personal identity, ensuring utmost confidentiality.",
     techLink:
-      'https://examina.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998',
+      "https://examina.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998",
   },
   {
-    techTitle: 'Mina zkProgram',
+    techTitle: "Mina zkProgram",
     techDesc:
-      'Our score verifier uses a Recursive Proof Of Score zkProgram. That enables us to prove exam results without revealing your score and answers',
+      "Our score verifier uses a Recursive Proof Of Score zkProgram. That enables us to prove exam results without revealing your score and answers",
     techLink:
-      'https://examina.medium.com/navigating-the-world-of-zk-programs-examinas-insight-into-secure-exam-scoring-ea974e0b11ed',
+      "https://examina.medium.com/navigating-the-world-of-zk-programs-examinas-insight-into-secure-exam-scoring-ea974e0b11ed",
   },
   {
-    techTitle: 'Web3 Session System',
+    techTitle: "Web3 Session System",
     techDesc:
-      'We generate a session based on your signature. Which enables us to verify your wallet ownership. Without any gas fees or private information!',
+      "We generate a session based on your signature. Which enables us to verify your wallet ownership. Without any gas fees or private information!",
     techLink:
-      'https://examina.medium.com/web3-sessions-bridging-the-gap-between-security-and-seamless-backend-integration-3eaf3ff8f995',
+      "https://examina.medium.com/web3-sessions-bridging-the-gap-between-security-and-seamless-backend-integration-3eaf3ff8f995",
   },
 ];
 
@@ -131,7 +132,7 @@ const techArr = [
 export default function Home() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const store = useStore();
+  const store = useAppStore();
   const session = useSelector((state: RootState) => state.session);
   return (
     <>
@@ -164,13 +165,13 @@ export default function Home() {
             onClick={async () => {
               const res = await authenticate(session as any);
               if (!res) {
-                toast.error('Failed to authenticate wallet!');
+                toast.error("Failed to authenticate wallet!");
                 return;
               }
-              toast.success('Welcome back!');
-              console.log('redirect res', (res as any).session);
+              toast.success("Welcome back!");
+              console.log("redirect res", (res as any).session);
               dispatch(setSession((res as any).session));
-              window.location.href = '/app'; // You are terrible at this
+              window.location.href = "/app"; // You are terrible at this
             }}
           >
             {(store as any).getState().session.session === initialState.session ? (
@@ -300,7 +301,7 @@ export default function Home() {
           <div className={styles.sub_section_text_container}>
             <Image src={Try} alt="" className={styles.sub_section_image} />
             <p className={styles.sub_section_desc}>
-              You must have an auro wallet account before using it. Not there yet?{' '}
+              You must have an auro wallet account before using it. Not there yet?{" "}
               <a rel="noopener noreferrer" target="_blank" href="https://www.aurowallet.com/">
                 Create now
               </a>

@@ -1,58 +1,50 @@
-import { fetchAccount, PublicKey, Field } from 'o1js';
+import { fetchAccount, PublicKey, Field } from "o1js";
 
-import type {
-  ZkappWorkerRequest,
-  ZkappWorkerReponse,
-  WorkerFunctions,
-} from './zkappWorker';
+import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from "./zkappWorker";
 
 export default class ZkappWorkerClient {
   // ---------------------------------------------------------------------------------------
 
   setActiveInstanceToBerkeley() {
-    return this._call('setActiveInstanceToBerkeley', {});
+    return this._call("setActiveInstanceToBerkeley", {});
   }
 
   loadContract() {
-    return this._call('loadContract', {});
+    return this._call("loadContract", {});
   }
 
   compileContract() {
-    return this._call('compileContract', {});
+    return this._call("compileContract", {});
   }
 
-  fetchAccount({
-    publicKey,
-  }: {
-    publicKey: PublicKey;
-  }): ReturnType<typeof fetchAccount> {
-    const result = this._call('fetchAccount', {
+  fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
+    const result = this._call("fetchAccount", {
       publicKey58: publicKey.toBase58(),
     });
     return result as ReturnType<typeof fetchAccount>;
   }
 
   initZkappInstance(publicKey: PublicKey) {
-    return this._call('initZkappInstance', {
+    return this._call("initZkappInstance", {
       publicKey58: publicKey.toBase58(),
     });
   }
 
   async getNum(): Promise<Field> {
-    const result = await this._call('getNum', {});
+    const result = await this._call("getNum", {});
     return Field.fromJSON(JSON.parse(result as string));
   }
 
   createUpdateTransaction() {
-    return this._call('createUpdateTransaction', {});
+    return this._call("createUpdateTransaction", {});
   }
 
   proveUpdateTransaction() {
-    return this._call('proveUpdateTransaction', {});
+    return this._call("proveUpdateTransaction", {});
   }
 
   async getTransactionJSON() {
-    const result = await this._call('getTransactionJSON', {});
+    const result = await this._call("getTransactionJSON", {});
     return result;
   }
 
@@ -67,7 +59,7 @@ export default class ZkappWorkerClient {
   nextId: number;
 
   constructor() {
-    this.worker = new Worker(new URL('./zkappWorker.ts', import.meta.url));
+    this.worker = new Worker(new URL("./zkappWorker.ts", import.meta.url));
     this.promises = {};
     this.nextId = 0;
 

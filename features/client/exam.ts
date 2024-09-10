@@ -1,9 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // @ts-ignore
-import { v4 } from 'uuid';
+import { v4 } from "uuid";
 
-import Question from '@/lib/Question';
-import type { RootState } from '../../store';
+import Question from "@/lib/Question";
+import type { RootState } from "../../store";
 
 // Define a type for the slice state
 export interface ExamState {
@@ -18,15 +18,15 @@ export interface ExamState {
 // Define the initial state using that type
 const initialState = {
   id: v4(),
-  title: '',
-  description: '',
+  title: "",
+  description: "",
   startDate: new Date(),
-  duration: '',
+  duration: "",
   questions: [],
 } as ExamState;
 
 export const examSlice = createSlice({
-  name: 'exam',
+  name: "exam",
   // `clientSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {

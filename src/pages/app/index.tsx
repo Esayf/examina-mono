@@ -1,24 +1,24 @@
-import styles from '@/styles/app/Dashboard.module.css';
-import { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
-import { getExamList } from '@/lib/Client/Exam';
-import { formatDate } from '../../../utils/formatter';
+import styles from "@/styles/app/Dashboard.module.css";
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import { getExamList } from "@/lib/Client/Exam";
+import { formatDate } from "../../../utils/formatter";
 
 // Import Custom Components
-import DashboardHeader from '@/components/ui/DashboardHeader';
+import DashboardHeader from "@/components/ui/DashboardHeader";
 
 // Icons and Images
-import Plus from '@/icons/plus.svg';
-import Duplicate from '@/icons/duplicate.svg';
-import Right from '@/icons/right_long.svg';
-import None from '@/images/dashboard/none.svg';
+import Plus from "@/icons/plus.svg";
+import Duplicate from "@/icons/duplicate.svg";
+import Right from "@/icons/right_long.svg";
+import None from "@/images/dashboard/none.svg";
 
 function Application() {
   const [copied, setCopied] = useState<string>();
 
-  const { data, isLoading, isError } = useQuery({ queryKey: ['exams'], queryFn: getExamList });
+  const { data, isLoading, isError } = useQuery({ queryKey: ["exams"], queryFn: getExamList });
 
   const router = useRouter();
 
@@ -40,7 +40,7 @@ function Application() {
               <div className={styles.no_content_button_container}>
                 <div
                   className={styles.no_content_button}
-                  onClick={() => router.push('/app/create-exam/')}
+                  onClick={() => router.push("/app/create-exam/")}
                 >
                   <p className={styles.content_header_button_text}>Create Now</p>
                   <Image src={Right} alt="" />
@@ -61,7 +61,7 @@ function Application() {
           <h3 className={styles.content_header_title}>Your Quizzes</h3>
           <div
             className={styles.content_header_button}
-            onClick={() => router.push('/app/create-exam/')}
+            onClick={() => router.push("/app/create-exam/")}
           >
             <Image src={Plus} alt="" className={styles.plus_icon} />
             <p className={styles.content_header_button_text}>New Quiz</p>
@@ -129,7 +129,7 @@ function Application() {
                           {/* <Image src={Copy} alt="" /> */}
                           <Image src={Duplicate} alt="" />
                           <p className={styles.table_row_copy_link}>
-                            {copied === exam?._id ? 'Copied' : 'Copy Link'}
+                            {copied === exam?._id ? "Copied" : "Copy Link"}
                           </p>
                         </div>
                       </div>

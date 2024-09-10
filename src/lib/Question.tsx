@@ -11,24 +11,36 @@ class Question {
   public description: string;
   public options: Option[];
   public correctAnswer: 1 | 2 | 3 | 4 | 5; // correctAnswer
-  public type: 'mc' | 'tf';
+  public type: "mc" | "tf";
 
   public constructor(id?: number) {
     this.number = id ? id : 0;
-    this.text = '';
-    this.description = '';
+    this.text = "";
+    this.description = "";
     this.options = [
       {
         number: 1,
-        text: '',
+        text: "",
       },
       {
         number: 2,
-        text: '',
+        text: "",
+      },
+      {
+        number: 3,
+        text: "",
+      },
+      {
+        number: 4,
+        text: "",
+      },
+      {
+        number: 5,
+        text: "",
       },
     ];
     this.correctAnswer = 1;
-    this.type = 'mc';
+    this.type = "mc";
   }
 }
 

@@ -1,15 +1,15 @@
-'use client';
-import styles from '@/styles/components/Sidebar.module.css';
-import { useRouter } from 'next/router';
+"use client";
+import styles from "@/styles/components/Sidebar.module.css";
+import { useRouter } from "next/router";
 
 // Components
-import * as Separator from '@radix-ui/react-separator';
+import * as Separator from "@radix-ui/react-separator";
 
 // Icons
-import { HomeIcon, Pencil1Icon } from '@radix-ui/react-icons';
+import { HomeIcon, Pencil1Icon } from "@radix-ui/react-icons";
 
 // Custom Components
-import { SidebarButton } from '../Buttons';
+import { SidebarButton } from "../Buttons";
 
 type Props = {};
 
@@ -29,14 +29,14 @@ function Sidebar({}: Props) {
         <SidebarButton
           label="Dashboard"
           Icon={HomeIcon}
-          active={pathname === '/app'}
-          onClick={() => router.push('/app')}
+          active={pathname === "/app"}
+          onClick={() => router.push("/app")}
         />
         <SidebarButton
           label="Create exam"
           Icon={Pencil1Icon}
-          active={pathname === '/app/create-exam'}
-          onClick={() => router.push('/app/create-exam')}
+          active={pathname === "/app/create-exam"}
+          onClick={() => router.push("/app/create-exam")}
         />
         {/* <SidebarButton label="Your exams" Icon={BarChartIcon} />
         <SidebarButton label="Your profile" Icon={PersonIcon} />

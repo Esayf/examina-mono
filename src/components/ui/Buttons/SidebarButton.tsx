@@ -39,16 +39,10 @@ function SidebarButton({
       >
         {Icon && (
           <Icon
-            className={`${styles.image} ${imageClassName} ${
-              active ? styles.icon_active : ""
-            }`}
+            className={`${styles.image} ${imageClassName} ${active ? styles.icon_active : ""}`}
           />
         )}
-        <p
-          className={`${styles.label} ${labelClassName} ${
-            active ? styles.label_active : ""
-          }`}
-        >
+        <p className={`${styles.label} ${labelClassName} ${active ? styles.label_active : ""}`}>
           {label}
         </p>
       </button>

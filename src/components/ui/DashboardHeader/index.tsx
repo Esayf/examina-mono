@@ -1,15 +1,15 @@
-import styles from '@/styles/components/DashboardHeader.module.css';
-import Image from 'next/image';
-import { useSelector } from 'react-redux';
-import { logout } from '@/lib/Client/Auth';
-import toast from 'react-hot-toast';
+import styles from "@/styles/components/DashboardHeader.module.css";
+import Image from "next/image";
+import { useSelector } from "react-redux";
+import { logout } from "@/lib/Client/Auth";
+import toast from "react-hot-toast";
 
 // Images
-import Choz from '@/icons/choz.svg';
-import Avatar from '@/icons/profile_image.svg';
-import Logout from '@/icons/arrow-right-start-on-rectangle.svg';
-import { resetSession } from '../../../../features/client/session';
-import { useDispatch } from 'react-redux';
+import Choz from "@/icons/choz.svg";
+import Avatar from "@/icons/profile_image.svg";
+import Logout from "@/icons/arrow-right-start-on-rectangle.svg";
+import { resetSession } from "../../../../features/client/session";
+import { useDispatch } from "react-redux";
 
 function DashboardHeader({ withoutNav = false }) {
   const session = useSelector((state: any) => state.session);
@@ -43,11 +43,11 @@ function DashboardHeader({ withoutNav = false }) {
             alt=""
             onClick={() =>
               logout().then(() => {
-                toast.success('Logged out successfully');
-                window.location.href = '/';
+                toast.success("Logged out successfully");
+                window.location.href = "/";
               })
             }
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         </div>
       </div>

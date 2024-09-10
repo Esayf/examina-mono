@@ -1,10 +1,10 @@
-import styles from '@/styles/app/exams/ExamScreen.module.css';
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
+import styles from "@/styles/app/exams/ExamScreen.module.css";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import toast from "react-hot-toast";
 import {
   imagePlugin,
   MDXEditor,
@@ -13,23 +13,23 @@ import {
   quotePlugin,
   thematicBreakPlugin,
   markdownShortcutPlugin,
-} from '@mdxeditor/editor';
-import '@mdxeditor/editor/style.css';
+} from "@mdxeditor/editor";
+import "@mdxeditor/editor/style.css";
 
 // Types
-import Question from '@/lib/Question';
+import Question from "@/lib/Question";
 
 // Custom Layout
-import Layout from './layout';
+import Layout from "./layout";
 
 // Import Icons
-import Clock from '@/icons/clock_red.svg';
+import Clock from "@/icons/clock_red.svg";
 
 // Radix Primitives
-import * as RadioGroup from '@radix-ui/react-radio-group';
+import * as RadioGroup from "@radix-ui/react-radio-group";
 
 // API
-import { getExamQuestions, getExamDetails, submitQuiz } from '@/lib/Client/Exam';
+import { getExamQuestions, getExamDetails, submitQuiz } from "@/lib/Client/Exam";
 
 type CurrentQuestion = Question | undefined;
 type Answer = 0 | 1 | 2 | 3 | 4 | 5;
@@ -45,13 +45,12 @@ function ExamDetails() {
   const [remainingTimeMiliseconds, setRemainingTimeMiliseconds] = useState<number | null>(null);
   const [startTimer, setStartTimer] = useState<boolean>(false);
 
-
   const {
     data: examData,
     isLoading: isloadingData,
     isError: isErrorExam,
   } = useQuery({
-    queryKey: ['exam'],
+    queryKey: ["exam"],
     queryFn: () => getExamDetails(examID),
     enabled: !!examID,
   });
@@ -61,16 +60,14 @@ function ExamDetails() {
     isLoading: isLoadingQuestions,
     isError: isErrorQuestions,
   } = useQuery({
-    queryKey: ['exams'],
+    queryKey: ["exams"],
     queryFn: async () => await getExamQuestions(examID),
     enabled: !!examID,
   });
 
-
-
   useEffect(() => {
     if (currentQuestion && mdRef.current) {
-      const description = currentQuestion.text || '';
+      const description = currentQuestion.text || "";
       mdRef.current.setMarkdown(description);
     }
   }, [currentQuestion]);
@@ -85,7 +82,7 @@ function ExamDetails() {
     },
     onSuccess: () => {
       toast.loading(
-        'Your answers have been submitted successfully. Redirecting to the result page.',
+        "Your answers have been submitted successfully. Redirecting to the result page.",
         {
           duration: 2000,
         }
@@ -93,13 +90,13 @@ function ExamDetails() {
       window.location.href = `/app/exams/result/${examID}`;
     },
     onError: (error) => {
-      toast.error('An error occured when submitting the answers. Please try again later.');
+      toast.error("An error occured when submitting the answers. Please try again later.");
     },
   });
 
-  console.log('QQQ', questions);
-  console.log('EEE', examData);
-  console.log('CCC', currentQuestion);
+  console.log("QQQ", questions);
+  console.log("EEE", examData);
+  console.log("CCC", currentQuestion);
 
   useEffect(() => {
     if (questions && examData) {
@@ -113,7 +110,7 @@ function ExamDetails() {
             (new Date((examData as any).exam.startDate).getTime() +
               (examData as any).exam.duration * 60000 -
               new Date().getTime()) /
-            1000
+              1000
           );
         }
         return prev - 1;
@@ -181,7 +178,7 @@ function ExamDetails() {
             <li> - the exam session may have ended or not started,</li>
             <li> - you may not have the necessary authorization to access the exam,</li>
             <li>
-              {' '}
+              {" "}
               - our servers have burned down, and they may be raising the average temperature of the
               world with the carbon dioxide they emit,
             </li>
@@ -218,9 +215,9 @@ function ExamDetails() {
             <p className={styles.timer_content}>
               {remainingTimeMiliseconds
                 ? `${Math.floor(remainingTimeMiliseconds / 60)}:${(remainingTimeMiliseconds % 60)
-                  .toString()
-                  .padStart(2, '0')}`
-                : '-'}
+                    .toString()
+                    .padStart(2, "0")}`
+                : "-"}
             </p>
           </div>
         </div>
@@ -228,7 +225,7 @@ function ExamDetails() {
       <div className={styles.container}>
         <div className={styles.content_container}>
           <h1 className={styles.question_number}>
-            Question {currentQuestion ? (currentQuestion as any).number : ''}
+            Question {currentQuestion ? (currentQuestion as any).number : ""}
           </h1>
           <div className={styles.preview_container}>
             <div className={styles.preview_question_container}>
@@ -236,7 +233,7 @@ function ExamDetails() {
                 <MDXEditor
                   ref={mdRef}
                   readOnly
-                  markdown={currentQuestion ? (currentQuestion as any).text : ''}
+                  markdown={currentQuestion ? (currentQuestion as any).text : ""}
                   // markdown={
                   //   'ASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDG'
                   // }
@@ -263,17 +260,18 @@ function ExamDetails() {
                       return (
                         <div
                           key={i}
-                          className={`RadioGruopContainer ${el.number === choices[currentQuestion.number - 1] &&
-                            'RadioGroupContainer__active'
-                            } RadioGruopContainerPreview`}
+                          className={`RadioGruopContainer ${
+                            el.number === choices[currentQuestion.number - 1] &&
+                            "RadioGroupContainer__active"
+                          } RadioGruopContainerPreview`}
                           onClick={() => {
                             const newChoices = [...choices];
                             newChoices[currentQuestion.number - 1] = el.number;
                             setChoices(newChoices);
                           }}
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <div style={{ display: "flex", alignItems: "center" }}>
                             <RadioGroup.Item
                               className="RadioGroupItem"
                               value={el.text}
@@ -287,8 +285,8 @@ function ExamDetails() {
                             <p
                               className="RadioText"
                               style={{
-                                wordBreak: 'break-word',
-                                overflowWrap: 'break-word',
+                                wordBreak: "break-word",
+                                overflowWrap: "break-word",
                               }}
                             >
                               {el.text}
@@ -308,14 +306,16 @@ function ExamDetails() {
                       return (
                         <div
                           key={_i}
-                          className={`${styles.selector_box} ${el.number === currentQuestion?.number && styles.selector_box_active
-                            }`}
+                          className={`${styles.selector_box} ${
+                            el.number === currentQuestion?.number && styles.selector_box_active
+                          }`}
                           onClick={() => setCurrentQuestion(el)}
                         >
                           <p
-                            className={`${styles.selector_box_text} ${el.number === currentQuestion?.number &&
+                            className={`${styles.selector_box_text} ${
+                              el.number === currentQuestion?.number &&
                               styles.selector_box_text_active
-                              }`}
+                            }`}
                           >
                             {_i + 1}
                           </p>
@@ -345,16 +345,16 @@ function ExamDetails() {
 
                     // Check if choices is empty or all choices are 0
                     if (choices.length === 0 || choices.every((el) => el === 0)) {
-                      toast.error('Please answer at least one question before submitting.');
+                      toast.error("Please answer at least one question before submitting.");
                       return;
                     }
 
-                    console.log('Selam');
+                    console.log("Selam");
                     mutate();
                   }}
                   disabled={isPending}
                 >
-                  {isPending ? 'Redirecting' : 'Finish Quiz'}
+                  {isPending ? "Redirecting" : "Finish Quiz"}
                 </button>
               </div>
             </div>
@@ -376,9 +376,9 @@ function ExamDetails() {
             >
               {currentQuestion?.number === 10
                 ? isPending
-                  ? 'Redirecting'
-                  : 'Save and Finish'
-                : 'Next Question'}
+                  ? "Redirecting"
+                  : "Save and Finish"
+                : "Next Question"}
             </button>
           </div> */}
         </div>
