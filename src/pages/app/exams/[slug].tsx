@@ -32,7 +32,7 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import { getExamQuestions, getExamDetails, submitQuiz } from "@/lib/Client/Exam";
 
 type CurrentQuestion = Question | undefined;
-type Answer = 0 | 1 | 2 | 3 | 4 | 5;
+type Answer = number;
 type Choices = Answer[];
 
 function ExamDetails() {
@@ -265,8 +265,7 @@ function ExamDetails() {
                             "RadioGroupContainer__active"
                           } RadioGruopContainerPreview`}
                           onClick={() => {
-                            const newChoices = [...choices];
-                            newChoices[currentQuestion.number - 1] = el.number;
+                            const newChoices = [...choices, el.number];
                             setChoices(newChoices);
                           }}
                           style={{ cursor: "pointer" }}

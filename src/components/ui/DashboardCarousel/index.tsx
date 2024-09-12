@@ -4,7 +4,7 @@ import styles from "@/styles/components/DashboardCarousel.module.css";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
-import { PersonIcon, ClockIcon } from "@radix-ui/react-icons";
+import { UserIcon, ClockIcon } from "@heroicons/react/24/solid";
 
 import LeftArrow from "@/icons/carousel-left.svg";
 import RightArrow from "@/icons/carousel-right.svg";
@@ -88,7 +88,7 @@ function CarouselComponent({ type, exams = [], step = 0, stepper = () => {} }: P
                   </div>
                 </div>
                 <div className={styles.owner_container}>
-                  <PersonIcon className={styles.owner_icon} />
+                  <UserIcon className={styles.owner_icon} />
                   <p className={styles.owner}>{exam.owner}</p>
                 </div>
                 <div className={styles.nav_container}>

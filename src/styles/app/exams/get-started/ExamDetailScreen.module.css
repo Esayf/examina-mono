@@ -1,5 +1,5 @@
 .container {
-  background-image: url('../../../../images/exam/bg.png');
+  background-image: url("../../../../images/exam/bg.png");
   background-repeat: no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -93,7 +93,7 @@
 }
 
 .card_content_inner_container {
-  border: 1px solid var(--mina-purple);
+  border: 1px solid rgba(var(--mina-purple));
   border-radius: 1rem;
   padding: 1rem;
 }
@@ -206,7 +206,7 @@
   padding: 0.5rem 0;
   text-indent: 0.5rem;
   border-radius: 0.25rem;
-  border: 1px solid var(--mina-purple);
+  border: 1px solid rgba(var(--mina-purple));
   font-size: 1rem;
   font-style: normal;
   font-weight: 400;
@@ -218,7 +218,7 @@
   padding: 0.5rem;
   border-radius: 0.25rem;
   margin-top: 2rem;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
 }
 
 .send_email_button_container:hover {
@@ -251,7 +251,7 @@
   font-weight: 600;
   line-height: 1.5rem; /* 150% */
   text-align: center;
-  color: var(--mina-purple);
+  color: rgba(var(--mina-purple));
   text-decoration: none;
 }
 
@@ -294,7 +294,7 @@
 }
 
 .footer_nav_item {
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 1rem;
   font-style: normal;
   font-weight: 700;
@@ -303,7 +303,7 @@
 }
 
 .footer_copyright {
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 1rem;
   font-style: normal;
   font-weight: 400;
@@ -320,7 +320,7 @@
   cursor: pointer;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--mina-purple);
+  color: rgba(var(--mina-purple));
 }
 
 @media screen and (max-width: 1280px) {

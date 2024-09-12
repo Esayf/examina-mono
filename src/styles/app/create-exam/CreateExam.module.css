@@ -2,7 +2,7 @@
   width: 1216px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);
-  background-color: var(--neutral-150);
+  background-color: rgba(var(--neutral-150));
 }
 
 .container_secondary {
@@ -17,7 +17,7 @@
   justify-content: center; */
   background-color: white;
   border-radius: 22.5px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   margin-bottom: 2rem;
 }
 
@@ -29,7 +29,7 @@
   background-color: white;
   border-radius: 16px;
   width: 908px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   margin-bottom: 2rem;
 }
 
@@ -45,18 +45,18 @@
   border: none;
   outline: none;
   cursor: pointer;
-  border-bottom: 1px solid var(--gray-border);
+  border-bottom: 1px solid rgba(var(--gray-border));
 }
 
-.stepper_selector[data-state='active'] {
-  border-bottom: 2px solid var(--mina-purple);
+.stepper_selector[data-state="active"] {
+  border-bottom: 2px solid rgba(var(--mina-purple));
 }
 
 .stepper_selector_title {
   font-weight: 300;
   font-size: 1rem;
   margin: 0.75rem 1rem;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
 }
 
 .stepper_selector_title_bold {
@@ -99,7 +99,7 @@
 }
 
 .form_element_container {
-  margin-bottom: 2.25rem;
+  position: relative;
 }
 
 .form_element_container_question_first {
@@ -115,23 +115,34 @@
   align-items: center;
   gap: 8px;
   font-weight: 500;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
   color: #60646c;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 
 .form_element_input {
-  width: calc(100% - 2.25rem);
+  width: calc(100%);
   padding: 0.75rem 1.125rem;
   border-radius: 4px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   outline: none;
   font-size: 1rem;
   font-weight: 300;
+  box-sizing: border-box;
 }
 
 .form_element_input:focus {
-  border: 1px solid var(--mina-purple);
+  border: 1px solid rgba(var(--mina-purple));
+}
+
+.form_element_info {
+  margin-top: 0.25rem;
+  font-weight: medium;
+  font-size: 0.75rem;
+}
+
+.form_element_error {
+  color: rgba(var(--dark-red), 0.8);
 }
 
 .from_element_sub_desc {
@@ -153,7 +164,9 @@
 }
 
 .counter_text {
+  font-size: 0.625rem;
   color: #b9bbc6;
+  margin-top: 0.25rem;
 }
 
 .form_element_textarea {
@@ -162,14 +175,14 @@
   resize: none;
   padding: 0.75rem 1.125rem;
   border-radius: 4px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   outline: none;
   font-size: 1rem;
   font-weight: 300;
 }
 
 .form_element_textarea:focus {
-  border: 1px solid var(--mina-purple);
+  border: 1px solid rgba(var(--mina-purple));
 }
 
 .form_element_button_container {
@@ -188,8 +201,8 @@
   font-weight: 400;
   font-size: 1.125rem;
   color: white;
-  background-color: var(--sidebar-purple);
-  padding: 0.75rem 4rem;
+  background-color: rgba(var(--sidebar-purple));
+  padding: 1rem 1.5rem;
   border-radius: 0.5rem;
   cursor: pointer !important;
 }
@@ -203,7 +216,7 @@
   font-weight: 400;
   font-size: 1.26rem;
   color: white;
-  background-color: var(--sidebar-purple);
+  background-color: rgba(var(--sidebar-purple));
   padding: 12px 64px;
   border-radius: 0.5rem;
   cursor: pointer !important;
@@ -218,7 +231,7 @@
   font-weight: 400;
   font-size: 1.26rem;
   color: black;
-  background-color: 'transparent';
+  background-color: "transparent";
   padding: 12px 64px;
   border-radius: 0.5rem;
   cursor: pointer !important;
@@ -241,7 +254,7 @@
   margin: 1.5rem 0;
   background-color: #ffffff;
   border-radius: 16px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   margin-bottom: 32px;
 }
 
@@ -353,7 +366,7 @@
 }
 
 .question_container {
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   border-radius: 12px;
   margin-bottom: 3rem;
   padding: 2rem 3rem;
@@ -385,7 +398,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   width: 3.25rem;
   height: 3.25rem;
   cursor: pointer;
@@ -393,13 +406,13 @@
 
 .selector_box_active {
   border: 1px solid transparent;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
 }
 
 .selector_box_text {
   font-weight: 400;
   font-size: 1.825rem;
-  color: var(--gray-dark);
+  color: rgba(var(--gray-dark));
 }
 
 .selector_box_text_active {
