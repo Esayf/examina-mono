@@ -1,4 +1,3 @@
-import styles from "@/styles/components/DashboardHeader.module.css";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { logout } from "@/lib/Client/Auth";
@@ -8,31 +7,38 @@ import toast from "react-hot-toast";
 import Choz from "@/icons/choz.svg";
 import Logout from "@/icons/arrow-right-start-on-rectangle.svg";
 import Link from "next/link";
+import { useAppSelector } from "@/app/hooks";
+import { hasActiveSession } from "@/features/client/session";
 
 function DashboardHeader({ withoutNav = false }) {
-  const session = useSelector((state: any) => state.session);
+  const session = useAppSelector((state) => state.session);
+  const isConnected = useAppSelector(hasActiveSession);
+
   return (
-    <div className={styles.dashboard_header}>
-      <div className={styles.container}>
+    <div className="bg-white border-b border-gray-300">
+      <div className="w-full max-w-[76rem]  mx-auto flex justify-between items-center py-4 px-0">
         <Link href="/">
-          <Image src={Choz} alt="" className={styles.logo} />
+          <Image src={Choz} alt="" className="mr-16" />
         </Link>
         {withoutNav === false && (
-          <div className={styles.header_nav_container}>
-            <p className={`${styles.header_nav_item} ${styles.header_nav_item_active}`}>Quizzes</p>
+          <div>
+            <p className="text-dark-blue-black text-lg leading-7 tracking-tight no-underline font-bold">
+              Quizzes
+            </p>
           </div>
         )}
-        <div className={styles.profile_container}>
-          <div className={styles.wallet_address_container}>
+        <div className="flex items-center gap-4">
+          <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg">
             <a
-              href={`https://minascan.io/mainnet/account/${session?.walletAddress}/`}
+              href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}/`}
               target="_blank"
-              className={styles.wallet_address}
+              className="text-base font-medium leading-6 no-underline"
             >
-              {session.walletAddress &&
-                `${(session.walletAddress as string).slice(0, 5)}...${(
-                  session.walletAddress as string
-                ).slice(-5)}`}
+              {isConnected &&
+                `${session.session.walletAddress.slice(
+                  0,
+                  5
+                )}...${session.session.walletAddress.slice(-5)}`}
             </a>
           </div>
           <Image
@@ -44,7 +50,7 @@ function DashboardHeader({ withoutNav = false }) {
                 window.location.href = "/";
               })
             }
-            style={{ cursor: "pointer" }}
+            className="cursor-pointer"
           />
         </div>
       </div>

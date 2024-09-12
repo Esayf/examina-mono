@@ -21,7 +21,7 @@ const initialState = {
   description: "",
   startDate: new Date(),
   duration: "",
-  questions: [],
+  questions: [new Question(1)],
 } as ExamState;
 
 export const examSlice = createSlice({

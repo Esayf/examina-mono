@@ -1,7 +1,5 @@
 // API imports
 import { getMessage, login, signMessage } from "@/lib/Client/Auth";
-import { NetworkID } from "../../types/global";
-import { AuthSession } from "@/features/client/session";
 
 export interface ContractStatus {
   status: "worker" | "account" | "compile" | "done";
@@ -11,8 +9,8 @@ export interface ContractStatus {
   };
 }
 
-export async function switchChain(chainId: NetworkID) {
-  const mina = window.mina;
+export async function switchChain(chainId: string) {
+  const mina = (window as any).mina;
 
   if (!mina) {
     console.error("Mina extension not found");
@@ -23,8 +21,8 @@ export async function switchChain(chainId: NetworkID) {
     networkID: chainId,
   });
 
-  if ("message" in chainRes) {
-    console.error("Failed to switch chain", chainRes.message);
+  if (chainRes.networkID !== chainId) {
+    console.error("Failed to switch chain");
     return null;
   }
 
@@ -33,7 +31,7 @@ export async function switchChain(chainId: NetworkID) {
 
 export async function connectWallet() {
   try {
-    const mina = window.mina;
+    const mina = (window as any).mina;
 
     if (!mina) {
       throw new Error("Mina extension not found. Please install the Mina extension and try again.");
@@ -46,13 +44,7 @@ export async function connectWallet() {
       return accounts[0];
     }
 
-    const publicKeys = await mina.requestAccounts();
-
-    if ("message" in publicKeys) {
-      throw new Error("Failed to connect wallet. Please try again.");
-    }
-
-    const publicKeyBase58 = publicKeys[0];
+    const publicKeyBase58: string = (await mina.requestAccounts())[0];
 
     const chain = await switchChain("mina:mainnet");
 
@@ -77,7 +69,7 @@ export async function authenticateWallet(address: string) {
 
     const signedData = await signMessage({ message: message });
 
-    if ("message" in signedData) {
+    if (!signedData) {
       throw new Error("Failed to sign message! Please try again.");
     }
 
@@ -94,7 +86,7 @@ export async function authenticateWallet(address: string) {
   }
 }
 
-export async function authenticate(session?: AuthSession) {
+export async function authenticate(session: any) {
   if (session?.walletAddress) {
     return session;
   }

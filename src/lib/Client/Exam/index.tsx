@@ -2,7 +2,21 @@ import RequestBase from "../RequestBase";
 
 import { ExamState } from "@/features/client/exam";
 
-function getExamList() {
+export interface Exam {
+  _id: string;
+  creator: string;
+  title: string;
+  description: string;
+  duration: number;
+  startDate: string;
+  rootHash: string;
+  secretKey: string;
+  isCompleted: boolean;
+  questionCount: number;
+  uniqueId: number;
+}
+
+function getExamList(): Promise<Exam[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
@@ -16,7 +30,26 @@ function getExamList() {
   });
 }
 
-function getExamDetails(examID: string) {
+interface ErrorResponse {
+  message: string;
+}
+
+interface ExamDetails {
+  _id: string;
+  creator: string;
+  title: string;
+  description: string;
+  duration: number;
+  startDate: string;
+  rootHash: string;
+  secretKey: string;
+  isCompleted: boolean;
+  questionCount: number;
+  uniqueId: number;
+  __v: number;
+}
+
+function getExamDetails(examID: string): Promise<{ exam: ExamDetails } | ErrorResponse> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase

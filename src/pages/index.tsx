@@ -5,15 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
-import { useDispatch, useSelector, useStore } from "react-redux";
-import { RootState } from "@/app/store";
-import { initialState } from "@/features/client/session";
+// import { initialState } from '../../features/client/session';
 // Components
-import { SidebarButton } from "@/components/ui/Buttons";
 
 // Images
 import BG from "@/images/landing-bg.png";
-// import Team from "@/images/landing_team/team.svg";
+// import Team from '@/images/landing_team/team.svg';
 import Try from "@/images/landing_general/try_now.svg";
 import TryButton from "@/images/landing_general/try_button.svg";
 import Mina from "@/images/landing_general/mina.svg";
@@ -34,8 +31,9 @@ import RightLong from "@/icons/right_long.svg";
 import RightLongPurple from "@/icons/right_long_purple.svg";
 import Choz from "@/icons/choz.svg";
 import { authenticate } from "@/hooks/auth";
-import { setSession } from "@/features/client/session";
-import { useAppStore } from "@/app/hooks";
+import { initialState, setSession } from "@/features/client/session";
+import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
+import { Button } from "@/components/ui/button";
 const stepArr = [
   {
     stepText: "STEP 1",
@@ -130,9 +128,9 @@ const techArr = [
 
 export default function Home() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const store = useAppStore();
-  const session = useSelector((state: RootState) => state.session);
+  const session = useAppSelector((state) => state.session);
   return (
     <>
       <div className={styles.landing_header_container}>
@@ -168,14 +166,15 @@ export default function Home() {
                 return;
               }
               toast.success("Welcome back!");
+              console.log("redirect res", (res as any).session);
               dispatch(setSession((res as any).session));
               window.location.href = "/app"; // You are terrible at this
             }}
           >
-            {(store as any).getState().session.session === initialState.session ? (
-              <SidebarButton label="Connect Wallet" active />
+            {store.getState().session.session === initialState.session ? (
+              <Button>Connect Wallet</Button>
             ) : (
-              <SidebarButton label="Go to Dashboard" active />
+              <Button>Go to Dashboard</Button>
             )}
           </div>
         </div>
@@ -230,7 +229,7 @@ export default function Home() {
             Meet <span>next generation</span> exam platform
           </h1>
           <h3 className={styles.section_desc}>
-            We offer an experience you&apos;ve never used before with our unique features.
+            We offer an experience you've never used before with our unique features.
           </h3>
           <div className={styles.card_container}>
             {featureArr.map((feature, index) => {

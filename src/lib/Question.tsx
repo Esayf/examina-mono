@@ -1,7 +1,7 @@
 // import { uuid } from 'uuidv4';
 
 export type Option = {
-  number: 1 | 2 | 3 | 4 | 5;
+  number: number;
   text: string;
 };
 
@@ -10,7 +10,7 @@ class Question {
   public text: string;
   public description: string;
   public options: Option[];
-  public correctAnswer: 1 | 2 | 3 | 4 | 5; // correctAnswer
+  public correctAnswer: number;
   public type: "mc" | "tf";
 
   public constructor(id?: number) {

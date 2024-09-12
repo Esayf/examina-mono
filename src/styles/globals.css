@@ -1,138 +1,114 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
-/* @import "@radix-ui/themes/styles.css"; */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* @font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProRegular.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 251 84% 66%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 40.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 251deg 84% 66% / 60%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
 }
 
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProBold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
-
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProLight.otf') format('opentype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProLightItalic.otf') format('opentype');
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProRegularItalic.otf') format('opentype');
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProBoldItalic.otf') format('opentype');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProBlack.otf') format('opentype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Filson Pro';
-  src: url('../fonts/FilsonProBlackItalic.otf') format('opentype');
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Kefir';
-  src: url('../fonts/Kefir-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-} */
 
 :root {
-  --dark-blue-black: #1e293b;
-  --mina-purple: #6366f1;
-  --mina-orange: #ff9376;
-  --gray-light: #fafafa;
-  --sidebar-purple: #7b60f1;
-  --gray-disabled: #8b8d98;
-  --gray-dark: #667085;
-  --gray-border: #e2e8f0;
-  --gray-bg: #f8fafc;
-  --gray-placeholder: #64748b;
-  --dark-blue-dot: #3649f9;
-  --green-dark: rgba(0, 131, 71, 0.84);
-  --green-light: rgba(0, 131, 71, 0.74);
-  --purple-bg: #f6f6fc;
-  --rose-red: #f3aeaf;
-  --dark-red: rgba(140, 0, 0, 0.8);
+  --dark-blue-black: 30, 41, 59;
+  --mina-purple: 99, 102, 241;
+  --mina-orange: 255, 147, 118;
+  --gray-light: 250, 250, 250;
+  --sidebar-purple: 123, 96, 241;
+  --gray-disabled: 139, 141, 152;
+  --gray-dark: 102, 112, 133;
+  --gray-border: 226, 232, 240;
+  --gray-bg: 248, 250, 252;
+  --gray-placeholder: 100, 116, 139;
+  --dark-blue-dot: 54, 73, 249;
+  --green-dark: 0, 131, 71, 0.84;
+  --green-light: 0, 131, 71, 0.74;
+  --purple-bg: 246, 246, 252;
+  --rose-red: 243, 174, 175;
+  --dark-red: 140, 0, 0;
 }
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Urbanist', sans-serif;
-}
-
-/* body {
-  font-family: 'Urbanist', sans-serif;
-} */
-
+/* 
 table,
 th,
 td {
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   padding: 1rem 2rem;
   border-collapse: collapse;
   text-align: left;
 }
 
 th {
-  background-color: var(--gray-light);
+  background-color: rgba(var(--gray-light));
   font-weight: 600;
   font-size: 1rem;
-}
+} */
 
 /* ---Dialog Styles--- Radix Base */
-@import '@radix-ui/colors/black-alpha.css';
-@import '@radix-ui/colors/green.css';
-@import '@radix-ui/colors/mauve.css';
-@import '@radix-ui/colors/violet.css';
-
-/* reset */
-button,
-fieldset,
-input {
-  all: unset;
-}
+@import "@radix-ui/colors/black-alpha.css";
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/mauve.css";
+@import "@radix-ui/colors/violet.css";
 
 .DialogOverlay {
-  background-color: var(--black-a9);
+  background-color: rgba(var(--black-a9));
   position: fixed;
   inset: 0;
   animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -159,12 +135,12 @@ input {
 .DialogTitle {
   margin: 0;
   font-weight: 500;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 1.125rem;
 }
 
 .DialogDescription {
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   font-size: 1rem;
   margin-top: 0.25rem;
   margin-bottom: 2.5rem;
@@ -177,8 +153,8 @@ input {
 }
 .Button.violet {
   background-color: white;
-  color: var(--gray-disabled);
-  border: 1px solid var(--gray-border);
+  color: rgba(var(--gray-disabled));
+  border: 1px solid rgba(var(--gray-border));
   font-weight: 300;
   font-size: 1rem;
   width: calc(100% - 2.25rem);
@@ -187,10 +163,10 @@ input {
 }
 
 .Button.violet:focus {
-  border: 1px solid var(--sidebar-purple);
+  border: 1px solid rgba(var(--sidebar-purple));
 }
 .Button.green {
-  background-color: var(--sidebar-purple);
+  background-color: rgba(var(--sidebar-purple));
   color: white;
   padding: 0.75rem 1.125rem;
   cursor: pointer;
@@ -201,24 +177,10 @@ input {
 }
 
 .IconButton {
-  font-family: inherit;
-  border-radius: 100%;
-  height: 2rem;
-  width: 2rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--violet-11);
   position: absolute;
   top: 1.125rem;
   right: 1.125rem;
   cursor: pointer;
-}
-.IconButton:hover {
-  background-color: var(--violet-4);
-}
-.IconButton:focus {
-  box-shadow: 0 0 0 2px var(--violet-7);
 }
 
 .Fieldset {
@@ -230,7 +192,7 @@ input {
 
 .Label {
   font-size: 15px;
-  color: var(--violet-11);
+  color: rgba(var(--violet-11));
   width: 90px;
   text-align: right;
 }
@@ -245,12 +207,12 @@ input {
   padding: 0 10px;
   font-size: 15px;
   line-height: 1;
-  color: var(--violet-11);
-  box-shadow: 0 0 0 1px var(--violet-7);
+  color: rgba(var(--violet-11));
+  box-shadow: 0 0 0 1px rgba(var(--violet-7));
   height: 35px;
 }
 .Input:focus {
-  box-shadow: 0 0 0 2px var(--violet-8);
+  box-shadow: 0 0 0 2px rgba(var(--violet-8));
 }
 
 @keyframes overlayShow {
@@ -403,12 +365,12 @@ abbr {
 }
 
 .react-calendar__tile--now {
-  background: var(--mina-orange);
+  background: rgba(var(--mina-orange));
 }
 
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-  background: var(--mina-orange);
+  background: rgba(var(--mina-orange));
 }
 
 .react-calendar__tile--hasActive {
@@ -421,13 +383,13 @@ abbr {
 }
 
 .react-calendar__tile--active {
-  background: var(--sidebar-purple);
+  background: rgba(var(--sidebar-purple));
   color: white;
 }
 
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-  background: var(--sidebar-purple);
+  background: rgba(var(--sidebar-purple));
 }
 
 .react-calendar--selectRange .react-calendar__tile--hover {
@@ -435,10 +397,6 @@ abbr {
 }
 
 /* ---Select Styles--- */
-button {
-  all: unset;
-}
-
 .SelectTrigger {
   display: inline-flex;
   align-items: center;
@@ -450,21 +408,21 @@ button {
   /* height: 35px; */
   width: calc(100% - 2.25rem);
   background-color: white;
-  border: 1px solid var(--gray-border);
-  color: var(--gray-disabled);
+  border: 1px solid rgba(var(--gray-border));
+  color: rgba(var(--gray-disabled));
 }
 .SelectTrigger:hover {
-  /* background-color: var(--mauve-3); */
+  /* background-color: rgba(var(--mauve-3)); */
 }
 .SelectTrigger:focus {
   /* box-shadow: 0 0 0 1px black; */
 }
 .SelectTrigger[data-placeholder] {
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .SelectIcon {
-  color: var(--sidebar-purple);
+  color: rgba(var(--sidebar-purple));
 }
 
 .SelectContent {
@@ -485,7 +443,7 @@ button {
 .SelectItem {
   font-size: 1rem;
   font-weight: 300;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -495,12 +453,12 @@ button {
   user-select: none;
 }
 .SelectItem[data-disabled] {
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   pointer-events: none;
 }
 .SelectItem[data-highlighted] {
   outline: none;
-  background-color: var(--sidebar-purple);
+  background-color: rgba(var(--sidebar-purple));
   color: white;
 }
 
@@ -508,12 +466,12 @@ button {
   padding: 0 25px;
   font-size: 12px;
   line-height: 25px;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .SelectSeparator {
   height: 1px;
-  background-color: var(--gray-border);
+  background-color: rgba(var(--gray-border));
   margin: 5px;
 }
 
@@ -532,7 +490,7 @@ button {
   justify-content: center;
   height: 25px;
   background-color: white;
-  color: var(--violet-11);
+  color: rgba(var(--violet-11));
   cursor: default;
 }
 
@@ -548,14 +506,14 @@ button {
 }
 
 .RadioGruopContainer {
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   padding: 1rem 1.5rem;
   border-radius: 4px;
 }
 
 .RadioGruopContainerSecondary {
   position: relative;
-  border: 1px solid var(--gray-bg);
+  border: 1px solid rgba(var(--gray-bg));
   padding: 1rem 1.5rem;
   border-radius: 4px;
 }
@@ -565,13 +523,13 @@ button {
 }
 
 .RadioGroupContainer__active {
-  border-color: var(--green-light);
+  border-color: rgba(var(--green-light));
   transition: 0.25s all ease-in-out;
 }
 
 .RadioGroupItem {
   background-color: white;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   width: 20px;
   height: 20px;
   border-radius: 100%;
@@ -581,14 +539,14 @@ button {
   align-items: center;
 }
 .RadioGroupItem:hover {
-  background-color: var(--green-light);
+  background-color: rgba(var(--green-light));
   transition: 0.25s all ease-in-out;
 }
 .RadioGroupItem:focus {
   /* box-shadow: 0 0 0 2px black; */
 }
-.RadioGroupItem[data-state='checked'] {
-  background-color: var(--green-dark);
+.RadioGroupItem[data-state="checked"] {
+  background-color: rgba(var(--green-dark));
 }
 
 .RadioGroupIndicator {
@@ -600,7 +558,7 @@ button {
   position: relative;
 }
 .RadioGroupIndicator::after {
-  content: '';
+  content: "";
   display: block;
   width: 10px;
   height: 10px;
@@ -655,7 +613,7 @@ button {
   display: flex;
   flex-grow: 1;
   flex-shrink: 0;
-  border: 1px solid var(--mina-purple);
+  border: 1px solid rgba(var(--mina-purple));
   border-radius: 8px;
   padding: 0.625rem 1rem;
 }

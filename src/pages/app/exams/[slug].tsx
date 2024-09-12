@@ -77,7 +77,7 @@ function ExamDetails() {
       return await submitQuiz(
         (examData as any).exam._id,
         choices,
-        (questions as any).filter((el: any) => el._id)
+        (questions as any).map((el: any) => el._id)
       );
     },
     onSuccess: () => {
@@ -266,6 +266,8 @@ function ExamDetails() {
                           } RadioGruopContainerPreview`}
                           onClick={() => {
                             const newChoices = [...choices];
+                            // FIXME: This is a temporary solution. We need to fix this.
+                            // @ts-ignore
                             newChoices[currentQuestion.number - 1] = el.number;
                             setChoices(newChoices);
                           }}
@@ -376,9 +378,9 @@ function ExamDetails() {
             >
               {currentQuestion?.number === 10
                 ? isPending
-                  ? "Redirecting"
-                  : "Save and Finish"
-                : "Next Question"}
+                  ? 'Redirecting'
+                  : 'Save and Finish'
+                : 'Next Question'}
             </button>
           </div> */}
         </div>

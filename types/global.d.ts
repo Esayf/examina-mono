@@ -34,6 +34,7 @@ interface SignedData {
 
 type Mina = {
   on: typeof on;
+  off: (event: "chainChanged" | "accountsChanged", handler: Function) => void;
   getAccounts: () => Promise<string[]>;
   requestAccounts: () => Promise<string[] | ProviderError>;
   signMessage: (args: SignMessageArgs) => Promise<SignedData | ProviderError>;

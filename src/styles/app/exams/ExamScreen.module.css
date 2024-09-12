@@ -1,5 +1,5 @@
 .container {
-  width: 1216px;
+  width: 76rem;
   margin: 0 auto;
   padding-bottom: 4.875rem;
 }
@@ -14,8 +14,8 @@
   align-items: center;
   background-color: white;
   padding: 20px;
-  border-top: 1px solid var(--gray-border);
-  border-bottom: 1px solid var(--gray-border);
+  border-top: 1px solid rgba(var(--gray-border));
+  border-bottom: 1px solid rgba(var(--gray-border));
 }
 
 .exam_header_text_container {
@@ -36,8 +36,8 @@
 }
 
 .exam_header_title {
-  color: var(--dark-blue-black);
-  font-size: 1.5rem;
+  color: rgba(var(--dark-blue-black));
+  font-size: 2.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: 32px; /* 133.333% */
@@ -50,8 +50,8 @@
   gap: 1rem;
   padding: 11px 10px;
   background-color: rgba(255, 0, 0, 0.1);
-  border: 1px solid var(--rose-red);
-  border-radius: 13.6px;
+  border: 1px solid rgba(var(--rose-red));
+  border-radius: 0.6rem;
 }
 
 .timer_content {
@@ -66,7 +66,7 @@
 .content_container {
   background-color: white;
   border-radius: 14.966px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   padding: 56px;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .question_container {
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   min-height: 274px;
   border-radius: 18px;
   margin-bottom: 4rem;
@@ -128,7 +128,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 5.298px;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   width: 44px;
   height: 44px;
   cursor: pointer;
@@ -136,7 +136,7 @@
 
 .selector_box_active {
   border: 1px solid transparent;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
 }
 
 .selector_box_text {
@@ -144,7 +144,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: 160%;
-  color: var(--gray-dark);
+  color: rgba(var(--gray-dark));
 }
 
 .selector_box_text_active {
@@ -165,7 +165,7 @@
 .form_element_button {
   padding: 1rem 2rem;
   border-radius: 12px;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
   border: none;
   outline: none;
   font-size: 1.125rem;
@@ -180,7 +180,7 @@
 .form_element_button_next {
   padding: 7.95px 34.5px;
   border-radius: 5.612px;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
   border: none;
   outline: none;
   font-size: 19.643px;
@@ -221,7 +221,7 @@
 
 .error_description > a {
   text-decoration: none;
-  color: var(--mina-purple);
+  color: rgba(var(--mina-purple));
 }
 
 .error_func_container {
@@ -232,7 +232,7 @@
 }
 
 .error_func_container p {
-  color: var(--mina-purple);
+  color: rgba(var(--mina-purple));
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 500;
@@ -242,7 +242,7 @@
 }
 
 .error_func_container a {
-  color: var(--mina-purple);
+  color: rgba(var(--mina-purple));
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 500;

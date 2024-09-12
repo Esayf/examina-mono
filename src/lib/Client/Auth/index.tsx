@@ -1,4 +1,4 @@
-import { AuthSession } from "@/features/client/session";
+// import { PublicKey } from 'o1js';
 import RequestBase from "../RequestBase";
 export interface SignedData {
   publicKey: string;
@@ -41,16 +41,17 @@ async function signMessage(data: SignMessageArgs) {
   return signResult;
 }
 
-function login(data: SignedData): Promise<AuthSession> {
+function login(data: SignedData | ProviderError): Promise<string> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
       .post("/register", {
-        walletAddress: data.publicKey,
-        signature: data.signature,
+        walletAddress: (data as SignedData).publicKey,
+        signature: (data as SignedData).signature,
       })
       .then((response) => {
-        resolve(response.data.session);
+        // resolve(response.data.message.split(',')[2]);
+        resolve(response.data);
       })
       .catch((error) => {
         reject(error);
@@ -72,7 +73,12 @@ function logout() {
   });
 }
 
-function getSession() {
+interface Session {
+  userId: string;
+  walletAddress: string;
+}
+
+function getSession(): Promise<{ success: boolean; session: Session } | { error: string }> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
