@@ -23,7 +23,7 @@
 
 .content_header_button {
   padding: 0.75rem 1.125rem;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -60,7 +60,7 @@
 }
 
 .table_head_item {
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -145,7 +145,7 @@
 }
 
 .no_content_desc {
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -153,7 +153,7 @@
 }
 
 .no_content_title {
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
@@ -167,7 +167,7 @@
 
 .no_content_button {
   padding: 0.75rem 1.125rem;
-  background-color: var(--mina-purple);
+  background-color: rgba(var(--mina-purple));
   border-radius: 8px;
   display: inline-flex;
   align-items: center;

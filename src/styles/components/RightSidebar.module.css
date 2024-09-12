@@ -18,7 +18,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
 }
 
 .card_container {
@@ -30,7 +30,7 @@
 }
 
 .card {
-  background-color: var(--gray-light);
+  background-color: rgba(var(--gray-light));
   padding: 1rem 2rem;
   border-radius: 12px;
   display: flex;
@@ -43,18 +43,18 @@
   height: 0.5rem;
   width: 0.5rem;
   border-radius: 50%;
-  background-color: var(--dark-blue-dot);
+  background-color: rgba(var(--dark-blue-dot));
 }
 
 .card_title {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   margin-bottom: 0.2rem;
 }
 
 .card_date {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--gray-placeholder);
+  color: rgba(var(--gray-placeholder));
 }

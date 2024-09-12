@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--white);
+  background-color: rgba(var(--white));
   box-shadow: 0px 0px 8px -3px rgba(0, 0, 0, 0.1);
 }
 
@@ -19,15 +19,15 @@
 .logo_primary {
   font-size: 2em;
   font-weight: 500;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
 }
 
 .logo_secondary {
-  color: var(--mina-purple);
+  color: rgba(var(--mina-purple));
 }
 
 .separator {
-  background-color: var(--gray-border);
+  background-color: rgba(var(--gray-border));
   margin-bottom: 1.5rem;
   height: 1px;
   width: 100%;

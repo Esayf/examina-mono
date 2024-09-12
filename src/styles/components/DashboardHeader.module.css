@@ -5,7 +5,7 @@
 
 .dashboard_header {
   background-color: white;
-  border-bottom: 1px solid var(--gray-border);
+  border-bottom: 1px solid rgba(var(--gray-border));
 }
 
 .dashboard_header > div {
@@ -20,7 +20,7 @@
 }
 
 .header_nav_item {
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 500;
@@ -42,7 +42,7 @@
 .wallet_address_container {
   padding: 8px 12px;
   background-color: rgba(249, 250, 251, 0.98);
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   border-radius: 16px;
 }
 
@@ -52,7 +52,7 @@
   font-weight: 500;
   line-height: 24px;
   text-decoration: none;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
 }
 
 .logout {
@@ -61,7 +61,7 @@
   font-weight: 500;
   line-height: 1.25rem; /* 144.444% */
   letter-spacing: -0.04px;
-  color: var(--dark-red);
+  color: rgba(var(--dark-red), 0.8);
   cursor: pointer;
 }
 
