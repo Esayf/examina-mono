@@ -124,10 +124,10 @@ function Layout({ children }: Props) {
   }, [rendered, isLoading, router.pathname]);
 
   return (
-    <div>
+    <>
       <main>{children}</main>
       <Toaster position="top-left" />
-    </div>
+    </>
   );
 }
 

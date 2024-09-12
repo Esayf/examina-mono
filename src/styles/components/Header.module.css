@@ -16,21 +16,21 @@
 .greeting_primary {
   font-size: 1.75rem;
   font-weight: 500;
-  color: var(--dark-blue-black);
+  color: rgba(var(--dark-blue-black));
 }
 
 .greeting_secondary {
   font-size: 1.25rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .input {
   width: 24rem;
   border-radius: 0.625rem;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(var(--gray-border));
   background-color: white;
-  color: var(--gray-placeholder);
+  color: rgba(var(--gray-placeholder));
   padding: 1rem 1.5rem;
   font-size: 1.125rem;
   outline: none;
