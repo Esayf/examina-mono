@@ -22,17 +22,20 @@ import {
 import { pinata } from '../../../../utils/config';
 import imageCompression from 'browser-image-compression';
 
+import {
+  HiOutlineDocumentDuplicate,
+  HiOutlineQuestionMarkCircle,
+  HiOutlineTrash,
+  HiPlus,
+  HiPlusCircle,
+} from 'react-icons/hi2';
+
 import '@mdxeditor/editor/style.css';
 
 // Icons
 import ArrowBottom from '@/icons/arrow_bottom.svg';
 import Close from '@/icons/close_mina_purple.svg';
-import Error from '@/icons/error.svg';
 import RArrow from '@/icons/arrow-right-circle.svg';
-import Duplicate from '@/icons/document-duplicate.svg';
-import Trash from '@/icons/trash.svg';
-import QMark from '@/icons/question-mark-circle.svg';
-import PCircle from '@/icons/plus-circle.svg';
 import BCircle from '@/icons/arrow-right-circle-black.svg';
 import CDown from '@/icons/chevron-down.svg';
 
@@ -43,7 +46,6 @@ import Question from '@/lib/Question';
 import { createExam } from '@/lib/Client/Exam';
 
 // Radix Primitives
-import * as Tabs from '@radix-ui/react-tabs';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Select from '@radix-ui/react-select';
 import * as RadioGroup from '@radix-ui/react-radio-group';
@@ -77,6 +79,34 @@ const uploadFile = async (file: any) => {
   }
 };
 
+const validateQuestion = (question: {
+  text: string;
+  description: string;
+  options: { text: string }[];
+}) => {
+  if (!question.text || question.text.trim() === '') {
+    return 'Question text is required.';
+  }
+
+  if (!question.description || question.description.trim() === '') {
+    return 'Question description is required.';
+  }
+
+  if (question.options.length < 2) {
+    return 'At least 2 options are required.';
+  }
+
+  const emptyOptions = question.options.filter(
+    (option) => !option.text || option.text.trim() === ''
+  );
+
+  if (emptyOptions.length > 0) {
+    return 'All options must be filled.';
+  }
+
+  return null;
+};
+
 function CreateExam() {
   const exam = useAppSelector((state) => state.exam);
   const dispatch = useAppDispatch();
@@ -88,19 +118,15 @@ function CreateExam() {
     mutationFn: createExam,
     // other options like onSuccess, onError, etc.
     onSuccess: (data) => {
-      //console.log(data);
-      setQuestionID(1);
-      dispatch(
-        setExam({
-          id: '',
-          title: '',
-          description: '',
-          startDate: new Date(),
-          duration: '',
-          questions: [],
-        })
-      );
-      setCurrentQuestion(new Question(questionID));
+      setExam({
+        id: '',
+        title: '',
+        description: '',
+        startDate: new Date(),
+        duration: '',
+        questions: [new Question(1)],
+      });
+      setPointer(0);
       router.replace('/app');
     },
     onError: (error) => {
@@ -112,42 +138,39 @@ function CreateExam() {
   const [currentStep, setCurrentStep] = React.useState<string>('0');
   const [startDate, setStartDate] = useState<Value>();
 
-  //! Temporary solution for question ID
-  const [questionID, setQuestionID] = useState<number>(1);
   const [pointer, setPointer] = useState<number>(0);
 
-  const [currentQuestion, setCurrentQuestion] = useState<Question>(new Question(questionID));
+  const currentQuestion: Question | undefined = exam.questions[pointer];
 
   useEffect(() => {
-    if (exam.questions.length === 0) {
-      setCurrentQuestion(new Question(questionID));
-    }
+    router.events.on('routeChangeStart', () => {
+      dispatch(
+        setExam({
+          id: '',
+          title: '',
+          description: '',
+          startDate: new Date(),
+          duration: '',
+          questions: [new Question(1)],
+        })
+      );
+      setPointer(0);
+    });
+  }, [dispatch, router.events]);
 
-    if (exam.questions.length > 0 && exam.questions[pointer]) {
-      setCurrentQuestion(exam.questions[pointer]);
-    }
-
-    // if (exam.questions.length > 0 && !exam.questions[pointer]) {
-    //   setQuestionID((prev) => prev + 1);
-    //   setCurrentQuestion(new Question(questionID));
-    //   dispatch(setExam({ ...exam, questions: [...exam.questions, currentQuestion] }));
-    // }
-  }, [pointer]);
-
-  useEffect(() => {
+  const setCurrentQuestion = (question: Question) => {
     const temp = [...exam.questions];
-    temp[pointer] = currentQuestion;
+    temp[pointer] = question;
     dispatch(setExam({ ...exam, questions: temp }));
-    mdRef.current?.setMarkdown(currentQuestion.description);
-  }, [currentQuestion]);
+  };
 
-  const createQuestionRef = useRef<any>(null);
-  //console.log('REF', createQuestionRef);
-
-  //console.log(exam);
-
-  console.log(pointer);
-  console.log(currentQuestion);
+  if (currentQuestion === undefined)
+    return (
+      <div className={styles.container}>
+        <DashboardHeader withoutNav />
+        <div>Loading...</div>
+      </div>
+    );
 
   return (
     <div className={styles.container}>
@@ -313,13 +336,13 @@ function CreateExam() {
       )}
 
       {currentStep === '1' && (
-        <div className={styles.container_secondary}>
+        <div className={styles.container_secondary} key={pointer}>
           <div className={styles.stepper_container_secondary}>
             <div className={styles.create_exam_form_container}>
               <div className={styles.create_exam_form_inner_container}>
                 <div className={styles.form_element_container_question_first}>
                   <h3 className={styles.form_element_title}>
-                    <Image src={QMark} alt="" /> Question Type
+                    <HiOutlineQuestionMarkCircle /> Question Type
                   </h3>
                   <Select.Root
                     onValueChange={(e) => {
@@ -329,25 +352,25 @@ function CreateExam() {
                         options:
                           e === 'mc'
                             ? [
-                              {
-                                number: 1,
-                                text: '',
-                              },
-                              {
-                                number: 2,
-                                text: '',
-                              },
-                            ]
+                                {
+                                  number: 1,
+                                  text: '',
+                                },
+                                {
+                                  number: 2,
+                                  text: '',
+                                },
+                              ]
                             : [
-                              {
-                                number: 1,
-                                text: 'True',
-                              },
-                              {
-                                number: 2,
-                                text: 'False',
-                              },
-                            ],
+                                {
+                                  number: 1,
+                                  text: 'True',
+                                },
+                                {
+                                  number: 2,
+                                  text: 'False',
+                                },
+                              ],
                       });
                     }}
                     value={currentQuestion.type}
@@ -453,9 +476,10 @@ function CreateExam() {
                         return (
                           <div
                             key={i}
-                            className={`RadioGruopContainer ${el.number === currentQuestion.correctAnswer &&
+                            className={`RadioGruopContainer ${
+                              el.number === currentQuestion.correctAnswer &&
                               'RadioGroupContainer__active'
-                              }`}
+                            }`}
                           >
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                               <RadioGroup.Item
@@ -519,9 +543,7 @@ function CreateExam() {
                               disabled
                             />
                           </div>
-                          <Image
-                            src={PCircle}
-                            alt=""
+                          <button
                             className={styles.add_option_image}
                             onClick={() => {
                               setCurrentQuestion({
@@ -540,7 +562,9 @@ function CreateExam() {
                                 ],
                               });
                             }}
-                          />
+                          >
+                            <HiPlusCircle />
+                          </button>
                         </div>
                       )}
                     </RadioGroup.Root>
@@ -554,34 +578,6 @@ function CreateExam() {
                     >
                       Back
                     </button>
-                    <button
-                      className={styles.form_element_button_create}
-                      onClick={() => {
-                        const questionsList = [...exam.questions];
-
-                        // Eğer currentQuestion henüz questionsList'e eklenmediyse ekle
-                        if (!questionsList[pointer]) {
-                          questionsList[pointer] = currentQuestion;
-                        }
-
-                        // Yeni soru numarasını hesapla
-                        const lastQuestionNumber =
-                          questionsList.length > 0
-                            ? Math.max(...questionsList.map((q) => q.number))
-                            : 0;
-                        const newQuestionNumber = lastQuestionNumber + 1;
-
-                        // Yeni soru oluştur
-                        const newQuestion = new Question(newQuestionNumber);
-
-                        // Soruları güncelle
-                        setPointer(questionsList.length);
-                        setCurrentQuestion(newQuestion);
-                        dispatch(setExam({ ...exam, questions: questionsList }));
-                      }}
-                    >
-                      Create
-                    </button>
                   </div>
                 </div>
               </div>
@@ -594,11 +590,12 @@ function CreateExam() {
                 {exam.questions.map((el, _i) => {
                   return (
                     <div
-                      className={
+                      className={classnames(
                         pointer === _i
                           ? styles.question_sidebar_question_item_active
-                          : styles.question_sidebar_question_item
-                      }
+                          : styles.question_sidebar_question_item,
+                        validateQuestion(el) && styles.question_sidebar_question_item_error
+                      )}
                       key={_i}
                       onClick={() => setPointer(_i)}
                     >
@@ -607,12 +604,22 @@ function CreateExam() {
                           Question {_i + 1}
                         </p>
                         <div className={styles.question_sidebar_question_item_controller_container}>
-                          <Image
-                            src={Duplicate}
-                            alt=""
+                          <button
                             className={styles.question_sidebar_question_item_controller}
-                            onClick={() => {
-                              const list = [...exam.questions];
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+
+                              let list = [...exam.questions];
+
+                              list = list.map((q, i) => ({
+                                number: i + 1,
+                                correctAnswer: q.correctAnswer,
+                                description: q.description,
+                                options: q.options.map((o) => ({ ...o })),
+                                text: q.text,
+                                type: q.type,
+                              }));
 
                               // Seçili sorunun bir kopyasını oluştur
                               const duplicatedQuestion = JSON.parse(JSON.stringify(list[_i]));
@@ -639,34 +646,73 @@ function CreateExam() {
                               // İşaretçiyi çoğaltılan soruya ayarla
                               setPointer(_i + 1);
                             }}
-                          />
+                          >
+                            <HiOutlineDocumentDuplicate />
+                          </button>
                           {exam.questions.length > 1 && (
-                            <Image
-                              src={Trash}
-                              alt=""
+                            <button
                               className={styles.question_sidebar_question_item_controller}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+
                                 const list = [...exam.questions];
+
                                 list.splice(_i, 1);
-                                dispatch(
-                                  setExam({
-                                    ...exam,
-                                    questions: list,
-                                  })
-                                );
+
                                 if (_i > 0) {
                                   setPointer(_i - 1); // Move to the previous question if possible
                                 } else {
                                   setPointer(0); // Stay at the first question
                                 }
+
+                                dispatch(
+                                  setExam({
+                                    ...exam,
+                                    questions: list.map((q, i) => ({
+                                      number: i + 1,
+                                      correctAnswer: q.correctAnswer,
+                                      description: q.description,
+                                      options: q.options.map((o) => ({ ...o })),
+                                      text: q.text,
+                                      type: q.type,
+                                    })),
+                                  })
+                                );
                               }}
-                            />
+                            >
+                              <HiOutlineTrash />
+                            </button>
                           )}
                         </div>
                       </div>
                     </div>
                   );
                 })}
+                <div className={styles.question_sidebar_question_create}>
+                  <button
+                    className={styles.form_element_button_create}
+                    onClick={() => {
+                      // Yeni soru numarasını hesapla
+                      const lastQuestionNumber =
+                        exam.questions.length > 0
+                          ? Math.max(...exam.questions.map((q) => q.number))
+                          : 0;
+
+                      const questionsList = [
+                        ...exam.questions,
+                        new Question(lastQuestionNumber + 1),
+                      ];
+
+                      // Soruları güncelle
+                      dispatch(setExam({ ...exam, questions: questionsList }));
+                      setPointer(questionsList.length - 1);
+                    }}
+                  >
+                    <HiPlus />
+                    Add question
+                  </button>
+                </div>
               </div>
             </div>
             <div
@@ -682,23 +728,10 @@ function CreateExam() {
                 for (let i = 0; i < exam.questions.length; i++) {
                   const question = exam.questions[i];
 
-                  if (!question.text || question.text.trim() === '') {
-                    toast.error(`Please fill in the text for question ${i + 1}.`);
-                    return;
-                  }
+                  const validationError = validateQuestion(question);
 
-                  if (question.type === 'mc') {
-                    const emptyOptions = question.options.filter(
-                      (option) => !option.text || option.text.trim() === ''
-                    );
-                    if (emptyOptions.length > 0) {
-                      toast.error(`Please fill all options for question ${i + 1}.`);
-                      return;
-                    }
-                  }
-
-                  if (!question.correctAnswer) {
-                    toast.error(`Please select the correct answer for question ${i + 1}.`);
+                  if (validationError) {
+                    toast.error(`Question ${i + 1}: ${validationError}`);
                     return;
                   }
                 }

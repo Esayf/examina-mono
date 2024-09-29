@@ -90,6 +90,8 @@
   --purple-bg: #f6f6fc;
   --rose-red: #f3aeaf;
   --dark-red: rgba(140, 0, 0, 0.8);
+  --neutral-10: #7e808a;
+  --neutral-12: #1c2024;
 }
 
 * {
