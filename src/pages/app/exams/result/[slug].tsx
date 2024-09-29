@@ -1,24 +1,25 @@
-import styles from '@/styles/app/exams/get-started/ExamDetailScreen.module.css';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
+import styles from "@/styles/app/exams/get-started/ExamDetailScreen.module.css";
+import Image from "next/image";
+import { useRouter } from "next/router";
 // import { useQuery } from '@tanstack/react-query';
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
-import { sendEmail } from '@/lib/Client/Exam';
+import { sendEmail } from "@/lib/Client/Exam";
 
 // Custom Layout
-import Layout from '../layout';
+import Layout from "../layout";
 
 // Icons
-import ResultImage from '@/images/exam/result.svg';
-import MinaBell from '@/icons/mina-bell.svg';
-import Send from '@/icons/exam_send.svg';
-import Discord from '@/icons/discord.svg';
-import Telegram from '@/icons/telegram.svg';
-import Twitter from '@/icons/twitter.svg';
-import toast from 'react-hot-toast';
-import { useState } from 'react';
-// import Choz from '@/icons/choz.svg';
+import ResultImage from "@/images/exam/result.svg";
+import MinaBell from "@/icons/mina-bell.svg";
+import Send from "@/icons/exam_send.svg";
+import Discord from "@/icons/discord.svg";
+import Telegram from "@/icons/telegram.svg";
+import Twitter from "@/icons/twitter.svg";
+import toast from "react-hot-toast";
+import { useState } from "react";
+// import Choz from "@/icons/choz.svg";
+import Link from "next/link";
 
 // API
 // import { getScore } from '@/lib/Client/Exam';
@@ -26,7 +27,7 @@ import { useState } from 'react';
 function ExamResult() {
   const router = useRouter();
 
-  const [mail, setMail] = useState('');
+  const [mail, setMail] = useState("");
   // const examID: string = router.query.slug as string;
 
   // const { data, isLoading, isPending, isError } = useQuery({
@@ -40,12 +41,12 @@ function ExamResult() {
     // other options like onSuccess, onError, etc.
     onSuccess: () => {
       //console.log(data);
-      toast.success('Email sent successfully');
-      router.replace('/app');
+      toast.success("Email sent successfully");
+      router.replace("/app");
     },
     onError: (error: any) => {
-      toast.error('Failed to send email');
-      console.log('Error', error);
+      toast.error("Failed to send email");
+      console.log("Error", error);
     },
   };
 
@@ -65,9 +66,10 @@ function ExamResult() {
                   YOUR SCORE: {data ? (data as any).score : '-'}
                 </h2>
                 <p className={styles.score_text}>
-                  Congratulations, you've proven yourself! Now it's time for your reward! 🎁 Your
-                  exam results will be automatically transmitted to us, and your prize will be
-                  deposited into your wallet within 2 weeks. That's all. You can close this window.
+                  Congratulations, you&apos;ve proven yourself! Now it&apos;s time for your reward!
+                  🎁 Your exam results will be automatically transmitted to us, and your prize will
+                  be deposited into your wallet within 2 weeks. That&apos;s all. You can close this
+                  window.
                 </p>
               </div> */}
               <div className={styles.card_content_container}>
@@ -89,13 +91,13 @@ function ExamResult() {
                       alt=""
                       className={styles.send_icon}
                       style={{
-                        cursor: 'pointer',
-                        transition: 'all 0.3s',
+                        cursor: "pointer",
+                        transition: "all 0.3s",
                       }}
                       onClick={() => {
                         // validate email
-                        if (mail === '' || !mail.includes('@') || !mail.includes('.')) {
-                          toast.error('Please enter valid email');
+                        if (mail === "" || !mail.includes("@") || !mail.includes(".")) {
+                          toast.error("Please enter valid email");
                           return;
                         }
 
@@ -104,12 +106,9 @@ function ExamResult() {
                     />
                   </div>
                   <div className={styles.send_email_button_container_secondary}>
-                    <a
-                      href="https://choz.io/app"
-                      className={styles.send_email_button_text_secondary}
-                    >
+                    <Link href="/app" className={styles.send_email_button_text_secondary}>
                       Skip and Continue
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -117,8 +116,8 @@ function ExamResult() {
                 <div className={styles.inform_container}>
                   <Image src={MinaBell} alt="" />
                   <p className={styles.inform_text}>
-                    If you encounter any issues, don't forget to reach out by following us! We'll
-                    contact you from there.
+                    If you encounter any issues, don&apos;t forget to reach out by following us!
+                    We&apos;ll contact you from there.
                   </p>
                 </div>
                 <div className={styles.social_container}>

@@ -31,12 +31,7 @@ const lights = {
   Inreview: "#CEE7FE",
 };
 
-function CarouselComponent({
-  type,
-  exams = [],
-  step = 0,
-  stepper = () => {},
-}: Props) {
+function CarouselComponent({ type, exams = [], step = 0, stepper = () => {} }: Props) {
   const carouselRef = useRef<any>(null);
 
   useEffect(() => {
@@ -62,20 +57,13 @@ function CarouselComponent({
   return (
     <div className={styles.container}>
       <h1 className={styles.carousel_title}>{type}</h1>
-      {exams.length === 0 && (
-        <div className={styles.empty}>No exams available</div>
-      )}
+      {exams.length === 0 && <div className={styles.empty}>No exams available</div>}
       <div
         className={styles.carousel_container}
         style={exams.length < 2 ? { padding: "0 3rem" } : {}}
       >
         {exams.length > 1 && (
-          <Image
-            src={LeftArrow}
-            className={styles.arrow}
-            alt=""
-            onClick={() => decrementStep()}
-          />
+          <Image src={LeftArrow} className={styles.arrow} alt="" onClick={() => decrementStep()} />
         )}
         <Carousel
           showArrows={false}
@@ -87,10 +75,7 @@ function CarouselComponent({
         >
           {exams.map((exam, _i) => (
             <div key={_i} className={styles.card_container}>
-              <div
-                className={styles.highlighter}
-                style={{ backgroundColor: lights[type] }}
-              />
+              <div className={styles.highlighter} style={{ backgroundColor: lights[type] }} />
               <div className={styles.card_content_container}>
                 <div className={styles.general}>
                   <div className={styles.title_container}>
@@ -107,9 +92,7 @@ function CarouselComponent({
                   <p className={styles.owner}>{exam.owner}</p>
                 </div>
                 <div className={styles.nav_container}>
-                  <div className={styles.participants}>
-                    {exam.participants} Participants
-                  </div>
+                  <div className={styles.participants}>{exam.participants} Participants</div>
                   <div className={styles.button}>Details</div>
                 </div>
               </div>
@@ -117,12 +100,7 @@ function CarouselComponent({
           ))}
         </Carousel>
         {exams.length > 1 && (
-          <Image
-            src={RightArrow}
-            className={styles.arrow}
-            alt=""
-            onClick={() => incrementStep()}
-          />
+          <Image src={RightArrow} className={styles.arrow} alt="" onClick={() => incrementStep()} />
         )}
       </div>
     </div>

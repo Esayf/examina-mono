@@ -1,0 +1,111 @@
+.base {
+  --primary: var(--sidebar-purple);
+  --primary-foreground: var(--gray-light);
+  --secondary: var(--mina-orange);
+  --secondary-foreground: var(--gray-light);
+  --destructive: var(--dark-red);
+  --destructive-foreground: var(--gray-light);
+  --accent: var(--sidebar-purple);
+  --accent-foreground: var(--gray-light);
+  --background: var(--gray-light);
+  --text: var(--dark-blue-black);
+  --input: var(--gray-border);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  transition: color 0.2s, background-color 0.2s;
+  outline: none;
+  cursor: pointer;
+}
+
+.default {
+  background-color: rgba(var(--primary));
+  color: rgba(var(--primary-foreground));
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.default:hover {
+  background-color: rgba(var(--primary), 0.9);
+}
+
+.destructive {
+  background-color: rgba(var(--destructive), 0.8);
+  color: rgba(var(--destructive-foreground));
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.destructive:hover {
+  background-color: rgba(var(--destructive), 0.6);
+}
+
+.outline {
+  border: 1px solid rgba(var(--input));
+  background-color: rgba(var(--background));
+  color: rgba(var(--text));
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.outline:hover {
+  background-color: rgba(var(--accent));
+  color: rgba(var(--accent-foreground));
+  border-color: rgba(var(--accent));
+}
+
+.secondary {
+  background-color: rgba(var(--secondary));
+  color: rgba(var(--secondary-foreground));
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.secondary:hover {
+  background-color: rgba(var(--secondary/80));
+}
+
+.ghost {
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.ghost:hover {
+  background-color: rgba(var(--primary), 0.8);
+  color: rgba(var(--accent-foreground));
+}
+
+.link {
+  color: rgba(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.defaultSize {
+  height: 3rem;
+  padding: 0 1rem;
+  border-radius: 0.3rem;
+}
+
+.sm {
+  height: 2.25rem;
+  border-radius: 0.4rem;
+  padding: 0 0.75rem;
+}
+
+.lg {
+  height: 2.75rem;
+  border-radius: 0.25rem;
+  padding: 0 2rem;
+}
+
+.icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+}

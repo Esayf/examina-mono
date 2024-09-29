@@ -1,17 +1,15 @@
-import styles from '../styles/app/Layout.module.css';
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { isMobile } from 'react-device-detect';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import toast, { Toaster } from "react-hot-toast";
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/app/store";
 
 // Components
-import { useQuery } from '@tanstack/react-query';
-import { getSession, login, logout } from '@/lib/Client/Auth';
-import { resetSession, setSession } from '../../features/client/session';
-import { authenticate } from '../../hooks/auth';
+import { useQuery } from "@tanstack/react-query";
+import { getSession, login, logout } from "@/lib/Client/Auth";
+import { resetSession, setSession } from "@/features/client/session";
+import { authenticate } from "@/hooks/auth";
 
 // Custom hooks
 // ! - This is a custom hook that is not yet implemented
@@ -27,7 +25,7 @@ function Layout({ children }: Props) {
 
   const session = useSelector((state: RootState) => state.session);
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['session'],
+    queryKey: ["session"],
     queryFn: getSession,
     // @ts-ignore
     cacheTime: 0,
@@ -40,25 +38,34 @@ function Layout({ children }: Props) {
   useEffect(() => {
     setRendered(true);
     /** account change listener */
-    (window as any)?.mina?.on('accountsChanged', async (accounts: string[]) => {
-      console.log('accountsChanged', accounts);
+    window.mina?.on("accountsChanged", async (accounts) => {
       if (accounts.length > 0) {
         logout().then(async () => {
-          const resetted_session = dispatch(resetSession());
-          const res = await authenticate(resetted_session);
+          dispatch(resetSession());
+          const res = await authenticate();
+          if (!res) return;
           dispatch(setSession((res as any).session));
         });
       } else {
         logout().then(async () => {
           dispatch(resetSession());
           console.log(router.pathname);
-          const accs = await (window as any)?.mina?.requestAccounts();
+          const accs = await window.mina?.requestAccounts();
+
+          if (!accs) return;
+
+          if ("message" in accs) {
+            toast.error(accs.message);
+            return;
+          }
+
           if (accs.length > 0) {
-            const res = await authenticate(session);
-            dispatch(setSession((res as any).session));
+            const res = await authenticate();
+            if (!res) return;
+            dispatch(setSession({ session: res }));
           }
         });
-        console.log('disconnect'); // handled disconnect here
+        console.log("disconnect"); // handled disconnect here
       }
     });
   }, []);
@@ -68,21 +75,21 @@ function Layout({ children }: Props) {
   }, [router.pathname]);
 
   useEffect(() => {
-    if (rendered && !isLoading && router.pathname !== '/') {
-      (window as any)?.mina?.getAccounts().then((accounts: string[]) => {
+    if (rendered && !isLoading && router.pathname !== "/") {
+      window?.mina?.getAccounts().then((accounts: string[]) => {
         if (data && accounts.length === 0) {
           logout().then(() => {
             dispatch(resetSession());
-            toast.error('Please connect wallet to continue.');
-            router.push('/');
+            toast.error("Please connect wallet to continue.");
+            router.push("/");
           });
           return;
         }
 
         if (!data && accounts.length === 0) {
           dispatch(resetSession());
-          toast.error('Please login to continue.');
-          router.push('/');
+          toast.error("Please login to continue.");
+          router.push("/");
           return;
         }
 
@@ -93,15 +100,15 @@ function Layout({ children }: Props) {
 
         if (!data && accounts.length > 0) {
           dispatch(resetSession());
-          toast.error('Please sign message while authentication to continue.');
-          router.push('/');
+          toast.error("Please sign message while authentication to continue.");
+          router.push("/");
           return;
         }
       });
     }
 
-    if (rendered && !isLoading && router.pathname == '/') {
-      (window as any)?.mina?.getAccounts().then((accounts: string[]) => {
+    if (rendered && !isLoading && router.pathname == "/") {
+      window?.mina?.getAccounts().then((accounts: string[]) => {
         if (data && accounts.length > 0) {
           if (accounts[0] !== (data as any)?.session?.walletAddress) {
             logout().then(() => {

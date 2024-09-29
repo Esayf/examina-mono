@@ -1,6 +1,6 @@
 // @ts-nocheck
-import styles from '@/styles/Home.module.css';
-import { useEffect, useState, useRef } from 'react';
+import styles from "@/styles/Home.module.css";
+import { useEffect, useState, useRef } from "react";
 
 export default function GradientBG({ children }) {
   const canvasRef = useRef(null);
@@ -16,9 +16,7 @@ export default function GradientBG({ children }) {
     this.dir = Math.random() > 0.5 ? -1 : 1;
 
     this.toString = function () {
-      return (
-        'hsla(' + this.h + ', ' + this.s + '%, ' + this.l + '%, ' + this.a + ')'
-      );
+      return "hsla(" + this.h + ", " + this.s + "%, " + this.l + "%, " + this.a + ")";
     };
   }
 
@@ -95,12 +93,7 @@ export default function GradientBG({ children }) {
 
   function paint() {
     if (canvasRef.current) {
-      context.clearRect(
-        0,
-        0,
-        canvasRef.current.width,
-        canvasRef.current.height
-      );
+      context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       for (let i = 0; i < pixels.length; i++) {
         updatePixel(pixels[i]);
 
@@ -112,7 +105,7 @@ export default function GradientBG({ children }) {
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       setContext(ctx);
 
       const currentPixels = [
@@ -146,12 +139,7 @@ export default function GradientBG({ children }) {
   return (
     <>
       <div className={styles.background}>
-        <canvas
-          className={styles.backgroundGradients}
-          width="6"
-          height="6"
-          ref={canvasRef}
-        />
+        <canvas className={styles.backgroundGradients} width="6" height="6" ref={canvasRef} />
       </div>
       <div className={styles.container}>{children}</div>
     </>

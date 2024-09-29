@@ -6,6 +6,6 @@
 
 .content_container {
   width: 100%;
-  background-color: var(--gray-bg);
+  background-color: rgba(var(--gray-bg));
   padding-bottom: 3rem;
 }

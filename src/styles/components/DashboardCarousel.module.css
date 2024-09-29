@@ -1,7 +1,7 @@
 .carousel_title {
   font-size: 1.125rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   margin-bottom: 1rem;
   padding: 0 58px;
 }
@@ -52,14 +52,14 @@
 .title {
   font-size: 1.125rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   margin-bottom: 4px;
 }
 
 .description {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   opacity: 0.8;
 }
 
@@ -70,13 +70,13 @@
 }
 
 .duration_icon {
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .duration {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .owner_container {
@@ -87,13 +87,13 @@
 }
 
 .owner_icon {
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .owner {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .nav_container {
@@ -105,11 +105,11 @@
 .participants {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
 }
 
 .button {
-  background-color: var(--sidebar-purple);
+  background-color: rgba(var(--sidebar-purple));
   border-radius: 4px;
   padding: 0.5rem 1rem;
   color: white;
@@ -121,7 +121,7 @@
 .empty {
   font-size: 0.825rem;
   font-weight: 500;
-  color: var(--gray-disabled);
+  color: rgba(var(--gray-disabled));
   margin-left: 6em;
   margin-bottom: 3em;
 }
