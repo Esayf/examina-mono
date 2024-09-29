@@ -1,7 +1,5 @@
 // import { PublicKey } from 'o1js';
-import { setSession, resetSession } from '../../../../features/client/session';
 import RequestBase from '../RequestBase';
-import { useDispatch } from 'react-redux';
 export interface SignedData {
   publicKey: string;
   data: string;
@@ -37,7 +35,7 @@ function getMessage(publicKey: string): Promise<string> {
 }
 
 async function signMessage(data: SignMessageArgs) {
-  const signResult: SignedData | ProviderError = await (window as any).mina
+  const signResult: SignedData | ProviderError = await window.mina
     ?.signMessage(data)
     .catch((err: any) => err);
   return signResult;
@@ -75,7 +73,12 @@ function logout() {
   });
 }
 
-function getSession() {
+interface Session {
+  userId: string;
+  walletAddress: string;
+}
+
+function getSession(): Promise<{ success: boolean; session: Session } | { error: string }> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase

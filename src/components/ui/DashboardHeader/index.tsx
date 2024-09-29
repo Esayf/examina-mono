@@ -1,19 +1,20 @@
 import styles from '@/styles/components/DashboardHeader.module.css';
 import Image from 'next/image';
-import { useSelector } from 'react-redux';
 import { logout } from '@/lib/Client/Auth';
 import toast from 'react-hot-toast';
 
 // Images
 import Choz from '@/icons/choz.svg';
-import Avatar from '@/icons/profile_image.svg';
 import Logout from '@/icons/arrow-right-start-on-rectangle.svg';
-import { resetSession } from '../../../../features/client/session';
-import { useDispatch } from 'react-redux';
+
+import { useAppSelector } from '../../../app/hooks';
+import { hasActiveSession } from '@/features/client/session';
 
 function DashboardHeader({ withoutNav = false }) {
-  const session = useSelector((state: any) => state.session);
-  const dispatch = useDispatch();
+  const session = useAppSelector((state) => state.session);
+
+  const isConnected = useAppSelector(hasActiveSession);
+
   return (
     <div className={styles.dashboard_header}>
       <div className={styles.container}>
@@ -28,14 +29,15 @@ function DashboardHeader({ withoutNav = false }) {
         <div className={styles.profile_container}>
           <div className={styles.wallet_address_container}>
             <a
-              href={`https://minascan.io/mainnet/account/${session?.walletAddress}/`}
+              href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}/`}
               target="_blank"
               className={styles.wallet_address}
             >
-              {session.walletAddress &&
-                `${(session.walletAddress as string).slice(0, 5)}...${(
-                  session.walletAddress as string
-                ).slice(-5)}`}
+              {isConnected &&
+                `${session.session.walletAddress.slice(
+                  0,
+                  5
+                )}...${session.session.walletAddress.slice(-5)}`}
             </a>
           </div>
           <Image

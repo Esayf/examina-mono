@@ -45,7 +45,6 @@ function ExamDetails() {
   const [remainingTimeMiliseconds, setRemainingTimeMiliseconds] = useState<number | null>(null);
   const [startTimer, setStartTimer] = useState<boolean>(false);
 
-
   const {
     data: examData,
     isLoading: isloadingData,
@@ -65,8 +64,6 @@ function ExamDetails() {
     queryFn: async () => await getExamQuestions(examID),
     enabled: !!examID,
   });
-
-
 
   useEffect(() => {
     if (currentQuestion && mdRef.current) {
@@ -113,7 +110,7 @@ function ExamDetails() {
             (new Date((examData as any).exam.startDate).getTime() +
               (examData as any).exam.duration * 60000 -
               new Date().getTime()) /
-            1000
+              1000
           );
         }
         return prev - 1;
@@ -218,8 +215,8 @@ function ExamDetails() {
             <p className={styles.timer_content}>
               {remainingTimeMiliseconds
                 ? `${Math.floor(remainingTimeMiliseconds / 60)}:${(remainingTimeMiliseconds % 60)
-                  .toString()
-                  .padStart(2, '0')}`
+                    .toString()
+                    .padStart(2, '0')}`
                 : '-'}
             </p>
           </div>
@@ -263,9 +260,10 @@ function ExamDetails() {
                       return (
                         <div
                           key={i}
-                          className={`RadioGruopContainer ${el.number === choices[currentQuestion.number - 1] &&
+                          className={`RadioGruopContainer ${
+                            el.number === choices[currentQuestion.number - 1] &&
                             'RadioGroupContainer__active'
-                            } RadioGruopContainerPreview`}
+                          } RadioGruopContainerPreview`}
                           onClick={() => {
                             const newChoices = [...choices];
                             newChoices[currentQuestion.number - 1] = el.number;
@@ -308,14 +306,16 @@ function ExamDetails() {
                       return (
                         <div
                           key={_i}
-                          className={`${styles.selector_box} ${el.number === currentQuestion?.number && styles.selector_box_active
-                            }`}
+                          className={`${styles.selector_box} ${
+                            el.number === currentQuestion?.number && styles.selector_box_active
+                          }`}
                           onClick={() => setCurrentQuestion(el)}
                         >
                           <p
-                            className={`${styles.selector_box_text} ${el.number === currentQuestion?.number &&
+                            className={`${styles.selector_box_text} ${
+                              el.number === currentQuestion?.number &&
                               styles.selector_box_text_active
-                              }`}
+                            }`}
                           >
                             {_i + 1}
                           </p>

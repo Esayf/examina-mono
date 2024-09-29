@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import { RootState } from '../../store';
-import { initialState } from '../../features/client/session';
+// import { initialState } from '../../features/client/session';
 // Components
 import { SidebarButton } from '@/components/ui/Buttons';
 
@@ -33,9 +31,9 @@ import FEATURE6 from '@/images/landing_feature_card/feature_6.svg';
 import RightLong from '@/icons/right_long.svg';
 import RightLongPurple from '@/icons/right_long_purple.svg';
 import Choz from '@/icons/choz.svg';
-import { authenticate } from '../../hooks/auth';
-import { setSession } from '../../features/client/session';
-import { getSession } from '@/lib/Client/Auth';
+import { authenticate } from '@/hooks/auth';
+import { initialState, setSession } from '@/features/client/session';
+import { useAppDispatch, useAppSelector, useAppStore } from '@/app/hooks';
 const stepArr = [
   {
     stepText: 'STEP 1',
@@ -130,9 +128,9 @@ const techArr = [
 
 export default function Home() {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const store = useStore();
-  const session = useSelector((state: RootState) => state.session);
+  const dispatch = useAppDispatch();
+  const store = useAppStore();
+  const session = useAppSelector((state) => state.session);
   return (
     <>
       <div className={styles.landing_header_container}>

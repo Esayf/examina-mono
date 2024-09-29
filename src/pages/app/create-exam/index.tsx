@@ -51,8 +51,8 @@ import * as Select from '@radix-ui/react-select';
 import * as RadioGroup from '@radix-ui/react-radio-group';
 
 // Redux
-import { useAppSelector, useAppDispatch } from '../../../../hooks';
-import { setExam } from '../../../../features/client/exam';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { setExam } from '@/features/client/exam';
 import DashboardHeader from '@/components/ui/DashboardHeader';
 import toast from 'react-hot-toast';
 

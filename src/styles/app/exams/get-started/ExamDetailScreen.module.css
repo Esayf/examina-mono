@@ -137,10 +137,12 @@
   background: linear-gradient(90deg, #7b60f1 0%, #9077fe 100%);
   border-radius: 0.5rem;
   margin-bottom: 0.5rem;
+  cursor: pointer;
 }
 
-.connect_button_container:hover {
-  cursor: pointer;
+.connect_button_container:disabled {
+  cursor: default;
+  background: #e0e0e0;
 }
 
 .connect_button_text {

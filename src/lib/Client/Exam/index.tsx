@@ -1,6 +1,6 @@
 import RequestBase from '../RequestBase';
 
-import { ExamState } from '../../../../features/client/exam';
+import { ExamState } from '@/features/client/exam';
 
 function getExamList() {
   return new Promise((resolve, reject) => {
@@ -16,7 +16,26 @@ function getExamList() {
   });
 }
 
-function getExamDetails(examID: string) {
+interface ErrorResponse {
+  message: string;
+}
+
+interface ExamDetails {
+  _id: string;
+  creator: string;
+  title: string;
+  description: string;
+  duration: number;
+  startDate: string;
+  rootHash: string;
+  secretKey: string;
+  isCompleted: boolean;
+  questionCount: number;
+  uniqueId: number;
+  __v: number;
+}
+
+function getExamDetails(examID: string): Promise<{ exam: ExamDetails } | ErrorResponse> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
