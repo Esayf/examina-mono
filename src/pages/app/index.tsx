@@ -67,9 +67,7 @@ function Row({ exam }: RowProps) {
             }}
           >
             <DocumentDuplicateIcon className="size-4" />
-            {copiedText === `${window.location.origin}/app/exams/get-started/${exam._id}`
-              ? "Copied"
-              : "Copy Link"}
+            {copiedText ? "Copied" : "Copy Link"}
           </Button>
         </div>
       </div>
