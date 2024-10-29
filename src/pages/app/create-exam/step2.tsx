@@ -198,7 +198,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
   };
 
   return (
-    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-y-auto">
+    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
       <CardHeader>
         <ArrowLeftCircleIcon className="size-7 shrink-0" />
         <CardHeaderContent>
@@ -219,7 +219,10 @@ export const Step2 = ({ onBack }: Step2Props) => {
       </CardHeader>
 
       <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row">
-        <div className="mx-auto w-full flex flex-col flex-1 md:max-w-2xl gap-4">
+        <div
+          className="mx-auto w-full flex flex-col flex-1 md:max-w-2xl gap-4"
+          key={activeQuestion.id}
+        >
           <FormField
             key={activeQuestion.id}
             control={control}
@@ -257,7 +260,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
                     <MarkdownEditor
                       markdown={field.value}
                       onChange={field.onChange}
-                      contentEditableClassName="h-36 overflow-y-auto "
+                      contentEditableClassName="h-32 overflow-y-auto "
                     />
                   </FormControl>
                   <FormMessage />

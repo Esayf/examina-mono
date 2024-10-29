@@ -56,9 +56,9 @@ function CreateExam() {
   };
 
   return (
-    <>
+    <div className="h-dvh flex flex-col">
       <DashboardHeader withoutNav />
-      <div className="max-w-[76rem] w-full mx-auto h-dvh flex flex-col pb-12">
+      <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
         <Head>
           <title>Create Exam</title>
         </Head>
@@ -68,7 +68,7 @@ function CreateExam() {
           {currentStep === 1 && <Step2 onBack={handleBack} />}
         </FormProvider>
       </div>
-    </>
+    </div>
   );
 }
 
