@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +23,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { publicEnv } from "@/env";
 
 interface RowProps {
   exam: Exam;
