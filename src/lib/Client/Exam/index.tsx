@@ -20,7 +20,7 @@ function getExamList(): Promise<Exam[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get("/exams")
+      .get("/exams/myExams")
       .then((response) => {
         resolve(response.data);
       })
@@ -49,7 +49,7 @@ interface ExamDetails {
   __v: number;
 }
 
-function getExamDetails(examID: string): Promise<{ exam: ExamDetails } | ErrorResponse> {
+function getExamDetails(examID: string): Promise<ExamDetails | ErrorResponse> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
@@ -80,11 +80,29 @@ function startExam(examID: string) {
   });
 }
 
-function getExamQuestions(examID: string) {
+export interface QuestionDocument {
+  exam: string;
+  text: string;
+  options: Array<{
+    number: number;
+    text: string;
+  }>;
+  correctAnswer: number;
+  number: number;
+  uniqueId: string;
+}
+
+interface QuestionResponse {
+  status: number;
+  data: QuestionDocument[];
+  message?: string;
+}
+
+function getExamQuestions(examID: string): Promise<QuestionResponse | ErrorResponse> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get(`/exams/${examID}/questions`)
+      .get(`/questions/${examID}`)
       .then((response) => {
         resolve(response.data);
       })

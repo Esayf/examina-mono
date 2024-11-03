@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-import DashboardHeader from "@/components/ui/DashboardHeader";
+import DashboardHeader from "@/components/ui/dashboard-header";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Step1FormValues, step1ValidationSchema } from "./step1-schema";
-import { Step2FormValues, step2ValidationSchema } from "./step2-schema";
-import { Step1 } from "./step1";
-import { Step2 } from "./step2";
+import { Step1FormValues, step1ValidationSchema } from "@/components/create-exam/step1-schema";
+import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
+import { Step1 } from "@/components/create-exam/step1";
+import { Step2 } from "@/components/create-exam/step2";
 
 import Head from "next/head";
 

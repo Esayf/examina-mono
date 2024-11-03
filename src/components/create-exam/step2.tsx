@@ -193,6 +193,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
           })),
           correctAnswer: parseInt(question.correctAnswer) + 1,
         })),
+        questionCount: step2Values.questions.length,
       });
     }
   };
@@ -218,7 +219,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
         </Button>
       </CardHeader>
 
-      <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row">
+      <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative">
         <div
           className="mx-auto w-full flex flex-col flex-1 md:max-w-2xl gap-4"
           key={activeQuestion.id}
@@ -260,7 +261,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
                     <MarkdownEditor
                       markdown={field.value}
                       onChange={field.onChange}
-                      contentEditableClassName="h-32 overflow-y-auto "
+                      contentEditableClassName="overflow-y-auto "
                     />
                   </FormControl>
                   <FormMessage />
@@ -274,7 +275,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
           </Button>
         </div>
 
-        <Card className="rounded-none md:rounded-3xl flex flex-col overflow-y-auto">
+        <Card className="rounded-none md:rounded-3xl flex flex-col overflow-y-auto sticky top-0">
           <CardHeader className="font-semibold text-lg">Questions List</CardHeader>
           <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto">
             <div className="flex-1 flex flex-col">

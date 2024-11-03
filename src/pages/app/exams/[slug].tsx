@@ -74,10 +74,18 @@ function ExamDetails() {
 
   const { mutate, isPending, isError } = useMutation({
     mutationFn: async () => {
+      if (!examData) return;
+
+      if (!("_id" in examData)) return;
+
+      if (!questions) return;
+
+      if (!("data" in questions)) return;
+
       return await submitQuiz(
-        (examData as any).exam._id,
+        examData._id,
         choices,
-        (questions as any).map((el: any) => el._id)
+        questions.data?.map((el) => el.uniqueId)
       );
     },
     onSuccess: () => {
@@ -100,15 +108,20 @@ function ExamDetails() {
 
   useEffect(() => {
     if (questions && examData) {
-      console.log(questions);
-      setChoices(new Array((questions as any).length).fill(0));
-      setCurrentQuestion((questions as any)[0]);
+      // TODO: handle this better
+      if (!("data" in questions)) return;
+      if (!("_id" in examData)) return;
+
+      setChoices(new Array(questions.data.length).fill(0));
+      // FIXME: handle the type error
+      // @ts-ignore
+      setCurrentQuestion(questions.data[0]);
       setRemainingTimeMiliseconds((prev) => {
         if (prev === null) {
           setStartTimer(true);
           return Math.floor(
-            (new Date((examData as any).exam.startDate).getTime() +
-              (examData as any).exam.duration * 60000 -
+            (new Date(examData.startDate).getTime() +
+              examData.duration * 60000 -
               new Date().getTime()) /
               1000
           );
@@ -131,6 +144,10 @@ function ExamDetails() {
 
     return () => clearInterval(timer);
   }, [startTimer]);
+
+  if (!examData) return <div>not loaded yet</div>;
+
+  if (!("_id" in examData)) return <div>error</div>;
 
   if (isLoadingQuestions || isloadingData) {
     return (
@@ -208,7 +225,7 @@ function ExamDetails() {
         <div className={styles.exam_header_container}>
           <div className={styles.exam_header_text_container}>
             <h3 className={styles.exam_header_type}>Quiz</h3>
-            <h1 className={styles.exam_header_title}>{examData && (examData as any).exam.title}</h1>
+            <h1 className={styles.exam_header_title}>{examData && (examData as any).title}</h1>
           </div>
           <div className={styles.timer_container}>
             <Image src={Clock} alt="" width={22.51} />

@@ -12,6 +12,7 @@ export interface ExamState {
   startDate: Date | null; // ISO 8601
   duration: string;
   questions: Question[];
+  questionCount: number;
 }
 
 // Define the initial state using that type

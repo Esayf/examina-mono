@@ -5,7 +5,7 @@ import { Exam, getExamList } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
 // Import Custom Components
-import DashboardHeader from "@/components/ui/DashboardHeader";
+import DashboardHeader from "@/components/ui/dashboard-header";
 
 // Icons and Images
 import Right from "@/icons/right_long.svg";

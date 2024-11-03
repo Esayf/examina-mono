@@ -23,7 +23,7 @@ function getMessage(publicKey: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get("/register/session/get-message-to-sign/" + publicKey)
+      .get("/users/session/get-message-to-sign/" + publicKey)
       .then((response) => {
         // resolve(response.data.message.split(',')[2]);
         resolve(response.data.message);
@@ -45,7 +45,7 @@ function login(data: SignedData | ProviderError): Promise<string> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .post("/register", {
+      .post("/users/register", {
         walletAddress: (data as SignedData).publicKey,
         signature: (data as SignedData).signature,
       })
@@ -63,7 +63,7 @@ function logout() {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get("/register/logout")
+      .post("/users/logout")
       .then((response) => {
         resolve(response.data);
       })
@@ -82,7 +82,7 @@ function getSession(): Promise<{ success: boolean; session: Session } | { error:
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get("/register/session")
+      .get("/users/session")
       .then((response) => {
         resolve(response.data);
       })

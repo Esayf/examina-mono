@@ -34,6 +34,7 @@ import { authenticate } from "@/hooks/auth";
 import { initialState, setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
+import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 const stepArr = [
   {
     stepText: "STEP 1",
@@ -172,9 +173,13 @@ export default function Home() {
             }}
           >
             {store.getState().session.session === initialState.session ? (
-              <Button>Connect Wallet</Button>
+              <Button variant="outline" pill={true}>
+                Connect <ArrowUpRightIcon className="size-6" />
+              </Button>
             ) : (
-              <Button>Go to Dashboard</Button>
+              <Button variant="outline" pill={true}>
+                Go to Dashboard
+              </Button>
             )}
           </div>
         </div>
