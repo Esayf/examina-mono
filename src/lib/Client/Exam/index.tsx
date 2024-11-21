@@ -95,7 +95,6 @@ export interface QuestionDocument {
     number: number;
     text: string;
   }>;
-  correctAnswer: number;
   number: number;
   uniqueId: string;
   _id: string;

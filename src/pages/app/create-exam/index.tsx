@@ -56,7 +56,7 @@ function CreateExam() {
   };
 
   return (
-    <div className="h-dvh flex flex-col">
+    <div className="h-dvh flex flex-col md:px-6">
       <DashboardHeader withoutNav />
       <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
         <Head>

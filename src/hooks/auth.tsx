@@ -9,8 +9,8 @@ export interface ContractStatus {
   };
 }
 
-export async function switchChain(chainId: string) {
-  const mina = (window as any).mina;
+export async function switchChain(chainId: `mina:${string}`) {
+  const mina = window.mina;
 
   if (!mina) {
     console.error("Mina extension not found");
@@ -20,6 +20,11 @@ export async function switchChain(chainId: string) {
   const chainRes = await mina.switchChain({
     networkID: chainId,
   });
+
+  if ("code" in chainRes) {
+    console.error("Failed to switch chain", chainRes.code);
+    return null;
+  }
 
   if (chainRes.networkID !== chainId) {
     console.error("Failed to switch chain");
@@ -31,7 +36,7 @@ export async function switchChain(chainId: string) {
 
 export async function connectWallet() {
   try {
-    const mina = (window as any).mina;
+    const mina = window.mina;
 
     if (!mina) {
       throw new Error("Mina extension not found. Please install the Mina extension and try again.");
@@ -44,7 +49,13 @@ export async function connectWallet() {
       return accounts[0];
     }
 
-    const publicKeyBase58: string = (await mina.requestAccounts())[0];
+    const minaAccounts = await mina.requestAccounts();
+
+    if ("code" in minaAccounts) {
+      throw new Error("Failed to connect wallet. Please try again.");
+    }
+
+    const publicKeyBase58: string = minaAccounts[0];
 
     const chain = await switchChain("mina:mainnet");
 
