@@ -10,6 +10,7 @@ import {
   quotePlugin,
   thematicBreakPlugin,
   markdownShortcutPlugin,
+  MDXEditorMethods,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 
@@ -17,7 +18,7 @@ import "@mdxeditor/editor/style.css";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 
 // API
-import { getExamQuestions, getExamDetails, submitQuiz, QuestionDocument } from "@/lib/Client/Exam";
+import { getExamQuestions, getExamDetails, submitQuiz } from "@/lib/Client/Exam";
 import { Button } from "@/components/ui/button";
 import { FetchingQuestions } from "@/components/exam/fetching-questions";
 import { QuestionFetchingError } from "@/components/exam/question-fetching-error";
@@ -30,14 +31,14 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Spinner } from "@/components/ui/spinner";
 import { Counter } from "@/components/exam/counter";
+import { ExamNavigation } from "@/components/exam/exam-navigation";
 
 function ExamDetails() {
   const router = useRouter();
   const examId: string = router.query.slug as string;
-  const mdRef = useRef<any>(null);
+  const mdRef = useRef<MDXEditorMethods>(null);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
@@ -119,142 +120,99 @@ function ExamDetails() {
     (!isLoadingQuestions && isErrorQuestions) ||
     (!isloadingData && isErrorExam) ||
     (questions && "message" in questions) ||
-    (examData && !("exam" in examData))
+    (examData && !("exam" in examData)) ||
+    !questions
   )
     return <QuestionFetchingError />;
 
   return (
-    <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
-      <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col">
-        <CardHeader>
-          <CardHeaderContent>
-            <CardTitle>{examData && examData.exam.title}</CardTitle>
-            <CardDescription>{examData && examData.exam.description}</CardDescription>
-          </CardHeaderContent>
-          <div className="flex gap-2">
-            {examData && (
-              <Counter
-                startDate={examData.exam.startDate}
-                duration={examData.exam.duration}
-                mutate={mutate}
-              />
-            )}
-            <Button
-              variant="destructive"
-              disabled={isPending}
-              onClick={() => {
-                if (choices.length === 0 || choices.every((el) => el === 0)) {
-                  toast.error("Please answer at least one question before submitting.");
-                  return;
-                }
-                mutate();
-              }}
-            >
-              {isPending ? (
-                <>
-                  <Spinner className="size-6" />
-                  Redirecting
-                </>
-              ) : (
-                "Finish Quiz"
+    <div className="h-dvh flex flex-col md:px-6">
+      <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
+        <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
+          <CardHeader>
+            <CardHeaderContent>
+              <CardTitle>{examData && examData.exam.title}</CardTitle>
+              <CardDescription>{examData && examData.exam.description}</CardDescription>
+            </CardHeaderContent>
+            <div className="flex gap-2">
+              {examData && (
+                <Counter
+                  startDate={examData.exam.startDate}
+                  duration={examData.exam.duration}
+                  mutate={mutate}
+                />
               )}
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CardContent className="flex-1 gap-4 flex flex-col">
-          <div className="flex gap-4 justify-between">
-            <Button
-              pill
-              onClick={() => {
-                if (!questions) return;
-
-                setCurrentQuestionIndex((prev) => prev - 1);
-              }}
-              disabled={isPending || currentQuestion?.number === 1}
-            >
-              <ArrowLeftIcon className="size-6" />
-              Prev
-            </Button>
-
-            <div className="flex items-center gap-2">
-              {questions &&
-                !("message" in questions) &&
-                questions.map((el, _i) => {
-                  const isActive = el.number === currentQuestion?.number;
-                  return (
-                    <Button
-                      key={_i}
-                      pill
-                      variant={isActive ? "default" : "outline"}
-                      size="icon"
-                      onClick={() => {
-                        setCurrentQuestionIndex(_i);
-                      }}
-                    >
-                      {_i + 1}
-                    </Button>
-                  );
-                })}
-            </div>
-
-            <Button
-              pill
-              onClick={() => {
-                // TODO: handle this better
-                if (!questions) return;
-
-                setCurrentQuestionIndex((prev) => prev + 1);
-              }}
-              disabled={isPending || currentQuestion?.number === questions?.length}
-            >
-              Next <ArrowRightIcon className="size-6" />
-            </Button>
-          </div>
-
-          <div className="flex-1">
-            <div className="border border-gray-200 rounded-lg p-8 mb-10">
-              <MDXEditor
-                ref={mdRef}
-                readOnly
-                markdown={currentQuestion ? currentQuestion.text : ""}
-                // markdown={
-                //   'ASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDG'
-                // }
-                plugins={[
-                  headingsPlugin(),
-                  listsPlugin(),
-                  quotePlugin(),
-                  thematicBreakPlugin(),
-                  markdownShortcutPlugin(),
-                  imagePlugin(),
-                ]}
-              />
-              {/* <p className={styles.question_describe}>{currentQuestion?.description}</p> */}
-              {/* <p className={styles.question_title}>{currentQuestion?.text}</p> */}
-            </div>
-            <div>
-              <RadioGroup.Root
-                className="RadioGroupRoot"
-                defaultValue="default"
-                aria-label="View density"
+              <Button
+                variant="destructive"
+                disabled={isPending}
+                onClick={() => {
+                  if (choices.length === 0 || choices.every((el) => el === 0)) {
+                    toast.error("Please answer at least one question before submitting.");
+                    return;
+                  }
+                  mutate();
+                }}
               >
-                {currentQuestion &&
-                  currentQuestion.options.map((el, i) => (
-                    <Question
-                      key={i}
-                      index={i}
-                      option={el}
-                      choices={choices}
-                      currentQuestion={currentQuestion}
-                      setChoices={setChoices}
-                    />
-                  ))}
-              </RadioGroup.Root>
+                {isPending ? (
+                  <>
+                    <Spinner className="size-6" />
+                    Redirecting
+                  </>
+                ) : (
+                  "Finish Quiz"
+                )}
+              </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+
+          <CardContent className="flex-1 gap-4 flex flex-col">
+            <ExamNavigation
+              setCurrentQuestionIndex={setCurrentQuestionIndex}
+              isPending={isPending}
+              currentQuestionIndex={currentQuestionIndex}
+              questions={questions}
+              currentQuestion={currentQuestion}
+            />
+
+            <div className="flex-1">
+              <div className="border border-gray-200 rounded-lg p-8 mb-10">
+                <MDXEditor
+                  ref={mdRef}
+                  readOnly
+                  markdown={currentQuestion ? currentQuestion.text : ""}
+                  plugins={[
+                    headingsPlugin(),
+                    listsPlugin(),
+                    quotePlugin(),
+                    thematicBreakPlugin(),
+                    markdownShortcutPlugin(),
+                    imagePlugin(),
+                  ]}
+                />
+              </div>
+              <div>
+                <RadioGroup.Root
+                  className="RadioGroupRoot"
+                  defaultValue="default"
+                  aria-label="View density"
+                >
+                  {currentQuestion &&
+                    currentQuestion.options.map((el, i) => (
+                      <Question
+                        key={i}
+                        index={i}
+                        option={el}
+                        choices={choices}
+                        currentQuestion={currentQuestion}
+                        setChoices={setChoices}
+                      />
+                    ))}
+                </RadioGroup.Root>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

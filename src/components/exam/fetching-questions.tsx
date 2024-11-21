@@ -1,22 +1,26 @@
-import styles from "@/styles/app/exams/ExamScreen.module.css";
 import { useRouter } from "next/router";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
 
 export const FetchingQuestions = () => {
   const router = useRouter();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.exam_header_container}>
-        <div className={styles.exam_header_container}>
-          <h1 className={styles.exam_header_title}>I guess it will take some times &#128534;</h1>
-        </div>
-      </div>
-      <p className={styles.error_description}>
-        We are fetching the questions for you. Please wait a moment. If this takes too long, please
-        try again later. We apologize for any inconvenience this may have caused.
-      </p>
-      <div className={styles.error_func_container}>
-        <p onClick={() => router.reload()}>Try again</p>
+    <div className="h-dvh flex flex-col md:px-6 ">
+      <div className="max-w-4xl w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden justify-center items-center">
+        <Card>
+          <CardHeader>
+            <CardTitle>I guess it will take some times &#128534;</CardTitle>
+          </CardHeader>
+
+          <CardContent className="text-lg font-light flex flex-col gap-5">
+            We are fetching the questions for you. Please wait a moment. If this takes too long,
+            please try again later. We apologize for any inconvenience this may have caused.
+            <div>
+              <Button onClick={() => router.reload()}>Try again</Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

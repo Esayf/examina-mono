@@ -161,14 +161,14 @@ export default function Home() {
           <div
             className={styles.button_container}
             onClick={async () => {
-              const res = await authenticate(session as any);
+              const res = await authenticate(session);
               if (!res) {
                 toast.error("Failed to authenticate wallet!");
                 return;
               }
               toast.success("Welcome back!");
-              console.log("redirect res", (res as any).session);
-              dispatch(setSession((res as any).session));
+
+              dispatch(setSession(res.session));
               window.location.href = "/app"; // You are terrible at this
             }}
           >
@@ -234,7 +234,7 @@ export default function Home() {
             Meet <span>next generation</span> exam platform
           </h1>
           <h3 className={styles.section_desc}>
-            We offer an experience you've never used before with our unique features.
+            We offer an experience you&apos;ve never used before with our unique features.
           </h3>
           <div className={styles.card_container}>
             {featureArr.map((feature, index) => {
