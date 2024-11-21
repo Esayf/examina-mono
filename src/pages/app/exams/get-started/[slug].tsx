@@ -63,9 +63,9 @@ function ExamDetail() {
       return;
     }
 
-    if (data?.isCompleted === true) {
+    if (data.exam?.isCompleted === true) {
       toast.error("This exam is already completed!");
-      router.push("/app/exams/result/" + data?._id);
+      router.push("/app/exams/result/" + data.exam._id);
     }
   }, [data]);
 
@@ -104,7 +104,7 @@ function ExamDetail() {
     );
   }
 
-  const canStartExam = data?.startDate && new Date(data?.startDate) < new Date();
+  const canStartExam = data?.exam?.startDate && new Date(data?.exam?.startDate) < new Date();
 
   return (
     <div className="flex justify-center items-center h-dvh bg-[url('/bg.png')] bg-cover">
@@ -112,19 +112,19 @@ function ExamDetail() {
         <CardContent className="gap-9 flex flex-col">
           <div className={cn("flex flex-col items-center", !data && "filter blur-sm")}>
             <p className="text-sm font-medium">
-              <b>{data?.creator}</b> invited you to join
+              <b>{data?.exam.creator}</b> invited you to join
             </p>
             <div className="flex items-center gap-5 my-4">
               <GlobeAltIcon className="size-8" />
-              <h3 title={data?.title}>
-                {data?.title && data?.title?.length > 25
-                  ? `${data?.title.substring(0, 25)}...`
-                  : data?.title}
+              <h3 title={data?.exam.title}>
+                {data?.exam.title && data?.exam.title?.length > 25
+                  ? `${data?.exam.title.substring(0, 25)}...`
+                  : data?.exam.title}
               </h3>
             </div>
             <div className="flex items-center gap-2">
               <ClockIcon className="size-4" />
-              <p>{data && humanize(new Date(data.startDate))}</p>
+              <p>{data && humanize(new Date(data.exam.startDate))}</p>
             </div>
           </div>
           <div className={cn("flex flex-col gap-7", !data && "filter blur-sm")}>
@@ -135,18 +135,18 @@ function ExamDetail() {
               </div>
               <div className="flex justify-between text-sm">
                 <b>Total Questions</b>
-                <p>{data?.questionCount ? data?.questionCount : "10"}</p>
+                <p>{data?.exam.questionCount ? data?.exam.questionCount : "10"}</p>
               </div>
               <div className="flex justify-between text-sm">
                 <b>Duration</b>
-                <p>{data?.duration} minutes</p>
+                <p>{data?.exam.duration} minutes</p>
               </div>
             </div>
             <div className="border rounded-2xl border-primary p-4">
               <div className="flex justify-between text-sm">
                 <b>Description</b>
               </div>
-              <p className="mt-2">{data?.description}</p>
+              <p className="mt-2">{data?.exam.description}</p>
             </div>
           </div>
           <div className="flex flex-col gap-4">
@@ -158,7 +158,7 @@ function ExamDetail() {
                   toast.loading("Starting exam...");
                   startExam(examID)
                     .then(() => {
-                      router.push(`/app/exams/${data?._id}`);
+                      router.push(`/app/exams/${data?.exam._id}`);
                       toast.remove();
                       toast.success("You are ready to start the exam. Good luck!");
                     })
