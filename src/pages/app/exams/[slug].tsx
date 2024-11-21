@@ -29,10 +29,9 @@ import Clock from "@/icons/clock_red.svg";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 
 // API
-import { getExamQuestions, getExamDetails, submitQuiz } from "@/lib/Client/Exam";
+import { getExamQuestions, getExamDetails, submitQuiz, QuestionDocument } from "@/lib/Client/Exam";
 import { Button } from "@/components/ui/button";
 
-type CurrentQuestion = Question | undefined;
 type Answer = 0 | 1 | 2 | 3 | 4 | 5;
 type Choices = Answer[];
 
@@ -41,7 +40,7 @@ function ExamDetails() {
   const examID: string = router.query.slug as string;
   const mdRef = useRef<any>(null);
 
-  const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestion | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<QuestionDocument | null>(null);
   const [choices, setChoices] = useState<Choices>([]);
   const [remainingTimeMiliseconds, setRemainingTimeMiliseconds] = useState<number | null>(null);
   const [startTimer, setStartTimer] = useState<boolean>(false);
@@ -81,12 +80,12 @@ function ExamDetails() {
 
       if (!questions) return;
 
-      if (!("data" in questions)) return;
+      if ("message" in questions) return;
 
       return await submitQuiz(
         examData._id,
         choices,
-        questions.data?.map((el) => el.uniqueId)
+        questions?.map((el) => el._id)
       );
     },
     onSuccess: () => {
@@ -106,13 +105,12 @@ function ExamDetails() {
   useEffect(() => {
     if (questions && examData) {
       // TODO: handle this better
-      if (!("data" in questions)) return;
+      if ("message" in questions) return;
       if (!("_id" in examData)) return;
 
-      setChoices(new Array(questions.data.length).fill(0));
-      // FIXME: handle the type error
-      // @ts-ignore
-      setCurrentQuestion(questions.data[0]);
+      setChoices(new Array(questions.length).fill(0));
+
+      setCurrentQuestion(questions[0]);
       setRemainingTimeMiliseconds((prev) => {
         if (prev === null) {
           setStartTimer(true);
@@ -213,6 +211,14 @@ function ExamDetails() {
           </div>
         </div>
       </Layout>
+    );
+  }
+
+  if (questions && "message" in questions) {
+    return (
+      <div>
+        <h1>{questions.message}</h1>
+      </div>
     );
   }
 
@@ -318,7 +324,8 @@ function ExamDetails() {
               <div className={styles.preview_next_container}>
                 <div className={styles.selector_container}>
                   {questions &&
-                    questions.map((el: any, _i: string) => {
+                    !("message" in questions) &&
+                    questions.map((el, _i) => {
                       return (
                         <div
                           key={_i}
@@ -342,6 +349,9 @@ function ExamDetails() {
                 <div className={styles.form_element_button_container_questions}>
                   <Button
                     onClick={() => {
+                      // TODO: handle this better
+                      if (!questions) return;
+
                       setCurrentQuestion(questions[currentQuestion ? currentQuestion?.number : 0]);
                     }}
                     disabled={isPending || currentQuestion?.number === questions?.length}

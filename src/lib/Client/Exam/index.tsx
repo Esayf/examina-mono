@@ -90,13 +90,10 @@ export interface QuestionDocument {
   correctAnswer: number;
   number: number;
   uniqueId: string;
+  _id: string;
 }
 
-interface QuestionResponse {
-  status: number;
-  data: QuestionDocument[];
-  message?: string;
-}
+type QuestionResponse = QuestionDocument[];
 
 function getExamQuestions(examID: string): Promise<QuestionResponse | ErrorResponse> {
   return new Promise((resolve, reject) => {
@@ -131,21 +128,25 @@ function createExam(exam: ExamState) {
   });
 }
 
-async function submitQuiz(examID: string, answers: number[], questions: string[]) {
+async function submitQuiz(examId: string, answers: number[], questions: string[]) {
   const _answers: any = [];
 
   for (let i = 0; i < questions.length; i++) {
     _answers.push({
-      questionID: questions[i],
+      questionId: questions[i].toString(),
       answer: `${answers[i]}`,
     });
   }
 
-  console.log(_answers);
-
   const requestBase = new RequestBase();
+
+  console.log({
+    examId: examId,
+    answers: _answers,
+  });
+
   await requestBase.post(`/exams/finishExam`, {
-    examID: examID,
+    examId: examId,
     answers: _answers,
   });
 }
