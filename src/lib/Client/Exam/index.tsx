@@ -35,18 +35,26 @@ interface ErrorResponse {
 }
 
 interface ExamDetails {
-  _id: string;
-  creator: string;
-  title: string;
-  description: string;
-  duration: number;
-  startDate: string;
-  rootHash: string;
-  secretKey: string;
-  isCompleted: boolean;
-  questionCount: number;
-  uniqueId: number;
-  __v: number;
+  exam: {
+    _id: string;
+    creator: string;
+    title: string;
+    description: string;
+    duration: number;
+    startDate: string;
+    rootHash: string;
+    secretKey: string;
+    isCompleted: boolean;
+    questionCount: number;
+    uniqueId: number;
+    isRewarded: boolean;
+    rewardPerWinner: number;
+    isDistributed: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  participatedUser: null;
 }
 
 function getExamDetails(examID: string): Promise<ExamDetails | ErrorResponse> {
