@@ -5,6 +5,7 @@ import { v4 } from "uuid";
 import Question from "@/lib/Question";
 
 // Define a type for the slice state
+
 export interface ExamState {
   id: string;
   title: string;
@@ -13,6 +14,8 @@ export interface ExamState {
   duration: string;
   questions: Question[];
   questionCount: number;
+  isRewarded: boolean;
+  rewardPerWinner: number;
 }
 
 // Define the initial state using that type

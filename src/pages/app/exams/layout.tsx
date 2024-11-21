@@ -3,7 +3,7 @@ type Props = {
 };
 
 function Layout({ children }: Props) {
-  return <div className="w-full flex flex-row">{children}</div>;
+  return <div className="h-dvh flex flex-col">{children}</div>;
 }
 
 export default Layout;
