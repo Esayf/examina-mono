@@ -194,6 +194,8 @@ export const Step2 = ({ onBack }: Step2Props) => {
           correctAnswer: parseInt(question.correctAnswer) + 1,
         })),
         questionCount: step2Values.questions.length,
+        isRewarded: false,
+        rewardPerWinner: 0,
       });
     }
   };

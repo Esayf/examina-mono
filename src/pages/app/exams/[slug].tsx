@@ -30,6 +30,7 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 
 // API
 import { getExamQuestions, getExamDetails, submitQuiz } from "@/lib/Client/Exam";
+import { Button } from "@/components/ui/button";
 
 type CurrentQuestion = Question | undefined;
 type Answer = 0 | 1 | 2 | 3 | 4 | 5;
@@ -101,10 +102,6 @@ function ExamDetails() {
       toast.error("An error occured when submitting the answers. Please try again later.");
     },
   });
-
-  console.log("QQQ", questions);
-  console.log("EEE", examData);
-  console.log("CCC", currentQuestion);
 
   useEffect(() => {
     if (questions && examData) {
@@ -225,7 +222,7 @@ function ExamDetails() {
         <div className={styles.exam_header_container}>
           <div className={styles.exam_header_text_container}>
             <h3 className={styles.exam_header_type}>Quiz</h3>
-            <h1 className={styles.exam_header_title}>{examData && (examData as any).title}</h1>
+            <h1 className={styles.exam_header_title}>{examData && examData.title}</h1>
           </div>
           <div className={styles.timer_container}>
             <Image src={Clock} alt="" width={22.51} />
@@ -242,7 +239,7 @@ function ExamDetails() {
       <div className={styles.container}>
         <div className={styles.content_container}>
           <h1 className={styles.question_number}>
-            Question {currentQuestion ? (currentQuestion as any).number : ""}
+            Question {currentQuestion ? currentQuestion.number : ""}
           </h1>
           <div className={styles.preview_container}>
             <div className={styles.preview_question_container}>
@@ -250,7 +247,7 @@ function ExamDetails() {
                 <MDXEditor
                   ref={mdRef}
                   readOnly
-                  markdown={currentQuestion ? (currentQuestion as any).text : ""}
+                  markdown={currentQuestion ? currentQuestion.text : ""}
                   // markdown={
                   //   'ASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDGASLKBAKJSDBGKJASDBGAKSJDG'
                   // }
@@ -321,7 +318,7 @@ function ExamDetails() {
               <div className={styles.preview_next_container}>
                 <div className={styles.selector_container}>
                   {questions &&
-                    (questions as any).map((el: any, _i: string) => {
+                    questions.map((el: any, _i: string) => {
                       return (
                         <div
                           key={_i}
@@ -343,38 +340,32 @@ function ExamDetails() {
                     })}
                 </div>
                 <div className={styles.form_element_button_container_questions}>
-                  <button
-                    className={styles.form_element_button_next}
+                  <Button
                     onClick={() => {
-                      setCurrentQuestion(
-                        (questions as any)[currentQuestion ? currentQuestion?.number : 0]
-                      );
+                      setCurrentQuestion(questions[currentQuestion ? currentQuestion?.number : 0]);
                     }}
-                    disabled={isPending || currentQuestion?.number === (questions as any)?.length}
+                    disabled={isPending || currentQuestion?.number === questions?.length}
                   >
                     Next Question
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className={styles.form_element_button_container_questions}>
-                <button
+                <Button
                   className={styles.form_element_button_finish}
                   onClick={() => {
-                    console.log(choices);
-
                     // Check if choices is empty or all choices are 0
                     if (choices.length === 0 || choices.every((el) => el === 0)) {
                       toast.error("Please answer at least one question before submitting.");
                       return;
                     }
-
-                    console.log("Selam");
                     mutate();
                   }}
+                  variant="destructive"
                   disabled={isPending}
                 >
                   {isPending ? "Redirecting" : "Finish Quiz"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -383,12 +374,12 @@ function ExamDetails() {
               className={styles.form_element_button}
               onClick={() => {
                 if (choices.length === 0) return;
-                if (currentQuestion?.number === (questions as any).length) {
+                if (currentQuestion?.number === (questions ).length) {
                   mutate();
                   return;
                 }
                 setCurrentQuestion(
-                  (questions as any)[currentQuestion ? currentQuestion?.number : 0]
+                  (questions )[currentQuestion ? currentQuestion?.number : 0]
                 );
               }}
               disabled={isPending}
