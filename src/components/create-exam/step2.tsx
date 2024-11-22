@@ -38,6 +38,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppSelector } from "@/app/hooks";
+interface BuildQuizArgs {
+  secretKey: string;
+  startDate: string;
+  totalRewardPoolAmount: string;
+  rewardPerWinner: string;
+  duration: string;
+}
+interface DeployQuizArgs {
+  contractAddress: string;
+  serializedTransaction: string;
+  signedData: string;
+  secretKey: string;
+  startDate: string;
+  totalRewardPoolAmount: string;
+  rewardPerWinner: string;
+  duration: string;
+}
 
 interface AnswersProps {
   index: number;
@@ -132,6 +150,7 @@ interface Step2Props {
 }
 
 export const Step2 = ({ onBack }: Step2Props) => {
+  const session = useAppSelector((state) => state.session);
   const { getValues: getStep1Values } = useStep1Form();
   const {
     control,
@@ -170,12 +189,68 @@ export const Step2 = ({ onBack }: Step2Props) => {
       toast.error("Failed to create exam");
     },
   });
+  async function buildDeployTx(sender: string, args: BuildQuizArgs) {
+    const result = await fetch("/api/buildDeployTx", {
+      method: "POST",
+      body: JSON.stringify({
+        sender: session.session.walletAddress,
+        args: {
+          startDate: args.startDate,
+          duration: args.duration,
+          secretKey: "1",
+          totalRewardPoolAmount: args.totalRewardPoolAmount,
+          rewardPerWinner: args.rewardPerWinner,
+        } satisfies BuildQuizArgs,
+      }),
+    });
+    return result;
+  }
 
   const handlePublish = async () => {
     const isValid = await trigger();
     const step1Values = getStep1Values();
     const step2Values = getValues();
     if (isValid) {
+      const result = await buildDeployTx(session.session.walletAddress, {
+        startDate: step1Values.startDate.getTime().toString(),
+        duration: step1Values.duration,
+        secretKey: "1",
+        totalRewardPoolAmount: "10000000000",
+        rewardPerWinner: "1000000",
+      });
+      const response = await result.json();
+      const { serializedTransaction, contractAddress, nonce } = response;
+      const mina_signer_payload = {
+        zkappCommand: JSON.parse(serializedTransaction.toJSON()),
+        feePayer: {
+          feePayer: session.session.walletAddress,
+          fee: 1e8,
+          nonce: nonce,
+          memo: "deploy quizbu",
+        },
+      };
+
+      const signedAuroData = await window?.mina?.signMessage({
+        message: JSON.stringify(mina_signer_payload),
+      });
+      let signedData = JSON.stringify({ zkappCommand: signedAuroData?.data });
+
+      const result2 = await fetch("/api/deployQuiz", {
+        method: "POST",
+        body: JSON.stringify({
+          serializedTransaction,
+          args: {
+            contractAddress,
+            serializedTransaction,
+            signedData,
+            secretKey: "1",
+            startDate: step1Values.startDate.getTime().toString(),
+            duration: step1Values.duration,
+            totalRewardPoolAmount: "10000000000",
+            rewardPerWinner: "1000000",
+          } satisfies DeployQuizArgs,
+        }),
+      });
       saveExam({
         id: v4(),
         title: step1Values.title,
