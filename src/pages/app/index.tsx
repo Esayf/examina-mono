@@ -11,7 +11,7 @@ import DashboardHeader from "@/components/ui/dashboard-header";
 import Right from "@/icons/right_long.svg";
 import None from "@/images/dashboard/none.svg";
 import { Button } from "@/components/ui/button";
-import { DocumentDuplicateIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ArrowUpRightIcon, DocumentDuplicateIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import {
@@ -122,10 +122,10 @@ function Application() {
                 All quizzes created by you are listed here. You can copy the link to share with
               </CardDescription>
             </CardHeaderContent>
-            <Button asChild>
+            <Button asChild pill>
               <Link href="/app/create-exam/">
-                <PlusIcon className="size-6" />
-                New Quiz
+                Create New
+                <ArrowUpRightIcon className="size-6" />
               </Link>
             </Button>
           </CardHeader>

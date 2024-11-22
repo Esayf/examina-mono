@@ -174,8 +174,8 @@ function ExamDetails() {
               currentQuestion={currentQuestion}
             />
 
-            <div className="flex-1">
-              <div className="border border-gray-200 rounded-lg p-8 mb-10">
+            <div className="flex-1 flex gap-6">
+              <div className="border border-gray-200 rounded-lg p-8 mb-10 flex-1">
                 <MDXEditor
                   ref={mdRef}
                   readOnly
@@ -190,7 +190,7 @@ function ExamDetails() {
                   ]}
                 />
               </div>
-              <div>
+              <div className="flex-1">
                 <RadioGroup.Root
                   className="RadioGroupRoot"
                   defaultValue="default"

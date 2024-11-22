@@ -56,19 +56,23 @@ function CreateExam() {
   };
 
   return (
-    <div className="h-dvh flex flex-col md:px-6">
-      <DashboardHeader withoutNav />
-      <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
-        <Head>
-          <title>Create Exam</title>
-        </Head>
+    <>
+      <div className="h-dvh flex flex-col">
+        <DashboardHeader withoutNav />
+        <div className="md:px-6 h-full flex flex-col overflow-hidden">
+          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
+            <Head>
+              <title>Create Exam</title>
+            </Head>
 
-        <FormProvider {...methods}>
-          {currentStep === 0 && <Step1 onNext={handleNext} />}
-          {currentStep === 1 && <Step2 onBack={handleBack} />}
-        </FormProvider>
+            <FormProvider {...methods}>
+              {currentStep === 0 && <Step1 onNext={handleNext} />}
+              {currentStep === 1 && <Step2 onBack={handleBack} />}
+            </FormProvider>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
