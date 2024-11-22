@@ -2,7 +2,7 @@ import React from "react";
 
 import { DurationPicker } from "./duration-picker";
 import { Button } from "@/components/ui/button";
-import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowRightCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
   Card,
   CardContent,
@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import { useStep1Form } from "./step1-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { ControlledDateTimePicker } from "./controlled-date-time-picker";
+import { Switch } from "../ui/switch";
+import { RewardDistributionForm } from "./reward-distrubition";
 
 interface Step1Props {
   onNext: () => void;
@@ -32,8 +34,10 @@ interface Step1Props {
 export const Step1 = ({ onNext }: Step1Props) => {
   const form = useStep1Form();
 
+  const rewardDistribution = form.watch("rewardDistribution");
+
   return (
-    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col">
+    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>Quiz details</CardTitle>
@@ -45,7 +49,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
         <ArrowRightCircleIcon className="size-7 shrink-0" />
       </CardHeader>
 
-      <CardContent className="max-w-2xl mx-auto space-y-5 flex-1 w-full">
+      <CardContent className="max-w-3xl mx-auto space-y-5 flex-1 w-full overflow-y-auto gap-6 flex-col relative mb-5">
         <FormField
           control={form.control}
           name="title"
@@ -102,16 +106,33 @@ export const Step1 = ({ onNext }: Step1Props) => {
             </FormItem>
           )}
         />
+        {/* <FormField
+          control={form.control}
+          name="rewardDistribution"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-end">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base pe-4">Reward distrubition</FormLabel>
+              </div>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+            </FormItem>
+          )}
+        /> */}
+
+        {/* {rewardDistribution && <RewardDistributionForm />} */}
       </CardContent>
-      <CardFooter className="max-w-2xl mx-auto w-full">
+      <CardFooter className="max-w-3xl mx-auto w-full">
         <Button
+          pill
           onClick={() => {
             onNext();
           }}
           className="w-full"
         >
           Start Create
-          <ArrowRightCircleIcon className="size-6" />
+          <ArrowRightIcon className="size-6" />
         </Button>
       </CardFooter>
     </Card>

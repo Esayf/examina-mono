@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { useSelector } from "react-redux";
 import { logout } from "@/lib/Client/Auth";
 import toast from "react-hot-toast";
 

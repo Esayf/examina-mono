@@ -210,7 +210,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             At this stage, create your questions and complete your quiz.
           </CardDescription>
         </CardHeaderContent>
-        <Button onClick={handlePublish} className="w-40" disabled={isPending}>
+        <Button onClick={handlePublish} className="w-40" disabled={isPending} pill>
           {isPending ? (
             <Spinner className="size-6" />
           ) : (
