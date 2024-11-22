@@ -25,7 +25,7 @@ import { useStep1Form } from "./step1-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { ControlledDateTimePicker } from "./controlled-date-time-picker";
 import { Switch } from "../ui/switch";
-import { RewardDistributionForm } from "./reward-distrubition";
+// import { RewardDistributionForm } from "./reward-distrubition";
 
 interface Step1Props {
   onNext: () => void;
@@ -34,7 +34,7 @@ interface Step1Props {
 export const Step1 = ({ onNext }: Step1Props) => {
   const form = useStep1Form();
 
-  const rewardDistribution = form.watch("rewardDistribution");
+  // const rewardDistribution = form.watch("rewardDistribution");
 
   return (
     <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
