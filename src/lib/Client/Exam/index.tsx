@@ -160,7 +160,7 @@ async function submitQuiz(examId: string, answers: number[], questions: string[]
 
 async function sendEmail(email: string) {
   const requestBase = new RequestBase();
-  await requestBase.post(`/user/put/email`, {
+  await requestBase.post(`/users/put/email`, {
     email: email,
   });
 }
