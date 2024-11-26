@@ -1,7 +1,7 @@
 // pages/api/key.ts
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import { deployQuiz } from "../../zkCloudWorker/QuizWorker";
+import { deployQuiz } from "../../zkCloudWorker/workerAPI";
 import { blockchain } from "zkcloudworker";
 import { initBlockchain } from "zkcloudworker";
 
@@ -11,9 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: `Method ${req.method} Not Allowed` });
   }
   try {
-    const { transaction, args } = JSON.parse(req.body);
+    const { args } = JSON.parse(req.body);
     await initBlockchain("devnet" as blockchain);
-    const tx = await deployQuiz(process.env.JWT!, transaction, args);
+    const tx = await deployQuiz(process.env.JWT!, args);
     return res.status(200).json({ tx });
   } catch (error) {
     console.error("Error creating API Key:", error);

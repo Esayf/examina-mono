@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppSelector } from "@/app/hooks";
+import { SendTransactionArgs, ProviderError } from "../../../types/global";
 interface BuildQuizArgs {
   secretKey: string;
   startDate: string;
@@ -189,21 +190,36 @@ export const Step2 = ({ onBack }: Step2Props) => {
       toast.error("Failed to create exam");
     },
   });
-  async function buildDeployTx(sender: string, args: BuildQuizArgs) {
+  async function buildDeployTx(
+    sender: string,
+    args: BuildQuizArgs
+  ): Promise<{
+    mina_signer_payload: SendTransactionArgs;
+    serializedTransaction: string;
+    contractAddress: string;
+    nonce: number;
+  }> {
     const result = await fetch("/api/buildDeployTx", {
       method: "POST",
       body: JSON.stringify({
-        sender: session.session.walletAddress,
+        sender: sender,
         args: {
           startDate: args.startDate,
           duration: args.duration,
-          secretKey: "1",
+          secretKey: args.secretKey,
           totalRewardPoolAmount: args.totalRewardPoolAmount,
           rewardPerWinner: args.rewardPerWinner,
         } satisfies BuildQuizArgs,
       }),
     });
-    return result;
+    return result.json();
+  }
+  async function deployQuiz(args: DeployQuizArgs) {
+    const result = await fetch("/api/deployQuiz", {
+      method: "POST",
+      body: JSON.stringify({ args }),
+    });
+    return result.json();
   }
 
   const handlePublish = async () => {
@@ -218,40 +234,27 @@ export const Step2 = ({ onBack }: Step2Props) => {
         totalRewardPoolAmount: "10000000000",
         rewardPerWinner: "1000000",
       });
-      const response = await result.json();
-      const { serializedTransaction, contractAddress, nonce } = response;
-      const mina_signer_payload = {
-        zkappCommand: JSON.parse(serializedTransaction.toJSON()),
-        feePayer: {
-          feePayer: session.session.walletAddress,
-          fee: 1e8,
-          nonce: nonce,
-          memo: "deploy quizbu",
-        },
-      };
+      const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = result;
 
-      const signedAuroData = await window?.mina?.signMessage({
-        message: JSON.stringify(mina_signer_payload),
-      });
-      let signedData = JSON.stringify({ zkappCommand: signedAuroData?.data });
-
-      const result2 = await fetch("/api/deployQuiz", {
-        method: "POST",
-        body: JSON.stringify({
+      const signedAuroData = await window?.mina?.sendTransaction(mina_signer_payload);
+      console.log("signedAuroData", signedAuroData);
+      if (typeof signedAuroData === "object" && "signedData" in signedAuroData) {
+        let signedData = signedAuroData.signedData;
+        console.log("signedData as stringified", signedData);
+        const result2 = await deployQuiz({
+          contractAddress,
           serializedTransaction,
-          args: {
-            contractAddress,
-            serializedTransaction,
-            signedData,
-            secretKey: "1",
-            startDate: step1Values.startDate.getTime().toString(),
-            duration: step1Values.duration,
-            totalRewardPoolAmount: "10000000000",
-            rewardPerWinner: "1000000",
-          } satisfies DeployQuizArgs,
-        }),
-      });
-      saveExam({
+          signedData,
+          secretKey: "1",
+          startDate: step1Values.startDate.getTime().toString(),
+          duration: step1Values.duration,
+          totalRewardPoolAmount: "10000000000",
+          rewardPerWinner: "1000000",
+        });
+      } else {
+        console.log("signedAuroData is not an object with signedData property");
+      }
+      /*       saveExam({
         id: v4(),
         title: step1Values.title,
         description: step1Values.description,
@@ -271,7 +274,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
         questionCount: step2Values.questions.length,
         isRewarded: false,
         rewardPerWinner: 0,
-      });
+      }); */
     }
   };
 
