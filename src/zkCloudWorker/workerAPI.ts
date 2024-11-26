@@ -105,10 +105,6 @@ export async function deployQuiz(JWT: string, args: DeployQuizArgs) {
     metadata: "prove and send deploy quiz tx test",
   });
   console.log("proveAndSendDeployQuizResponse", proveAndSendDeployQuizResponse);
-  const deployQuizTxResult = await client.waitForJobResult({
-    jobId: proveAndSendDeployQuizResponse.jobId!,
-    printLogs: true,
-  });
-  return deployQuizTxResult;
+  return proveAndSendDeployQuizResponse;
 }
 

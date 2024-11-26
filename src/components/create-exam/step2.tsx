@@ -248,13 +248,13 @@ export const Step2 = ({ onBack }: Step2Props) => {
           secretKey: "1",
           startDate: step1Values.startDate.getTime().toString(),
           duration: step1Values.duration,
-          totalRewardPoolAmount: "10000000000",
+          totalRewardPoolAmount: "10000000000", // 10^9 = 1 mina
           rewardPerWinner: "1000000",
         });
       } else {
         console.log("signedAuroData is not an object with signedData property");
       }
-      /*       saveExam({
+      saveExam({
         id: v4(),
         title: step1Values.title,
         description: step1Values.description,
@@ -274,7 +274,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
         questionCount: step2Values.questions.length,
         isRewarded: false,
         rewardPerWinner: 0,
-      }); */
+      });
     }
   };
 
