@@ -24,7 +24,8 @@ import { useStep2Form } from "./step2-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { ControlledDateTimePicker } from "./controlled-date-time-picker";
 import { PublishButton } from "./publish-button";
-// import { RewardDistributionForm } from "./reward-distrubition";
+import { RewardDistributionForm } from "./reward-distrubition";
+import { Switch } from "../ui/switch";
 
 interface Step2Props {
   onBack: () => void;
@@ -33,7 +34,7 @@ interface Step2Props {
 export const Step2 = ({ onBack }: Step2Props) => {
   const form = useStep2Form();
 
-  // const rewardDistribution = form.watch("rewardDistribution");
+  const rewardDistribution = form.watch("rewardDistribution");
 
   return (
     <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
@@ -78,7 +79,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             placeholder="Pick a date"
             className="flex-1"
             calendarProps={{
-              disabled: { before: new Date() },
+              disabled: { before: new Date(Date.now() + 5 * 60 * 1000) },
             }}
           />
 
@@ -108,7 +109,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             </FormItem>
           )}
         />
-        {/* <FormField
+        <FormField
           control={form.control}
           name="rewardDistribution"
           render={({ field }) => (
@@ -121,9 +122,9 @@ export const Step2 = ({ onBack }: Step2Props) => {
               </FormControl>
             </FormItem>
           )}
-        /> */}
+        />
 
-        {/* {rewardDistribution && <RewardDistributionForm />} */}
+        {rewardDistribution && <RewardDistributionForm />}
       </CardContent>
     </Card>
   );

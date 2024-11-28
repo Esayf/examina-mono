@@ -26,6 +26,7 @@ function CreateExam() {
     mode: "onChange",
     defaultValues: {
       title: "",
+      rewardDistribution: false,
       questions: [
         {
           question: "",

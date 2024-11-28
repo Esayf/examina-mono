@@ -16,9 +16,9 @@ import { Spinner } from "../ui/spinner";
 interface BuildQuizArgs {
   secretKey: string;
   startDate: string;
+  duration: string;
   totalRewardPoolAmount: string;
   rewardPerWinner: string;
-  duration: string;
 }
 interface DeployQuizArgs {
   contractAddress: string;
@@ -26,9 +26,9 @@ interface DeployQuizArgs {
   signedData: string;
   secretKey: string;
   startDate: string;
+  duration: string;
   totalRewardPoolAmount: string;
   rewardPerWinner: string;
-  duration: string;
 }
 
 async function buildDeployTx(
@@ -56,12 +56,18 @@ async function buildDeployTx(
   return result.json();
 }
 
-async function deployQuiz(args: DeployQuizArgs) {
+async function deployQuiz(
+  args: DeployQuizArgs
+): Promise<{ tx: { success: boolean; jobId: string } }> {
   const result = await fetch("/api/deployQuiz", {
     method: "POST",
     body: JSON.stringify({ args }),
   });
   return result.json();
+}
+
+function parseMina(amount: string | number) {
+  return Number(amount.toString()) * 1000000000;
 }
 
 export const PublishButton = () => {
@@ -72,7 +78,7 @@ export const PublishButton = () => {
 
   const [isPublishing, setIsPublishing] = useState(false);
 
-  const { mutate: saveExam, isPending } = useMutation({
+  const { mutateAsync: saveExam } = useMutation({
     mutationFn: createExam,
     onSuccess: () => {
       router.replace("/app");
@@ -89,40 +95,65 @@ export const PublishButton = () => {
     const isValid = await form.trigger();
     const step1Values = getStep1Values();
     const step2Values = form.getValues();
+
     if (isValid) {
       try {
-        const result = await buildDeployTx(session.session.walletAddress, {
-          startDate: step2Values.startDate.getTime().toString(),
-          duration: step2Values.duration,
-          secretKey: "1",
-          totalRewardPoolAmount: "10000000000",
-          rewardPerWinner: "1000000",
-        });
-        const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = result;
+        const totalRewardPoolAmount = step2Values.totalRewardPoolAmount
+          ? parseMina(step2Values.totalRewardPoolAmount)
+          : undefined;
+        const rewardPerWinner = step2Values.rewardPerWinner
+          ? parseMina(step2Values.rewardPerWinner)
+          : undefined;
 
-        const signedAuroData = await window?.mina?.sendTransaction(mina_signer_payload);
+        const isRewardDistributionEnabled =
+          step2Values.rewardDistribution && !!totalRewardPoolAmount && !!rewardPerWinner;
 
-        console.log("signedAuroData", signedAuroData);
+        if (isRewardDistributionEnabled) {
+          const randomValues = new Uint8Array(1);
+          self.crypto.getRandomValues(randomValues);
+          const secretKey = randomValues[0].toString();
 
-        if (typeof signedAuroData === "object" && "signedData" in signedAuroData) {
+          const deployTx = await buildDeployTx(session.session.walletAddress, {
+            startDate: step2Values.startDate.getTime().toString(),
+            duration: step2Values.duration,
+            secretKey,
+            totalRewardPoolAmount: totalRewardPoolAmount.toString(),
+            rewardPerWinner: rewardPerWinner.toString(),
+          });
+
+          if (!("mina_signer_payload" in deployTx)) {
+            toast.error("Failed to create exam. Could not build deploy transaction");
+            setIsPublishing(false);
+            return;
+          }
+
+          const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
+
+          const signedAuroData = await window?.mina?.sendTransaction(mina_signer_payload);
+
+          if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
+            toast.error("You need to sign the transaction to deploy the quiz");
+            setIsPublishing(false);
+            return;
+          }
+
           let signedData = signedAuroData.signedData;
-          console.log("signedData as stringified", signedData);
-          const result2 = await deployQuiz({
+
+          const txStatus = await deployQuiz({
             contractAddress,
             serializedTransaction,
             signedData,
-            secretKey: "1",
+            secretKey,
             startDate: step2Values.startDate.getTime().toString(),
             duration: step2Values.duration,
-            totalRewardPoolAmount: "10000000000", // 10^9 = 1 mina
-            rewardPerWinner: "1000000",
+            ...(isRewardDistributionEnabled && {
+              totalRewardPoolAmount: totalRewardPoolAmount.toString(),
+              rewardPerWinner: rewardPerWinner.toString(),
+            }),
           });
-        } else {
-          console.log("signedAuroData is not an object with signedData property");
-          toast.error("You need to sign the transaction to deploy the quiz");
         }
 
-        saveExam({
+        await saveExam({
           id: v4(),
           title: step2Values.title,
           description: step2Values.description,
@@ -140,11 +171,11 @@ export const PublishButton = () => {
             correctAnswer: parseInt(question.correctAnswer) + 1,
           })),
           questionCount: step1Values.questions.length,
-          isRewarded: false,
-          rewardPerWinner: 0,
+          isRewarded: isRewardDistributionEnabled,
+          rewardPerWinner: rewardPerWinner || 0,
+          // secretKey,
         });
       } catch (error) {
-        console.log("Error", error);
         toast.error("Failed to create exam");
       } finally {
         setIsPublishing(false);
