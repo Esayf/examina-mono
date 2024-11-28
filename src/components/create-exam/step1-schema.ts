@@ -11,7 +11,7 @@ const looseOptional = <T extends z.ZodTypeAny>(schema: T) =>
 export const step1ValidationSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(3, "Description must be at least 3 characters"),
-  startDate: z.date(),
+  startDate: z.date().refine((date) => date > new Date(), "Start date must be in the future"),
   duration: z.string(),
   // rewardDistribution: z.boolean(),
   // // the rest of the fields are only required if the reward distribution is activated

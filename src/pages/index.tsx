@@ -35,6 +35,7 @@ import { initialState, setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import { cn } from "@/lib/utils";
 const stepArr = [
   {
     stepText: "STEP 1",
@@ -102,21 +103,21 @@ const techArr = [
     techDesc:
       "Leveraging Zero Knowledge, Choz empowers the creation of exams without disclosing questions, correct answers, user responses, or personal identity, ensuring utmost confidentiality.",
     techLink:
-      "https://examina.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998",
+      "https://choz.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998",
   },
   {
     techTitle: "Mina zkProgram",
     techDesc:
       "Our score verifier uses a Recursive Proof Of Score zkProgram. That enables us to prove exam results without revealing your score and answers",
     techLink:
-      "https://examina.medium.com/navigating-the-world-of-zk-programs-examinas-insight-into-secure-exam-scoring-ea974e0b11ed",
+      "https://choz.medium.com/navigating-the-world-of-zk-programs-examinas-insight-into-secure-exam-scoring-ea974e0b11ed",
   },
   {
     techTitle: "Web3 Session System",
     techDesc:
       "We generate a session based on your signature. Which enables us to verify your wallet ownership. Without any gas fees or private information!",
     techLink:
-      "https://examina.medium.com/web3-sessions-bridging-the-gap-between-security-and-seamless-backend-integration-3eaf3ff8f995",
+      "https://choz.medium.com/web3-sessions-bridging-the-gap-between-security-and-seamless-backend-integration-3eaf3ff8f995",
   },
 ];
 
@@ -152,33 +153,34 @@ export default function Home() {
               rel="noopener noreferrer"
               target="_blank"
               className={styles.link_no_decoration}
-              href="https://examina.medium.com/"
+              href="https://choz.medium.com/"
             >
               <p className={styles.nav_button}>Blog</p>
             </Link>
             <p className={styles.nav_button}>Features</p>
           </div>
-          <div
-            className={styles.button_container}
-            onClick={async () => {
-              const res = await authenticate(session);
-              if (!res) {
-                toast.error("Failed to authenticate wallet!");
-                return;
-              }
-              toast.success("Welcome back!");
-
-              dispatch(setSession(res.session));
-              window.location.href = "/app"; // You are terrible at this
-            }}
-          >
+          <div className={styles.button_container}>
             {store.getState().session.session === initialState.session ? (
-              <Button variant="outline" pill={true}>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  const res = await authenticate(session);
+                  if (!res) {
+                    toast.error("Failed to authenticate wallet!");
+                    return;
+                  }
+                  toast.success("Welcome back!");
+
+                  dispatch(setSession(res));
+
+                  router.push("/app");
+                }}
+              >
                 Connect <ArrowUpRightIcon className="size-6" />
               </Button>
             ) : (
-              <Button variant="outline" pill={true}>
-                Go to Dashboard
+              <Button variant="outline" pill asChild>
+                <Link href="/app">Go to Dashboard</Link>
               </Button>
             )}
           </div>
@@ -192,11 +194,16 @@ export default function Home() {
             <h3 className={styles.hero_desc}>
               Choz: Setting the New Standard for Secure Exam Creation
             </h3>
-            <button className={styles.hero_button}>Create your exam</button>
+
+            <Button pill={true} className="mt-10" asChild>
+              <Link href="/app">
+                Start Creating <ArrowUpRightIcon className="size-6" />
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
-      <Image src={BG} alt="" className={styles.hero_bg} />
+      <Image src={BG} alt="" className={cn(styles.hero_bg, "pointer-events-none")} />
       <div className={styles.section_container}>
         <div className={styles.container}>
           <h5 className={styles.section_title}>HOW IT WORKS</h5>

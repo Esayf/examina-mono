@@ -34,7 +34,7 @@ function Footer() {
             Docs
           </a>
         </div>
-        <p>© 2024 Examina</p>
+        <p>© 2024 Choz</p>
       </div>
     </div>
   );
