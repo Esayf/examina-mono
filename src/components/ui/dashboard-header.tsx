@@ -3,7 +3,7 @@ import { logout } from "@/lib/Client/Auth";
 import toast from "react-hot-toast";
 
 // Images
-import Choz from "@/icons/choz.svg";
+import Choz from "@/images/landing-header/choz.svg";
 import Logout from "@/icons/arrow-right-start-on-rectangle.svg";
 import Link from "next/link";
 import { useAppSelector } from "@/app/hooks";

@@ -12,7 +12,7 @@ import Telegram from "@/icons/telegram.svg";
 import Twitter from "@/icons/twitter.svg";
 import toast from "react-hot-toast";
 import { useState } from "react";
-// import Choz from "@/icons/choz.svg";
+/* import Choz from "@/images/landing/choz.svg";*/
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

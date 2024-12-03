@@ -6,7 +6,7 @@ import { getExamDetails, startExam } from "@/lib/Client/Exam";
 import { authenticate } from "../../../../hooks/auth";
 
 // Icons
-import Choz from "@/icons/choz.svg";
+import Choz from "@/images/landing-header/choz.svg";
 import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
 import { setSession } from "@/features/client/session";

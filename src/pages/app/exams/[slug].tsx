@@ -20,9 +20,9 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 // API
 import { getExamQuestions, getExamDetails, submitQuiz } from "@/lib/Client/Exam";
 import { Button } from "@/components/ui/button";
-import { FetchingQuestions } from "@/components/exam/fetching-questions";
-import { QuestionFetchingError } from "@/components/exam/question-fetching-error";
-import { Question } from "@/components/exam/question";
+import { FetchingQuestions } from "@/components/live-exam/fetching-questions";
+import { QuestionFetchingError } from "@/components/live-exam/question-fetching-error";
+import { Question } from "@/components/live-exam/question";
 import {
   Card,
   CardContent,
@@ -32,8 +32,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { Counter } from "@/components/exam/counter";
-import { ExamNavigation } from "@/components/exam/exam-navigation";
+import { Counter } from "@/components/live-exam/counter";
+import { ExamNavigation } from "@/components/live-exam/exam-navigation";
 
 function ExamDetails() {
   const router = useRouter();
