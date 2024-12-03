@@ -147,7 +147,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
   };
 
   return (
-    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
+    <Card className=" bg-base-white mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>Create questions</CardTitle>
@@ -162,17 +162,18 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
       <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative">
         <div
-          className="mx-auto w-full flex flex-col flex-1 md:max-w-2xl gap-4"
+          className="mx-auto w-full flex flex-col flex-2 md:max-w-2xl gap-4"
           key={activeQuestion.id}
         >
+
+          <div className="flex flex-col gap-4 flex-0">
           <FormField
             key={activeQuestion.id}
             control={control}
             name={`questions.${activeQuestionIndex}.questionType`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex gap-2 items-center">
-                  <QuestionMarkCircleIcon className="size-4" />
+                <FormLabel className="z-index-10 flex gap-2 items-center rounded-full">
                   Question Type
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
@@ -181,17 +182,15 @@ export const Step1 = ({ onNext }: Step1Props) => {
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="z-50">
                     <SelectItem value="mc">Multiple Choice</SelectItem>
                     <SelectItem value="tf">True/False</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
-            )}
-          />
-
-          <div className="flex flex-col gap-4 flex-1">
+              )}
+            />  
             <FormField
               control={control}
               name={`questions.${activeQuestionIndex}.question`}

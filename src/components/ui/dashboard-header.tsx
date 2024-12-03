@@ -27,11 +27,11 @@ function DashboardHeader({ withoutNav = false }) {
           </div>
         )}
         <div className="flex items-center gap-4">
-          <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg">
+          <div className="px-4 py-2 bg-brand-secondary-100 border border-brand-primary-950 rounded-full">
             <a
               href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}/`}
               target="_blank"
-              className="text-base font-medium leading-6 no-underline"
+              className="text-base font-book leading-6 no-underline"
             >
               {isConnected &&
                 `${session.session.walletAddress.slice(

@@ -6,8 +6,8 @@
 @layer base {
   :root {
     /* Base Colors */
-    --color-base-black: #000000;
-    --color-base-white: #ffffff;
+    --color-base-black: 0, 0, 0;
+    --color-base-white: 255, 255, 255;
 
     /* Primary Colors */
     --color-brand-primary-50: #fff3fd;
@@ -128,7 +128,7 @@
     --color-ui-info-950: #112527;
 
      /*Background Colors*/
-     --color-ui-bg-primary: #f5feff;
+     --color-ui-bg-primary: #FBE7DA;
      --color-ui-background-lightest: #e1fbfe;
      --color-ui-background-light: #c4f7fd;
      --color-ui-background-lighter: #93f0fb;
