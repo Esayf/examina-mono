@@ -15,10 +15,7 @@ export interface ExamState {
   questions: Question[];
   questionCount: number;
   isRewarded: boolean;
-  rewardPerWinner: number | null;
-  passingScore: number | null;
-  contractAddress: string | null;
-  deployJobId: string | null;
+  rewardPerWinner: number;
 }
 
 // Define the initial state using that type

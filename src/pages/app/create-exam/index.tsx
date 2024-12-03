@@ -4,10 +4,10 @@ import DashboardHeader from "@/components/ui/dashboard-header";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
 import { Step1FormValues, step1ValidationSchema } from "@/components/create-exam/step1-schema";
-import { Step2 } from "@/components/create-exam/step2";
+import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
 import { Step1 } from "@/components/create-exam/step1";
+import { Step2 } from "@/components/create-exam/step2";
 
 import Head from "next/head";
 
@@ -26,7 +26,6 @@ function CreateExam() {
     mode: "onChange",
     defaultValues: {
       title: "",
-      rewardDistribution: false,
       questions: [
         {
           question: "",
@@ -57,21 +56,23 @@ function CreateExam() {
   };
 
   return (
-    <div className="h-dvh flex flex-col">
-      <DashboardHeader withoutNav />
-      <div className="md:px-6 h-full flex flex-col overflow-hidden">
-        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
-          <Head>
-            <title>Create Exam</title>
-          </Head>
+    <>
+      <div className="h-dvh flex flex-col">
+        <DashboardHeader withoutNav />
+        <div className="md:px-6 h-full flex flex-col overflow-hidden">
+          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
+            <Head>
+              <title>Create Exam</title>
+            </Head>
 
-          <FormProvider {...methods}>
-            {currentStep === 0 && <Step1 onNext={handleNext} />}
-            {currentStep === 1 && <Step2 onBack={handleBack} />}
-          </FormProvider>
+            <FormProvider {...methods}>
+              {currentStep === 0 && <Step1 onNext={handleNext} />}
+              {currentStep === 1 && <Step2 onBack={handleBack} />}
+            </FormProvider>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

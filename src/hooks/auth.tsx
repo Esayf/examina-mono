@@ -45,7 +45,7 @@ export async function connectWallet() {
     const accounts: string[] = await mina.getAccounts();
 
     if (accounts.length > 0) {
-      await switchChain("mina:testnet");
+      await switchChain("mina:mainnet");
       return accounts[0];
     }
 
@@ -57,7 +57,7 @@ export async function connectWallet() {
 
     const publicKeyBase58: string = minaAccounts[0];
 
-    const chain = await switchChain("mina:testnet");
+    const chain = await switchChain("mina:mainnet");
 
     if (!chain) {
       throw new Error("Failed to switch chain. Please try again.");

@@ -10,7 +10,7 @@ import Choz from "@/images/landing-header/choz.svg";
 import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
 import { setSession } from "@/features/client/session";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import { humanize } from "@/utils/formatter";
 import { Button } from "@/components/ui/button";
@@ -44,44 +44,16 @@ function ExamDetail() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const examID: string = router.query.slug as string;
-  const session = useAppSelector((state) => state.session);
-  const isConnected = Object.keys(session.session).length > 0;
 
-  const [timer, setTimer] = useState<number>(0);
+  const session = useAppSelector((state) => state.session);
+
+  const isConnected = Object.keys(session.session).length > 0;
 
   const { data, isLoading, isPending, isError, refetch } = useQuery({
     queryKey: ["exam"],
     queryFn: () => getExamDetails(examID),
     enabled: !!examID && isConnected,
   });
-
-  useEffect(() => {
-    if (data === undefined || "message" in data) return;
-    if (data?.exam?.duration) {
-      setTimer(data.exam.duration * 60);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 0) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return minutes > 0
-      ? `${minutes} minute${minutes > 1 ? "s" : ""}`
-      : `${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
-  };
 
   useEffect(() => {
     if (!data) return;
@@ -167,7 +139,7 @@ function ExamDetail() {
               </div>
               <div className="flex justify-between text-sm">
                 <b>Duration</b>
-                <p>{formatTime(timer)}</p>
+                <p>{data?.exam.duration} minutes</p>
               </div>
             </div>
             <div className="border rounded-2xl border-primary p-4">

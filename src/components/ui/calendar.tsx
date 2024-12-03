@@ -1,34 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { DayPicker, DayPickerSingleProps, SelectSingleEventHandler } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
-export type CalendarProps = DayPickerSingleProps;
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  onSelect,
-  ...props
-}: CalendarProps) {
-  const handleDaySelect: SelectSingleEventHandler = (day, selectedDay, activeModifiers, e) => {
-    if (day?.toDateString() === new Date().toDateString()) {
-      onSelect?.(new Date(Date.now() + 5 * 60 * 1000), selectedDay, activeModifiers, e);
-      return;
-    }
-    onSelect?.(day, selectedDay, activeModifiers, e);
-  };
-
+function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
-      onSelect={handleDaySelect}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",

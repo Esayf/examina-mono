@@ -17,12 +17,6 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
     date ? (date.getHours() >= 12 ? "PM" : "AM") : "AM"
   );
 
-  React.useEffect(() => {
-    if (date) {
-      setPeriod(date.getHours() >= 12 ? "PM" : "AM");
-    }
-  }, [date]);
-
   const minuteRef = React.useRef<HTMLInputElement>(null);
   const hourRef = React.useRef<HTMLInputElement>(null);
   const periodRef = React.useRef<HTMLButtonElement>(null);
@@ -39,7 +33,7 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
           </Label>
           <TimePickerInput
             className="rounded-r-none"
-            picker="12hours"
+            picker="hours"
             period={period}
             date={date}
             setDate={setDate}
