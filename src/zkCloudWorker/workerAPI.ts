@@ -3,7 +3,6 @@ import { blockchain, fetchMinaAccount, initBlockchain, serializeTransaction, zkC
 import { AccountUpdate, Mina, PrivateKey, PublicKey, Field, UInt64 } from "o1js";
 import { Quiz } from "./contracts/Quiz";
 import { QUIZ_VERIFICATION_KEY, QUIZ_VERIFICATION_KEY_HASH } from "./contracts/verificationKeys";
-import { zkcloudworker } from "./cloudWorker";
 import { SendTransactionArgs } from "../../types/global";
 
 interface BuildQuizArgs {
@@ -93,7 +92,6 @@ export async function deployQuiz(JWT: string, args: DeployQuizArgs) {
   const client = new zkCloudWorkerClient({
     jwt: JWT,
     chain: process.env.CHAIN as blockchain,
-    zkcloudworker
   });
   console.log("args", args);
   const proveAndSendDeployQuizResponse = await client.execute({
@@ -105,6 +103,9 @@ export async function deployQuiz(JWT: string, args: DeployQuizArgs) {
     metadata: "prove and send deploy quiz tx test",
   });
   console.log("proveAndSendDeployQuizResponse", proveAndSendDeployQuizResponse);
+  if (proveAndSendDeployQuizResponse.jobId) {
+    await client.waitForJobResult({ jobId: proveAndSendDeployQuizResponse.jobId, printLogs: true });
+  }
   return proveAndSendDeployQuizResponse;
 }
 

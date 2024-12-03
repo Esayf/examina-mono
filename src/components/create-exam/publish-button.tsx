@@ -98,6 +98,8 @@ export const PublishButton = () => {
 
     if (isValid) {
       try {
+        let contractAddressNullable = "";
+        let txStatus = { tx: { success: false, jobId: "" } };
         const totalRewardPoolAmount = step2Values.totalRewardPoolAmount
           ? parseMina(step2Values.totalRewardPoolAmount)
           : undefined;
@@ -130,7 +132,6 @@ export const PublishButton = () => {
           const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
 
           const signedAuroData = await window?.mina?.sendTransaction(mina_signer_payload);
-
           if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
             toast.error("You need to sign the transaction to deploy the quiz");
             setIsPublishing(false);
@@ -138,8 +139,7 @@ export const PublishButton = () => {
           }
 
           let signedData = signedAuroData.signedData;
-
-          const txStatus = await deployQuiz({
+          txStatus = await deployQuiz({
             contractAddress,
             serializedTransaction,
             signedData,
@@ -151,6 +151,7 @@ export const PublishButton = () => {
               rewardPerWinner: rewardPerWinner.toString(),
             }),
           });
+          contractAddressNullable = contractAddress;
         }
 
         await saveExam({
@@ -173,7 +174,9 @@ export const PublishButton = () => {
           questionCount: step1Values.questions.length,
           isRewarded: isRewardDistributionEnabled,
           rewardPerWinner: rewardPerWinner || 0,
-          // secretKey,
+          passingScore: step2Values.minimumPassingScore || 0,
+          contractAddress: contractAddressNullable,
+          deployJobId: txStatus.tx.jobId === "" ? null : txStatus.tx.jobId,
         });
       } catch (error) {
         toast.error("Failed to create exam");

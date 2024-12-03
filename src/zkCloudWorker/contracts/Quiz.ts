@@ -1,9 +1,8 @@
 
 import {
-    AccountUpdate, assert, Bool, Experimental, Field, method, PrivateKey, PublicKey, SmartContract, state, State, Struct, UInt64
+    AccountUpdate, assert, Bool, Experimental, Field, method, PrivateKey, PublicKey, SmartContract, state, State, Struct, UInt32, UInt64
 } from 'o1js';
-import { WinnersProof } from './WinnersProver';
-export const adminKey = PrivateKey.fromBase58("EKFY3NDqUJ4SRaxidXK3nWyyoassi7dRyicZ8pubyoqbUHN84i7J");
+import { WinnersProof, WinnersProver } from './WinnersProver';
 export class WinnerState extends Struct({
     amount: UInt64,
     isPaid: Bool,
@@ -18,11 +17,14 @@ export class QuizState extends Struct({
     rewardPerWinner: UInt64
 }) { }
 export class Quiz extends SmartContract {
-    @state(PublicKey) admin = State<PublicKey>(adminKey.toPublicKey());
     @state(QuizState) quizState = State<QuizState>();
     @state(Field) winnersRoot = State<Field>(Field(0));
     init() {
         super.init();
+    }
+
+    getAdmin() {
+        return PrivateKey.fromBase58(process.env.ADMIN_PRIVATE_KEY!).toPublicKey()
     }
 
 
@@ -33,6 +35,7 @@ export class Quiz extends SmartContract {
         totalRewardPoolAmount: UInt64, // This is the total reward pool
         rewardPerWinner: UInt64 // This is the reward per winner
     ) {
+        this.account.nonce.requireEquals(UInt32.from(1))
         this.quizState.set({
             duration,
             startDate,
@@ -44,6 +47,7 @@ export class Quiz extends SmartContract {
     }
 
     @method async setWinnersRoot(root: Field) {
+        this.sender.getAndRequireSignature().assertEquals(this.getAdmin())
         this.winnersRoot.set(root);
     }
 
@@ -75,6 +79,16 @@ export class Quiz extends SmartContract {
         this.network.timestamp.requireBetween(startDate, endDate)
     }
 
+    @method async payoutByOne(
+        winnersProof: WinnersProof
+    ) {
+        winnersProof.verify()
+        this.sender.getAndRequireSignature().assertEquals(this.getAdmin())
+        winnersProof.publicInput.previousRoot.assertEquals(this.winnersRoot.getAndRequireEquals());
+        this.winnersRoot.set(winnersProof.publicOutput.newRoot);
+        this.send({ to: winnersProof.publicOutput.winner.publicKey, amount: winnersProof.publicOutput.winner.reward });
+    }
+
     @method async payoutByTwo(
         winnersProof1: WinnersProof,
         winnersProof2: WinnersProof
@@ -85,6 +99,7 @@ export class Quiz extends SmartContract {
         winnersProof1.publicInput.previousRoot.assertEquals(this.winnersRoot.getAndRequireEquals());
         winnersProof2.publicInput.previousRoot.assertEquals(winnersProof1.publicOutput.newRoot);
         assert(winnersProof1.publicOutput.winner.publicKey.equals(winnersProof2.publicInput.winner.publicKey).not(), "winner2 and winner3 must be different");
+        this.sender.getAndRequireSignature().assertEquals(this.getAdmin())
         // finally, we send the payouts
         this.send({ to: winnersProof1.publicOutput.winner.publicKey, amount: winnersProof1.publicOutput.winner.reward });
         this.send({ to: winnersProof2.publicOutput.winner.publicKey, amount: winnersProof2.publicOutput.winner.reward });
