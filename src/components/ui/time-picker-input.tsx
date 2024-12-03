@@ -27,7 +27,7 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
       value,
       id,
       name,
-      date = new Date(new Date().setHours(0, 0, 0, 0)),
+      date = new Date(Date.now() + 5 * 60 * 1000),
       setDate,
       onChange,
       onKeyDown,
