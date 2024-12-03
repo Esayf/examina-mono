@@ -46,7 +46,7 @@ function DashboardHeader({ withoutNav = false }) {
             onClick={() =>
               logout().then(() => {
                 toast.success("Logged out successfully");
-                window.location.replace("/");
+                window.location.replace(window.location.origin);
               })
             }
             className="cursor-pointer"
