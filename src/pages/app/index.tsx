@@ -74,7 +74,10 @@ function Row({ exam }: RowProps) {
 }
 
 function Application() {
-  const { data, isLoading, isError } = useQuery({ queryKey: ["exams"], queryFn: getExamList });
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["exams"],
+    queryFn: getExamList,
+  });
 
   const router = useRouter();
 
