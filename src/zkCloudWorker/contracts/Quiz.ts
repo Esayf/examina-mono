@@ -3,6 +3,8 @@ import {
     AccountUpdate, assert, Bool, Experimental, Field, method, PrivateKey, PublicKey, SmartContract, state, State, Struct, UInt32, UInt64
 } from 'o1js';
 import { WinnersProof, WinnersProver } from './WinnersProver';
+import dotenv from 'dotenv';
+dotenv.config();
 export class WinnerState extends Struct({
     amount: UInt64,
     isPaid: Bool,
@@ -19,8 +21,10 @@ export class QuizState extends Struct({
 export class Quiz extends SmartContract {
     @state(QuizState) quizState = State<QuizState>();
     @state(Field) winnersRoot = State<Field>(Field(0));
+    @state(PublicKey) creator = State<PublicKey>();
     init() {
         super.init();
+        this.creator.set(this.sender.getAndRequireSignature())
     }
 
     getAdmin() {
@@ -104,6 +108,11 @@ export class Quiz extends SmartContract {
         this.send({ to: winnersProof1.publicOutput.winner.publicKey, amount: winnersProof1.publicOutput.winner.reward });
         this.send({ to: winnersProof2.publicOutput.winner.publicKey, amount: winnersProof2.publicOutput.winner.reward });
         this.winnersRoot.set(winnersProof2.publicOutput.newRoot);
+    }
+
+    @method async withdraw() {
+        assert(this.sender.getAndRequireSignature().equals(this.creator.getAndRequireEquals()).or(this.sender.getAndRequireSignature().equals(this.getAdmin())), "only creator or admin can withdraw")
+        this.send({ to: this.creator.getAndRequireEquals(), amount: this.account.balance.getAndRequireEquals() });
     }
 
     @method.returns(QuizState)
