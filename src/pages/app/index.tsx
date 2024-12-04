@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Exam, getExamList } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
+
 // Import Custom Components
 import DashboardHeader from "@/components/ui/dashboard-header";
 
 // Icons and Images
-import Right from "@/icons/right_long.svg";
-import None from "@/images/dashboard/none.svg";
+import EmptyState from "@/images/emptystates.svg";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRightIcon, DocumentDuplicateIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -32,8 +32,8 @@ function Row({ exam }: RowProps) {
   const [copiedText, copy] = useCopyToClipboard();
 
   return (
-    <div className="text-greyscale-light-600">
-      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-secondary-50 hover:text-greyscale-light-800 hover:font-light cursor-pointer">
+    <div className="text-brand-primary-950">
+      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-100 hover:text-brand-primary-600 hover:font-bold">
         <div className="flex-1 p-6">
           <p className="text-inherit text-base font-light leading-6" title={exam?.title}>
             {exam?.title.length > 18 ? `${exam?.title.substring(0, 18)}...` : exam?.title}
@@ -87,25 +87,21 @@ function Application() {
         <DashboardHeader />
         <div className="max-w-96rem h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-normal">All Quizzes</h3>
+            <h3 className="text-xl font-bold">All Quizzes</h3>
           </div>
           <div className="flex justify-center items-center min-h-[600px] h-[80vh]">
             <div className="flex flex-col gap-[2.625rem]">
-              <Image src={None} alt="" />
+              <Image src={EmptyState} height={220} width={280} alt="No quizzes found" />
               <div className="text-center">
-                <p className="text-gray-800 text-2xl font-normal leading-9">
-                  You haven&apos;t created any exams yet!{" "}
+                <p className="text-brand-primary-950 text-2xl font-regular leading-9">
+                  No quizzes found.
                 </p>
-                <h3 className="text-gray-800 text-2xl font-semibold leading-9">Create new quiz.</h3>
               </div>
               <div className="flex justify-center">
-                <div
-                  className="py-3 px-4.5 bg-[color:rgba(var(--mina-purple))] rounded-lg inline-flex items-center gap-2 shadow-[0_5.063px_0_0_#262525] transition-all duration-200 ease-in-out hover:shadow-[0_3.063px_0_0_#262525] hover:cursor-pointer"
-                  onClick={() => router.push("/app/create-exam/")}
-                >
-                  <p className="text-white">Create Now</p>
-                  <Image src={Right} alt="" />
-                </div>
+                <Button variant="default" onClick={() => router.push("/app/create-exam/")}>
+                  Create now
+                  <ArrowUpRightIcon className="size-6" color="brand-primary-950" />
+                </Button>
               </div>
             </div>
           </div>

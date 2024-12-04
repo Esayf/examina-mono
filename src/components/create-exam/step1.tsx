@@ -173,7 +173,8 @@ export const Step1 = ({ onNext }: Step1Props) => {
             name={`questions.${activeQuestionIndex}.questionType`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="z-index-10 flex gap-2 items-center rounded-full">
+                <FormLabel className="flex gap-2 items-center rounded-full">
+                  <QuestionMarkCircleIcon className="size-4" />
                   Question Type
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
