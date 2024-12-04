@@ -6,9 +6,10 @@ interface CounterProps {
   startDate: string;
   duration: number;
   mutate: () => void;
+  onTimeout: () => void;
 }
 
-export const Counter = ({ startDate, duration, mutate }: CounterProps) => {
+export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps) => {
   const [startTimer, setStartTimer] = useState<boolean>(false);
   const [remainingTimeMiliseconds, setRemainingTimeMiliseconds] = useState<number | null>(null);
 
@@ -25,21 +26,24 @@ export const Counter = ({ startDate, duration, mutate }: CounterProps) => {
   }, [startDate, duration]);
 
   useEffect(() => {
-    const timer = setInterval((remainingTimeMiliseconds) => {
+    const timer = setInterval(() => {
       if (startTimer) {
-        setRemainingTimeMiliseconds((el) => (el !== null ? el - 1 : null));
-      }
-      if (startTimer && remainingTimeMiliseconds && remainingTimeMiliseconds <= 0) {
-        mutate();
-        clearInterval(timer);
+        setRemainingTimeMiliseconds((currentTime) => {
+          if (currentTime !== null && currentTime <= 0) {
+            clearInterval(timer);
+            onTimeout();
+            return 0;
+          }
+          return currentTime !== null ? currentTime - 1 : null;
+        });
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [mutate, startTimer]);
+  }, [onTimeout, startTimer]);
 
   return (
-    <div className="flex items-center gap-4 p-2 bg-red-100 border border-red-500 rounded-md">
+    <div className="flex items-center gap-2 p-4 bg-red-100 border border-red-500 rounded-full">
       <ClockIcon className="size-6 text-red-600" />
       <p className="text-red-600 font-bold text-lg">
         {remainingTimeMiliseconds

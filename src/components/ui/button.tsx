@@ -10,11 +10,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:border-2 hover:border-brand-primary-950",
+          "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:border-1 hover:border-brand-primary-950 disabled:bg-greyscale-light-300 disabled:text-greyscale-light-400 disabled:border disabled:border-greyscale-light-400",
         outline:
-          "bg-transparent border border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border hover:border-brand-primary-700",
+          "bg-transparent border border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border hover:border-brand-primary-700 disabled:bg-brand-primary-100 disabled:text-brand-primary-500 disabled:border-brand-primary-500",
         secondary: "bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
-        destructive: "bg-ui-error-500 text-base-white hover:bg-ui-error-600",
+        destructive:
+          "bg-ui-error-500 text-ui-error-950 border-2 border-ui-error-950 hover:bg-ui-error-400",
         ghost:
           "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600",
         link: "text-brand-primary-500 underline-offset-4 hover:bg-brand-secondary-200",
@@ -23,6 +24,7 @@ const buttonVariants = cva(
         sm: "h-6 px-2 text-xs",
         default: "h-auto px-6 py-3",
         lg: "h-11 px-8",
+        date: "max-h-[34px] h-[34px] leading-[34px] w-[48px] text-sm caret-auto text-center p-0 bg-brand-primary-400 text-brand-primary-950 border border-brand-primary-950 hover:bg-brand-primary-300 hover:border-brand-primary-950 cursor-pointer",
         icon: "h-10 w-10",
         "icon-sm": "h-6 w-6",
       },

@@ -40,7 +40,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
     <Card className="bg-base-white mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
       <CardHeader>
         <Button size="icon" pill variant="outline" onClick={onBack}>
-          <ArrowLeftIcon className="size-6 shrink-0" />
+          <ArrowLeftIcon className="size-5 shrink-0" />
         </Button>
         <CardHeaderContent>
           <CardTitle>Quiz details</CardTitle>
@@ -100,7 +100,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             <FormItem>
               <FormLabel>Quiz information for participants</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter quiz description" {...field} />
+                <Textarea className="rounded-2xl pl-4 pr-4 pt-3 min-h-[160px]" placeholder="Enter quiz description" {...field} />
               </FormControl>
               <FormDescription>
                 A good description will help participants get accurate information about the quiz.

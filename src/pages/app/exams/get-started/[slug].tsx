@@ -7,7 +7,7 @@ import { authenticate } from "../../../../hooks/auth";
 
 // Icons
 import Choz from "@/images/landing-header/choz.svg";
-import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import { ArrowUpRightIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
 import { setSession } from "@/features/client/session";
@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ClockIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import BackgroundPattern from "@/images/backgrounds/backgroundpattern.svg";
 
 function Footer() {
   return (
@@ -64,26 +65,37 @@ function ExamDetail() {
   }, [data]);
 
   useEffect(() => {
-    if (timer === 0) return;
-
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 0) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 0) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1000;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [timer]);
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return minutes > 0
-      ? `${minutes} minute${minutes > 1 ? "s" : ""}`
-      : `${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
+  const formatTimeLeft = (milliseconds: number) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    if (minutes > 1) {
+      return `Starts in ${minutes} minutes`;
+    } else if (minutes === 1) {
+      return `Starts in ${minutes} minute and ${seconds} seconds`;
+    } else if (seconds > 0) {
+      return `Starts in ${seconds} seconds`;
+    } else {
+      if(data && "exam" in data && Math.abs(timer) >= (data.exam?.duration ?? 0) * 60 * 1000) {
+        return "Exam has ended";
+      }
+      return `Exam has started ${Math.abs(minutes) > 0 ? Math.abs(minutes) + " minutes" : Math.abs(seconds) + " seconds"} ago`;
+    }
   };
 
   useEffect(() => {
@@ -94,9 +106,12 @@ function ExamDetail() {
       return;
     }
 
-    if (data.exam?.isCompleted === true) {
-      toast.error("This exam is already completed!");
+    if (data.exam?.isCompleted === true && data.participatedUser) {
       router.push("/app/exams/result/" + data.exam._id);
+    }
+    if(data.participatedUser && data.participatedUser.isFinished) {
+      router.push("/app/exams/result/" + data.exam._id);
+
     }
   }, [data]);
 
@@ -135,18 +150,24 @@ function ExamDetail() {
     );
   }
 
-  const canStartExam = data?.exam?.startDate && new Date(data?.exam?.startDate) < new Date();
+  const canStartExam = data?.exam?.startDate && new Date(data?.exam?.startDate) < new Date() && new Date(data?.exam?.startDate).getTime() + data?.exam?.duration * 60 * 1000 > new Date().getTime();
 
   return (
-    <div className="flex justify-center items-center h-dvh bg-[url('/bg.png')] bg-cover">
-      <Card className="max-w-[36rem] w-full px-10 py-16">
+    <div className="flex justify-center items-center h-dvh">
+      <Image
+        src={BackgroundPattern}
+        alt="Background pattern"
+        className="absolute flex justify-center items-center h-dvh"
+      />
+      <Card className="max-w-[36rem] w-full px-10 py-16 bg-base-white z-10">
         <CardContent className="gap-9 flex flex-col">
           <div className={cn("flex flex-col items-center", !data && "filter blur-sm")}>
-            <p className="text-sm font-medium">
-              <b>{data?.exam.creator}</b> invited you to join
-            </p>
-            <div className="flex items-center gap-5 my-4">
-              <GlobeAltIcon className="size-8" />
+  {/*           <p className="text-sm font-semibold text-brand-primary-950">
+              <b>{data?.exam.creator}</b>{" "}
+              <span className="text-brand-primary-950 font-light">invited you to join this quiz</span>
+            </p> */}
+            <div className="flex items-center gap-3 my-4">
+              <ComputerDesktopIcon className="size-6" />
               <h3 title={data?.exam.title}>
                 {data?.exam.title && data?.exam.title?.length > 25
                   ? `${data?.exam.title.substring(0, 25)}...`
@@ -155,7 +176,7 @@ function ExamDetail() {
             </div>
             <div className="flex items-center gap-2">
               <ClockIcon className="size-4" />
-              <p>{data && humanize(new Date(data.exam.startDate))}</p>
+              <p>{timer != 0 ? formatTimeLeft(timer) : "Exam has started"}</p>
             </div>
           </div>
           <div className={cn("flex flex-col gap-7", !data && "filter blur-sm")}>
@@ -193,13 +214,14 @@ function ExamDetail() {
                       toast.remove();
                       toast.success("You are ready to start the exam. Good luck!");
                     })
-                    .catch(() => {
+                    .catch((error) => {
+                      console.log(error)
                       toast.remove();
                       toast.error("Failed to start exam!");
                     });
                 }}
               >
-                Start Exam
+                Start exam
               </Button>
             ) : (
               <Button
@@ -220,10 +242,10 @@ function ExamDetail() {
               </Button>
             )}
 
-            <p className="mt-4">
+            <p className="mt-auto text-center text-sm ">
               {session.session?.walletAddress ? (
                 <>
-                  You are using this wallet address:{" "}
+                  Your current wallet address is:{" "}
                   <a
                     href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}/`}
                     target="_blank"

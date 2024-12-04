@@ -54,7 +54,17 @@ interface ExamDetails {
     updatedAt: string;
     __v: number;
   };
-  participatedUser: null;
+  participatedUser: ParticipatedUser;
+}
+
+interface ParticipatedUser {
+  createdAt: string;
+  exam: string;
+  isFinished: boolean;
+  isMailSent: boolean;
+  isRewardSent: boolean;
+  isWinner: boolean;
+  jobAdded: boolean;
 }
 
 function getExamDetails(examID: string): Promise<ExamDetails | ErrorResponse> {

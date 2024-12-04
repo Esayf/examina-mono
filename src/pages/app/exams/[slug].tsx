@@ -8,6 +8,7 @@ import {
   headingsPlugin,
   listsPlugin,
   quotePlugin,
+  tablePlugin,
   thematicBreakPlugin,
   markdownShortcutPlugin,
   MDXEditorMethods,
@@ -37,35 +38,28 @@ import { ExamNavigation } from "@/components/live-exam/exam-navigation";
 
 function ExamDetails() {
   const router = useRouter();
-  const examId: string = router.query.slug as string;
+  const examId = router.query.slug as string | undefined;
   const mdRef = useRef<MDXEditorMethods>(null);
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [choices, setChoices] = useState<number[]>([]);
 
-  const {
-    data: examData,
-    isLoading: isloadingData,
-    isError: isErrorExam,
-  } = useQuery({
-    queryKey: ["exam"],
-    queryFn: () => getExamDetails(examId),
+  // Exam details query
+  const { data: examData, isLoading: isloadingData, isError: isErrorExam } = useQuery({
+    queryKey: ["exam", examId],
+    queryFn: () => getExamDetails(examId!),
     enabled: !!examId,
   });
 
-  const {
-    data: questions,
-    isLoading: isLoadingQuestions,
-    isError: isErrorQuestions,
-  } = useQuery({
-    queryKey: ["exams"],
-    queryFn: async () => await getExamQuestions(examId),
+  // Questions query
+  const { data: questions, isLoading: isLoadingQuestions, isError: isErrorQuestions } = useQuery({
+    queryKey: ["questions", examId],
+    queryFn: () => getExamQuestions(examId!),
     enabled: !!examId,
   });
 
   const currentQuestion =
-    questions && ("message" in questions ? undefined : questions[currentQuestionIndex]);
+    questions && !("message" in questions) ? questions[currentQuestionIndex] : undefined;
 
   useEffect(() => {
     if (currentQuestion && mdRef.current) {
@@ -74,54 +68,42 @@ function ExamDetails() {
     }
   }, [currentQuestion]);
 
-  const { mutate, isPending, isError } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      if (!examData) return;
+      if (!examData || !questions || "message" in questions || !("exam" in examData)) {
+        toast.error("Missing exam data. Please try again.");
+        return;
+      }
 
-      if (!("exam" in examData)) return;
-
-      if (!questions) return;
-
-      if ("message" in questions) return;
-
-      return await submitQuiz(
+      return submitQuiz(
         examData.exam._id,
         choices,
-        questions?.map((el) => el._id)
+        questions.map((q) => q._id)
       );
     },
     onSuccess: () => {
-      toast.loading(
-        "Your answers have been submitted successfully. Redirecting to the result page.",
-        {
-          duration: 2000,
-        }
-      );
-      window.location.href = `/app/exams/result/${examId}`;
+      toast.success("Your answers have been submitted. Redirecting...");
+      router.push(`/app/exams/result/${examId}`);
     },
-    onError: (error) => {
-      toast.error("An error occured when submitting the answers. Please try again later.");
+    onError: () => {
+      toast.error("An error occurred. Please try again.");
     },
   });
 
   useEffect(() => {
-    if (questions && examData) {
-      // TODO: handle this better
-      if ("message" in questions) return;
-      if (!("exam" in examData)) return;
-
+    if (questions && !("message" in questions)) {
       setChoices(new Array(questions.length).fill(0));
     }
-  }, [questions, examData]);
+  }, [questions]);
 
   if (isLoadingQuestions || isloadingData) return <FetchingQuestions />;
-
   if (
-    (!isLoadingQuestions && isErrorQuestions) ||
-    (!isloadingData && isErrorExam) ||
-    (questions && "message" in questions) ||
-    (examData && !("exam" in examData)) ||
-    !questions
+    isErrorQuestions ||
+    isErrorExam ||
+    !questions ||
+    "message" in questions ||
+    !examData ||
+    !("exam" in examData)
   )
     return <QuestionFetchingError />;
 
@@ -131,8 +113,8 @@ function ExamDetails() {
         <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
           <CardHeader>
             <CardHeaderContent>
-              <CardTitle>{examData && examData.exam.title}</CardTitle>
-              <CardDescription>{examData && examData.exam.description}</CardDescription>
+              <CardTitle>{examData.exam.title}</CardTitle>
+              <CardDescription>{examData.exam.description}</CardDescription>
             </CardHeaderContent>
             <div className="flex gap-2">
               {examData && (
@@ -140,14 +122,15 @@ function ExamDetails() {
                   startDate={examData.exam.startDate}
                   duration={examData.exam.duration}
                   mutate={mutate}
+                  onTimeout={() => router.push('/')}
                 />
               )}
               <Button
                 variant="destructive"
                 disabled={isPending}
                 onClick={() => {
-                  if (choices.length === 0 || choices.every((el) => el === 0)) {
-                    toast.error("Please answer at least one question before submitting.");
+                  if (choices.every((choice) => choice === 0)) {
+                    toast.error("Please answer at least one question.");
                     return;
                   }
                   mutate();
@@ -156,7 +139,7 @@ function ExamDetails() {
                 {isPending ? (
                   <>
                     <Spinner className="size-6" />
-                    Redirecting
+                    Submitting...
                   </>
                 ) : (
                   "Finish Quiz"
@@ -165,7 +148,7 @@ function ExamDetails() {
             </div>
           </CardHeader>
 
-          <CardContent className="flex-1 gap-4 flex flex-col">
+          <CardContent className="flex-1 gap-4 flex flex-col bg-base-white">
             <ExamNavigation
               setCurrentQuestionIndex={setCurrentQuestionIndex}
               isPending={isPending}
@@ -175,11 +158,11 @@ function ExamDetails() {
             />
 
             <div className="flex-1 flex gap-6">
-              <div className="border border-greyscale-light-200 bg-base-white rounded-2xl p-8 mb-10 flex-1">
+              <div className="border border-greyscale-light-200 bg-base-white rounded-2xl p-4 mb-10 flex-1">
                 <MDXEditor
                   ref={mdRef}
                   readOnly
-                  markdown={currentQuestion ? currentQuestion.text : ""}
+                  markdown={currentQuestion?.text || ""}
                   plugins={[
                     headingsPlugin(),
                     listsPlugin(),
@@ -187,6 +170,7 @@ function ExamDetails() {
                     thematicBreakPlugin(),
                     markdownShortcutPlugin(),
                     imagePlugin(),
+                    tablePlugin(),
                   ]}
                 />
               </div>
@@ -194,19 +178,18 @@ function ExamDetails() {
                 <RadioGroup.Root
                   className="RadioGroupRoot"
                   defaultValue="default"
-                  aria-label="View density"
+                  aria-label="Answer options"
                 >
-                  {currentQuestion &&
-                    currentQuestion.options.map((el, i) => (
-                      <Question
-                        key={i}
-                        index={i}
-                        option={el}
-                        choices={choices}
-                        currentQuestion={currentQuestion}
-                        setChoices={setChoices}
-                      />
-                    ))}
+                  {currentQuestion?.options?.map((option, index) => (
+                    <Question
+                      key={index}
+                      index={index}
+                      option={option}
+                      choices={choices}
+                      currentQuestion={currentQuestion}
+                      setChoices={setChoices}
+                    />
+                  ))}
                 </RadioGroup.Root>
               </div>
             </div>

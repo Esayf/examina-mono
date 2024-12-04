@@ -1,13 +1,31 @@
+import { authenticate } from "@/hooks/auth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setSession } from "@/features/client/session";
+
 import styles from "../../styles/Landing.module.css";
 import BG from "@/images/backgrounds/hero-section-bg.svg";
 import Image from "next/image";
-
+import { toast } from "react-hot-toast";
 interface HeroSectionProps {
   hasTopButton?: boolean;
   hasBackgroundPattern?: boolean;
 }
 
 export function HeroSection({ hasTopButton = true, hasBackgroundPattern = true }: HeroSectionProps) {
+  const session = useAppSelector((state) => state.session);
+  const dispatch = useAppDispatch();
+
+  const handleAuthentication = async () => {
+    const res = await authenticate(session);
+    if (!res) {
+      toast.error("Failed to authenticate wallet!");
+      return;
+    }
+    toast.success("Welcome back!");
+    dispatch(setSession(res.session));
+    window.location.href = "/app";
+  };
+
   return (
     <section className={styles.hero_section}>
       {hasBackgroundPattern && (
@@ -29,7 +47,10 @@ export function HeroSection({ hasTopButton = true, hasBackgroundPattern = true }
             learning. Fully secure, fully anonymous.
           </h3>
           {hasTopButton && (
-            <button className="group relative inline-block h-[60px] w-[200px] overflow-hidden rounded-full text-lg text-black">
+            <button
+              className="group relative inline-block h-[60px] w-[200px] overflow-hidden rounded-full text-lg text-black"
+              onClick={() => handleAuthentication()}
+            >
               <div className="h-[inherit] w-[inherit] overflow-hidden rounded-full bg-brand-primary-400 [transition:_transform_1.5s_cubic-bezier(.19,1,.22,1)] group-hover:scale-[.94]">
                 <span className="absolute bottom-0 left-1/2 z-20 block h-[200%] w-[120%] -translate-x-0 translate-y-[100%] bg-brand-tertiary-200 [border-radius:999px_999px_0_0] [translate:-50%] group-hover:translate-y-[10px] group-hover:[border-radius:60%_60%_0_0] group-hover:[transition:_transform_1s_cubic-bezier(.19,1,.22,1)_200ms,_border-radius_.2s_cubic-bezier(.19,1,.22,1)_270ms]" />
                 <span className="absolute bottom-0 left-1/2 z-20 block h-[200%] w-[120%] -translate-x-0 translate-y-[100%] bg-brand-secondary-300 [border-radius:999px_999px_0_0] [translate:-50%] group-hover:translate-y-[10px] group-hover:[border-radius:60%_60%_0_0] group-hover:[transition:_transform_1s_cubic-bezier(.19,1,.22,1)_300ms,_border-radius_.2s_cubic-bezier(.19,1,.22,1)_470ms]" />

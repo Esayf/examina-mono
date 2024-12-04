@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { Exam, getExamList } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
+import { useState } from "react";
 
 // Import Custom Components
 import DashboardHeader from "@/components/ui/dashboard-header";
@@ -30,16 +31,35 @@ interface RowProps {
 function Row({ exam }: RowProps) {
   const [copiedText, copy] = useCopyToClipboard();
 
+  const now = new Date();
+  const startDate = new Date(exam.startDate);
+  const endDate = new Date(
+    new Date(exam.startDate).getTime() + Number(exam.duration) * 60 * 1000
+  );
+
+  let status = "Upcoming";
+  if (startDate > now) {
+    status = "Upcoming";
+  } else if (startDate <= now && (!endDate || endDate > now) && !exam.isCompleted) {
+    status = "Active";
+  } else if (endDate && endDate <= now || exam.isCompleted) {
+    status = "Ended";
+  }
+
   return (
     <div className="text-brand-primary-950">
-      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-100 hover:text-brand-primary-600 hover:font-bold">
+      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-50 hover:text-brand-primary-600 hover:font-bold">
         <div className="flex-1 p-6">
           <p className="text-inherit text-base font-light leading-6" title={exam?.title}>
             {exam?.title.length > 18 ? `${exam?.title.substring(0, 18)}...` : exam?.title}
           </p>
         </div>
         <div className="flex-1 p-6">
-          <Badge variant="active">Active</Badge>
+          <Badge
+            variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
+          >
+            {status}
+          </Badge>
         </div>
         <div className="flex-1 p-6">
           <p className="text-inherit text-base font-normal leading-6">
@@ -48,8 +68,7 @@ function Row({ exam }: RowProps) {
         </div>
         <div className="flex-1 p-6">
           <p className="text-inherit text-base font-normal leading-6">
-            {exam?.creator.slice(0, 5)}...
-            {exam?.creator.slice(exam?.creator.length - 4, exam?.creator.length + 1)}
+            {endDate ? formatDate(endDate) : "N/A"}
           </p>
         </div>
         <div className="flex-1 p-6">
@@ -64,7 +83,7 @@ function Row({ exam }: RowProps) {
             }}
           >
             <DocumentDuplicateIcon className="size-3" />
-            {copiedText ? "Copied" : "Copy Link"}
+            {copiedText ? "Copied to clipboard!" : "Copy quiz link"}
           </Button>
         </div>
       </div>
@@ -132,22 +151,22 @@ function Application() {
           <CardContent className="px-0 pt-0">
             <div className="overflow-x-auto">
               <div className="flex">
-                <div className="flex-1 p-6">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">NAME</p>
+                <div className="flex-1 p-6 bg-brand-secondary-100">
+                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Quiz Title</p>
                 </div>
-                <div className="flex-1 p-6">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">STATUS</p>
+                <div className="flex-1 p-6 bg-brand-secondary-100">
+                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Status</p>
                 </div>
-                <div className="flex-1 p-6">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">CREATED ON</p>
+                <div className="flex-1 p-6 bg-brand-secondary-100">
+                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Start Date</p>
                 </div>
-                <div className="flex-1 p-6">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">CREATED BY</p>
+                <div className="flex-1 p-6 bg-brand-secondary-100">
+                  <p className="text-brand-primary-950 text-sm font-medium leading-6">End Date</p>
                 </div>
-                <div className="flex-1 p-6">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">DURATION</p>
+                <div className="flex-1 p-6 bg-brand-secondary-100">
+                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Total Time</p>
                 </div>
-                <div className="flex-1 p-6" />
+                <div className="flex-1 p-6 bg-brand-secondary-100" />
               </div>
               {data?.map((exam) => (
                 <Row key={exam?._id} exam={exam} />

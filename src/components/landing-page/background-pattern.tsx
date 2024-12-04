@@ -1,6 +1,6 @@
 import React from "react";
-import mask from "./mask.svg";
-import styles from "./Landing.module.css";
+import mask from "@/images/backgrounds/backgroundpattern.svg";
+import styles from "@/styles/Landing.module.css";
 
 export const BackgroundPattern = (): JSX.Element => {
     return (

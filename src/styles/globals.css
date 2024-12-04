@@ -532,13 +532,21 @@
   .RadioGruopContainer {
     background-color: white;
     padding: 15px;
-    border-radius: 12px;
+    border-radius: 24px;
     border: 1px solid var(--color-greyscale-light-200);
+  }
+
+  .RadioGroupContainer:hover {
+    border: 1px solid var(--color-brand-primary-800) !important;
+    background-color: var(--color-brand-primary-50) !important;
   }
 
   .RadioGroupContainer__active {
     border: 1px solid var(--color-brand-primary-400);
     background-color: var(--color-brand-primary-50);
+    .RadioText {
+      color: var(--color-brand-primary-600) !important;
+    }
   }
 
   .RadioGroupItem {
@@ -548,6 +556,11 @@
     border-radius: 100%;
     border: 1px solid var(--color-greyscale-light-300);
     margin-right: 10px;
+  }
+
+  .RadioGroupItem:hover {
+    background-color: var(--color-brand-primary-50) !important;
+    border: 1px solid var(--color-brand-primary-400) !important;
   }
 
   .RadioGroupIndicator {
@@ -571,6 +584,10 @@
     font-size: 15px;
     line-height: 24px;
     color: var(--color-greyscale-light-900);
+  }
+
+  .RadioText:hover {
+    color: var(--color-brand-primary-600);
   }
 
   /* Select styles */
