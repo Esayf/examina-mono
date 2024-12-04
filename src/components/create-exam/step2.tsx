@@ -2,7 +2,7 @@ import React from "react";
 
 import { DurationPicker } from "./duration-picker";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
   Card,
   CardContent,
@@ -37,10 +37,10 @@ export const Step2 = ({ onBack }: Step2Props) => {
   const rewardDistribution = form.watch("rewardDistribution");
 
   return (
-    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
+    <Card className="bg-base-white mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
       <CardHeader>
         <Button size="icon" pill variant="outline" onClick={onBack}>
-          <ArrowLeftCircleIcon className="size-7 shrink-0" />
+          <ArrowLeftIcon className="size-5 shrink-0" />
         </Button>
         <CardHeaderContent>
           <CardTitle>Quiz details</CardTitle>
@@ -100,7 +100,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             <FormItem>
               <FormLabel>Quiz information for participants</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter quiz description" {...field} />
+                <Textarea className="rounded-2xl pl-4 pr-4 pt-3 min-h-[160px]" placeholder="Enter quiz description" {...field} />
               </FormControl>
               <FormDescription>
                 A good description will help participants get accurate information about the quiz.

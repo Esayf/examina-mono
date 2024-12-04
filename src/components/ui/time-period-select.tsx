@@ -39,7 +39,7 @@ export const TimePeriodSelect = React.forwardRef<HTMLButtonElement, PeriodSelect
       <ButtonGroup>
         <Button
           ref={ref}
-          size="sm"
+          size="date"
           onClick={() => handleValueChange("AM")}
           className={cn(period === "PM" && "bg-transparent [&:not(:hover)]:text-accent-foreground")}
           onKeyDown={(e) => {
@@ -51,7 +51,7 @@ export const TimePeriodSelect = React.forwardRef<HTMLButtonElement, PeriodSelect
         </Button>
         <Button
           ref={pmRef}
-          size="sm"
+          size="date"
           onClick={() => handleValueChange("PM")}
           className={cn(period === "AM" && "bg-transparent [&:not(:hover)]:text-accent-foreground")}
           onKeyDown={(e) => {

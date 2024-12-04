@@ -28,13 +28,10 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
   const periodRef = React.useRef<HTMLButtonElement>(null);
 
   return (
-    <div className="flex items-end gap-2">
-      <div className="flex items-center h-7">
-        <ClockIcon className="size-4" />
-      </div>
+    <div className="flex items-center gap-4 justify-between">
       <div className="flex">
-        <div className="grid gap-1 text-center">
-          <Label htmlFor="hours" className="text-xs">
+        <div className="grid gap-1 text-center cursor-pointer">
+          <Label htmlFor="hours" className="text-book text-xs">
             Hours
           </Label>
           <TimePickerInput
@@ -47,9 +44,9 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
             onRightFocus={() => minuteRef.current?.focus()}
           />
         </div>
-        <div className="grid gap-1 text-center">
-          <Label htmlFor="minutes" className="text-xs">
-            Minutes
+        <div className="grid gap-1 text-center cursor-pointer">
+          <Label htmlFor="minutes" className="text-book text-xs">
+            Mins
           </Label>
           <TimePickerInput
             className="rounded-l-none"
@@ -63,9 +60,9 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
           />
         </div>
       </div>
-      <div className="grid gap-1 text-center">
-        <Label htmlFor="period" className="text-xs">
-          Period
+      <div className="grid gap-1 text-center cursor-pointer rounded-none">
+        <Label htmlFor="period" className="text-xs text-book w-full h-full">
+          Select period
         </Label>
         <TimePeriodSelect
           period={period}

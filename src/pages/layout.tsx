@@ -17,7 +17,7 @@ function Layout({ children }: Props) {
 
   return (
     <div>
-      <main>{children}</main>
+      <main className="bg-brand-secondary-50">{children}</main>
       <Toaster position="top-left" />
     </div>
   );

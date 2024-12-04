@@ -15,7 +15,6 @@ import {
 import {
   ArrowRightIcon,
   PlusIcon,
-  QuestionMarkCircleIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { QuestionListItem } from "./question-list-item";
@@ -63,7 +62,9 @@ const Answers = ({ index }: AnswersProps) => {
         name={`questions.${index}.correctAnswer`}
         render={({ field: radioField }) => (
           <FormItem>
-            <FormLabel>Please write the answer options and select correct answers</FormLabel>
+            <FormLabel>
+              Enter the answer options and select the correct one
+            </FormLabel>
             <RadioGroup onValueChange={radioField.onChange} value={radioField.value}>
               {fields.map((field, i) => (
                 <FormField
@@ -78,7 +79,8 @@ const Answers = ({ index }: AnswersProps) => {
                         {...field}
                         className={cn(
                           radioField.value === i.toString() && "border-green-600 bg-green-50",
-                          questionType === "tf" && "cursor-pointer"
+                          questionType === "tf" && "cursor-pointer",
+                          "gap-2"
                         )}
                         readOnly={questionType === "tf"}
                         onClick={() => {
@@ -147,7 +149,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
   };
 
   return (
-    <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
+    <Card className="mt-7 flex-1 flex flex-col overflow-hidden">
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>Create questions</CardTitle>
@@ -162,18 +164,19 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
       <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative">
         <div
-          className="mx-auto w-full flex flex-col flex-1 md:max-w-2xl gap-4"
+          className="mx-auto w-full flex flex-col flex-2 md:max-w-2xl gap-4"
           key={activeQuestion.id}
         >
+
+          <div className="flex flex-col gap-4 flex-0">
           <FormField
             key={activeQuestion.id}
             control={control}
             name={`questions.${activeQuestionIndex}.questionType`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex gap-2 items-center">
-                  <QuestionMarkCircleIcon className="size-4" />
-                  Question Type
+                <FormLabel className="flex gap-2 items-center rounded-full">
+                  Select the question type
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
@@ -181,25 +184,24 @@ export const Step1 = ({ onNext }: Step1Props) => {
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="mc">Multiple Choice</SelectItem>
-                    <SelectItem value="tf">True/False</SelectItem>
+                  <SelectContent className="z-50">
+                    <SelectItem className="py-4 px-4" value="mc">Multiple Choice</SelectItem>
+                    <SelectItem className="py-4 px-4" value="tf">True/False</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
-            )}
-          />
-
-          <div className="flex flex-col gap-4 flex-1">
+              )}
+            />  
             <FormField
               control={control}
               name={`questions.${activeQuestionIndex}.question`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Enter the question</FormLabel>
+                  <FormLabel>Enter your question below. You can use the markdown editor to customize it</FormLabel>
                   <FormControl>
                     <MarkdownEditor
+                      className="border border-greyscale-light-200 rounded-2xl min-h-[240px] bg-base-white"
                       markdown={field.value}
                       onChange={field.onChange}
                       contentEditableClassName="overflow-y-auto "
@@ -214,7 +216,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
         </div>
 
         <Card className="rounded-none md:rounded-3xl flex flex-col overflow-y-auto sticky top-0">
-          <CardHeader className="font-semibold text-lg">Questions List</CardHeader>
+          <CardHeader className="font-medium text-base-brand-primary-950">Questions List</CardHeader>
           <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto">
             <div className="flex-1 flex flex-col">
               {fields.map((_, index) => (

@@ -8,6 +8,7 @@ import {
   thematicBreakPlugin,
   markdownShortcutPlugin,
   toolbarPlugin,
+  tablePlugin,
   UndoRedo,
   BoldItalicUnderlineToggles,
   InsertImage,

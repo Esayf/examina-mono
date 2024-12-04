@@ -56,7 +56,7 @@ export const ControlledDateTimePicker = <
                 <Button
                   variant="outline"
                   className={cn(
-                    "justify-start text-left font-light text-base px-4",
+                    "rounded-xl border-input border-solid justify-start text-left font-light text-base px-4",
                     !field.value && "text-muted-foreground"
                   )}
                 >
@@ -69,7 +69,7 @@ export const ControlledDateTimePicker = <
                 </Button>
               </PopoverTrigger>
             </FormControl>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="bg-base-white w-auto p-0">
               <Calendar
                 mode="single"
                 selected={field.value}

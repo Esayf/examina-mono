@@ -4,16 +4,56 @@ import Layout from "./layout";
 import { Provider } from "react-redux";
 import { store } from "@/app/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Urbanist } from "next/font/google";
-
+import localFont from "next/font/local";
 const queryClient = new QueryClient();
 
-const urbanist = Urbanist({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  display: "swap",
+const kefir = localFont({
+  src: [
+    {
+      path: "../fonts/Kefir-Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
 });
+
+const filsonPro = localFont({
+  src: [
+    {
+      path: '../fonts/FilsonProBook.otf',
+      weight: '350',
+      style: 'normal',
+    },
+
+    {
+      path: '../fonts/FilsonProRegular.otf',
+      weight: '400',
+      style: 'normal',
+    },
+
+    {
+      path: '../fonts/FilsonProMedium.otf',
+      weight: '500',
+      style: 'normal',
+    },
+
+    {
+      path: '../fonts/FilsonProBookItalic.otf',
+      weight: '350',
+      style: 'italic',
+    },
+    {
+      path: '../fonts/FilsonProBold.otf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/FilsonProBoldItalic.otf',
+      weight: '700',
+      style: 'italic',
+    },
+  ],
+})
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -21,13 +61,13 @@ export default function App({ Component, pageProps }: AppProps) {
       <Provider store={store}>
         <style jsx global>{`
           html {
-            font-family: ${urbanist.style.fontFamily};
+            font-family: ${filsonPro.style.fontFamily}, ${kefir.style.fontFamily};
           }
         `}</style>
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </Provider>
+      </Provider> 
     </QueryClientProvider>
   );
 }
