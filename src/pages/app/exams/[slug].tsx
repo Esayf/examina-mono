@@ -175,7 +175,7 @@ function ExamDetails() {
             />
 
             <div className="flex-1 flex gap-6">
-              <div className="border border-gray-200 rounded-lg p-8 mb-10 flex-1">
+              <div className="border border-greyscale-light-200 bg-base-white rounded-2xl p-8 mb-10 flex-1">
                 <MDXEditor
                   ref={mdRef}
                   readOnly

@@ -57,12 +57,14 @@ function ExamDetail() {
 
   useEffect(() => {
     if (data === undefined || "message" in data) return;
-    if (data?.exam?.duration) {
-      setTimer(data.exam.duration * 60);
+    if (data?.exam?.startDate && timer === 0) {
+      setTimer(new Date(data.exam.startDate).getTime() - new Date().getTime());
     }
   }, [data]);
 
   useEffect(() => {
+    if (timer === 0) return;
+
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 0) {
@@ -73,7 +75,7 @@ function ExamDetail() {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timer]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -167,7 +169,7 @@ function ExamDetail() {
               </div>
               <div className="flex justify-between text-sm">
                 <b>Duration</b>
-                <p>{formatTime(timer)}</p>
+                <p>{data?.exam.duration} minutes</p>
               </div>
             </div>
             <div className="border rounded-2xl border-primary p-4">

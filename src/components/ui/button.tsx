@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:outline-2 hover:outline-brand-primary-950",
-        outline: "bg-transparent border-2 border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border-2 hover:border-brand-primary-700 active:bg-brand-primary-200 active:text-brand-primary-700 active:border-2 active:outline-brand-primary-700 icon-color-brand-tertiary-200 icon-size-md",
+        default: "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:border-2 hover:border-brand-primary-950",
+        outline: "bg-transparent border border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border hover:border-brand-primary-700",
         secondary:"bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
         destructive:"bg-ui-error-500 text-base-white hover:bg-ui-error-600",
         ghost: "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600",
         link: "text-brand-primary-500 underline-offset-4 hover:bg-brand-secondary-200",
       },
       size: {
-        sm: "h-6 px-2 text-sm",
+        sm: "h-6 px-2 text-xs",
         default: "h-auto px-6 py-3",
         lg: "h-11 px-8",
         icon: "h-10 w-10",

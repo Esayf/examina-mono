@@ -15,7 +15,7 @@ function DashboardHeader({ withoutNav = false }) {
 
   return (
     <div className="bg-white border-b border-gray-300">
-      <div className="w-full max-w-[76rem]  mx-auto flex justify-between items-center py-4 px-0">
+      <div className="w-full flex justify-between items-center py-4 px-8">
         <Link href="/">
           <Image src={Choz} alt="" className="mr-16" />
         </Link>
