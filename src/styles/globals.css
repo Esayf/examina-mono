@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     /* Base Colors */
@@ -24,7 +23,7 @@
 
     /* Secondary Colors */
     --color-brand-secondary-50: #fff9f5;
-    --color-brand-secondary-100: #FBE7DA;
+    --color-brand-secondary-100: #fbe7da;
     --color-brand-secondary-200: #f6d5c0;
     --color-brand-secondary-300: #f1bda2;
     --color-brand-secondary-400: #ec9468;
@@ -33,10 +32,10 @@
     --color-brand-secondary-700: #d82a00;
     --color-brand-secondary-800: #c01300;
     --color-brand-secondary-900: #a20e00;
-    --color-brand-secondary-950: #860900; 
+    --color-brand-secondary-950: #860900;
 
     /* Tertiary Colors */
-    --color-brand-tertiary-50: #eefffe;  
+    --color-brand-tertiary-50: #eefffe;
     --color-brand-tertiary-100: #d6fffc;
     --color-brand-tertiary-200: #c5fcfc;
     --color-brand-tertiary-300: #8cf4f8;
@@ -45,7 +44,7 @@
     --color-brand-tertiary-600: #1a909d;
     --color-brand-tertiary-700: #167883;
     --color-brand-tertiary-800: #116069;
-    --color-brand-tertiary-900: #0c4045;   
+    --color-brand-tertiary-900: #0c4045;
     --color-brand-tertiary-950: #062428;
 
     /*Greyscale Light*/
@@ -72,7 +71,7 @@
     --color-greyscale-dark-700: #3e3741;
     --color-greyscale-dark-800: #271827;
     --color-greyscale-dark-900: #271827;
-    --color-greyscale-dark-950: #120a12;    
+    --color-greyscale-dark-950: #120a12;
 
     /*UI Colors*/
     /*Success Colors*/
@@ -127,20 +126,18 @@
     --color-ui-info-900: #15383c;
     --color-ui-info-950: #112527;
 
-     /*Background Colors*/
-     --color-ui-bg-primary: #FBE7DA;
-     --color-ui-background-lightest: #e1fbfe;
-     --color-ui-background-light: #c4f7fd;
-     --color-ui-background-lighter: #93f0fb;
-     --color-ui-background-normal: #64e8f7;
-     --color-ui-background-normal-dark: #2cdef2;
-     --color-ui-info-600: #16a6b6;
-     --color-ui-info-700: #1d7b86;
-     --color-ui-info-800: #195158;
-     --color-ui-info-900: #15383c;
-     --color-ui-info-950: #112527;
-
-
+    /*Background Colors*/
+    --color-ui-bg-primary: #fbe7da;
+    --color-ui-background-lightest: #e1fbfe;
+    --color-ui-background-light: #c4f7fd;
+    --color-ui-background-lighter: #93f0fb;
+    --color-ui-background-normal: #64e8f7;
+    --color-ui-background-normal-dark: #2cdef2;
+    --color-ui-info-600: #16a6b6;
+    --color-ui-info-700: #1d7b86;
+    --color-ui-info-800: #195158;
+    --color-ui-info-900: #15383c;
+    --color-ui-info-950: #112527;
 
     /* Add all other color sets following the same pattern */
 
@@ -199,9 +196,9 @@
     --width-2xl: 1536px;
 
     /* Typography Variables */
-    --font-family-display: 'Kefir', 'Filson Pro', system-ui;
-    --font-family-heading: 'Filson Pro', system-ui;
-    --font-family-body: 'Filson Pro', system-ui;
+    --font-family-display: "Kefir", "Filson Pro", system-ui;
+    --font-family-heading: "Filson Pro", system-ui;
+    --font-family-body: "Filson Pro", system-ui;
 
     /* Font Sizes */
     --font-size-xs: 0.75rem; /* 12px */
@@ -234,7 +231,7 @@
     --line-height-14: 3.75rem; /* 60px */
     --line-height-15: 4rem; /* 64px */
     --line-height-16: 4.5rem; /* 72px */
-    --line-height-17: 5rem; /* 80px */ 
+    --line-height-17: 5rem; /* 80px */
     --line-height-18: 5.5rem; /* 88px */
     --line-height-19: 6rem; /* 96px */
     --line-height-20: 6.5rem; /* 104px */
@@ -359,7 +356,6 @@
     --size-80: 20rem;
     --size-96: 24rem;
 
-        
     /* Width Variables */
     --width-110: 27.5rem;
     --width-120: 30rem;
@@ -511,7 +507,6 @@
     --min-height-88: 22rem; /* 352px */
     --min-height-89: 22.25rem; /* 356px */
     --min-height-90: 22.5rem; /* 360px */
-    
 
     /* Max Height Variables */
     --max-height-96: 24rem; /* 384px */
@@ -522,6 +517,216 @@
     --container-padding-lg: 4rem; /* 64px */
     --container-padding-xl: 5rem; /* 80px */
     --container-padding-2xl: 6rem; /* 96px */
-  
-  } 
- } 
+  }
+}
+
+/* Add these Radix UI base styles near the top of the file */
+@layer base {
+  /* Radio Group styles */
+  .RadioGroupRoot {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .RadioGruopContainer {
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--color-greyscale-light-200);
+  }
+
+  .RadioGroupContainer__active {
+    border: 1px solid var(--color-brand-primary-400);
+    background-color: var(--color-brand-primary-50);
+  }
+
+  .RadioGroupItem {
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    border: 1px solid var(--color-greyscale-light-300);
+    margin-right: 10px;
+  }
+
+  .RadioGroupIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .RadioGroupIndicator::after {
+    content: "";
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .RadioText {
+    font-size: 15px;
+    line-height: 24px;
+    color: var(--color-greyscale-light-900);
+  }
+
+  /* Select styles */
+  .SelectTrigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 12px;
+    padding: 0 15px;
+    font-size: 14px;
+    line-height: 1;
+    height: 48px;
+    gap: 5px;
+    background-color: white;
+    color: var(--color-greyscale-light-900);
+    border: 1px solid var(--color-greyscale-light-200);
+  }
+
+  .SelectTrigger:hover {
+    background-color: var(--color-brand-primary-50);
+  }
+
+  .SelectTrigger:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-brand-primary-200);
+  }
+
+  .SelectContent {
+    overflow: hidden;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid var(--color-greyscale-light-200);
+    box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35);
+  }
+
+  .SelectItem {
+    font-size: 14px;
+    line-height: 1;
+    color: var(--color-greyscale-light-900);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 35px 0 25px;
+    position: relative;
+    user-select: none;
+  }
+
+  .SelectItem[data-highlighted] {
+    outline: none;
+    background-color: var(--color-brand-primary-50);
+    color: var(--color-brand-primary-900);
+  }
+}
+
+@layer components {
+  /* Radio Group */
+  .RadioGroupRoot {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .RadioGroupItem {
+    background-color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    border: 1px solid var(--color-brand-primary-300);
+  }
+
+  .RadioGroupItem:hover {
+    background-color: var(--color-brand-primary-50);
+  }
+
+  .RadioGroupItem:focus {
+    box-shadow: 0 0 0 2px var(--color-brand-primary-200);
+  }
+
+  .RadioGroupIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .RadioGroupIndicator::after {
+    content: "";
+    display: block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background-color: var(--color-brand-primary-500);
+  }
+
+  /* Select */
+  .SelectTrigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 4px;
+    padding: 0 15px;
+    font-size: 13px;
+    line-height: 1;
+    height: 35px;
+    gap: 5px;
+    background-color: white;
+    border: 1px solid var(--color-brand-primary-300);
+  }
+
+  .SelectTrigger:hover {
+    background-color: var(--color-brand-primary-50);
+  }
+
+  .SelectTrigger:focus {
+    box-shadow: 0 0 0 2px var(--color-brand-primary-200);
+  }
+
+  .SelectContent {
+    overflow: hidden;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+      0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  }
+
+  .SelectViewport {
+    padding: 5px;
+  }
+
+  .SelectItem {
+    font-size: 13px;
+    line-height: 1;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 35px 0 25px;
+    position: relative;
+    user-select: none;
+  }
+
+  .SelectItem[data-highlighted] {
+    outline: none;
+    background-color: var(--color-brand-primary-50);
+    color: var(--color-brand-primary-900);
+  }
+
+  .SelectItemIndicator {
+    position: absolute;
+    left: 0;
+    width: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

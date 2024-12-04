@@ -9,11 +9,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:border-2 hover:border-brand-primary-950",
-        outline: "bg-transparent border border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border hover:border-brand-primary-700",
-        secondary:"bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
-        destructive:"bg-ui-error-500 text-base-white hover:bg-ui-error-600",
-        ghost: "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600",
+        default:
+          "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:border-2 hover:border-brand-primary-950",
+        outline:
+          "bg-transparent border border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border hover:border-brand-primary-700",
+        secondary: "bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
+        destructive: "bg-ui-error-500 text-base-white hover:bg-ui-error-600",
+        ghost:
+          "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600",
         link: "text-brand-primary-500 underline-offset-4 hover:bg-brand-secondary-200",
       },
       size: {

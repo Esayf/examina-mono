@@ -7,6 +7,7 @@ import { authenticate } from "../../../../hooks/auth";
 
 // Icons
 import Choz from "@/images/landing-header/choz.svg";
+import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
 import { setSession } from "@/features/client/session";
@@ -214,7 +215,8 @@ function ExamDetail() {
                   dispatch(setSession(res));
                 }}
               >
-                Connect Wallet
+                Connect wallet
+                <ArrowUpRightIcon className="size-4" />
               </Button>
             )}
 

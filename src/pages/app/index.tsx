@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Exam, getExamList } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
-
 // Import Custom Components
 import DashboardHeader from "@/components/ui/dashboard-header";
 
@@ -85,7 +84,7 @@ function Application() {
     return (
       <>
         <DashboardHeader />
-        <div className="max-w-96rem h-full mx-auto my-auto py-8">
+        <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">All Quizzes</h3>
           </div>
@@ -124,7 +123,7 @@ function Application() {
             </CardHeaderContent>
             <Button asChild pill>
               <Link href="/app/create-exam/">
-                Create New
+                Create new
                 <ArrowUpRightIcon className="size-6" />
               </Link>
             </Button>

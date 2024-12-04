@@ -36,9 +36,7 @@ export const Question = ({
           className="RadioGroupItem"
           value={option.text}
           checked={currentQuestion.options[index].number === choices[currentQuestion.number - 1]}
-        >
-          <RadioGroup.Indicator className="RadioGroupIndicator" />
-        </RadioGroup.Item>
+        ></RadioGroup.Item>
         <p
           className="RadioText"
           style={{

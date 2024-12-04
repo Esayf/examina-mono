@@ -54,7 +54,7 @@ function ExamResult() {
   return (
     <div className="flex w-full justify-center flex-col items-center h-dvh bg-[url('/bg.png')] bg-cover">
       <div className="flex flex-col items-center justify-center flex-1">
-        <Card className="max-w-[36rem] w-full px-10 py-16 gap-4 flex flex-col">
+        <Card className="max-w-[36rem] w-full px-10 py-16 gap-4 flex flex-col border-2 border-greyscale-light-100 rounded-2xl bg-base-white">
           <CardContent className="gap-9 flex flex-col">
             <Image className="mx-auto" src={ResultImage} alt="" />
             <div className="flex flex-col gap-4">
@@ -85,8 +85,11 @@ function ExamResult() {
                   <PaperAirplaneIcon className="size-6" />
                 </Button>
               </div>
-              <Link href="/app" className="text-primary block mx-auto font-bold hover:underline">
-                Skip and Continue
+              <Link
+                href="/app"
+                className="text-brand-primary-700 mx-auto font-bold hover:underline"
+              >
+                Skip this
               </Link>
             </div>
             <div className="flex gap-4">
