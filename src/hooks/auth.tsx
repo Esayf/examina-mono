@@ -17,21 +17,30 @@ export async function switchChain(chainId: `mina:${string}`) {
     return;
   }
 
-  const chainRes = await mina.switchChain({
-    networkID: chainId,
-  });
+  if (mina.isAuro) {
+    const chainRes = await mina.switchChain({
+      networkID: chainId,
+    });
 
-  if ("code" in chainRes) {
-    console.error("Failed to switch chain", chainRes.code);
-    return null;
+    if ("code" in chainRes) {
+      console.error("Failed to switch chain", chainRes.code);
+      return null;
+    }
+
+    if (chainRes.networkID !== chainId) {
+      console.error("Failed to switch chain");
+      return null;
+    }
+
+    return chainId;
+  } else {
+    const currentChain = await mina.request({
+      method: "wallet_getChainId",
+    });
+    if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
+      throw new Error(`This network is not supported. Switch to devnet to continue.`);
+    }
   }
-
-  if (chainRes.networkID !== chainId) {
-    console.error("Failed to switch chain");
-    return null;
-  }
-
-  return chainId;
 }
 
 export async function connectWallet() {
@@ -42,28 +51,48 @@ export async function connectWallet() {
       throw new Error("Mina extension not found. Please install the Mina extension and try again.");
     }
 
-    const accounts: string[] = await mina.getAccounts();
+    if (mina.isAuro) {
+      const accounts: string[] = await mina.getAccounts();
 
-    if (accounts.length > 0) {
-      await switchChain("mina:testnet");
-      return accounts[0];
+      if (accounts.length > 0) {
+        await switchChain("mina:testnet");
+        return accounts[0];
+      }
+
+      const minaAccounts = await mina.requestAccounts();
+
+      if ("code" in minaAccounts) {
+        throw new Error("Failed to connect wallet. Please try again.");
+      }
+
+      const publicKeyBase58: string = minaAccounts[0];
+      const chain = await switchChain("mina:testnet");
+      if (!chain) {
+        throw new Error("Failed to switch chain. Please try again.");
+      }
+
+      return publicKeyBase58;
     }
+    if (mina.isPallad) {
+      const currentChain = await mina.request({
+        method: "wallet_getChainId",
+      });
 
-    const minaAccounts = await mina.requestAccounts();
+      if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
+        await switchChain("mina:testnet");
+      }
 
-    if ("code" in minaAccounts) {
-      throw new Error("Failed to connect wallet. Please try again.");
+      const accounts: string[] = (
+        await mina.request({
+          method: "mina_accounts",
+        })
+      ).result;
+      console.log(accounts);
+
+      if (accounts.length > 0) {
+        return accounts[0];
+      }
     }
-
-    const publicKeyBase58: string = minaAccounts[0];
-
-    const chain = await switchChain("mina:testnet");
-
-    if (!chain) {
-      throw new Error("Failed to switch chain. Please try again.");
-    }
-
-    return publicKeyBase58;
   } catch (e) {
     console.error("Failed to connect wallet", e);
     return null;

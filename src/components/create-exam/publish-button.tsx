@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createExam } from "@/lib/Client/Exam";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import { SendTransactionArgs } from "../../../types/global";
+import { SendTransactionArgs, SignedAuroData, SignedPalladData } from "../../../types/global";
 import { useStep1Form } from "./step1-schema";
 import { useAppSelector } from "@/app/hooks";
 import { Spinner } from "../ui/spinner";
@@ -131,14 +131,23 @@ export const PublishButton = () => {
 
           const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
 
-          const signedAuroData = await window?.mina?.sendTransaction(mina_signer_payload);
-          if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
-            toast.error("You need to sign the transaction to deploy the quiz");
-            setIsPublishing(false);
-            return;
+          const signedAuroData = window.mina?.isPallad
+            ? ((await window?.mina?.request({
+                method: "mina_signTransaction",
+                params: { transaction: mina_signer_payload.transaction },
+              })) as SignedPalladData)
+            : await window?.mina?.sendTransaction(mina_signer_payload);
+          if (window.mina?.isAuro) {
+            if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
+              toast.error("You need to sign the transaction to deploy the quiz");
+              setIsPublishing(false);
+              return;
+            }
           }
 
-          let signedData = signedAuroData.signedData;
+          let signedData = window.mina?.isAuro
+            ? (signedAuroData as SignedAuroData).signedData
+            : (signedAuroData as SignedPalladData).data;
           txStatus = await deployQuiz({
             contractAddress,
             serializedTransaction,

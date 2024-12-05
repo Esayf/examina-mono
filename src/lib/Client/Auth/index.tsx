@@ -35,10 +35,17 @@ function getMessage(publicKey: string): Promise<string> {
 }
 
 async function signMessage(data: SignMessageArgs) {
-  const signResult: SignedData | ProviderError = await window.mina
-    ?.signMessage(data)
-    .catch((err: any) => err);
-  return signResult;
+  if (window.mina?.isPallad) {
+    return await window.mina?.request({
+      method: "mina_sign",
+      params: { message: data.message },
+    });
+  } else {
+    const signResult: SignedData | ProviderError = await window.mina
+      ?.signMessage(data)
+      .catch((err: any) => err);
+    return signResult;
+  }
 }
 
 function login(data: SignedData | ProviderError): Promise<string> {
