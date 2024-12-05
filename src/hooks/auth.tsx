@@ -50,6 +50,7 @@ export async function connectWallet() {
     if (!mina) {
       throw new Error("Mina extension not found. Please install the Mina extension and try again.");
     }
+    console.log("THIS IS MINA", mina);
 
     if (mina.isAuro) {
       const accounts: string[] = await mina.getAccounts();
