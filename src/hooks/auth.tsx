@@ -75,10 +75,12 @@ export async function connectWallet() {
       return publicKeyBase58;
     }
     if (mina.isPallad) {
-      const currentChain = await mina.request({
+      const currentChainRequest = (await mina.request({
         method: "mina_chainId",
-      });
-
+      })
+      )
+      console.log("CURRENT CHAIN REQUEST", currentChainRequest);
+      const currentChain = currentChainRequest.result;
       if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
         await switchChain("mina:testnet");
       }
