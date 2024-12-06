@@ -34,9 +34,10 @@ export async function switchChain(chainId: `mina:${string}`) {
 
     return chainId;
   } else {
-    const currentChain = await mina.request({
+    const currentChain = (await mina.request({
       method: "mina_chainId",
-    });
+    })
+    ).result;
     if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
       throw new Error(`This network is not supported. Switch to devnet to continue.`);
     }
