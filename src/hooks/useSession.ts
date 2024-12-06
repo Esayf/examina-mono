@@ -8,6 +8,7 @@ import { getSession, logout } from '@/lib/Client/Auth';
 import { resetSession, setSession } from '@/features/client/session';
 import { authenticate } from '../hooks/auth';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { getAccounts } from '@/utils/window.mina';
 
 export const useSession = () => {
   const router = useRouter();
@@ -97,7 +98,7 @@ export const useSession = () => {
     isRendered.current = true;
 
     if (router.pathname !== '/') {
-      window?.mina?.getAccounts().then((accounts: string[]) => {
+      getAccounts().then((accounts: string[]) => {
         if (accounts.length === 0) {
           // the browser wallet does not exist but there was a session in the server
           if (data) {
@@ -138,7 +139,7 @@ export const useSession = () => {
     }
 
     if (!isLoading && router.pathname == '/') {
-      window?.mina?.getAccounts().then((accounts: string[]) => {
+      getAccounts().then((accounts: string[]) => {
         if (data && accounts.length > 0) {
           if ('error' in data) {
             toast.error(data.error);
