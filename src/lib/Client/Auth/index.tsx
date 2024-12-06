@@ -36,10 +36,11 @@ function getMessage(publicKey: string): Promise<string> {
 
 async function signMessage(data: SignMessageArgs) {
   if (window.mina?.isPallad) {
-    return await window.mina?.request({
+    return (await window.mina?.request({
       method: "mina_sign",
       params: { message: data.message },
-    });
+    })
+    ).result;
   } else {
     const signResult: SignedData | ProviderError = await window.mina
       ?.signMessage(data)

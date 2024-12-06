@@ -133,9 +133,9 @@ export const PublishButton = () => {
 
           const signedAuroData = window.mina?.isPallad
             ? ((await window?.mina?.request({
-                method: "mina_signTransaction",
-                params: { transaction: mina_signer_payload.transaction },
-              })) as SignedPalladData)
+              method: "mina_signTransaction",
+              params: { transaction: mina_signer_payload.transaction },
+            })).result as SignedPalladData)
             : await window?.mina?.sendTransaction(mina_signer_payload);
           if (window.mina?.isAuro) {
             if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
