@@ -13,7 +13,7 @@ export const FetchingQuestions = () => {
             <CardTitle>I guess it will take some times &#128534;</CardTitle>
           </CardHeader>
 
-          <CardContent className="text-lg font-light flex flex-col gap-5">
+          <CardContent className="text-lg font-light flex flex-col gap-5 p-5">
             We are fetching the questions for you. Please wait a moment. If this takes too long,
             please try again later. We apologize for any inconvenience this may have caused.
             <div>

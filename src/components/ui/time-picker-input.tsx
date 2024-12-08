@@ -23,6 +23,7 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
   (
     {
       className,
+      placeholder,
       type = "tel",
       value,
       id,
@@ -100,8 +101,9 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
         ref={ref}
         id={id || picker}
         name={name || picker}
+        placeholder={placeholder}
         className={cn(
-          "w-[48px] h-[36px] p-0 text-center font-mono text-sm tabular-nums caret-auto focus:outline-none focus:ring-1 focus:ring-brand-primary-950 focus:border-brand-primary-500 border border-brand-primary-950 rounded-full [&::-webkit-inner-spin-button]:appearance-none cursor-text hover:bg-white",
+          "w-[48px] h-[34px] p-0 text-center font-mono text-sm tabular-nums caret-auto focus:ring-1 focus:ring-brand-primary-950 focus:border-brand-primary-500 border border-brand-primary-950 rounded-full [&::-webkit-inner-spin-button]:appearance-none cursor-text",
           className
         )}
         value={value || calculatedValue}

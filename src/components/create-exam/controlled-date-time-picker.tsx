@@ -48,19 +48,19 @@ export const ControlledDateTimePicker = <
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn("flex flex-col", className)}>
+        <FormItem className={cn(className)}>
           <FormLabel className="text-left">{label}</FormLabel>
           <Popover>
             <FormControl>
               <PopoverTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="date-picker"
+                  size="date-picker"
                   className={cn(
-                    "rounded-xl border-input border-solid justify-start text-left font-light text-base px-4",
-                    !field.value && "text-muted-foreground"
+                    "flex w-full items-center justify-between gap-2 rounded-2xl border border-input bg-background text-md font-light focus:outline-none focus:ring-2 focus:ring-brand-primary-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    !field.value && "text-greyscale-light-400"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
                   {field.value ? (
                     format(field.value, "MM/dd/yyyy hh:mm a")
                   ) : (
@@ -77,7 +77,7 @@ export const ControlledDateTimePicker = <
                 initialFocus
                 {...calendarProps}
               />
-              <div className="p-3 border-t border-border flex justify-center">
+              <div className="pt-3 pb-3 border-t border-border flex justify-between">
                 <TimePicker setDate={field.onChange} date={field.value} />
               </div>
             </PopoverContent>

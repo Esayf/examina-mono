@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { CodeToggle, MDXEditor, MDXEditorMethods } from "@mdxeditor/editor";
+import { AdmonitionDirectiveDescriptor, BlockTypeSelect, CodeToggle, CreateLink, InsertAdmonition, InsertCodeBlock, InsertTable, InsertThematicBreak, ListsToggle, MDXEditor, MDXEditorMethods, tablePlugin } from "@mdxeditor/editor";
 import {
   headingsPlugin,
   listsPlugin,
@@ -8,18 +8,22 @@ import {
   thematicBreakPlugin,
   markdownShortcutPlugin,
   toolbarPlugin,
-  tablePlugin,
   UndoRedo,
   BoldItalicUnderlineToggles,
   InsertImage,
+  directivesPlugin,
+  linkPlugin,
+  codeBlockPlugin,
 } from "@mdxeditor/editor";
 import imageCompression from "browser-image-compression";
 
-import "@mdxeditor/editor/style.css";
+/*import "@mdxeditor/editor/style.css";*/
+import "@/styles/mdxeditor.css";
 
 import toast from "react-hot-toast";
 import { pinata } from "@/utils/config";
 import { KeyResponse } from "pinata-web3";
+import { ListBulletIcon } from "@heroicons/react/24/outline";
 
 interface MarkdownEditorProps {
   onChange?: (markdown: string) => void;
@@ -30,7 +34,7 @@ interface MarkdownEditorProps {
 }
 
 export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
-  ({ onChange, markdown, readOnly, className, contentEditableClassName }, ref) => {
+  ({ onChange, markdown, readOnly, className, contentEditableClassName = "contentEditable" }, ref) => {
     const uploadFile = async (file: File) => {
       if (!file) return Promise.reject("No file selected");
 
@@ -46,17 +50,30 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
     };
 
     const plugins = [
-      headingsPlugin(),
+      headingsPlugin({
+        allowedHeadingLevels: [1, 2, 3, 4, 5, 6],
+      }),
       listsPlugin(),
-      quotePlugin(),
+      quotePlugin({
+        allowedQuoteTypes: ["block", "inline"],
+      }),
       thematicBreakPlugin(),
       markdownShortcutPlugin(),
       imagePlugin({
-        imageUploadHandler: async (image) => {
+        imageUploadHandler: async (image: File) => {
+          return await uploadFile(image);
+        },
+      }),
+      linkPlugin(),
+      codeBlockPlugin(),
+      directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
+      tablePlugin({
+
+        imageUploadHandler: async (image: File) => {
           const options = {
-            maxSizeMB: 1, // Maksimum dosya boyutu (MB)
-            maxWidthOrHeight: 400, // Maksimum genişlik veya yükseklik (piksel)
-            useWebWorker: true, // Web Worker kullanarak performansı artırma
+            maxSizeMB: 1, // Maximum file size (MB)
+            maxWidthOrHeight: 400, // Maximum width or height (pixels)
+            useWebWorker: true, // Use Web Worker to improve performance
           };
           const compressedFile = await toast.promise(imageCompression(image, options), {
             loading: "Compressing image...",
@@ -84,9 +101,14 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
           toolbarContents: () => (
             <>
               <UndoRedo />
+              <BlockTypeSelect/>
               <BoldItalicUnderlineToggles />
               <CodeToggle />
-              <InsertImage />
+              <InsertTable />
+              <InsertThematicBreak />
+              <InsertAdmonition />
+              <ListsToggle />
+              <CreateLink />
             </>
           ),
         })
@@ -100,11 +122,10 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
         // ideally we should not use this editor to show preview
         readOnly={readOnly}
         plugins={plugins}
-        className={className}
+        className="mdxeditor"
         contentEditableClassName={contentEditableClassName}
       />
     );
   }
 );
 
-MarkdownEditor.displayName = "MarkdownEditor";

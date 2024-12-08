@@ -7,7 +7,7 @@ import { authenticate } from "../../../../hooks/auth";
 
 // Icons
 import Choz from "@/images/landing-header/choz.svg";
-import { ArrowUpRightIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import { ArrowUpRightIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
 import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
 import { setSession } from "@/features/client/session";
@@ -92,7 +92,7 @@ function ExamDetail() {
       return `Starts in ${seconds} seconds`;
     } else {
       if(data && "exam" in data && Math.abs(timer) >= (data.exam?.duration ?? 0) * 60 * 1000) {
-        return "Exam has ended";
+        return "Oopps! 🥴 Quiz has ended. You can't join this quiz.";
       }
       return `Exam has started ${Math.abs(minutes) > 0 ? Math.abs(minutes) + " minutes" : Math.abs(seconds) + " seconds"} ago`;
     }
@@ -166,20 +166,19 @@ function ExamDetail() {
               <b>{data?.exam.creator}</b>{" "}
               <span className="text-brand-primary-950 font-light">invited you to join this quiz</span>
             </p> */}
-            <div className="flex items-center gap-3 my-4">
-              <ComputerDesktopIcon className="size-6" />
+            <div className="flex items-center gap-3 my-4 font-bold text-center text-xl border border-greyscale-light-200 rounded-2xl p-4">
+              <RocketLaunchIcon className="size-7 stroke-brand-primary-950 stroke-2" />
               <h3 title={data?.exam.title}>
                 {data?.exam.title && data?.exam.title?.length > 25
                   ? `${data?.exam.title.substring(0, 25)}...`
                   : data?.exam.title}
               </h3>
             </div>
-            <div className="flex items-center gap-2">
-              <ClockIcon className="size-4" />
-              <p>{timer != 0 ? formatTimeLeft(timer) : "Exam has started"}</p>
+            <div className="flex items-center text-center max-w-[360px] justify-center gap-2">
+              <p>{timer != 0 ? formatTimeLeft(timer) : "Quiz has started"}</p>
             </div>
           </div>
-          <div className={cn("flex flex-col gap-7", !data && "filter blur-sm")}>
+          <div className={cn("flex flex-col gap-4", !data && "filter blur-sm")}>
             <div className="border rounded-2xl border-primary p-4">
               <div className="flex justify-between text-sm">
                 <b>Type</b>
@@ -196,14 +195,18 @@ function ExamDetail() {
             </div>
             <div className="border rounded-2xl border-primary p-4">
               <div className="flex justify-between text-sm">
-                <b>Description</b>
+                <b>Summary</b>
               </div>
-              <p className="mt-2">{data?.exam.description}</p>
+              <p className="mt-1 flex-col max-h-[240px] text-base text-greyscale-light-700 font-light tracking-wide leading-5 overflow-y-auto overflow-x-hidden break-all overflow-wrap">{data?.exam.description}</p>
             </div>
           </div>
           <div className="flex flex-col gap-4">
             {session.session?.walletAddress ? (
               <Button
+                variant="default"
+                size="default"
+                icon={true}
+                iconPosition="right"
                 className="self-center"
                 disabled={!canStartExam && isConnected}
                 onClick={() => {
@@ -221,10 +224,12 @@ function ExamDetail() {
                     });
                 }}
               >
-                Start exam
+                Join quiz <ArrowUpRightIcon className="size-4" />
               </Button>
             ) : (
               <Button
+                icon={true}
+                iconPosition="right"
                 className="self-center"
                 onClick={async () => {
                   const res = await authenticate(session);
@@ -262,8 +267,8 @@ function ExamDetail() {
                 "You have to use desktop browser to join exam."
               ) : (
                 <>
-                  You must have an Auro Wallet account before using it. Not there yet?{" "}
-                  <a className="font-bold" href="#">
+                  You must have an wallet account before using it. Not there yet?{" "}
+                  <a className="font-bold" href="https://wallet.aurora.dev/" target="_blank">
                     Create now!
                   </a>
                 </>

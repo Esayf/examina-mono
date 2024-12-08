@@ -31,21 +31,15 @@ export const Question = ({
       onClick={handleSelection}
       style={{ cursor: "pointer" }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          alignContent: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", alignContent: "center", justifyContent: "center" }}>
         <RadioGroup.Item
-          className="RadioGroupItem rounded-full bg-base-white border border-greyscale-light-300 w-6 h-6 mr-2 hover:bg-brand-primary-100 selection:bg-brand-primary-100"
+          className="RadioGroupItem rounded-full bg-base-white border border-greyscale-light-300 min-w-[24px] w-6 h-6 mr-2 hover:bg-brand-primary-100 selection:bg-brand-primary-100"
           value={String(option.number)}
           id={`option-${option.number}`}
           checked={option.number === choices[currentQuestion.number - 1]}
+          onClick={handleSelection}
         >
-          <RadioGroup.Indicator className="RadioGroupIndicator" onClick={handleSelection} />
+          <RadioGroup.Indicator className="RadioGroupIndicator" />
         </RadioGroup.Item>
         <p
           className="RadioText"
@@ -54,7 +48,6 @@ export const Question = ({
             width: "100%",
             height: "100%",
             alignItems: "center",
-            borderRadius: "64px",
             wordBreak: "break-word",
             overflowWrap: "break-word",
           }}

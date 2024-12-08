@@ -30,7 +30,7 @@ function CreateExam() {
       questions: [
         {
           question: "",
-          correctAnswer: "0",
+          correctAnswer: "",
           questionType: "mc",
           answers: [
             {
@@ -58,9 +58,9 @@ function CreateExam() {
 
   return (
     <div className="h-dvh flex flex-col">
-      <DashboardHeader withoutNav />
-      <div className="md:px-6 h-full flex flex-col overflow-hidden">
-        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
+      <DashboardHeader withoutNav={false} />
+      <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
+        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
           <Head>
             <title>Create Exam</title>
           </Head>

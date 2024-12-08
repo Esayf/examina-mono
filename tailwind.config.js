@@ -4,10 +4,8 @@ const animatePlugin = require("tailwindcss-animate");
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    "./src/**/*.css"
   ],
   theme: {
     container: {
@@ -31,10 +29,10 @@ module.exports = {
         },
         // Background colors
         bg: {
-          primary: 'var(--color-brand-primary-500)',
-          secondary: 'var(--color-brand-secondary-500)',
-          tertiary: 'var(--color-brand-tertiary-500)',
-          background: 'var(--color-brand-background-500)',
+          primary: 'var(--color-brand-secondary-50)',
+          secondary: 'var(--color-brand-primary-50)',
+          tertiary: 'var(--color-brand-tertiary-50)',
+          page: 'var(--color-brand-secondary-50)',
         },
         // Brand colors
         brand: {
@@ -163,12 +161,12 @@ module.exports = {
           },
         },
       },
-      fontFamily: {
+      font: {
         display: 'var(--font-family-display)',
         heading: 'var(--font-family-heading)',
         body: 'var(--font-family-body)',
       },
-      fontSize: {
+      text: {
         xs: 'var(--font-size-xs)',
         sm: 'var(--font-size-sm)',
         base: 'var(--font-size-base)',
@@ -228,11 +226,77 @@ module.exports = {
         16: 'var(--spacing-16)',
         20: 'var(--spacing-20)',
         24: 'var(--spacing-24)',
+        28: 'var(--spacing-28)',
+        29: 'var(--spacing-29)',
+        30: 'var(--spacing-30)',
+        31: 'var(--spacing-31)',
         32: 'var(--spacing-32)',
         40: 'var(--spacing-40)',
         48: 'var(--spacing-48)',
         56: 'var(--spacing-56)',
         64: 'var(--spacing-64)',
+      },
+
+      margin: {
+        'm-0': 'var(--spacing-0)',
+        'm-2': 'var(--spacing-2)',
+        'm-4': 'var(--spacing-4)',
+        'm-6': 'var(--spacing-6)',
+        'm-8': 'var(--spacing-8)',
+      },
+
+      marginLeft: {
+        'ml-0': 'var(--spacing-0)',
+        'ml-2': 'var(--spacing-2)',
+        'ml-4': 'var(--spacing-4)',
+        'ml-6': 'var(--spacing-6)',
+        'ml-8': 'var(--spacing-8)',
+      },
+
+      marginRight: {
+        'mr-0': 'var(--spacing-0)',
+        'mr-2': 'var(--spacing-2)',
+        'mr-4': 'var(--spacing-4)',
+        'mr-6': 'var(--spacing-6)',
+        'mr-8': 'var(--spacing-8)',
+      },
+
+      marginTop: {
+        'mt-0': 'var(--spacing-0)',
+        'mt-2': 'var(--spacing-2)',
+        'mt-4': 'var(--spacing-4)',
+        'mt-6': 'var(--spacing-6)',
+        'mt-8': 'var(--spacing-8)',
+      },
+
+      marginBottom: {
+        'mb-0': 'var(--spacing-0)',
+        'mb-2': 'var(--spacing-2)',
+        'mb-4': 'var(--spacing-4)',
+        'mb-6': 'var(--spacing-6)',
+        'mb-8': 'var(--spacing-8)',
+      },
+
+      padding: {
+        'p-0': 'var(--spacing-0)',
+        'p-1': 'var(--spacing-1)',
+        'p-2': 'var(--spacing-2)',
+        'p-3': 'var(--spacing-3)',
+        'p-4': 'var(--spacing-4)',
+        'p-5': 'var(--spacing-5)',
+        'p-6': 'var(--spacing-6)',
+        'p-8': 'var(--spacing-8)',
+        'p-10': 'var(--spacing-10)',
+        'p-12': 'var(--spacing-12)',
+        'p-16': 'var(--spacing-16)',
+        'p-20': 'var(--spacing-20)',
+        'p-24': 'var(--spacing-24)',
+        'p-28': 'var(--spacing-28)',
+        'p-29': 'var(--spacing-29)',
+        'p-30': 'var(--spacing-30)',
+        'p-31': 'var(--spacing-31)',
+        'p-32': 'var(--spacing-32)',
+        'p-40': 'var(--spacing-40)',
       },
       borderWidth: {
         none: 'var(--border-width-none)',
@@ -245,6 +309,8 @@ module.exports = {
         sm: 'var(--border-radius-sm)',
         md: 'var(--border-radius-md)',
         lg: 'var(--border-radius-lg)',
+        xl: 'var(--border-radius-xl)',
+        '2xl': 'var(--border-radius-2xl)',
         full: 'var(--border-radius-full)',
       },
       boxShadow: {
@@ -252,15 +318,6 @@ module.exports = {
         md: 'var(--shadow-md)',
         lg: 'var(--shadow-lg)',
         xl: 'var(--shadow-xl)',
-      },
-      zIndex: {
-        auto: 'var(--z-index-auto)',
-        0: 'var(--z-index-0)',
-        10: 'var(--z-index-10)',
-        20: 'var(--z-index-20)',
-        30: 'var(--z-index-30)',
-        40: 'var(--z-index-40)',
-        50: 'var(--z-index-50)',
       },
       keyframes: {
         "accordion-down": {
@@ -275,6 +332,34 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+
+      width: {
+        1: 'var(--width-1)',
+        2: 'var(--width-2)',
+        3: 'var(--width-3)',
+        4: 'var(--width-4)',
+        5: 'var(--width-5)',
+        6: 'var(--width-6)',
+        7: 'var(--width-7)',
+        8: 'var(--width-8)',  
+        10: 'var(--width-10)',
+        12: 'var(--width-12)',
+        13: 'var(--width-13)',
+        14: 'var(--width-14)',
+        16: 'var(--width-16)',
+        20: 'var(--width-20)',
+        24: 'var(--width-24)',
+        28: 'var(--width-28)',
+        32: 'var(--width-32)',
+        40: 'var(--width-40)',
+        48: 'var(--width-48)',
+        56: 'var(--width-56)',
+        64: 'var(--width-64)',
+        72: 'var(--width-72)',
+        80: 'var(--width-80)',
+        96: 'var(--width-96)',
+        100: 'var(--width-100)',
       },
 
       height: {
@@ -380,8 +465,10 @@ module.exports = {
         1088: 'var(--height-1088)',
         1104: 'var(--height-1104)',
         1120: 'var(--height-1120)',
+        1136: 'var(--height-1136)',
       },
     },
   },
   plugins: [animatePlugin],
+
 }

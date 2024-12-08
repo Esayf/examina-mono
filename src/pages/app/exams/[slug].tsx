@@ -12,6 +12,9 @@ import {
   thematicBreakPlugin,
   markdownShortcutPlugin,
   MDXEditorMethods,
+  directivesPlugin,
+  codeBlockPlugin,
+  linkPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 
@@ -108,15 +111,14 @@ function ExamDetails() {
     return <QuestionFetchingError />;
 
   return (
-    <div className="h-dvh flex flex-col md:px-6">
-      <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 flex-1 overflow-hidden">
-        <Card className="mt-7 rounded-none md:rounded-3xl flex-1 flex flex-col overflow-hidden">
+    <div className="flex flex-col">
+      <div className="max-w-[76rem] w-full mx-auto flex flex-col">
+        <Card className="mt-7 mb-7 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
           <CardHeader>
             <CardHeaderContent>
-              <CardTitle>{examData.exam.title}</CardTitle>
-              <CardDescription>{examData.exam.description}</CardDescription>
+              <CardTitle className="hidden md:block">{examData.exam.title}</CardTitle>
             </CardHeaderContent>
-            <div className="flex gap-2">
+            <div className="flex gap-8">
               {examData && (
                 <Counter
                   startDate={examData.exam.startDate}
@@ -125,8 +127,9 @@ function ExamDetails() {
                   onTimeout={() => router.push('/')}
                 />
               )}
-              <Button
-                variant="destructive"
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
                 disabled={isPending}
                 onClick={() => {
                   if (choices.every((choice) => choice === 0)) {
@@ -142,13 +145,14 @@ function ExamDetails() {
                     Submitting...
                   </>
                 ) : (
-                  "Finish Quiz"
+                  "Finish quiz"
                 )}
               </Button>
+              </div>
             </div>
           </CardHeader>
 
-          <CardContent className="flex-1 gap-4 flex flex-col bg-base-white">
+          <CardContent className="p-5 flex-1 gap-7 flex flex-col bg-base-white">
             <ExamNavigation
               setCurrentQuestionIndex={setCurrentQuestionIndex}
               isPending={isPending}
@@ -157,9 +161,10 @@ function ExamDetails() {
               currentQuestion={currentQuestion}
             />
 
-            <div className="flex-1 flex gap-6">
-              <div className="border border-greyscale-light-200 bg-base-white rounded-2xl p-4 mb-10 flex-1">
+            <div className="flex-1 flex gap-6 flex-col overflow-wrap break-words">
+              <div className="border border-greyscale-light-300 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[360px] max-h-[400px] md:min-h-[400px] md:max-h-[1200px]">
                 <MDXEditor
+                  className="overflow-wrap break-words"
                   ref={mdRef}
                   readOnly
                   markdown={currentQuestion?.text || ""}
@@ -171,12 +176,15 @@ function ExamDetails() {
                     markdownShortcutPlugin(),
                     imagePlugin(),
                     tablePlugin(),
+                    directivesPlugin(),
+                    linkPlugin(),
+                    codeBlockPlugin(),
                   ]}
                 />
               </div>
               <div className="flex-1">
                 <RadioGroup.Root
-                  className="RadioGroupRoot"
+                  className="RadioGroupRoot overflow-wrap break-words"
                   defaultValue="default"
                   aria-label="Answer options"
                 >

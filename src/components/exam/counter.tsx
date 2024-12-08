@@ -39,9 +39,9 @@ export const Counter = ({ startDate, duration, mutate }: CounterProps) => {
   }, [mutate, startTimer]);
 
   return (
-    <div className="flex items-center gap-2 p-4 bg-red-100 border border-red-500 rounded-full">
+    <div className="flex items-center gap-2 p-2 h-13 bg-red-100 border border-red-500 rounded-full">
       <ClockIcon className="size-6 text-red-600" />
-      <p className="text-red-600 font-bold text-lg">
+      <p className="text-red-600 font-bold text-lg py-1 px-2">
         {remainingTimeMiliseconds
           ? `${Math.floor(remainingTimeMiliseconds / 60)}:${(remainingTimeMiliseconds % 60)
               .toString()

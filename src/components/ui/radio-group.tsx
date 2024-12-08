@@ -5,7 +5,7 @@ import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 
 import { cn } from "@/lib/utils";
 
-const Circle = (props: React.ComponentProps<"svg">) => (
+/*const Circle = (props: React.ComponentProps<"svg">) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -20,16 +20,23 @@ const Circle = (props: React.ComponentProps<"svg">) => (
   >
     <circle cx="12" cy="12" r="10" />
   </svg>
-);
+);*/
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
->(({ className, ...props }, ref) => {
+>(({ className, value, onValueChange, ...props }, ref) => {
   return (
-    <RadioGroupPrimitive.Root className={cn("RadioGroupRoot", className)} {...props} ref={ref} />
+    <RadioGroupPrimitive.Root
+      ref={ref}
+      className={cn("RadioGroupRoot", className)}
+      value={value}
+      onValueChange={onValueChange}
+      {...props}
+    />
   );
 });
+
 RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
 const RadioGroupText = (props: React.ComponentProps<"p">) => <p className="RadioText" {...props} />;
 const RadioGroupItem = React.forwardRef<

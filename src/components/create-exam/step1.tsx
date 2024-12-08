@@ -1,8 +1,9 @@
-import { useFieldArray } from "react-hook-form";
-import { useStep1Form } from "./step1-schema";
+import { useFieldArray, useForm } from "react-hook-form";
+import { step1ValidationSchema, useStep1Form } from "./step1-schema";
 import { Button } from "@/components/ui/button";
 import { MarkdownEditor } from "./markdown";
 import { useEffect, useRef, useState } from "react";
+
 import {
   Card,
   CardContent,
@@ -30,18 +31,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+
 interface AnswersProps {
   index: number;
 }
-
 const Answers = ({ index }: AnswersProps) => {
-  const { control, watch } = useStep1Form();
+  const form = useStep1Form();
   const { fields, append, remove, replace } = useFieldArray({
-    control,
+    control: form.control,
     name: `questions.${index}.answers`,
   });
 
-  const questionType = watch(`questions.${index}.questionType`);
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(undefined);
+
+  // Seçim kontrolü için handleSelection fonksiyonu
+  const handleSelection = (value: string) => {
+    setSelectedValue(value); // State'i günceller
+    form.setValue(`questions.${index}.correctAnswer`, value); // Formik kontrolünü günceller
+  };
+
+  const correctAnswerForm = useForm({
+    defaultValues: {
+      correctAnswer: "",
+    },
+    resolver: zodResolver(step1ValidationSchema), // Zod resolver kullanımı
+  }); 
+  
+  const questionType = form.watch(`questions.${index}.questionType`);
 
   const prevQuestionType = useRef(questionType);
 
@@ -57,55 +74,98 @@ const Answers = ({ index }: AnswersProps) => {
 
   return (
     <div className="flex flex-col gap-1">
-      <FormField
-        control={control}
-        name={`questions.${index}.correctAnswer`}
-        render={({ field: radioField }) => (
-          <FormItem>
-            <FormLabel>
-              Enter the answer options and select the correct one
-            </FormLabel>
-            <RadioGroup onValueChange={radioField.onChange} value={radioField.value}>
-              {fields.map((field, i) => (
-                <FormField
-                  control={control}
-                  key={field.id}
-                  name={`questions.${index}.answers.${i}.answer`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Input
-                        placeholder={`Enter the ${i + 1}`}
-                        maxLength={120}
-                        {...field}
-                        className={cn(
-                          radioField.value === i.toString() && "border-green-600 bg-green-50",
-                          questionType === "tf" && "cursor-pointer",
-                          "gap-2"
-                        )}
-                        readOnly={questionType === "tf"}
-                        onClick={() => {
-                          if (questionType === "tf") {
-                            radioField.onChange(i.toString());
-                          }
-                        }}
-                        startElement={<RadioGroupItem value={i.toString()} />}
-                        endElement={
-                          fields.length > 2 && (
-                            <Button size="icon-sm" variant="ghost" onClick={() => remove(i)}>
-                              <TrashIcon className="size-5" />
-                            </Button>
-                          )
+     <FormField
+      control={form.control}
+      name={`questions.${index}.correctAnswer`}
+      render={({ field: radioField }) => (
+      <FormItem>
+      <FormLabel className="flex gap-2 items-center rounded-full">
+        Enter the answer options and select the correct one
+      </FormLabel>
+      <RadioGroup
+              value={selectedValue} // Başlangıçta undefined
+              onValueChange={(value) => {
+                handleSelection(value);
+                form.clearErrors(`questions.${index}.correctAnswer`); // Hata temizleme
+              }}
+            >
+        {fields.map((field, i) => {
+          const characterCount = field.answer?.length || 0;
+          const isOverLimit = characterCount > 200;
+          const hasTrashIcon = fields.length > 2;
+
+          return (
+            <FormField
+              control={form.control}
+              key={field.id}
+              name={`questions.${index}.answers.${i}.answer`}
+              render={({ field: inputField }) => (
+                <FormItem>
+                  <div className="relative">
+                    <Input
+                      placeholder={`Enter the ${i + 1}. option`}
+                      maxLength={200}
+                      {...inputField}
+                      onChange={(e) => {
+                        inputField.onChange(e);
+                      }}
+                      className={cn(
+                        radioField.value === i.toString() && "rounded-2xl border border-brand-primary-400 bg-brand-primary-50 ring-0",
+                        questionType === "tf" && "cursor-pointer",
+                        isOverLimit ? "rounded-2xl border-ui-error-500 focus:ring-ui-error-500" : "",
+                        "gap-4 pl-12 pr-32 py-6"
+                      )}
+                      readOnly={questionType === "tf"}
+                      onClick={() => {
+                        if (questionType === "tf") {
+                          radioField.onChange(i.toString());
+                          handleSelection(i.toString());
+                          form.setValue(`questions.${index}.correctAnswer`, i.toString());
                         }
-                      />
-                      <FormMessage />
-                    </FormItem>
+                      }}
+                      startElement={ <RadioGroupItem
+                        value={i.toString()}
+                        checked={radioField.value === i.toString()}
+                        />}
+                      endElement={
+                        hasTrashIcon && (
+                          <Button size="icon-sm" variant="ghost" onClick={() => remove(i)}>
+                            <TrashIcon className="size-4" />
+                          </Button>
+                        )
+                      }
+                    />
+                    {questionType !== "tf" && (
+                      <div
+                        className={`absolute top-1/2 -translate-y-1/2 ${
+                          hasTrashIcon ? "right-10" : "right-4"
+                        } text-sm bg-transparent px-1 z-10 ${
+                          isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+                        }`}
+                      >
+                        {`${inputField.value?.length || 0}/200`}
+                      </div>
+                    )}
+                  </div>
+                  {isOverLimit && (
+                    <p className="text-red-500 text-sm mt-1">
+                      The answer option exceeds the maximum allowed 200 characters.
+                    </p>
                   )}
-                />
-              ))}
-            </RadioGroup>
-          </FormItem>
-        )}
-      />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          );
+        })}
+      </RadioGroup>
+    </FormItem>
+  )}
+/>
+<FormMessage>
+  {form.formState.errors?.questions?.[index]?.correctAnswer?.message}
+</FormMessage>
+
       {questionType === "mc" && fields.length < 4 && (
         <Button
           size="icon"
@@ -149,26 +209,33 @@ export const Step1 = ({ onNext }: Step1Props) => {
   };
 
   return (
-    <Card className="mt-7 flex-1 flex flex-col overflow-hidden">
+      <Card className="flex-1 flex flex-col overflow-y-auto">
       <CardHeader>
+      <Button 
+      onClick={() => {}}
+      variant="default"
+      className="flex items-center justify-center stroke-current text-3xl align-middle cursor-pointer hover:bg-brand-primary-400"
+      size="icon" pill>
+       ☺︎
+        </Button>
         <CardHeaderContent>
-          <CardTitle>Create questions</CardTitle>
+          <CardTitle>Let’s create your questions!</CardTitle>
           <CardDescription>
-            At this stage, create your questions and complete your quiz.
+          Create questions that inspire, challenge, and engage participants for a truly interactive experience.
           </CardDescription>
         </CardHeaderContent>
-        <Button onClick={onNext} className="w-40" pill>
-          Next <ArrowRightIcon className="size-6" />
+        <Button size="icon" onClick={onNext} pill>
+        <ArrowRightIcon className="size-6" />
         </Button>
       </CardHeader>
 
-      <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative">
+      <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative p-5">
         <div
-          className="mx-auto w-full flex flex-col flex-2 md:max-w-2xl gap-4"
+          className="w-full flex flex-col flex-1 md:max-w-full gap-4"
           key={activeQuestion.id}
         >
 
-          <div className="flex flex-col gap-4 flex-0">
+          <div className="flex flex-col gap-6 flex-0">
           <FormField
             key={activeQuestion.id}
             control={control}
@@ -185,8 +252,8 @@ export const Step1 = ({ onNext }: Step1Props) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="z-50">
-                    <SelectItem className="py-4 px-4" value="mc">Multiple Choice</SelectItem>
-                    <SelectItem className="py-4 px-4" value="tf">True/False</SelectItem>
+                    <SelectItem className="py-3 px-4" value="mc">Multiple choice</SelectItem>
+                    <SelectItem className="py-3 px-4" value="tf">True/False</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -198,14 +265,19 @@ export const Step1 = ({ onNext }: Step1Props) => {
               name={`questions.${activeQuestionIndex}.question`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Enter your question below. You can use the markdown editor to customize it</FormLabel>
+                  <FormLabel className="flex gap-2 items-center rounded-full">
+                    Enter the question below. You can use the markdown editor to customize it ☺︎
+                  </FormLabel>
                   <FormControl>
-                    <MarkdownEditor
-                      className="border border-greyscale-light-200 rounded-2xl min-h-[240px] bg-base-white"
+                    <div className="border border-greyscale-light-200 rounded-2xl min-h-[240px] max-h-[240px] bg-base-white ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-400">
+                      <MarkdownEditor
+                        className="mdxeditor"
                       markdown={field.value}
                       onChange={field.onChange}
-                      contentEditableClassName="overflow-y-auto "
-                    />
+                        contentEditableClassName="contentEditable" 
+                    
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,12 +287,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
           </div>
         </div>
 
-        <Card className="rounded-none md:rounded-3xl flex flex-col overflow-y-auto sticky top-0">
-          <CardHeader className="font-medium text-base-brand-primary-950">Questions List</CardHeader>
-          <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto">
+        <Card>
+          <CardHeader className="px-5 min-h-[68px] max-h-[68px]">Questions List</CardHeader>
+          <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4">
             <div className="flex-1 flex flex-col">
               {fields.map((_, index) => (
-                <QuestionListItem
+                <QuestionListItem  
                   key={index}
                   index={index}
                   onClick={() => setActiveQuestionIndex(index)}
@@ -234,18 +306,22 @@ export const Step1 = ({ onNext }: Step1Props) => {
           <CardFooter>
             <Button
               variant="outline"
+              size="default"
+              icon={true}
+              iconPosition="right"
+              iconSize="md"
               onClick={() => {
                 append({
                   question: "",
-                  correctAnswer: "0",
+                  correctAnswer: "",
                   answers: [{ answer: "" }, { answer: "" }],
                   questionType: "mc",
                 });
                 setActiveQuestionIndex(fields.length);
               }}
+              className="flex items-center justify-center px-5 py-4"
             >
-              <PlusIcon className="size-6" />
-              Add Question
+              <span className="hidden md:block">Add question</span> <PlusIcon className="size-5 h-5 w-5 stroke-current" />
             </Button>
           </CardFooter>
         </Card>
