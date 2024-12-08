@@ -92,7 +92,7 @@ export const PublishButton = () => {
 
   const handlePublish = async () => {
     setIsPublishing(true); // Set publishing state to true
-    const isValid = await form.trigger();
+    const isValid = await form.trigger(undefined, { shouldFocus: true });
     const step1Values = getStep1Values();
     const step2Values = form.getValues();
 
@@ -132,10 +132,12 @@ export const PublishButton = () => {
           const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
 
           const signedAuroData = window.mina?.isPallad
-            ? ((await window?.mina?.request({
-              method: "mina_signTransaction",
-              params: { transaction: JSON.parse(mina_signer_payload.transaction as string) },
-            })).result as SignedPalladData)
+            ? ((
+                await window?.mina?.request({
+                  method: "mina_signTransaction",
+                  params: { transaction: JSON.parse(mina_signer_payload.transaction as string) },
+                })
+              ).result as SignedPalladData)
             : await window?.mina?.sendTransaction(mina_signer_payload);
           if (window.mina?.isAuro) {
             if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {

@@ -48,7 +48,9 @@ function CreateExam() {
   const { trigger } = methods;
 
   const handleNext = async () => {
-    const isStepValid = await trigger();
+    const isStepValid = await trigger(undefined, {
+      shouldFocus: true,
+    });
     if (isStepValid) setCurrentStep((prevStep) => prevStep + 1);
   };
 
