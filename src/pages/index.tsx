@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import Head from "next/head";
 
 // Components
 import { Button } from "@/components/ui/button";
@@ -101,6 +102,27 @@ const techArr = [
   },
 ];
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Choz",
+  "description": "Next-generation blockchain-powered quiz platform with reward distribution and zero-knowledge proofs",
+  "applicationCategory": "Education, Assessment",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Secure blockchain-based quizzes",
+    "Zero-knowledge proof verification",
+    "Reward distribution system",
+    "Private and decentralized",
+    "Web3 integration"
+  ]
+};
+
 export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -118,154 +140,295 @@ export default function Home() {
     window.location.href = "/app";
   };
 
+  const pageTitle = "Choz | Blockchain-Powered Quiz Platform for Rewards and Engagement";
+  const pageDescription = "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol."
+
   return (
-    <main className="min-h-screen">
+    <>
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform, secure testing, blockchain quiz platform, zero-knowledge proof quizzes, decentralized quiz platform, secure quizzes blockchain, quiz rewards system, Web3 quiz platform, private quiz platform, Mina Protocol quizzes, blockchain-powered assessment, zero-knowledge exam system, decentralized learning tools, secure online quizzes, gamified blockchain quizzes, anonymous quiz platform, Web3 education tools, zkProof quiz platform, online quiz rewards, privacy-first quiz system, next-generation quiz platform, Choz blockchain quiz, gamification education platform, interactive learning tools, competitive quiz platform, blockchain rewards education, secure exam hosting, Web3 gamified education, decentralized competitive quizzes, exam privacy protection, smart contract education, blockchain-powered teaching tools" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://choz.io" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:site_name" content="Choz" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@chozapp" />
+        <meta name="twitter:creator" content="@chozapp" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        
+        {/* Additional Meta Tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta name="author" content="Choz" />
+        <meta name="application-name" content="Choz" />
+        
+        {/* PWA Tags */}
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Choz" />
+        
+        {/* Language and Locale */}
+        <meta property="og:locale" content="en_US" />
+        <link rel="canonical" href="https://choz.io" />
+        <link rel="alternate" href="https://choz.io" hrefLang="x-default" />
+        <link rel="alternate" href="https://choz.io" hrefLang="en" />
 
-      <div className={styles.container}>
-        <div className={styles.background_pattern}>
-          {/* Header */}
-          <Header size="xl" state="not-connected" />
-          {/* Hero Section */}
-          <HeroSection />
-        </div>
-      </div>
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Head>
 
-      {/* How it Works Section */}
-        <section className={styles.section_container}>
-          <div className={styles.container}>
-          <h5 className={styles.section_title}>HOW IT WORKS</h5>
-          <h1 className={styles.section_summary}>
-            Your quizzes, <span>simplified</span>.
-          </h1>
-          <h3 className={styles.section_desc}>
-            Whether for training, customer engagement, or pure fun, Choz brings together everything you need for a seamless and impactful quiz experience.
-          </h3>
-          <div className={styles.card_container}>
-            {stepArr.map((step, index) => (
-              <div className={styles.usage_card} key={index}>
-                <div className={styles.usage_card_title_container}>
-                  <p className={styles.usage_card_title_step}>{step.stepText}</p>
-                  <h1 className={styles.usage_card_title}>{step.stepTitle}</h1>
-                </div>
-                <p className={styles.usage_card_desc}>{step.stepDesc}</p>
-              </div>
-            ))}
+      <main className="min-h-screen">
+        <div className={styles.container}>
+          <div className={styles.background_pattern}>
+            {/* Header */}
+            <Header size="xl" state="not-connected" />
+            {/* Hero Section */}
+            <HeroSection />
           </div>
-          <div className={styles.section_button_container}>
-            <Button variant="default" pill={true} size="default" icon={true} iconPosition="right">
-              Create now <ArrowUpRightIcon className="size-6" />
-            </Button>
+        </div>
+
+        {/* How it Works Section */}
+        <section className={styles.section_container} aria-label="How it Works">
+          <div className={styles.container}>
+            <h2 className={styles.section_title}>HOW IT WORKS</h2>
+            <h3 className={styles.section_summary}>
+              Your quizzes, <span>simplified</span>.
+            </h3>
+            <p className={styles.section_desc}>
+              Whether for training, customer engagement, or pure fun, Choz brings together everything you need for a seamless and impactful quiz experience.
+            </p>
+            <div className={styles.card_container} role="list">
+              {stepArr.map((step, index) => (
+                <div className={styles.usage_card} key={index} role="listitem">
+                  <div className={styles.usage_card_title_container}>
+                    <p className={styles.usage_card_title_step}>{step.stepText}</p>
+                    <h4 className={styles.usage_card_title}>{step.stepTitle}</h4>
+                  </div>
+                  <p className={styles.usage_card_desc}>{step.stepDesc}</p>
+                </div>
+              ))}
+            </div>
+            <div className={styles.section_button_container}>
+              <Link 
+                href="/app/create-exam"
+                className={styles.cta_button}
+                aria-label="Start creating your first quiz on Choz"
+              >
+                <Button 
+                  variant="default" 
+                  pill={true} 
+                  size="default" 
+                  icon={true} 
+                  iconPosition="right"
+                >
+                  Create your first quiz <ArrowUpRightIcon className="size-6" aria-hidden="true" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
 
-      {/* Text Message Section */}
-      <section className={`${styles.section_container} ${styles.section_container_secondary}`}>
-        <div className={styles.text_cta_container}>
-          <div className={styles.section_background}>
-            <Image src={CTA} alt="CTA Background" className="w-full h-full object-cover" />
+        {/* Documentation Links */}
+        <div className={styles.doc_links}>
+          <Link
+            href="https://docs.choz.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.doc_link}
+            aria-label="Access comprehensive documentation and guides for using Choz"
+          >
+            Read Documentation <ArrowUpRightIcon className="size-4" aria-hidden="true" />
+          </Link>
+          <Link
+            href="https://choz.medium.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.doc_link}
+            aria-label="Explore technical articles and updates on our Medium blog"
+          >
+            Technical Blog <ArrowUpRightIcon className="size-4" aria-hidden="true" />
+          </Link>
+          <Link
+            href="https://github.com/chozapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.doc_link}
+            aria-label="View our open source projects and contribute on GitHub"
+          >
+            GitHub Repository <ArrowUpRightIcon className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+
+        {/* Text Message Section */}
+        <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Value Proposition">
+          <div className={styles.text_cta_container}>
+            <div className={styles.section_background}>
+              <Image src={CTA} alt="CTA Background" className="w-full h-full object-cover" />
             </div>
-          <div className={styles.text_cta_content}>
-            <h1 className={styles.text_cta_title}>
-              Empower your audience
-            </h1>
-            <h3 className={styles.text_cta_desc}>
-            At Choz, rewards do more than add value. They transform quizzes into exciting, competitive experiences. Motivate your team, engage customers, or make learning fun.
-            </h3>
+            <div className={styles.text_cta_content}>
+              <h1 className={styles.text_cta_title}>
+                Empower your audience
+              </h1>
+              <h3 className={styles.text_cta_desc}>
+                At Choz, rewards do more than add value. They transform quizzes into exciting, competitive experiences. Motivate your team, engage customers, or make learning fun.
+              </h3>
+            </div>
           </div>
-        </div>
-      </section>  
+        </section>  
 
-      {/* Features Section */}
-      <section className={styles.section_container}>
-        <div className={styles.container}>
-          <h5 className={styles.section_title}>OUR FEATURES</h5>
-          <h1 className={styles.section_summary}>
-            Meet <span>next generation</span> exam platform
-          </h1>
-          <h3 className={styles.section_desc}>
-            We offer an experience you&apos;ve never used before with our unique
-            features.
-          </h3>
-          <div className={styles.card_container}>
-            {featureArr.map((feature, index) => (
-              <div key={index} className={styles.feature_card_container}>
-                <div className={styles.feature_card_text_container}>
-                  <h1 className={styles.feature_card_title}>
-                    {feature.featureTitle}
-                  </h1>
-                  <p className={styles.feature_card_desc}>{feature.featureDesc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Technologies Section */}
-      <section className={`${styles.section_container} ${styles.section_container_secondary}`} >
-        <div className={styles.container}>
-          <h5 className={styles.section_title}>OUR TECHNOLOGIES</h5>
-          <h1 className={styles.section_summary}>
-            Choz <span>uses</span> these technologies
-          </h1>
-          <h3 className={styles.section_desc}>
-            We provide a safe, fast and technological experience with the
-            technologies we use.
-          </h3>
-          <div className={styles.card_container}>
-            {techArr.map((tech, index) => (
-              <div key={index} className={styles.tech_card_container}>
-                <SparklesIcon className="size-8" />
-                <div className={styles.tech_card_text_container}>
-                  <h1 className={styles.tech_card_title}>{tech.techTitle}</h1>
-                  <p className={styles.tech_card_desc}>{tech.techDesc}</p>
-                </div>
-                <div className={styles.tech_card_link_container}>
-                  <Link
-                    href={tech.techLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.techLink}
-                  >
-                    Learn more <ArrowUpRightIcon className="size-6" />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Sub CTA Section */}
-      <section className={`${styles.section_container} ${styles.section_container_secondary}`}>
-        <div className={styles.section_background}>
-          <Image src={SUBCTA} alt="Sub CTA Background" className="w-full h-full object-cover" />
-        </div>
-        <div className={styles.sub_section_container}>      
+        {/* Features Section */}
+        <section className={styles.section_container} aria-label="Features">
           <div className={styles.container}>
-          <div className={styles.sub_section_text_container}>
-            It's rewarding, it's engaging, are you ready to dive in?
+            <h2 className={styles.section_title}>OUR FEATURES</h2>
+            <h3 className={styles.section_summary}>
+              Meet <span>next generation</span> exam platform
+            </h3>
+            <p className={styles.section_desc}>
+              We offer an experience you&apos;ve never used before with our unique
+              features.
+            </p>
+            <div className={styles.card_container} role="list">
+              {featureArr.map((feature, index) => (
+                <div key={index} className={styles.feature_card_container} role="listitem">
+                  <div className={styles.feature_card_text_container}>
+                    <h4 className={styles.feature_card_title}>
+                      {feature.featureTitle}
+                    </h4>
+                    <p className={styles.feature_card_desc}>{feature.featureDesc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Supporters Section */}
-      <section className={`${styles.supporters_container} ${styles.section_container_secondary}`}>
-        <p>supported by</p>
-        <Link href="https://minaprotocol.com/" target="_blank" rel="noopener noreferrer">
-          <Image src={Mina} alt="Mina Protocol" className="w-full h-full object-cover" />
-        </Link>
-      </section>
+        {/* Technologies Section */}
+        <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Technologies">
+          <div className={styles.container}>
+            <h2 className={styles.section_title}>OUR TECHNOLOGIES</h2>
+            <h3 className={styles.section_summary}>
+              Choz <span>uses</span> these technologies
+            </h3>
+            <p className={styles.section_desc}>
+              We provide a safe, fast and technological experience with the
+              technologies we use.
+            </p>
+            <div className={styles.card_container} role="list">
+              {techArr.map((tech, index) => (
+                <div key={index} className={styles.tech_card_container} role="listitem">
+                  <SparklesIcon className="size-8" aria-hidden="true" />
+                  <div className={styles.tech_card_text_container}>
+                    <h4 className={styles.tech_card_title}>{tech.techTitle}</h4>
+                    <p className={styles.tech_card_desc}>{tech.techDesc}</p>
+                  </div>
+                  <div className={styles.tech_card_link_container}>
+                    <Link
+                      href={tech.techLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.techLink}
+                      aria-label={`Read detailed article about ${tech.techTitle} technology in Choz`}
+                    >
+                      Learn more about {tech.techTitle} <ArrowUpRightIcon className="size-6" aria-hidden="true" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      {/* Footer */}
-      <footer className={styles.footer_container}>
-        <div className={styles.logo_container}>
-          <Image src={Choz} alt="Choz Logo" height={50} width={100} />
-        </div>
-        <p className={styles.copyright + " whitespace-nowrap"}>© 2024 Choz</p>
-      </footer>
-    </main>
+        {/* Sub CTA Section */}
+        <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Call to Action">
+          <div className={styles.section_background}>
+            <Image 
+              src={SUBCTA} 
+              alt="" 
+              className="w-full h-full object-cover" 
+              aria-hidden="true"
+              priority={true}
+            />
+          </div>
+          <div className={styles.sub_section_container}>      
+            <div className={styles.container}>
+              <div className={styles.sub_section_text_container}>
+                <h2>It's rewarding, it's engaging, are you ready to dive in?</h2>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Supporters Section */}
+        <section className={`${styles.supporters_container} ${styles.section_container_secondary}`} aria-label="Supporters">
+          <h2>Supported by Industry Leaders</h2>
+          <Link 
+            href="https://minaprotocol.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="supporter-link"
+            aria-label="Visit Mina Protocol - Our Blockchain Technology Partner"
+          >
+            <span className="sr-only">Learn more about our partnership with Mina Protocol</span>
+            <Image 
+              src={Mina} 
+              alt="Mina Protocol - Blockchain Technology Partner" 
+              className="w-full h-full object-cover"
+              priority={true}
+            />
+          </Link>
+        </section>
+
+        {/* Footer */}
+        <footer className={styles.footer_container} role="contentinfo">
+          <div className={styles.logo_container}>
+            <Link href="/" aria-label="Return to Choz Homepage">
+              <Image 
+                src={Choz} 
+                alt="Choz - Next Generation Quiz Platform" 
+                height={50} 
+                width={100}
+                priority={true}
+              />
+            </Link>
+          </div>
+          <nav className={styles.footer_nav}>
+            <Link 
+              href="/about" 
+              className={styles.footer_link}
+              aria-label="Learn more about Choz and our mission"
+            >
+              About Us
+            </Link>
+            <Link 
+              href="/privacy" 
+              className={styles.footer_link}
+              aria-label="Read our privacy policy and data protection measures"
+            >
+              Privacy Policy
+            </Link>
+            <Link 
+              href="/terms" 
+              className={styles.footer_link}
+              aria-label="Review our terms of service and user agreement"
+            >
+              Terms of Service
+            </Link>
+          </nav>
+          <p className={styles.copyright + " whitespace-nowrap"}>© {new Date().getFullYear()} Choz - All rights reserved</p>
+        </footer>
+      </main>
+    </>
   );
 }
