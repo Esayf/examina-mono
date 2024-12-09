@@ -28,51 +28,51 @@ import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
 const stepArr = [
   {
     stepText: "STEP 1",
-    stepTitle: "Connect",
+    stepTitle: "Seamlessly start 🥳",
     stepDesc:
-      "Seamlessly connect via the Auro Wallet by simply pressing the 'Connect Wallet' button.",
+      "Jump right in – no signup needed! Just connect and go! Simply press the 'Connect’ button to seamlessly link your Pallad or Auro Wallet.",
   },
   {
     stepText: "STEP 2",
-    stepTitle: "Create",
-    stepDesc: "Navigate to the exam creation page and fill in your questions and answers.",
+    stepTitle: "Add your questions 💪",
+    stepDesc: "Design your quiz in minutes – choose questions, add rewards, and you’re set!",
   },
   {
     stepText: "STEP 3",
-    stepTitle: "Publish",
-    stepDesc: "Publish your exam and you are good to go!",
+    stepTitle: "Quickly share 🚀",
+    stepDesc: "With a single click, your quiz is live and ready to engage your audience!",
   },
 ];
 
 const featureArr = [
   {
-    featureTitle: "Secure",
+    featureTitle: "Secure 🔒",
     featureDesc:
       "Experience the pinnacle of security with our cutting-edge exam system fortified by next-generation blockchain technology powered by Mina Protocol",
   },
   {
-    featureTitle: "Fast",
+    featureTitle: "Fast 🚀",
     featureDesc:
       "Effortless registration and exam entry: No email or password needed – just use your Auro Wallet and start your journey seamlessly!",
   },
   {
-    featureTitle: "Free",
+    featureTitle: "Free 🤑",
     featureDesc:
       "Enjoy the freedom – register and create your exam in just a minute, absolutely free!",
 
   },
   {
-    featureTitle: "Private",
+    featureTitle: "Private 🔒",
     featureDesc:
       "Your privacy is paramount to us! Rest assured, we do not retain any private information about you, encompassing your test scores and identity.",
   },
   {
-    featureTitle: "Decentralized",
+    featureTitle: "Decentralized 🌐",
     featureDesc:
       "Blockchain empowers secure global connectivity, enabling seamless connections to anywhere in the world.",
   },
   {
-    featureTitle: "Smart",
+    featureTitle: "Smart 🧠",
     featureDesc:
       "Utilize the intelligence of our Choz Smart Contract, seamlessly integrating external exams for a more efficient and technologically advanced system.",
   },
@@ -82,23 +82,23 @@ const techArr = [
   {
     techTitle: "Zero Knowledge",
     techDesc:
-      "Leveraging Zero Knowledge, Choz empowers the creation of exams without disclosing questions, correct answers, user responses, or personal identity, ensuring utmost confidentiality.",
+      "With Zero Knowledge, Choz enables quiz creation without revealing questions, answers, user responses, or personal identity, ensuring complete confidentiality.",
     techLink:
-      "https://examina.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998",
+      "https://choz.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998",
   },
   {
     techTitle: "Mina zkProgram",
     techDesc:
-      "Our score verifier uses a Recursive Proof Of Score zkProgram. That enables us to prove exam results without revealing your score and answers",
+      "Our score verifier uses a Recursive Proof Of Score zkProgram. That enables us to prove quiz results without revealing your score and answers",
     techLink:
-      "https://examina.medium.com/navigating-the-world-of-zk-programs-examinas-insight-into-secure-exam-scoring-ea974e0b11ed",
+      "https://choz.medium.com/navigating-the-world-of-zk-programs-examinas-insight-into-secure-exam-scoring-ea974e0b11ed",
   },
   {
     techTitle: "Web3 Session System",
     techDesc:
       "We generate a session based on your signature. Which enables us to verify your wallet ownership. Without any gas fees or private information!",
     techLink:
-      "https://examina.medium.com/web3-sessions-bridging-the-gap-between-security-and-seamless-backend-integration-3eaf3ff8f995",
+      "https://medium.com/@choz/web3-sessions-bridging-the-gap-between-security-and-seamless-backend-integration-3eaf3ff8f995",
   },
 ];
 
@@ -233,43 +233,13 @@ export default function Home() {
                   icon={true} 
                   iconPosition="right"
                 >
-                  Create your first quiz <ArrowUpRightIcon className="size-6" aria-hidden="true" />
+                  Create now<ArrowUpRightIcon className="size-6" aria-hidden="true" />
                 </Button>
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Documentation Links */}
-        <div className={styles.doc_links}>
-          <Link
-            href="https://docs.choz.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.doc_link}
-            aria-label="Access comprehensive documentation and guides for using Choz"
-          >
-            Read Documentation <ArrowUpRightIcon className="size-4" aria-hidden="true" />
-          </Link>
-          <Link
-            href="https://choz.medium.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.doc_link}
-            aria-label="Explore technical articles and updates on our Medium blog"
-          >
-            Technical Blog <ArrowUpRightIcon className="size-4" aria-hidden="true" />
-          </Link>
-          <Link
-            href="https://github.com/chozapp"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.doc_link}
-            aria-label="View our open source projects and contribute on GitHub"
-          >
-            GitHub Repository <ArrowUpRightIcon className="size-4" aria-hidden="true" />
-          </Link>
-        </div>
 
         {/* Text Message Section */}
         <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Value Proposition">
@@ -341,7 +311,7 @@ export default function Home() {
                       className={styles.techLink}
                       aria-label={`Read detailed article about ${tech.techTitle} technology in Choz`}
                     >
-                      Learn more about {tech.techTitle} <ArrowUpRightIcon className="size-6" aria-hidden="true" />
+                      Learn more <ArrowUpRightIcon className="size-6" aria-hidden="true" />
                     </Link>
                   </div>
                 </div>
@@ -372,7 +342,7 @@ export default function Home() {
 
         {/* Supporters Section */}
         <section className={`${styles.supporters_container} ${styles.section_container_secondary}`} aria-label="Supporters">
-          <h2>Supported by Industry Leaders</h2>
+          <h2>💜 Supported by Industry Leaders 💜</h2>
           <Link 
             href="https://minaprotocol.com/" 
             target="_blank" 
@@ -403,27 +373,36 @@ export default function Home() {
               />
             </Link>
           </div>
-          <nav className={styles.footer_nav}>
+          <nav className={styles.social_links}>
             <Link 
-              href="/about" 
+              href="https://x.com/chozapp" 
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.footer_link}
-              aria-label="Learn more about Choz and our mission"
+              aria-label="Visit our X account"
+              hidden={true}
             >
-              About Us
+              X Account
             </Link>
             <Link 
-              href="/privacy" 
+              href="https://choz.medium.com" 
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.footer_link}
               aria-label="Read our privacy policy and data protection measures"
+              hidden={true}
             >
-              Privacy Policy
+              Medium Blog
             </Link>
             <Link 
-              href="/terms" 
+              href="https://www.linkedin.com/company/chozapp" 
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.footer_link}
-              aria-label="Review our terms of service and user agreement"
+              aria-label="Visit our LinkedIn page"
+              hidden={true}
             >
-              Terms of Service
+              LinkedIn
             </Link>
           </nav>
           <p className={styles.copyright + " whitespace-nowrap"}>© {new Date().getFullYear()} Choz - All rights reserved</p>
