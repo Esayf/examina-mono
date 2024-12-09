@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface RowProps {
   exam: Exam;
@@ -47,43 +48,49 @@ function Row({ exam }: RowProps) {
   }
 
   return (
-    <div className="text-brand-primary-950">
-      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-50 hover:text-brand-primary-600 hover:font-bold">
-        <div className="flex-1 p-6">
-          <p className="text-inherit text-base font-light leading-6" title={exam?.title}>
-            {exam?.title.length > 18 ? `${exam?.title.substring(0, 18)}...` : exam?.title}
+    <div className="text-greyscale-light-700">
+      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-50 hover:text-brand-primary-600 hover:font-base border-t border-greyscale-light-200">
+        <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px]">
+          <p className="text-inherit text-base font-medium leading-6 overflow-y-hidden overflow-x-hidden" title={exam?.title}>
+            {exam?.title.length > 15 ? `${exam?.title.substring(0, 15)}...` : exam?.title}
           </p>
         </div>
-        <div className="flex-1 p-6">
+        <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px]">
+          <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+            {formatDate(new Date(exam?.startDate))}
+          </p>
+        </div>
+        <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px]">
+          <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+            {endDate ? formatDate(endDate) : "N/A"}
+          </p>
+        </div>
+        <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] max-h-[72px]">
+          <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+            {exam?.duration} min.
+          </p>
+        </div>
+        <div className="flex-1 p-5 min-w-[80px] max-w-[160px] max-h-[72px]">
           <Badge
+            className={cn("border border-active-ui-success-600 border-ended-ui-error-600 border-upcoming-ui-warning-600")}
             variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
           >
             {status}
           </Badge>
         </div>
-        <div className="flex-1 p-6">
-          <p className="text-inherit text-base font-normal leading-6">
-            {formatDate(new Date(exam?.startDate))}
-          </p>
-        </div>
-        <div className="flex-1 p-6">
-          <p className="text-inherit text-base font-normal leading-6">
-            {endDate ? formatDate(endDate) : "N/A"}
-          </p>
-        </div>
-        <div className="flex-1 p-6">
-          <p className="text-inherit text-base font-normal leading-6">{exam?.duration} min.</p>
-        </div>
-        <div className="flex-1 p-6 text-right">
+        <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end">
           <Button
-            variant="outline"
+            variant="default"
+            className="bg-brand-secondary-200 hover:bg-brand-secondary-100 border hover:border-brand-primary-950 "
             size="sm"
+            icon={true}
+            iconPosition="right"
             onClick={() => {
               copy(`${window.location.origin}/app/exams/get-started/${exam._id}`);
             }}
           >
-            <DocumentDuplicateIcon className="size-3" />
-            {copiedText ? "Copied to clipboard!" : "Copy quiz link"}
+            {copiedText ? "Copied!" : "Copy link"}
+            <DocumentDuplicateIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block"/>
           </Button>
         </div>
       </div>
@@ -129,18 +136,24 @@ function Application() {
 
   return (
     <>
-      <DashboardHeader />
-      <div className="max-w-[76rem] min-h-screen mx-auto my-auto py-8 px:10">
-        <Card className="bg-base-white min-h-screen rounded-none md:rounded-3xl">
+      <DashboardHeader withoutNav={true} />
+      <div className="max-w-[76rem] min-h-full mx-auto my-auto py-8 px:10">
+        <Card className="bg-base-white min-h-full border-greyscale-light-200">
           <CardHeader>
             <CardHeaderContent>
-              <CardTitle>All Quizzes</CardTitle>
-              <CardDescription>
+              <CardTitle className="whitespace-nowrap">All quizzes</CardTitle>
+              <CardDescription className="hidden md:block">
                 All quizzes created by you are listed here. You can copy the link to share with
-                audience.
+                audience. 
               </CardDescription>
             </CardHeaderContent>
-            <Button asChild pill>
+            <Button
+              variant="default"
+              icon={true}
+              iconPosition="right"
+              asChild
+              pill
+            >
               <Link href="/app/create-exam/">
                 Create new
                 <ArrowUpRightIcon className="size-6" />
@@ -150,23 +163,23 @@ function Application() {
 
           <CardContent className="px-0 pt-0">
             <div className="overflow-x-auto">
-              <div className="flex">
-                <div className="flex-1 p-6 bg-brand-secondary-100">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Quiz Title</p>
+              <div className="flex min-w-full">
+                <div className="flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[154px] max-w-[220px]">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Quiz Title</p>
                 </div>
-                <div className="flex-1 p-6 bg-brand-secondary-100">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Status</p>
+                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px]">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Start Date</p>
                 </div>
-                <div className="flex-1 p-6 bg-brand-secondary-100">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Start Date</p>
+                <div className="hidden lg:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px]">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">End Date</p>
                 </div>
-                <div className="flex-1 p-6 bg-brand-secondary-100">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">End Date</p>
+                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[120px] max-w-[160px]">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Total Time</p>
+                </div>  
+                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[80px] max-w-[160px]">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Status</p>
                 </div>
-                <div className="flex-1 p-6 bg-brand-secondary-100">
-                  <p className="text-brand-primary-950 text-sm font-medium leading-6">Total Time</p>
-                </div>
-                <div className="flex-1 p-6 bg-brand-secondary-100" />
+                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[100px] justify-end" />
               </div>
               {data?.map((exam) => (
                 <Row key={exam?._id} exam={exam} />

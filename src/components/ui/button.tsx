@@ -5,40 +5,46 @@ import { cn } from "@/lib/utils";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const buttonVariants = cva(
-  "inline-flex box-content items-center gap-2 justify-center whitespace-nowrap text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer border border-solid border-transparent",
+  "inline-flex items-center justify-center box-border text-medium font-base whitespace-nowrap transition-colors rounded-xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 hover:text-brand-primary-950 hover:border-1 hover:border-brand-primary-950 disabled:bg-greyscale-light-300 disabled:text-greyscale-light-400 disabled:border disabled:border-greyscale-light-400",
+          "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 disabled:bg-greyscale-light-200 disabled:text-greyscale-light-400 disabled:border-greyscale-light-300",
         outline:
-          "bg-transparent border border-brand-primary-950 text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-800 hover:border hover:border-brand-primary-700 disabled:bg-brand-primary-100 disabled:text-brand-primary-500 disabled:border-brand-primary-500",
-        secondary: "bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
+          "bg-transparent text-medium text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-950 disabled:bg-brand-primary-100 disabled:text-brand-primary-300 disabled:border-brand-primary-300 disabled:stroke-brand-primary-300",
+        secondary:
+          "bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
         destructive:
-          "bg-ui-error-500 text-ui-error-950 border-2 border-ui-error-950 hover:bg-ui-error-400",
+          "bg-ui-error-500 text-ui-error-950 border-2 border-ui-error-950 hover:bg-ui-error-400 disabled:bg-greyscale-light-300 disabled:text-greyscale-light-400 disabled:border disabled:border-greyscale-light-400",
         ghost:
-          "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600",
-        link: "text-brand-primary-500 underline-offset-4 hover:bg-brand-secondary-200",
+          "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600 disabled:text-greyscale-light-400",
+        link:
+          "text-brand-primary-800 underline-offset-4 hover:bg-brand-secondary-200",
+        "date-picker":
+          "flex border-box items-center justify-between rounded-2xl border border-input bg-background text-md text-brand-primary-950 font-light focus:outline-none focus:ring-2 focus:ring-brand-primary-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-greyscale-light-400",
       },
       size: {
-        sm: "h-6 px-2 text-xs",
-        default: "h-auto px-6 py-3",
+        sm: "h-8 px-3 py-1.5 border-2 text-xs leading-2",
+        default: "h-13 px-4 py-2",
         lg: "h-11 px-8",
         date: "max-h-[34px] h-[34px] leading-[34px] w-[48px] text-sm caret-auto text-center p-0 bg-brand-primary-400 text-brand-primary-950 border border-brand-primary-950 hover:bg-brand-primary-300 hover:border-brand-primary-950 cursor-pointer",
-        icon: "h-10 w-10",
+        icon: "h-13 min-w-[52px]",
         "icon-sm": "h-6 w-6",
+        "date-picker": "w-full max-h-[48px] min-h-[48px] pl-4 pr-4 py-2",
       },
       pill: {
         true: "rounded-full",
         false: "rounded-md",
       },
       icon: {
-        none: "",
+        false: "gap-0",
         true: "gap-2",
+        only: "items-center justify-center",
       },
       iconPosition: {
-        left: "gap-1",
-        right: "gap-2",
+        left: "gap-2 pl-1",
+        right: "gap-2 pr-1",
       },
       iconSize: {
         sm: "w-4 h-4",
@@ -50,10 +56,52 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
       pill: true,
+      icon: false,
     },
   }
 );
 
+/*"inline-flex items-center justify-center box-border text-base font-medium whitespace-nowrap transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+{
+  variants: {
+    variant: {
+      default:
+        "bg-brand-primary-500 text-white border border-transparent hover:bg-brand-primary-400 focus-visible:ring-brand-primary-400 disabled:bg-greyscale-light-300",
+      outline:
+        "bg-transparent text-brand-primary-500 border border-brand-primary-500 hover:bg-brand-primary-100 focus-visible:ring-brand-primary-500 disabled:text-greyscale-light-400 disabled:border-greyscale-light-300",
+      secondary:
+        "bg-brand-secondary-500 text-white hover:bg-brand-secondary-400 focus-visible:ring-brand-secondary-400",
+      destructive:
+        "bg-red-500 text-white border border-red-600 hover:bg-red-400 focus-visible:ring-red-500",
+      ghost:
+        "bg-transparent text-brand-primary-500 hover:bg-brand-primary-100 focus-visible:ring-brand-primary-400 disabled:text-greyscale-light-400",
+      link: "text-brand-primary-500 underline-offset-4 hover:underline hover:bg-brand-primary-50 focus-visible:ring-brand-primary-400",
+      success:
+        "bg-success-500 text-white border border-success-600 hover:bg-success-400 focus-visible:ring-success-500",
+    },
+    size: {
+      sm: "px-3 py-1.5 text-sm rounded-md",
+      md: "px-5 py-2 text-base",
+      lg: "px-6 py-3 text-lg",
+      icon: "h-10 w-10 flex items-center justify-center p-0 rounded-full",
+    },
+    shape: {
+      rounded: "rounded-lg",
+      pill: "rounded-full",
+      square: "rounded-none",
+    },
+    iconPosition: {
+      left: "flex-row gap-2",
+      right: "flex-row-reverse gap-2",
+      none: "gap-0",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "md",
+    shape: "rounded",
+    iconPosition: "none",
+  },*/
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
   VariantProps<typeof buttonVariants> {
@@ -75,7 +123,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, pill, className }))}
+        className={cn(buttonVariants({ variant, size, pill, icon, className }))}
         ref={ref}
         {...props}
       />

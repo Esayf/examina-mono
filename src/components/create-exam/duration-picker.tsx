@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input"; // Kullanıcıdan veri almak için
+import { Input } from "@/components/ui/input";
 import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 
 interface DurationPickerProps {
@@ -50,20 +50,20 @@ export const DurationPicker = <
           <Select
             onValueChange={(value) => {
               if (value === "custom") {
-                setCustomDuration(""); // Custom seçildiğinde boş input göster
+                setCustomDuration("");
               } else {
-                setCustomDuration(null); // Diğer seçimlerde input'u gizle
-                field.onChange(value); // Seçilen değeri kaydet
+                setCustomDuration(null);
+                field.onChange(value);
               }
             }}
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger className="box-border">
-                <SelectValue
+              <SelectTrigger className="box-border justify-between">
+                <SelectValue 
                   placeholder={
                     customDuration !== null
-                      ? `${customDuration} Minutes` // Custom seçiliyse göster
+                      ? `${customDuration} Minutes`
                       : placeholder
                   }
                 />
@@ -82,18 +82,23 @@ export const DurationPicker = <
           {customDuration !== null && (
             <Input
               type="number"
-              placeholder="Enter custom duration (minutes)"
+              placeholder="Enter custom duration (only numbers)"
               value={customDuration}
               onChange={(e) => {
                 const value = e.target.value;
                 setCustomDuration(value);
-                field.onChange(value); // React Hook Form ile değeri kaydet
+                field.onChange(value);
               }}
-              className="mt-2"
+              onKeyDown={(e) => {
+                if (e.key.length === 1 && !/[0-9]/.test(e.key) && e.key !== "Backspace") {
+                  e.preventDefault();
+                }
+              }}
+              className="mt-2 number-input"
             />
           )}
 
-          <FormDescription>{description}</FormDescription>
+          <FormDescription className="text-xs text-ui-error-500">{description}</FormDescription>
           <FormMessage />
         </FormItem>
       )}

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { BellAlertIcon, BellIcon } from "@heroicons/react/24/solid";
 import BackgroundPattern from "@/images/backgrounds/backgroundpattern.svg";
+import { only } from "node:test";
 
 // API
 // import { getScore } from '@/lib/Client/Exam';
@@ -60,7 +61,7 @@ function ExamResult() {
         className="absolute flex justify-center items-center h-dvh z-0"
       />
       <div className="flex flex-col items-center justify-center flex-1 z-10">
-        <Card className="max-w-[36rem] w-full px-10 py-16 gap-4 flex flex-col border-2 border-greyscale-light-100 rounded-2xl bg-base-white">
+        <Card className="max-w-[36rem] w-full px-10 py-20 gap-4 flex flex-col border-2 border-greyscale-light-100 rounded-2xl bg-base-white">
           <CardContent className="gap-9 flex flex-col">
             <Image className="mx-auto" src={DoneImage} alt="" />
             <div className="flex flex-col gap-4">
@@ -80,7 +81,6 @@ function ExamResult() {
                   onChange={(e) => setMail(e.target.value)}
                 />
                 <Button
-                  variant="ghost"
                   size="icon"
                   onClick={() => {
                     // validate email

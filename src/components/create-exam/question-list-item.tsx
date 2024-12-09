@@ -28,8 +28,8 @@ export const QuestionListItem = ({
     <button
       key={index}
       className={cn(
-        isActive ? "bg-brand-primary-50 text-brand-primary-800 icon-brand-primary-800" : "text-greyscale-light-500",
-        "flex justify-between px-6 py-4 items-center"
+        isActive ? "bg-brand-primary-50 text-brand-primary-600 border-brand-primary-400 icon-brand-primary-800 min-h-[48px] max-h-[64px]" : "text-greyscale-light-500 border-b border-b-greyscale-light-100 min-h-[48px] max-h-[64px]",
+        "flex justify-between px-5 leading-5 py-5 items-center"
       )}
       onClick={onClick}
     >

@@ -198,7 +198,14 @@ export const PublishButton = () => {
   };
 
   return (
-    <Button className="w-40" disabled={isPublishing} pill onClick={handlePublish}>
+    <Button 
+    variant="default"
+    size="default"
+    icon={true}
+    iconPosition="right"
+    disabled={isPublishing} 
+    pill 
+    onClick={handlePublish}>
       {isPublishing ? (
         <Spinner className="size-6" />
       ) : (

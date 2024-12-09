@@ -7,7 +7,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "rounded-3xl border border-greyscale-light-300 bg-base-white text-card-foreground shadow-sm",
+        "border border-greyscale-light-200 bg-base-white text-card-foreground shadow-sm rounded-2xl sm:rounded-3xl flex flex-col sticky top-0",
         className
       )}
       {...props}
@@ -28,7 +28,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
     <div
       ref={ref}
       className={cn(
-        "bg-base-white flex items-center justify-between p-5 border-b gap-6 md:rounded-t-3xl",
+        "bg-base-white flex items-center justify-between p-5 gap-6 border-b border-b-greyscale-light-200 rounded-t-2xl rounded-b-none sm:rounded-t-3xl font-medium text-base-brand-primary-950",
         className
       )}
       {...props}
@@ -36,15 +36,26 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
   )
 );
 CardHeader.displayName = "CardHeader";
-
 const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h3
-      ref={ref}
-      className={cn("text-xl font-semibold leading-none tracking-tight", className)}
-      {...props}
-    />
-  )
+  ({ className, children, ...props }, ref) => {
+    const processedChildren =
+      typeof children === "string" && children.length > 200
+        ? `${children.substring(0, 200)}...`
+        : children;
+
+    return (
+      <h3
+        ref={ref}
+        className={cn(
+          "text-xl font-semibold max-w-[400px] leading-tight tracking-tight overflow-y-hidden overflow-x-hidden overflow-wrap break-words",
+          className
+        )}
+        {...props}
+      >
+        {processedChildren}
+      </h3>
+    );
+  }
 );
 CardTitle.displayName = "CardTitle";
 
@@ -54,14 +65,14 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm font-light text-greyscale-light-500", className)}
+    className={cn("hidden lg:block text-sm font-light text-greyscale-light-500 overflow-y-auto overflow-x-hidden overflow-wrap break-words", className)}
     {...props}
   />
 ));
 CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <div ref={ref} className={cn("p-5", className)} {...props} />
+  ({ className, ...props }, ref) => <div ref={ref} className={cn("px-5", className)} {...props} />
 );
 CardContent.displayName = "CardContent";
 

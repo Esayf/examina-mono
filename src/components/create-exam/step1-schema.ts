@@ -6,11 +6,11 @@ export const step1ValidationSchema = z.object({
     .array(
       z.object({
         question: z.string().min(3, { message: "Question must be at least 3 characters long" }),
-        correctAnswer: z.string().min(1),
+        correctAnswer: z.string().min(1, { message: "Correct answer is required" }),
         answers: z
           .array(
             z.object({
-              answer: z.string().min(3, { message: "Answer must be at least 3 characters long" }),
+              answer: z.string().min(1, { message: "Answer is required" }).max(200),
             })
           )
           .min(2),

@@ -19,19 +19,21 @@ export const ExamNavigation = ({
   currentQuestion,
 }: ExamNavigationProps) => {
   return (
-    <div className="flex gap-4 justify-between">
+    <div className="flex gap-4 justify-between flex-row">
       <Button
+        variant="default"
+        icon={true}
+        iconPosition="left"
         pill
         onClick={() => {
           setCurrentQuestionIndex((prev) => prev - 1);
         }}
         disabled={isPending || currentQuestionIndex === 0}
       >
-        <ArrowLeftIcon className="size-6" />
-        Prev
+        <ArrowLeftIcon className="size-6" /> <span className="hidden sm:block">Prev</span>
       </Button>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto">
         {questions.map((el, index) => {
           const isActive = el.number === currentQuestion?.number;
           return (
@@ -52,12 +54,15 @@ export const ExamNavigation = ({
 
       <Button
         pill
+        variant="default"
+        icon={true}
+        iconPosition="right"
         onClick={() => {
           setCurrentQuestionIndex((prev) => prev + 1);
         }}
         disabled={isPending || currentQuestionIndex === questions.length - 1}
       >
-        Next <ArrowRightIcon className="size-6" />
+        <span className="hidden sm:block">Next</span> <ArrowRightIcon className="size-6" />
       </Button>
     </div>
   );

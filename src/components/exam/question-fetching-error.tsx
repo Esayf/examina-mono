@@ -13,7 +13,7 @@ export const QuestionFetchingError = () => {
           <CardHeader>
             <CardTitle>An error occured when fetching questions &#128534;</CardTitle>
           </CardHeader>
-          <CardContent className="text-lg font-light flex flex-col gap-5">
+          <CardContent className="px-5 py-5 text-lg font-light flex flex-col gap-5">
             <p>
               Sorry, we couldn&apos;t process your request at the moment. This may be due to several
               reasons:
@@ -34,12 +34,12 @@ export const QuestionFetchingError = () => {
               caused.
             </p>
             <p>
-              <a href="mailto:info@choz.io">Mail us</a>. Or send a DM on X (
+              <a href="mailto:info@choz.io" className="text-brand-primary-500 hover:underline">Mail us</a>. Or send a DM on X (
               <a
                 href="https://x.com/chozapp"
                 target="_blank"
-                className="text-primary hover:underline"
-              >
+                className="text-brand-primary-500 hover:underline"
+              > 
                 @chozapp
               </a>
               ).
