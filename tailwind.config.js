@@ -472,3 +472,4 @@ module.exports = {
   plugins: [animatePlugin],
 
 }
+

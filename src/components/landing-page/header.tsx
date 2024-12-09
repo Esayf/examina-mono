@@ -43,7 +43,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
         <div className="navbar_container">
           <div className="flex gap-4">
           <Button
-            className={`${styles.nav_button}`}
+            className={`${styles.nav_button} hidden md:block`}
             icon={false}
             pill={false}
             size="default"
@@ -53,7 +53,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             Docs
           </Button>
           <Button
-            className={`${styles.nav_button}`}
+            className={`${styles.nav_button} hidden md:block`}
             icon={false}
             pill={false}
             size="default"
@@ -64,18 +64,19 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             </Button>
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 hidden md:block">
           <Button
             iconPosition="right"
             icon={true}
-              variant="outline"
-              pill
-              size="default"
-              onClick={handleAuthentication}
+            variant="outline"
+            pill
+            size="default"
+            onClick={handleAuthentication}
           >
-            Connect wallet <ArrowUpRightIcon className="w-4 h-4" />
+            Connect wallet <ArrowUpRightIcon className="w-4 h-4 hidden md:block" />
           </Button>
-          <div className="md:hidden flex items-center">
+        </div>
+         <div className="md:hidden flex items-center">
             <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="text-gray-700 focus:outline-none"
@@ -83,8 +84,6 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               {menuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
             </button>
           </div>
-        </div>
-
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">

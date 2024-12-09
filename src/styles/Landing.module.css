@@ -12,6 +12,9 @@
   position: relative;
   width: 1920px;
   z-index: -1;
+  @media (max-width: 768px) {
+    height: 100vh;
+  }
 }
 
 .background-pattern .overlap-group {
@@ -162,11 +165,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  @media (max-width: 768px) {
+    padding: 0rem 0rem 0rem;
+    background-color: var(--color-brand-secondary-200);
   }
+}
 
 .hero_container {
   position: relative;
   z-index: 1;
+  @media (max-width: 768px) {
+    height: screen;
+  }
 }
 
 .hero_content_container {
@@ -176,6 +186,9 @@
   gap: 1.5rem;
   text-align: center;
   z-index: 1;
+  @media (max-width: 768px) {
+    height: screen;
+  }
 }
 
 .hero_summary {
@@ -190,6 +203,9 @@
   border: 2px solid var(--color-brand-tertiary-500);
   border-radius: 9999px;
   z-index: 1;
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .hero_title {
@@ -200,6 +216,13 @@
   line-height: 1.2;
   color: var(--color-brand-primary-950);
   z-index: 1;
+  text-wrap: balance;
+  @media (max-width: 768px) {
+    font-size: 3.5rem;
+    line-height: 1.2;
+    height: screen;
+    overflow: visible;
+  }
 }
 
 .highlight_word {
@@ -210,10 +233,14 @@
 .hero_desc {
   width: 100%;
   font-size: 1.25rem;
-  font-weight: 400;
+  font-weight: 350;
   line-height: 1.5;
   color: var(--color-greyscale-light-600);
   z-index: 1;
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
 }
 
 .hero_button {
@@ -241,6 +268,9 @@
   top: 0px;
   left: 0px;
   z-index: 0; 
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 /* Text Message Section */
@@ -259,6 +289,10 @@
   font-weight: 700;
   line-height: 5.25rem;
   color: var(--color-brand-primary-900);
+  @media (max-width: 768px) {
+    font-size: 3.5rem;
+    line-height: 4.25rem;
+  }
 }
 
 .text_cta_title:hover {
@@ -312,6 +346,11 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-brand-primary-950);
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
 }
 
 .section_background {
@@ -327,6 +366,9 @@
   font-size: 3rem;
   font-weight: 700;
   color: var(--color-brand-primary-950);
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 }
 
 .section_summary > span {

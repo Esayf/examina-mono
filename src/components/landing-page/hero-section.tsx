@@ -36,7 +36,7 @@ export function HeroSection({ hasTopButton = true, hasBackgroundPattern = true }
       <div className={styles.hero_container}>
         <div className={styles.hero_content_container}>
           <h5 className={styles.hero_summary}>
-            ✨ Choz AI features are almost here - Stay Tuned!
+            ✨ Choz AI features are almost here - Stay Tuned
           </h5>
           <h1 className={styles.hero_title}>
             <span className={styles.highlight_word}>'Choz'</span> to turn every
