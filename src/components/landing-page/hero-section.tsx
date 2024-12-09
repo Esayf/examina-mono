@@ -6,6 +6,7 @@ import styles from "../../styles/Landing.module.css";
 import BG from "@/images/backgrounds/hero-section-bg.svg";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import { useState } from "react";
 interface HeroSectionProps {
   hasTopButton?: boolean;
   hasBackgroundPattern?: boolean;
@@ -39,7 +40,8 @@ export function HeroSection({ hasTopButton = true, hasBackgroundPattern = true }
             ✨ Choz AI features are almost here - Stay Tuned
           </h5>
           <h1 className={styles.hero_title}>
-            <span className={styles.highlight_word}>'Choz'</span> to turn every
+            <span className={`${styles.highlight_word}`}> 'Choz' </span>
+            to turn every
             decision into an advantage
           </h1>
           <h3 className={styles.hero_desc}>
