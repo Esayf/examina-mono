@@ -10,6 +10,8 @@ import { authenticate } from "@/hooks/auth";
 import { useAppDispatch } from "@/app/hooks";
 import Image from "next/image";
 import { ArrowUpRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
+import { IconRight } from "react-day-picker";
 
 interface HeaderProps {
   size: string;
@@ -64,7 +66,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             </Button>
           </div>
         </div>
-        <div className="flex gap-4 hidden md:block">
+        <div className="gap-4 hidden md:block">
           <Button
             iconPosition="right"
             icon={true}
@@ -76,48 +78,52 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             Connect wallet <ArrowUpRightIcon className="w-4 h-4 hidden md:block" />
           </Button>
         </div>
-         <div className="md:hidden flex items-center">
-            <button
+        <div className="md:hidden flex items-center">
+            <Button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-gray-700 focus:outline-none"
+            variant="default"
+            pill
+            size="icon"
+            className="text-brand-primary-950 focus:outline-none"
           >
-              {menuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-            </button>
-          </div>
+              {menuOpen ? <XMarkIcon className="w-8 h-8" /> : <Bars3Icon className="w-8 h-8" />}
+            </Button>
+        </div>
+        
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="flex flex-col items-start p-4 gap-4">
+      <div className="absolute top-20 right-4 w-48 z-50 shadow-lg bg-brand-primary-400 rounded-3xl border border-brand-primary-950">
+      <div className="flex flex-col items-start p-4 gap-4">
+        <Button
+          className="w-full text-left text-brand-primary-950 bg-brand-secondary-200"
+          icon={true}
+          pill
+          size="default"
+          variant="default"
+          onClick={() => window.open("https://x.com/chozapp", "_blank")}
+        >
+          X Account <ArrowUpRightIcon className="w-4 h-4" />
+        </Button>
             <Button
-              className={`${styles.nav_button} w-full text-left`}
+              className="w-full text-brand-primary-950 bg-brand-secondary-200"
               icon={false}
-              pill={false}
+              pill
               size="default"
-              variant="link"
-              onClick={() => window.open("https://github.com/Esayf", "_blank")}
-            >
-              Docs
-            </Button>
-            <Button
-              className={`${styles.nav_button} w-full text-left`}
-              icon={false}
-              pill={false}
-              size="default"
-              variant="link"
+              variant="default"
               onClick={() => window.open("https://choz.medium.com/", "_blank")}
             >
               Blog
             </Button>
             <Button
-              className="w-full text-left"
-              icon={false}
-              variant="outline"
+              className="w-full bg-brand-secondary-200 text-brand-primary-950"
+              icon={true}
+              variant="default"
               pill
               size="default"
               onClick={handleAuthentication}
             >
-                Connect wallet
-              </Button>
+                Connect <ArrowUpRightIcon className="w-4 h-4" />
+            </Button>
             </div>
           </div>
         )}
