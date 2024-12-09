@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { ClockIcon } from "@heroicons/react/24/outline";
 
 interface CounterProps {
@@ -32,7 +31,7 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
           if (currentTime !== null && currentTime <= 0) {
             clearInterval(timer);
             onTimeout();
-            return 0;
+            return 0; // Sayaç sıfıra ulaştığında burada durduruluyor
           }
           return currentTime !== null ? currentTime - 1 : null;
         });
@@ -42,16 +41,25 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
     return () => clearInterval(timer);
   }, [onTimeout, startTimer]);
 
+  const isLastMinute = remainingTimeMiliseconds !== null && remainingTimeMiliseconds <= 60;
+
   return (
-    <div className="flex items-center gap-2 py-1 px-2 bg-red-100 border border-red-500 rounded-full">
-      <ClockIcon className="size-6 text-red-600" />
-      <p className="text-red-600 font-bold text-lg py-1 px-2">
-        {remainingTimeMiliseconds
+    <div
+      className={`flex items-center gap-2 py-1 px-2 min-w-[120px] border rounded-full ${
+        isLastMinute
+          ? "bg-ui-error-100 text-ui-error-600 animate-pulse border-ui-error-600 min-w-[200px]"
+          : "bg-ui-success-100 border-ui-success-500 text-ui-success-600 min-w-[120px]"
+      }`}
+    >
+      <ClockIcon className={`size-6 ${isLastMinute ? "text-ui-error-600" : "text-ui-success-600"}`} />
+      <p className="font-semibold text-base py-1 px-2">
+        {remainingTimeMiliseconds !== null && remainingTimeMiliseconds >= 0
           ? `${Math.floor(remainingTimeMiliseconds / 60)}:${(remainingTimeMiliseconds % 60)
               .toString()
               .padStart(2, "0")}`
-          : "-"}
+          : "0:00"} {/* Sayaç sıfıra ulaştığında 0:00 gösterilir */}
       </p>
+      {isLastMinute && <p className="font-bold text-lg ml-2">Last seconds!</p>}
     </div>
   );
 };

@@ -82,7 +82,7 @@ export const DurationPicker = <
           {customDuration !== null && (
             <Input
               type="number"
-              placeholder="Enter custom duration (only numbers)"
+              placeholder="Enter custom duration (minutes)"
               value={customDuration}
               onChange={(e) => {
                 const value = e.target.value;

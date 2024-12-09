@@ -264,7 +264,7 @@ export default function Home() {
         <div className={styles.logo_container}>
           <Image src={Choz} alt="Choz Logo" height={50} width={100} />
         </div>
-        <p className={styles.copyright}>© 2024 Choz</p>
+        <p className={styles.copyright + " whitespace-nowrap"}>© 2024 Choz</p>
       </footer>
     </main>
   );
