@@ -22,9 +22,18 @@ function on(event: "accountsChanged", handler: (accounts: string[]) => void): vo
 type SignMessageArgs = {
   readonly message: string;
 };
-interface SignedData {
+export interface SignedAuroData {
   publicKey: string;
   signedData: string;
+  signature: {
+    field: string;
+    scalar: string;
+  };
+}
+
+export interface SignedPalladData {
+  publicKey: string;
+  data: any; æ
   signature: {
     field: string;
     scalar: string;
@@ -59,8 +68,10 @@ type Mina = {
   switchChain: (args: SwitchChainArgs) => Promise<ChainInfoArgs | ProviderError>;
   signJsonMessage: (json: any) => Promise<SignedData | ProviderError>;
   sendTransaction: (args: SendTransactionArgs) => Promise<SignedData | ProviderError>;
+  isPallad: boolean;
+  isAuro: boolean;
+  request: (args: any) => Promise<any>;
 };
-
 declare global {
   interface Window {
     mina: Mina | undefined;

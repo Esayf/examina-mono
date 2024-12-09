@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { store } from "@/app/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 const queryClient = new QueryClient();
 
 const kefir = localFont({
@@ -65,9 +66,10 @@ export default function App({ Component, pageProps }: AppProps) {
           }
         `}</style>
         <Layout>
+          <Analytics />
           <Component {...pageProps} />
         </Layout>
-      </Provider> 
+      </Provider>
     </QueryClientProvider>
   );
 }

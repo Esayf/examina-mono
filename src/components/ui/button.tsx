@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const buttonVariants = cva(
- "inline-flex items-center justify-center box-border text-medium font-base whitespace-nowrap transition-colors rounded-xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center box-border text-medium font-base whitespace-nowrap transition-colors rounded-xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-ui-error-500 text-ui-error-950 border-2 border-ui-error-950 hover:bg-ui-error-400 disabled:bg-greyscale-light-300 disabled:text-greyscale-light-400 disabled:border disabled:border-greyscale-light-400",
         ghost:
           "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600 disabled:text-greyscale-light-400",
-        link: 
+        link:
           "text-brand-primary-800 underline-offset-4 hover:bg-brand-secondary-200",
         "date-picker":
           "flex border-box items-center justify-between rounded-2xl border border-input bg-background text-md text-brand-primary-950 font-light focus:outline-none focus:ring-2 focus:ring-brand-primary-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-greyscale-light-400",
@@ -104,12 +104,22 @@ const buttonVariants = cva(
   },*/
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, pill, icon, ...props }, ref) => {
+  ({
+    className,
+    variant,
+    size,
+    asChild = false,
+    pill,
+    icon,
+    iconPosition,
+    iconSize,
+    ...props
+  }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
