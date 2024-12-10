@@ -10,7 +10,7 @@ import { Step2 } from "@/components/create-exam/step2";
 import { Step1 } from "@/components/create-exam/step1";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { Exam, getDraftExam } from "@/lib/Client/Exam";
+import { DraftExam, getDraftExam } from "@/lib/Client/Exam";
 import { Spinner } from "@/components/ui/spinner";
 
 type FormValues = Step1FormValues | Step2FormValues;
@@ -18,7 +18,7 @@ type FormValues = Step1FormValues | Step2FormValues;
 const validationSchema = [step1ValidationSchema, step2ValidationSchema] as const;
 
 interface ExamFormProps {
-  exam?: Exam;
+  exam?: DraftExam;
 }
 
 const EMPTY_QUESTION = [
@@ -52,7 +52,13 @@ function ExamForm({ exam }: ExamFormProps) {
           description: exam.description,
           duration: exam.duration ? exam.duration.toString() : undefined,
           rewardDistribution: exam.isRewarded,
-          questions: EMPTY_QUESTION,
+          questions: exam.questions.map((q) => ({
+            answers: q.options.map((o) => ({ answer: o.text })),
+            correctAnswer: q.correctAnswer ? q.correctAnswer.toString() : undefined,
+            question: q.text,
+            // FIXME: this info doesn't exist in the draft exam
+            questionType: "mc" as const,
+          })),
         }
       : {
           title: "",

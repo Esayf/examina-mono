@@ -53,7 +53,19 @@ function getDraftExams(): Promise<Exam[]> {
   });
 }
 
-function getDraftExam(examID: string): Promise<Exam> {
+export interface DraftExam extends Exam {
+  questions: {
+    text: string;
+    options: {
+      number: number;
+      text: string;
+    }[];
+    correctAnswer: number;
+    number: number;
+  }[];
+}
+
+function getDraftExam(examID: string): Promise<DraftExam> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
