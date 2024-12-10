@@ -28,6 +28,7 @@ import { RewardDistributionForm } from "./reward-distrubition";
 import { Switch } from "../ui/switch";
 import "../../styles/globals.css";
 import { cn } from "@/lib/utils";
+import { SaveAsDraftButton } from "./save-as-draft-button";
 
 interface Step2Props {
   onBack: () => void;
@@ -50,52 +51,52 @@ export const Step2 = ({ onBack }: Step2Props) => {
             about the quiz.
           </CardDescription>
         </CardHeaderContent>
+        <SaveAsDraftButton />
         <PublishButton />
       </CardHeader>
 
       <CardContent className="w-full px-5 py-5 space-y-5 flex-1 overflow-y-auto gap-8 flex-col relative mb-5">
-      <FormField
-      control={form.control}
-      name="title"
-      render={({ field }) => {
-        const characterCount = field.value?.length || 0;
-        const isOverLimit = characterCount > 200;
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => {
+            const characterCount = field.value?.length || 0;
+            const isOverLimit = characterCount > 200;
 
-    return (
-      <FormItem>
-        <p className="text-lg font-bold text-brand-primary-950 mb-2">1. Title</p>
-        <FormLabel>Quiz name</FormLabel>
-        <FormControl>
-          <div className="relative">
-            <Input
-              maxLength={120}
-              placeholder="Give your quiz a clear, engaging name.."
-              className={cn(
-                "rounded-2xl border",
-                isOverLimit
-                  ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                  : "border-greyscale-light-300"
-              )}
-              {...field}
-            />
-            <div
-              className={`text-sm absolute right-3 top-3 ${
-                isOverLimit ? "text-red-500" : "text-greyscale-light-500"
-              }`}
-            >
-              {`${characterCount}/120`}
-            </div>
-          </div>
-        </FormControl>
-        <FormDescription>
-          A descriptive name will give participants an indication of what the quiz is about.
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    );
-  }}
-/>
-
+            return (
+              <FormItem>
+                <p className="text-lg font-bold text-brand-primary-950 mb-2">1. Title</p>
+                <FormLabel>Quiz name</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      maxLength={120}
+                      placeholder="Give your quiz a clear, engaging name.."
+                      className={cn(
+                        "rounded-2xl border",
+                        isOverLimit
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-greyscale-light-300"
+                      )}
+                      {...field}
+                    />
+                    <div
+                      className={`text-sm absolute right-3 top-3 ${
+                        isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+                      }`}
+                    >
+                      {`${characterCount}/120`}
+                    </div>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  A descriptive name will give participants an indication of what the quiz is about.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
 
         <div className="flex flex-col sm:flex-row">
           <div className="flex-1 gap-4">
@@ -106,21 +107,21 @@ export const Step2 = ({ onBack }: Step2Props) => {
                 name="startDate"
                 label="When should this quiz start?"
                 description="Choose a date and time for the quiz to begin."
-                placeholder="Select date and time" 
+                placeholder="Select date and time"
                 className="flex-1"
                 calendarProps={{
-                disabled: { before: new Date(Date.now() + 5 * 60 * 1000) },
+                  disabled: { before: new Date(Date.now() + 5 * 60 * 1000) },
                 }}
-               />
-              <DurationPicker 
+              />
+              <DurationPicker
                 className="flex-1"
                 name="duration"
                 label="How long should this quiz take? (in minutes)"
                 control={form.control}
                 description="Once the time is up, the quiz will automatically end."
-                placeholder="Select duration" 
-                />
-              </div>
+                placeholder="Select duration"
+              />
+            </div>
           </div>
         </div>
 
@@ -128,41 +129,43 @@ export const Step2 = ({ onBack }: Step2Props) => {
           control={form.control}
           name="description"
           render={({ field }) => (
-            
             <FormItem>
-            <p className="text-lg font-bold text-brand-primary-950 mb-2">3. Description</p>
-            <FormLabel>Quiz overview for participants</FormLabel>
-            <FormControl>
-              <div className="relative">
-                <Textarea
-                  maxLength={360}
-                  className={cn(
-                    "rounded-2xl pl-4 pr-24 pt-3 min-h-[160px]",
-                    field.value?.length > 360 ? "border-red-500 focus:ring-red-500" : "border-greyscale-light-300"
-                  )}
-                  placeholder="Share key details about the quiz.."
-                  {...field}
-                />
-                <div
-                  className={`text-sm absolute right-3 top-3 ${
-                    field.value?.length > 360 ? "text-red-500" : "text-greyscale-light-500"
-                  }`}
-                >
-                  {`${field.value?.length || 0}/360`}
+              <p className="text-lg font-bold text-brand-primary-950 mb-2">3. Description</p>
+              <FormLabel>Quiz overview for participants</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Textarea
+                    maxLength={360}
+                    className={cn(
+                      "rounded-2xl pl-4 pr-24 pt-3 min-h-[160px]",
+                      field.value?.length > 360
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-greyscale-light-300"
+                    )}
+                    placeholder="Share key details about the quiz.."
+                    {...field}
+                  />
+                  <div
+                    className={`text-sm absolute right-3 top-3 ${
+                      field.value?.length > 360 ? "text-red-500" : "text-greyscale-light-500"
+                    }`}
+                  >
+                    {`${field.value?.length || 0}/360`}
+                  </div>
                 </div>
-              </div>
-            </FormControl>
-            <FormDescription>
-              An engaging and clear description ensures participants understand the purpose and format of the quiz.
-            </FormDescription>
-            {field.value?.length > 360 && (
-              <p className="text-red-500 text-sm mt-1">
-                The description exceeds the maximum allowed 360 characters.
-              </p>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
+              </FormControl>
+              <FormDescription>
+                An engaging and clear description ensures participants understand the purpose and
+                format of the quiz.
+              </FormDescription>
+              {field.value?.length > 360 && (
+                <p className="text-red-500 text-sm mt-1">
+                  The description exceeds the maximum allowed 360 characters.
+                </p>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
         />
         <FormField
           control={form.control}

@@ -28,6 +28,14 @@ class RequestBase {
       data,
     });
   }
+
+  put(url: string, data?: any): Promise<AxiosResponse> {
+    return this.instance.request({
+      url,
+      method: "PUT",
+      data,
+    });
+  }
 }
 
 export default RequestBase;
