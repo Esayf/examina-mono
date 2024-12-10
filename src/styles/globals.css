@@ -198,7 +198,7 @@
     --width-2xl: 1920px;
 
     /* Typography Variables */
-    --font-family-display: "Kefir", "Filson Pro";
+    --font-family-display: "Filson Pro";
     --font-family-heading: "Filson Pro";
     --font-family-body: "Filson Pro";
 
@@ -782,49 +782,48 @@
   }
 
   /* Basılı tutma animasyonu */
-.long-press {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  outline: none;
-}
+  .long-press {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
 
-.long-press::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 0, 0, 0.2); /* Kırmızı dolgu */
-  transform: scaleY(0); /* Başlangıçta görünmez */
-  transform-origin: top; /* Yukarıdan aşağı dolma */
-  transition: transform 3s linear; /* 3 saniyelik dolum */
-}
+  .long-press::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 0, 0, 0.2); /* Kırmızı dolgu */
+    transform: scaleY(0); /* Başlangıçta görünmez */
+    transform-origin: top; /* Yukarıdan aşağı dolma */
+    transition: transform 3s linear; /* 3 saniyelik dolum */
+  }
 
-.long-press.pressing::after {
-  transform: scaleY(1); /* Basılı tutulduğunda tamamen dol */
+  .long-press.pressing::after {
+    transform: scaleY(1); /* Basılı tutulduğunda tamamen dol */
   }
 
   /* Flex container için */
-.flex-wrap-responsive {
-  display: flex;
-  flex-wrap: wrap; /* Ekran daraldığında alt alta geçişi sağlar */
-  gap: 1rem; /* Dropdownlar arasında boşluk oluşturur */
-}
-
-.flex-wrap-responsive > * {
-  flex: 1 1 100%; /* Her bir eleman başlangıçta tam genişlik alır */
-}
-
-@media (min-width: 768px) {
-  .flex-wrap-responsive > * {
-    flex: 1; /* Daha geniş ekranlarda eşit şekilde yan yana dizilir */
+  .flex-wrap-responsive {
+    display: flex;
+    flex-wrap: wrap; /* Ekran daraldığında alt alta geçişi sağlar */
+    gap: 1rem; /* Dropdownlar arasında boşluk oluşturur */
   }
-}
 
+  .flex-wrap-responsive > * {
+    flex: 1 1 100%; /* Her bir eleman başlangıçta tam genişlik alır */
+  }
+
+  @media (min-width: 768px) {
+    .flex-wrap-responsive > * {
+      flex: 1; /* Daha geniş ekranlarda eşit şekilde yan yana dizilir */
+    }
+  }
 }
