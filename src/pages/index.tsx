@@ -61,7 +61,6 @@ const featureArr = [
     featureTitle: "Free 🤑",
     featureDesc:
       "Enjoy the freedom – register and create your exam in just a minute, absolutely free!",
-
   },
   {
     featureTitle: "Private 🔒",
@@ -107,22 +106,23 @@ const techArr = [
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Choz",
-  "description": "Next-generation blockchain-powered quiz platform with reward distribution and zero-knowledge proofs",
-  "applicationCategory": "Education, Assessment",
-  "operatingSystem": "Web",
-  "offers": {
+  name: "Choz",
+  description:
+    "Next-generation blockchain-powered quiz platform with reward distribution and zero-knowledge proofs",
+  applicationCategory: "Education, Assessment",
+  operatingSystem: "Web",
+  offers: {
     "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
+    price: "0",
+    priceCurrency: "USD",
   },
-  "featureList": [
+  featureList: [
     "Secure blockchain-based quizzes",
     "Zero-knowledge proof verification",
     "Reward distribution system",
     "Private and decentralized",
-    "Web3 integration"
-  ]
+    "Web3 integration",
+  ],
 };
 
 export default function Home() {
@@ -143,44 +143,54 @@ export default function Home() {
   };
 
   const pageTitle = "Choz | Blockchain-Powered Quiz Platform for Rewards and Engagement";
-  const pageDescription = "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol."
+  const pageDescription =
+    "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol.";
 
   return (
     <>
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        <meta name="keywords" content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform, secure testing, blockchain quiz platform, zero-knowledge proof quizzes, decentralized quiz platform, secure quizzes blockchain, quiz rewards system, Web3 quiz platform, private quiz platform, Mina Protocol quizzes, blockchain-powered assessment, zero-knowledge exam system, decentralized learning tools, secure online quizzes, gamified blockchain quizzes, anonymous quiz platform, Web3 education tools, zkProof quiz platform, online quiz rewards, privacy-first quiz system, next-generation quiz platform, Choz blockchain quiz, gamification education platform, interactive learning tools, competitive quiz platform, blockchain rewards education, secure exam hosting, Web3 gamified education, decentralized competitive quizzes, exam privacy protection, smart contract education, blockchain-powered teaching tools" />
-        
+        <meta
+          name="keywords"
+          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform, secure testing, blockchain quiz platform, zero-knowledge proof quizzes, decentralized quiz platform, secure quizzes blockchain, quiz rewards system, Web3 quiz platform, private quiz platform, Mina Protocol quizzes, blockchain-powered assessment, zero-knowledge exam system, decentralized learning tools, secure online quizzes, gamified blockchain quizzes, anonymous quiz platform, Web3 education tools, zkProof quiz platform, online quiz rewards, privacy-first quiz system, next-generation quiz platform, Choz blockchain quiz, gamification education platform, interactive learning tools, competitive quiz platform, blockchain rewards education, secure exam hosting, Web3 gamified education, decentralized competitive quizzes, exam privacy protection, smart contract education, blockchain-powered teaching tools"
+        />
+
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://choz.io" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`} />
+        <meta
+          property="og:image"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`}
+        />
         <meta property="og:site_name" content="Choz" />
-        
+
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chozapp" />
         <meta name="twitter:creator" content="@chozapp" />
-        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`} />
+        <meta
+          name="twitter:image"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`}
+        />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
-        
+
         {/* Additional Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="author" content="Choz" />
         <meta name="application-name" content="Choz" />
-        
+
         {/* PWA Tags */}
         <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Choz" />
-        
+
         {/* Language and Locale */}
         <meta property="og:locale" content="en_US" />
         <link rel="canonical" href="https://choz.io" />
@@ -188,9 +198,7 @@ export default function Home() {
         <link rel="alternate" href="https://choz.io" hrefLang="en" />
 
         {/* Structured Data */}
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Head>
 
       <main className="min-h-screen">
@@ -208,10 +216,11 @@ export default function Home() {
           <div className={styles.container}>
             <h2 className={styles.section_title}>HOW IT WORKS</h2>
             <h3 className={styles.section_summary}>
-              Your quizzes, simplified.
+              <span>Your quizzes, simplified.</span>
             </h3>
             <p className={styles.section_desc}>
-              Whether for training, customer engagement, or pure fun, Choz brings together everything you need for a seamless and impactful quiz experience.
+              Whether for training, customer engagement, or pure fun, Choz brings together
+              everything you need for a seamless and impactful quiz experience.
             </p>
             <div className={styles.card_container} role="list">
               {stepArr.map((step, index) => (
@@ -225,61 +234,54 @@ export default function Home() {
               ))}
             </div>
             <div className={styles.section_button_container}>
-              <Link 
+              <Link
                 href="/app/create-exam"
                 className={styles.cta_button}
                 aria-label="Start creating your first quiz on Choz"
               >
-                <Button 
-                  variant="default" 
-                  pill={true} 
-                  size="lg"
-                  icon={true} 
-                  iconPosition="right"
-                >
-                  Create now<ArrowUpRightIcon className="size-6" aria-hidden="true" />
+                <Button variant="default" pill={true} size="lg" icon={true} iconPosition="right">
+                  Create now
+                  <ArrowUpRightIcon className="size-6" aria-hidden="true" />
                 </Button>
               </Link>
             </div>
           </div>
         </section>
 
-
         {/* Text Message Section */}
-        <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Value Proposition">
+        <section
+          className={`${styles.section_container} ${styles.section_container_secondary}`}
+          aria-label="Value Proposition"
+        >
           <div className={styles.text_cta_container}>
             <div className={styles.section_background}>
               <Image src={CTA} alt="CTA Background" className="w-full h-full object-cover" />
             </div>
             <div className={styles.text_cta_content}>
-              <h1 className={styles.text_cta_title}>
-                Empower your audience
-              </h1>
+              <h1 className={styles.text_cta_title}>Empower your audience</h1>
               <h3 className={styles.text_cta_desc}>
-                At Choz, rewards do more than add value. They transform quizzes into exciting, competitive experiences. Motivate your team, engage customers, or make learning fun.
+                At Choz, rewards do more than add value. They transform quizzes into exciting,
+                competitive experiences. Motivate your team, engage customers, or make learning fun.
               </h3>
             </div>
           </div>
-        </section>  
+        </section>
 
         {/* Features Section */}
         <section className={styles.section_container} aria-label="Features">
           <div className={styles.container}>
             <h2 className={styles.section_title}>OUR FEATURES</h2>
             <h3 className={styles.section_summary}>
-              The future of engagement.
+              <span>The future of engagement.</span>
             </h3>
             <p className={styles.section_desc}>
-              We offer an experience you&apos;ve never used before with our unique
-              features.
+              We offer an experience you&apos;ve never used before with our unique features.
             </p>
             <div className={styles.card_container} role="list">
               {featureArr.map((feature, index) => (
                 <div key={index} className={styles.feature_card_container} role="listitem">
                   <div className={styles.feature_card_text_container}>
-                    <h4 className={styles.feature_card_title}>
-                      {feature.featureTitle}
-                    </h4>
+                    <h4 className={styles.feature_card_title}>{feature.featureTitle}</h4>
                     <p className={styles.feature_card_desc}>{feature.featureDesc}</p>
                   </div>
                 </div>
@@ -289,11 +291,14 @@ export default function Home() {
         </section>
 
         {/* Technologies Section */}
-        <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Technologies">
+        <section
+          className={`${styles.section_container} ${styles.section_container_secondary}`}
+          aria-label="Technologies"
+        >
           <div className={styles.container}>
             <h2 className={styles.section_title}>OUR TECHNOLOGIES</h2>
             <h3 className={styles.section_summary}>
-              We use these techs.
+              <span>We use these techs.</span>
             </h3>
             <p className={styles.section_desc}>
               With our cutting-edge technologies, we deliver a secure, fast, and modern experience.
@@ -324,17 +329,20 @@ export default function Home() {
         </section>
 
         {/* Sub CTA Section */}
-        <section className={`${styles.section_container} ${styles.section_container_secondary}`} aria-label="Call to Action">
+        <section
+          className={`${styles.section_container} ${styles.section_container_secondary}`}
+          aria-label="Call to Action"
+        >
           <div className={styles.section_background}>
-            <Image 
-              src={SUBCTA} 
-              alt="" 
-              className="w-full h-full object-cover" 
+            <Image
+              src={SUBCTA}
+              alt=""
+              className="w-full h-full object-cover"
               aria-hidden="true"
               priority={true}
             />
           </div>
-          <div className={styles.sub_section_container}>      
+          <div className={styles.sub_section_container}>
             <div className={styles.container}>
               <div className={styles.sub_section_text_container}>
                 <h2>It's rewarding, it's engaging, are you ready to dive in?</h2>
@@ -344,19 +352,22 @@ export default function Home() {
         </section>
 
         {/* Supporters Section */}
-        <section className={`${styles.supporters_container} ${styles.section_container_secondary}`} aria-label="Supporters">
+        <section
+          className={`${styles.supporters_container} ${styles.section_container_secondary}`}
+          aria-label="Supporters"
+        >
           <h2>💜 Supported by Industry Leaders 💜</h2>
-          <Link 
-            href="https://minaprotocol.com/" 
-            target="_blank" 
+          <Link
+            href="https://minaprotocol.com/"
+            target="_blank"
             rel="noopener noreferrer"
             className="supporter-link"
             aria-label="Visit Mina Protocol - Our Blockchain Technology Partner"
           >
             <span className="sr-only">Learn more about our partnership with Mina Protocol</span>
-            <Image 
-              src={Mina} 
-              alt="Mina Protocol - Blockchain Technology Partner" 
+            <Image
+              src={Mina}
+              alt="Mina Protocol - Blockchain Technology Partner"
               className="w-full h-full object-cover"
               priority={true}
             />
@@ -367,18 +378,18 @@ export default function Home() {
         <footer className={styles.footer_container} role="contentinfo">
           <div className={styles.logo_container}>
             <Link href="/" aria-label="Return to Choz Homepage">
-              <Image 
-                src={Choz} 
-                alt="Choz - Next Generation Quiz Platform" 
-                height={50} 
+              <Image
+                src={Choz}
+                alt="Choz - Next Generation Quiz Platform"
+                height={50}
                 width={100}
                 priority={true}
               />
             </Link>
           </div>
           <nav className={styles.social_links}>
-            <Link 
-              href="https://x.com/chozapp" 
+            <Link
+              href="https://x.com/chozapp"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.footer_link}
@@ -387,8 +398,8 @@ export default function Home() {
             >
               X Account
             </Link>
-            <Link 
-              href="https://choz.medium.com" 
+            <Link
+              href="https://choz.medium.com"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.footer_link}
@@ -397,8 +408,8 @@ export default function Home() {
             >
               Medium Blog
             </Link>
-            <Link 
-              href="https://www.linkedin.com/company/chozapp" 
+            <Link
+              href="https://www.linkedin.com/company/chozapp"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.footer_link}
@@ -408,7 +419,9 @@ export default function Home() {
               LinkedIn
             </Link>
           </nav>
-          <p className={styles.copyright + " whitespace-nowrap"}>© {new Date().getFullYear()} Choz - All rights reserved</p>
+          <p className={styles.copyright + " whitespace-nowrap"}>
+            © {new Date().getFullYear()} Choz - All rights reserved
+          </p>
         </footer>
       </main>
     </>
