@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 disabled:bg-greyscale-light-200 disabled:text-greyscale-light-400 disabled:border-greyscale-light-300",
         outline:
-          "bg-transparent text-medium text-brand-primary-950 border-2 border-brand-primary-950 outline-2 outline-brand-primary-950 hover:bg-brand-primary-200 hover:text-brand-primary-950 disabled:bg-brand-primary-100 disabled:text-brand-primary-300 disabled:border-brand-primary-300 disabled:stroke-brand-primary-300",
+          "bg-transparent text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-200 hover:text-brand-primary-950 disabled:bg-greyscale-light-100 disabled:text-greyscale-light-300 disabled:border-greyscale-light-300 disabled:stroke-greyscale-light-300",
         secondary:
           "bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
         destructive:
@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost:
           "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600 disabled:text-greyscale-light-400 active:bg-brand-primary-100",
         link:
-          "text-brand-primary-800 underline-offset-4 hover:bg-brand-secondary-200 active:bg-brand-secondary-200 disabled:bg-transparent disabled:text-greyscale-light-400",
+          "text-brand-primary-950 underline-offset-4 hover:bg-brand-primary-200 active:bg-brand-secondary-200 disabled:bg-transparent disabled:text-greyscale-light-400",
         "date-picker":
           "flex border-box items-center justify-between rounded-2xl border border-input bg-background text-md text-brand-primary-950 font-light focus:outline-none focus:ring-2 focus:ring-brand-primary-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-greyscale-light-400",
       },
@@ -29,7 +29,7 @@ const buttonVariants = cva(
         default: "h-13 px-6 py-3",
         lg: "h-15 px-8 py-4 text-lg",
         date: "max-h-[34px] h-[34px] leading-[34px] w-[48px] text-sm caret-auto text-center p-0 bg-brand-primary-400 text-brand-primary-950 border border-brand-primary-950 hover:bg-brand-primary-300 hover:border-brand-primary-950 cursor-pointer",
-        icon: "h-13 min-w-[52px]",
+        icon: "h-13 max-w-[52px] min-w-[52px]",
         "icon-sm": "h-6 w-6",
         "date-picker": "w-full max-h-[48px] min-h-[48px] pl-4 pr-4 py-2",
       },
@@ -40,11 +40,11 @@ const buttonVariants = cva(
       icon: {
         false: "gap-0",
         true: "gap-2",
-        only: "items-center justify-center",
       },
       iconPosition: {
-        left: "gap-2 pl-5",
-        right: "gap-2 pr-5",
+        left: "pl-5",
+        right: "pr-5",
+        only: "gap-0",
       },
       iconSize: {
         sm: "w-4 h-4",
