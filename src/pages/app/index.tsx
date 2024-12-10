@@ -49,24 +49,25 @@ function Row({ exam }: RowProps) {
   }
 
   return (
+    <div className="flex flex-col">
     <div className="text-greyscale-light-700">
       <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-50 hover:text-brand-primary-600 hover:font-base border-t border-greyscale-light-200">
-        <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px]">
+        <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px] border-r border-greyscale-light-100">
           <p className="text-inherit text-base font-medium leading-6 overflow-y-hidden overflow-x-hidden" title={exam?.title}>
             {exam?.title.length > 15 ? `${exam?.title.substring(0, 15)}...` : exam?.title}
           </p>
         </div>
-        <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px]">
+        <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px] border-r border-greyscale-light-100">
           <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
             {formatDate(new Date(exam?.startDate))}
           </p>
         </div>
-        <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px]">
+        <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px] border-r border-greyscale-light-100">
           <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
             {endDate ? formatDate(endDate) : "N/A"}
           </p>
         </div>
-        <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] max-h-[72px]">
+        <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] max-h-[72px] border-r border-greyscale-light-100">
           <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
             {exam?.duration} min.
           </p>
@@ -79,26 +80,18 @@ function Row({ exam }: RowProps) {
           </Badge>
         </div>
         <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
-          <div className="flex items-center justify-center gap-2"> 
-            <Button disabled /*disabled={exam.isCompleted}*/ variant="default" size="icon" className="h-8 w-8 min-w-8 min-h-8" icon={true}
+            <Button disabled={exam.isCompleted} variant="outline" size="sm" icon={true} className="max-w-8 min-h-8 border"
               onClick={() => {
                 router.push(`/app/exams/edit/${exam._id}`);
               }}
             >
-              <PencilIcon className="size-4 w-4 h-4 stroke-current stroke-2 hidden md:block"/>
+              <PencilIcon className="size-4 min-w-4 min-h-4 stroke-current stroke-2"/>
             </Button>
-            <Button disabled variant="default" size="icon" className="h-8 w-8 min-w-8 min-h-8" icon={true} onClick={() => {
-              router.push(`/app/exams/edit/${exam._id}`);
-            }}>
-              <TrashIcon className="size-4 w-4 h-4 stroke-current stroke-2 hidden md:block"/>
-            </Button>
-          </div>
           <Button
             variant="default"
             className="bg-brand-secondary-200 hover:bg-brand-secondary-100 border hover:border-brand-primary-950 "
             size="sm"
             icon={true}
-            iconPosition="right"
             onClick={() => {
               copy(`${window.location.origin}/app/exams/get-started/${exam._id}`);
             }}
@@ -108,6 +101,7 @@ function Row({ exam }: RowProps) {
           </Button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
@@ -151,10 +145,12 @@ function Application() {
   return (
     <>
       <DashboardHeader withoutTabs={false} withoutNav={true}/>
-      <div className="max-w-[76rem] min-h-full mx-auto my-auto py-8 px:10">
+      <div className="h-dvh flex flex-col bg-brand-secondary-50">
+      <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
+        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
         <Card className="bg-base-white min-h-full border-greyscale-light-200">
           <CardHeader>
-            <CardHeaderContent>
+            <CardHeaderContent className="sticky top-0">
               <CardTitle className="whitespace-nowrap">All quizzes</CardTitle>
               <CardDescription className="hidden md:block">
                 All quizzes created by you are listed here. You can copy the link to share with
@@ -195,12 +191,16 @@ function Application() {
                 </div>
                 <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[100px] justify-end" />
               </div>
+              <div className="overflow-y-auto max-h-[724px]">
               {data?.map((exam) => (
                 <Row key={exam?._id} exam={exam} />
               ))}
+              </div>
             </div>
           </CardContent>
         </Card>
+      </div>
+      </div>
       </div>
     </>
   );
