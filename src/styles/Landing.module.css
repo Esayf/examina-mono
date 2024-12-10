@@ -370,7 +370,7 @@
 .section_container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100svh;
   padding: 6rem 2.5rem;
   background-color: var(--color-brand-secondary-50);
   background-image: url("/images/backgrounds/text-cta-section-bg.svg");

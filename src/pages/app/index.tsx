@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { Exam, getExamList } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
@@ -11,7 +11,7 @@ import DashboardHeader from "@/components/ui/dashboard-header";
 // Icons and Images
 import EmptyState from "@/images/emptystates.svg";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRightIcon, DocumentDuplicateIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ArrowUpRightIcon, DocumentDuplicateIcon, PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import {
@@ -37,6 +37,7 @@ function Row({ exam }: RowProps) {
   const endDate = new Date(
     new Date(exam.startDate).getTime() + Number(exam.duration) * 60 * 1000
   );
+
 
   let status = "Upcoming";
   if (startDate > now) {
@@ -72,13 +73,26 @@ function Row({ exam }: RowProps) {
         </div>
         <div className="flex-1 p-5 min-w-[80px] max-w-[160px] max-h-[72px]">
           <Badge
-            className={cn("border border-active-ui-success-600 border-ended-ui-error-600 border-upcoming-ui-warning-600")}
             variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
           >
             {status}
           </Badge>
         </div>
-        <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end">
+        <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
+          <div className="flex items-center justify-center gap-2"> 
+            <Button disabled /*disabled={exam.isCompleted}*/ variant="default" size="icon" className="h-8 w-8 min-w-8 min-h-8" icon={true}
+              onClick={() => {
+                router.push(`/app/exams/edit/${exam._id}`);
+              }}
+            >
+              <PencilIcon className="size-4 w-4 h-4 stroke-current stroke-2 hidden md:block"/>
+            </Button>
+            <Button disabled variant="default" size="icon" className="h-8 w-8 min-w-8 min-h-8" icon={true} onClick={() => {
+              router.push(`/app/exams/edit/${exam._id}`);
+            }}>
+              <TrashIcon className="size-4 w-4 h-4 stroke-current stroke-2 hidden md:block"/>
+            </Button>
+          </div>
           <Button
             variant="default"
             className="bg-brand-secondary-200 hover:bg-brand-secondary-100 border hover:border-brand-primary-950 "
@@ -109,7 +123,7 @@ function Application() {
   if (isLoading === false && data?.length === 0 && isError === false)
     return (
       <>
-        <DashboardHeader />
+        <DashboardHeader/>
         <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">All Quizzes</h3>
@@ -136,7 +150,7 @@ function Application() {
 
   return (
     <>
-      <DashboardHeader withoutNav={true} />
+      <DashboardHeader withoutTabs={false} withoutNav={true}/>
       <div className="max-w-[76rem] min-h-full mx-auto my-auto py-8 px:10">
         <Card className="bg-base-white min-h-full border-greyscale-light-200">
           <CardHeader>

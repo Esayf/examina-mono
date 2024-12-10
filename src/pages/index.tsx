@@ -18,11 +18,13 @@ import BG from "@/images/backgrounds/hero-section-bg.svg";
 import CTA from "@/images/backgrounds/text-cta-section-bg.svg";
 import SUBCTA from "@/images/backgrounds/sub-cta-bg.svg";
 import Mina from "@/images/landing_general/mina.svg";
+import OGImage from "@/images/backgrounds/ogimage.png";
 
 // State Management
 import { authenticate } from "@/hooks/auth";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 
 // Data Arrays
 const stepArr = [
@@ -155,12 +157,14 @@ export default function Home() {
         <meta property="og:url" content="https://choz.io" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`} />
         <meta property="og:site_name" content="Choz" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chozapp" />
         <meta name="twitter:creator" content="@chozapp" />
+        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`} />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
         
@@ -204,7 +208,7 @@ export default function Home() {
           <div className={styles.container}>
             <h2 className={styles.section_title}>HOW IT WORKS</h2>
             <h3 className={styles.section_summary}>
-              Your quizzes, <span>simplified</span>.
+              Your quizzes, simplified.
             </h3>
             <p className={styles.section_desc}>
               Whether for training, customer engagement, or pure fun, Choz brings together everything you need for a seamless and impactful quiz experience.
@@ -229,7 +233,7 @@ export default function Home() {
                 <Button 
                   variant="default" 
                   pill={true} 
-                  size="default" 
+                  size="lg"
                   icon={true} 
                   iconPosition="right"
                 >
@@ -263,7 +267,7 @@ export default function Home() {
           <div className={styles.container}>
             <h2 className={styles.section_title}>OUR FEATURES</h2>
             <h3 className={styles.section_summary}>
-              Meet <span>next generation</span> exam platform
+              The future of engagement.
             </h3>
             <p className={styles.section_desc}>
               We offer an experience you&apos;ve never used before with our unique
@@ -289,11 +293,10 @@ export default function Home() {
           <div className={styles.container}>
             <h2 className={styles.section_title}>OUR TECHNOLOGIES</h2>
             <h3 className={styles.section_summary}>
-              Choz <span>uses</span> these technologies
+              We use these techs.
             </h3>
             <p className={styles.section_desc}>
-              We provide a safe, fast and technological experience with the
-              technologies we use.
+              With our cutting-edge technologies, we deliver a secure, fast, and modern experience.
             </p>
             <div className={styles.card_container} role="list">
               {techArr.map((tech, index) => (

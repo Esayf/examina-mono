@@ -77,7 +77,7 @@ function CreateExam() {
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="/app/create-exam" />
       </Head>
-      <DashboardHeader withoutNav={false} />
+      <DashboardHeader withoutNav={false} withoutTabs={true}/>
       <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
         <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
           <FormProvider {...methods}>

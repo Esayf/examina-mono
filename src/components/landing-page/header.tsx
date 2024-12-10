@@ -34,7 +34,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
   };
 
   return (
-    <div className={`${styles.header} bg-white border-b border-gray-200`}>
+    <div className={`${styles.header} bg-brand-secondary-100 border-b border-brand-secondary-100`}>
       <div className={`${styles.header_container} w-full mx-auto flex items-center justify-between`}>
         {/* Logo */}
         <div className={`${styles.logo_container}`} style={{ maxHeight: "50px", width: "175.81px" }}>
@@ -75,7 +75,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             size="default"
             onClick={handleAuthentication}
           >
-            Connect wallet <ArrowUpRightIcon className="w-4 h-4 hidden md:block" />
+            Connect wallet<ArrowUpRightIcon className="w-5 h-5 hidden md:block" />
           </Button>
         </div>
         <div className="md:hidden flex items-center">

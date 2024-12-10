@@ -254,6 +254,15 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   <SelectContent className="z-50">
                     <SelectItem className="py-3 px-4" value="mc">Multiple choice</SelectItem>
                     <SelectItem className="py-3 px-4" value="tf">True/False</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="ord">Ordering (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="ma">Matching (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="sa">Likert (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="ps">Poll/Survey (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="dd">Drag and Drop (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="vb">Video based (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="ib">Image based (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="ess">Essay (soon)</SelectItem>
+                    <SelectItem disabled className="py-3 px-4" value="fill">Fill in the blank (soon)</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -309,7 +318,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
               size="default"
               icon={true}
               iconPosition="right"
-              iconSize="md"
+              className="border-2 border-brand-primary-950 hover:bg-brand-primary-200"
               onClick={() => {
                 append({
                   question: "",
@@ -319,7 +328,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
                 });
                 setActiveQuestionIndex(fields.length);
               }}
-              className="flex items-center justify-center px-5 py-4"
             >
               <span className="hidden md:block">Add question</span> <PlusIcon className="size-5 h-5 w-5 stroke-current" />
             </Button>

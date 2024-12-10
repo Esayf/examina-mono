@@ -34,6 +34,7 @@ export const QuestionListItem = ({
       onClick={onClick}
     >
       Question {index + 1}
+  
       {isIncomplete && <ErrorBadge>check it</ErrorBadge>}
       {onRemove && (
         <Button

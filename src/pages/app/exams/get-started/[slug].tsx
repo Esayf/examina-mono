@@ -168,10 +168,8 @@ function ExamDetail() {
             </p> */}
             <div className="flex items-center gap-3 my-4 font-bold text-center text-xl border-none border-greyscale-light-200 rounded-2xl p-4">
               <RocketLaunchIcon className="size-7 stroke-brand-primary-950 stroke-2" />
-              <h3 title={data?.exam.title}>
-                {data?.exam.title && data?.exam.title?.length > 25
-                  ? `${data?.exam.title.substring(0, 25)}...`
-                  : data?.exam.title}
+              <h3 title={data?.exam.title} className="text-brand-primary-950 text-center max-w-[360px] overflow-x-auto break-all overflow-wrap">
+                {data?.exam.title}
               </h3>
             </div>
             <div className="flex items-center text-center max-w-[360px] justify-center gap-2">
@@ -195,7 +193,7 @@ function ExamDetail() {
               </div>
             </div>
             <div className="border-none min-h-[160px] rounded-2xl border-greyscale-light-200 p-4">
-              <p className="mt-1 flex-col text-center max-h-[240px] text-base text-greyscale-light-700 font-light leading-5 overflow-y-auto overflow-x-hidden break-all overflow-wrap">{data?.exam.description}</p>
+              <p className="mt-1 flex-col max-h-[240px] text-base text-greyscale-light-700 font-light leading-5 overflow-y-auto overflow-x-hidden break-all overflow-wrap">{data?.exam.description}</p>
             </div>
           </div>
           <div className="flex flex-col gap-4">

@@ -12,22 +12,22 @@ const buttonVariants = cva(
         default:
           "bg-brand-primary-400 text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-300 disabled:bg-greyscale-light-200 disabled:text-greyscale-light-400 disabled:border-greyscale-light-300",
         outline:
-          "bg-transparent text-medium text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-primary-200 hover:text-brand-primary-950 disabled:bg-brand-primary-100 disabled:text-brand-primary-300 disabled:border-brand-primary-300 disabled:stroke-brand-primary-300",
+          "bg-transparent text-medium text-brand-primary-950 border-2 border-brand-primary-950 outline-2 outline-brand-primary-950 hover:bg-brand-primary-200 hover:text-brand-primary-950 disabled:bg-brand-primary-100 disabled:text-brand-primary-300 disabled:border-brand-primary-300 disabled:stroke-brand-primary-300",
         secondary:
           "bg-brand-secondary-500 text-base-white hover:bg-brand-secondary-600",
         destructive:
           "bg-ui-error-500 text-ui-error-950 border-2 border-ui-error-950 hover:bg-ui-error-400 disabled:bg-greyscale-light-300 disabled:text-greyscale-light-400 disabled:border disabled:border-greyscale-light-400",
         ghost:
-          "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600 disabled:text-greyscale-light-400",
+          "bg-transparent text-brand-primary-950 hover:bg-brand-primary-100 hover:text-brand-primary-600 disabled:text-greyscale-light-400 active:bg-brand-primary-100",
         link:
-          "text-brand-primary-800 underline-offset-4 hover:bg-brand-secondary-200",
+          "text-brand-primary-800 underline-offset-4 hover:bg-brand-secondary-200 active:bg-brand-secondary-200 disabled:bg-transparent disabled:text-greyscale-light-400",
         "date-picker":
           "flex border-box items-center justify-between rounded-2xl border border-input bg-background text-md text-brand-primary-950 font-light focus:outline-none focus:ring-2 focus:ring-brand-primary-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-greyscale-light-400",
       },
       size: {
         sm: "h-8 px-3 py-1.5 border-2 text-xs leading-2",
-        default: "h-13 px-4 py-2",
-        lg: "h-11 px-8",
+        default: "h-13 px-6 py-3",
+        lg: "h-15 px-8 py-4 text-lg",
         date: "max-h-[34px] h-[34px] leading-[34px] w-[48px] text-sm caret-auto text-center p-0 bg-brand-primary-400 text-brand-primary-950 border border-brand-primary-950 hover:bg-brand-primary-300 hover:border-brand-primary-950 cursor-pointer",
         icon: "h-13 min-w-[52px]",
         "icon-sm": "h-6 w-6",
@@ -43,13 +43,21 @@ const buttonVariants = cva(
         only: "items-center justify-center",
       },
       iconPosition: {
-        left: "gap-2 pl-1",
-        right: "gap-2 pr-1",
+        left: "gap-2 pl-5",
+        right: "gap-2 pr-5",
       },
       iconSize: {
         sm: "w-4 h-4",
         md: "w-5 h-5",
         lg: "w-6 h-6",
+      },
+      isSelected: {
+        true: "bg-brand-primary-100",
+        false: "",
+      },
+      isActive: {
+        true: "bg-brand-primary-100",
+        false: "",
       },
     },
     defaultVariants: {
@@ -118,12 +126,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     icon,
     iconPosition,
     iconSize,
+    isActive,
+    isSelected,
     ...props
   }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, pill, icon, className }))}
+        className={cn(buttonVariants({ variant, size, pill, icon, className, iconPosition, iconSize, isSelected}))}
         ref={ref}
         {...props}
       />
