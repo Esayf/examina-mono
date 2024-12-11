@@ -95,12 +95,6 @@ export const PublishButton = () => {
     const isValid = await form.trigger(undefined, { shouldFocus: true });
     const step1Values = getStep1Values();
     const step2Values = form.getValues();
-    console.log("step2Values", step2Values);
-    console.log("step1Values", step1Values);
-    console.log("isValid", isValid);
-    console.log("session", session);
-    console.log("form", form);
-    console.log("getValues", form.getValues());
   
     if (isValid) {
       try {
