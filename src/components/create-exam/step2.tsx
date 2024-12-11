@@ -56,47 +56,47 @@ export const Step2 = ({ onBack }: Step2Props) => {
       </CardHeader>
 
       <CardContent className="w-full px-5 py-5 space-y-5 flex-1 overflow-y-auto gap-8 flex-col relative mb-5">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => {
-            const characterCount = field.value?.length || 0;
-            const isOverLimit = characterCount > 200;
+      <FormField
+      control={form.control}
+      name="title"
+      render={({ field }) => {
+        const characterCount = field.value?.length || 0;
+        const isOverLimit = characterCount > 200;
 
-            return (
-              <FormItem>
-                <p className="text-lg font-bold text-brand-primary-950 mb-2">1. Title</p>
-                <FormLabel>Quiz name</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      maxLength={120}
-                      placeholder="Give your quiz a clear, engaging name.."
-                      className={cn(
-                        "rounded-2xl border",
-                        isOverLimit
-                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                          : "border-greyscale-light-300"
-                      )}
-                      {...field}
-                    />
-                    <div
-                      className={`text-sm absolute right-3 top-3 ${
-                        isOverLimit ? "text-red-500" : "text-greyscale-light-500"
-                      }`}
-                    >
-                      {`${characterCount}/120`}
-                    </div>
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  A descriptive name will give participants an indication of what the quiz is about.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
+         return (
+      <FormItem>
+        <p className="text-lg font-bold text-brand-primary-950 mb-2">1. Title</p>
+        <FormLabel>Quiz name</FormLabel>
+        <FormControl>
+          <div className="relative">
+            <Input
+              maxLength={120}
+              placeholder="Give your quiz a clear, engaging name.."
+              className={cn(
+                "rounded-2xl border",
+                isOverLimit
+                  ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                  : "border-greyscale-light-300"
+              )}
+              {...field}
+            />
+            <div
+              className={`text-sm absolute right-3 top-3 ${
+                isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+              }`}
+            >
+              {`${characterCount}/120`}
+            </div>
+          </div>
+        </FormControl>
+        <FormDescription>
+          A descriptive name will give participants an indication of what the quiz is about.
+        </FormDescription>
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
 
         <div className="flex flex-col sm:flex-row">
           <div className="flex-1 gap-4">

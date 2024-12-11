@@ -58,58 +58,37 @@ function Row({ exam }: RowProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="text-greyscale-light-700">
-        <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-50 hover:text-brand-primary-600 hover:font-base border-t border-greyscale-light-200">
-          <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px] border-r border-greyscale-light-100">
-            <p
-              className="text-inherit text-base font-medium leading-6 overflow-y-hidden overflow-x-hidden"
-              title={exam?.title}
-            >
-              {exam?.title.length > 15 ? `${exam?.title.substring(0, 15)}...` : exam?.title}
-            </p>
-          </div>
-          <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam?.startDate ? formatDate(new Date(exam?.startDate)) : "N/A"}
-            </p>
-          </div>
-          <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {endDate ? formatDate(endDate) : "N/A"}
-            </p>
-          </div>
-          <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] max-h-[72px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam?.duration ? `${exam?.duration} min.` : "N/A"}
-            </p>
-          </div>
-          <div className="flex-1 p-5 min-w-[80px] max-w-[160px] max-h-[72px]">
-            <Badge
-              variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
-            >
-              {status}
-            </Badge>
-          </div>
-          <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
-            {status === "Draft" && (
-              <Button
-                disabled={exam.isCompleted}
-                variant="outline"
-                size="sm"
-                icon={true}
-                className="max-w-8 min-h-8 border"
-                onClick={() => {
-                  router.push(`/app/exams/edit/${exam._id}`);
-                }}
-              >
-                <PencilIcon className="size-4 min-w-4 min-h-4 stroke-current stroke-2" />
-              </Button>
-            )}
-            <Button
-              variant="default"
-              className="bg-brand-secondary-200 hover:bg-brand-secondary-100 border hover:border-brand-primary-950 "
-              size="sm"
-              icon={true}
+    <div className="text-greyscale-light-700">
+      <div className="flex transition-all duration-200 ease-in-out font-medium hover:bg-brand-primary-50 hover:text-brand-primary-600 hover:font-base border-t border-greyscale-light-200">
+        <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px] border-r border-greyscale-light-100">
+          <p className="text-inherit text-base font-medium leading-6 overflow-y-hidden overflow-x-hidden" title={exam?.title}>
+            {exam?.title.length > 15 ? `${exam?.title.substring(0, 15)}...` : exam?.title}
+          </p>
+        </div>
+        <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px] border-r border-greyscale-light-100">
+          <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+            {formatDate(new Date(exam?.startDate))}
+          </p>
+        </div>
+        <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] max-h-[72px] border-r border-greyscale-light-100">
+          <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+            {endDate ? formatDate(endDate) : "N/A"}
+          </p>
+        </div>
+        <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] max-h-[72px] border-r border-greyscale-light-100">
+          <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+            {exam?.duration} min.
+          </p>
+        </div>
+        <div className="flex-1 p-5 min-w-[80px] max-w-[160px] max-h-[72px]">
+          <Badge
+            variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
+          >
+            {status}
+          </Badge>
+        </div>
+        <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
+            <Button disabled variant="default" size="sm" icon={true} className="max-w-8 min-h-8 border"
               onClick={() => {
                 copy(`${window.location.origin}/app/exams/get-started/${exam._id}`);
               }}
@@ -166,70 +145,59 @@ function Application() {
 
   return (
     <>
-      <DashboardHeader withoutTabs={false} withoutNav={true} />
-      <div className="h-dvh flex flex-col bg-brand-secondary-50">
-        <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
-            <Card className="bg-base-white min-h-full border-greyscale-light-200">
-              <CardHeader>
-                <CardHeaderContent className="sticky top-0">
-                  <CardTitle className="whitespace-nowrap">All quizzes</CardTitle>
-                  <CardDescription className="hidden md:block">
-                    All quizzes created by you are listed here. You can copy the link to share with
-                    audience.
-                  </CardDescription>
-                </CardHeaderContent>
-                <Button variant="default" icon={true} iconPosition="right" asChild pill>
-                  <Link href="/app/create-exam/">
-                    Create new
-                    <ArrowUpRightIcon className="size-6" />
-                  </Link>
-                </Button>
-              </CardHeader>
+    <div className="h-dvh flex flex-col bg-brand-secondary-50">
+      <DashboardHeader withoutTabs={false} withoutNav={true}/>
+      <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
+        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
+        <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col">
+          <CardHeader>
+            <CardHeaderContent>
+              <CardTitle>All quizzes</CardTitle>
+              <CardDescription>
+                All quizzes created by you are listed here. You can copy the link to share with
+                audience. 
+              </CardDescription>
+            </CardHeaderContent>
+            <Button
+              variant="default"
+              icon={true}
+              iconPosition="right"
+              pill
+              onClick={() => router.push("/app/create-exam/")}
+            >
+              Create new
+              <ArrowUpRightIcon className="size-6" />
+            </Button>
+          </CardHeader>
 
-              <CardContent className="px-0 pt-0">
-                <div className="overflow-x-auto">
-                  <div className="flex min-w-full">
-                    <div className="flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[154px] max-w-[220px]">
-                      <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                        Quiz Title
-                      </p>
-                    </div>
-                    <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px]">
-                      <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                        Start Date
-                      </p>
-                    </div>
-                    <div className="hidden lg:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px]">
-                      <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                        End Date
-                      </p>
-                    </div>
-                    <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[120px] max-w-[160px]">
-                      <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                        Total Time
-                      </p>
-                    </div>
-                    <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[80px] max-w-[160px]">
-                      <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                        Status
-                      </p>
-                    </div>
-                    <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[100px] justify-end" />
-                  </div>
-                  <div className="overflow-y-auto max-h-[724px]">
-                    {data?.map((exam) => (
-                      <Row key={exam?._id} exam={exam} />
-                    ))}
-                    {draftExams?.map((exam) => (
-                      <Row key={exam?._id} exam={exam} />
-                    ))}
-                  </div>
+          <CardContent className="px-0 pt-0 pb-5">
+              <div className="flex min-w-full">
+                <div className="flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[154px] max-w-[220px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Title</p>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Start Date</p>
+                </div>
+                <div className="hidden lg:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">End Date</p>
+                </div>
+                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[120px] max-w-[160px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Duration</p>
+                </div>  
+                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[80px] max-w-[160px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Status</p>
+                </div>
+                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[100px] justify-end border-b-4" />
+              </div>
+              <div className="overflow-y-auto max-h-[628px]">
+              {data?.map((exam) => (
+                <Row key={exam?._id} exam={exam} />
+              ))}
+              </div>
+          </CardContent>
+        </Card>
+      </div>
+      </div>
       </div>
     </>
   );
