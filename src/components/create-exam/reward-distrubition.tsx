@@ -21,6 +21,7 @@ export const RewardDistributionForm = () => {
       <div className="flex gap-4 justify-between flex-col sm:flex-row">
         {/*         <FormField
           name="rewardType"
+          control={form.control}
           render={({ field: { onChange, ...field } }) => (
             <FormItem className="flex-1">
               <FormLabel>Reward type</FormLabel>
