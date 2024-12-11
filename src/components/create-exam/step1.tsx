@@ -212,12 +212,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
       <Card className="flex-1 flex flex-col overflow-y-auto">
       <CardHeader>
       <Button 
-      onClick={() => {}}
-      variant="default"
-      className="flex items-center justify-center stroke-current text-3xl align-middle cursor-pointer hover:bg-brand-primary-400"
-      size="icon" pill>
+        onClick={() => {}}
+        variant="default"
+        className="flex items-center justify-center stroke-current text-3xl align-middle cursor-pointer hover:bg-brand-primary-400"
+        size="icon" pill>
        ☺︎
-        </Button>
+      </Button>
         <CardHeaderContent>
           <CardTitle>Let’s create your questions!</CardTitle>
           <CardDescription>

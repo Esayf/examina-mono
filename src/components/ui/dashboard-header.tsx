@@ -15,6 +15,7 @@ import { hasActiveSession } from "@/features/client/session";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { LogoutButton } from "./logout-button";
 
 function DashboardHeader({ withoutNav = false, withoutTabs = false} ) {
   const session = useAppSelector((state) => state.session);
@@ -91,19 +92,8 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false} ) {
             </a>
           </Button>
           <div className="hidden md:flex items-center">
-          <Button
-            variant="outline"
-            size="icon"
-            pill
-            onClick={() =>
-              logout().then(() => {
-                toast.success("Logged out successfully");
-                window.location.replace(window.location.origin);
-              })
-            }
-          >
-            <ArrowRightStartOnRectangleIcon className="w-6 h-6" />
-          </Button>
+          <LogoutButton
+          ></LogoutButton>
           </div>
 
             <div className="md:hidden flex items-center">

@@ -161,20 +161,14 @@ export default function Home() {
         <meta property="og:url" content="https://choz.io" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta
-          property="og:image"
-          content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`}
-        />
+        <meta property="og:image" content="https://choz.io/ogimage.png"/>
         <meta property="og:site_name" content="Choz" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chozapp" />
         <meta name="twitter:creator" content="@chozapp" />
-        <meta
-          name="twitter:image"
-          content={`${process.env.NEXT_PUBLIC_BASE_URL}/images/backgrounds/ogimage.png`}
-        />
+        <meta name="twitter:image" content="/ogimage.png"/>
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
 

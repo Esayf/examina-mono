@@ -95,7 +95,7 @@ export const PublishButton = () => {
     const isValid = await form.trigger(undefined, { shouldFocus: true });
     const step1Values = getStep1Values();
     const step2Values = form.getValues();
-
+  
     if (isValid) {
       try {
         let contractAddressNullable = "";
@@ -106,15 +106,16 @@ export const PublishButton = () => {
         const rewardPerWinner = step2Values.rewardPerWinner
           ? parseMina(step2Values.rewardPerWinner)
           : undefined;
-
+  
         const isRewardDistributionEnabled =
           step2Values.rewardDistribution && !!totalRewardPoolAmount && !!rewardPerWinner;
-
+  
         if (isRewardDistributionEnabled) {
+          // Reward dağıtımı için gerekli işlemler
           const randomValues = new Uint8Array(1);
           self.crypto.getRandomValues(randomValues);
           const secretKey = randomValues[0].toString();
-
+  
           const deployTx = await buildDeployTx(session.session.walletAddress, {
             startDate: step2Values.startDate.getTime().toString(),
             duration: step2Values.duration,
@@ -122,15 +123,15 @@ export const PublishButton = () => {
             totalRewardPoolAmount: totalRewardPoolAmount.toString(),
             rewardPerWinner: rewardPerWinner.toString(),
           });
-
+  
           if (!("mina_signer_payload" in deployTx)) {
             toast.error("Failed to create exam. Could not build deploy transaction");
             setIsPublishing(false);
             return;
           }
-
+  
           const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
-
+  
           const signedAuroData = window.mina?.isPallad
             ? ((
                 await window?.mina?.request({
@@ -146,7 +147,7 @@ export const PublishButton = () => {
               return;
             }
           }
-
+  
           let signedData = window.mina?.isAuro
             ? (signedAuroData as SignedAuroData).signedData
             : (signedAuroData as SignedPalladData).data;
@@ -164,7 +165,8 @@ export const PublishButton = () => {
           });
           contractAddressNullable = contractAddress;
         }
-
+  
+        // Reward dağıtımı devre dışıyken sadece sınav oluştur
         await saveExam({
           id: v4(),
           title: step2Values.title,
@@ -197,7 +199,7 @@ export const PublishButton = () => {
     } else {
       setIsPublishing(false);
     }
-  };
+  };  
 
   return (
     <Button

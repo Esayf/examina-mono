@@ -80,7 +80,7 @@ function Row({ exam }: RowProps) {
           </Badge>
         </div>
         <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
-            <Button disabled={exam.isCompleted} variant="outline" size="sm" icon={true} className="max-w-8 min-h-8 border"
+            <Button disabled variant="default" size="sm" icon={true} className="max-w-8 min-h-8 border"
               onClick={() => {
                 router.push(`/app/exams/edit/${exam._id}`);
               }}
@@ -144,15 +144,15 @@ function Application() {
 
   return (
     <>
+    <div className="h-dvh flex flex-col bg-brand-secondary-50">
       <DashboardHeader withoutTabs={false} withoutNav={true}/>
-      <div className="h-dvh flex flex-col bg-brand-secondary-50">
       <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
         <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
-        <Card className="bg-base-white min-h-full border-greyscale-light-200">
+        <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col">
           <CardHeader>
-            <CardHeaderContent className="sticky top-0">
-              <CardTitle className="whitespace-nowrap">All quizzes</CardTitle>
-              <CardDescription className="hidden md:block">
+            <CardHeaderContent>
+              <CardTitle>All quizzes</CardTitle>
+              <CardDescription>
                 All quizzes created by you are listed here. You can copy the link to share with
                 audience. 
               </CardDescription>
@@ -161,42 +161,38 @@ function Application() {
               variant="default"
               icon={true}
               iconPosition="right"
-              asChild
               pill
+              onClick={() => router.push("/app/create-exam/")}
             >
-              <Link href="/app/create-exam/">
-                Create new
-                <ArrowUpRightIcon className="size-6" />
-              </Link>
+              Create new
+              <ArrowUpRightIcon className="size-6" />
             </Button>
           </CardHeader>
 
-          <CardContent className="px-0 pt-0">
-            <div className="overflow-x-auto">
+          <CardContent className="px-0 pt-0 pb-5">
               <div className="flex min-w-full">
-                <div className="flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[154px] max-w-[220px]">
-                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Quiz Title</p>
+                <div className="flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[154px] max-w-[220px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Title</p>
                 </div>
-                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px]">
+                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px] border-b-4">
                   <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Start Date</p>
                 </div>
-                <div className="hidden lg:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px]">
+                <div className="hidden lg:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[180px] max-w-[240px] border-b-4">
                   <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">End Date</p>
                 </div>
-                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[120px] max-w-[160px]">
-                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Total Time</p>
+                <div className="hidden sm:flex flex-1 p-5 bg-greyscale-light-100 border-r border-r-greyscale-light-200 min-w-[120px] max-w-[160px] border-b-4">
+                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Duration</p>
                 </div>  
-                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[80px] max-w-[160px]">
+                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[80px] max-w-[160px] border-b-4">
                   <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">Status</p>
                 </div>
-                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[100px] justify-end" />
+                <div className="flex-1 p-5 bg-greyscale-light-100 min-w-[100px] justify-end border-b-4" />
               </div>
-              <div className="overflow-y-auto max-h-[724px]">
+              <div className="overflow-y-auto max-h-[628px]">
               {data?.map((exam) => (
                 <Row key={exam?._id} exam={exam} />
               ))}
               </div>
-            </div>
           </CardContent>
         </Card>
       </div>
