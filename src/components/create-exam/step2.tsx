@@ -61,7 +61,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
         const characterCount = field.value?.length || 0;
         const isOverLimit = characterCount > 200;
 
-    return (
+         return (
       <FormItem>
         <p className="text-lg font-bold text-brand-primary-950 mb-2">1. Title</p>
         <FormLabel>Quiz name</FormLabel>

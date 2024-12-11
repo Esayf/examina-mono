@@ -21,19 +21,16 @@ export const step2ValidationSchema = z
     minimumPassingScore: looseOptional(
       z
         .number()
-        .int()
         .min(0, "Minimum passing score must be at least 0")
         .max(100, "Minimum passing score must be at most 100")
     ),
     totalRewardPoolAmount: z.preprocess((value) => {
-      if (
-        value === null ||
-        (typeof value === "string" && value === "") ||
-        typeof value === "undefined"
-      )
-        return undefined;
-      return Number(z.string().parse(value));
+      if (!value) return undefined; // Null, boş string veya undefined ise geri dön
+      return Number(value);
     }, z.number().min(0, "Total reward pool must be at least 0").optional()),
+
+    rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
+    
     rewardPerWinner: z.preprocess((value) => {
       if (
         value === null ||
@@ -67,8 +64,22 @@ export const step2ValidationSchema = z
           path: ["rewardPerWinner"],
         });
       }
+  
+      // Mantıksal kontrol: Reward per winner > total pool
+      if (
+        values.rewardPerWinner &&
+        values.totalRewardPoolAmount &&
+        values.rewardPerWinner > values.totalRewardPoolAmount
+      ) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Reward per winner cannot exceed the total reward pool.",
+          path: ["rewardPerWinner"],
+        });
+      }
     }
   });
+  
 
 export type Step2FormValues = z.infer<typeof step2ValidationSchema>;
 

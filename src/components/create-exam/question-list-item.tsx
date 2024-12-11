@@ -2,13 +2,20 @@ import { Button } from "@/components/ui/button";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
 import { text } from "stream/consumers";
+import EraseButton from "../ui/erase-button";
+import { handlePromise } from "@mdxeditor/editor";
+
 
 const ErrorBadge = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="px-1 py-0.5 rounded-full bg-ui-error-100 text-xs font-semibold flex-grow-0 text-ui-error-500 flex">{children}</div>
   );
 };
-
+  
+const handleRemove = () => {
+    console.log("Item removed!");
+  };
+  
 interface QuestionListItemProps {
   index: number;
   onClick: () => void;
@@ -34,20 +41,9 @@ export const QuestionListItem = ({
       onClick={onClick}
     >
       Question {index + 1}
-  
       {isIncomplete && <ErrorBadge>check it</ErrorBadge>}
       {onRemove && (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            onRemove(index);
-          }}
-        >
-          <TrashIcon className="size-5" />
-        </Button>
+        <EraseButton onRemove={() => onRemove(index)} duration={1500} />
       )}
     </button>
   );
