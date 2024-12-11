@@ -19,9 +19,8 @@ export const RewardDistributionForm = () => {
   return (
     <>
       <div className="flex gap-4 justify-between flex-col sm:flex-row">
-        {/*         <FormField
+        <FormField
           name="rewardType"
-          control={form.control}
           render={({ field: { onChange, ...field } }) => (
             <FormItem className="flex-1">
               <FormLabel>Reward type</FormLabel>
@@ -39,7 +38,7 @@ export const RewardDistributionForm = () => {
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
         <FormField
           control={form.control}
           name="minimumPassingScore"
