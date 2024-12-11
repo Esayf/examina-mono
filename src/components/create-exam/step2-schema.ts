@@ -29,8 +29,8 @@ export const step2ValidationSchema = z
       return Number(value);
     }, z.number().min(0, "Total reward pool must be at least 0").optional()),
 
-    rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
-    
+    //rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
+
     rewardPerWinner: z.preprocess((value) => {
       if (
         value === null ||
@@ -64,7 +64,7 @@ export const step2ValidationSchema = z
           path: ["rewardPerWinner"],
         });
       }
-  
+
       // Mantıksal kontrol: Reward per winner > total pool
       if (
         values.rewardPerWinner &&
@@ -79,7 +79,7 @@ export const step2ValidationSchema = z
       }
     }
   });
-  
+
 
 export type Step2FormValues = z.infer<typeof step2ValidationSchema>;
 
