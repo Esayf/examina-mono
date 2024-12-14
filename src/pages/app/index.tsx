@@ -1,7 +1,7 @@
 import Image from "next/image";
 import router, { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { Exam, getExamList } from "@/lib/Client/Exam";
+import { Exam, getDraftExams, getExamList } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 import { useState } from "react";
 
@@ -11,7 +11,13 @@ import DashboardHeader from "@/components/ui/dashboard-header";
 // Icons and Images
 import EmptyState from "@/images/emptystates.svg";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRightIcon, DocumentDuplicateIcon, PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowUpRightIcon,
+  DocumentDuplicateIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import {
@@ -34,18 +40,20 @@ function Row({ exam }: RowProps) {
 
   const now = new Date();
   const startDate = new Date(exam.startDate);
-  const endDate = new Date(
-    new Date(exam.startDate).getTime() + Number(exam.duration) * 60 * 1000
-  );
-
+  const endDate =
+    exam.duration && exam.startDate
+      ? new Date(new Date(exam.startDate).getTime() + Number(exam.duration) * 60 * 1000)
+      : null;
 
   let status = "Upcoming";
   if (startDate > now) {
     status = "Upcoming";
   } else if (startDate <= now && (!endDate || endDate > now) && !exam.isCompleted) {
     status = "Active";
-  } else if (endDate && endDate <= now || exam.isCompleted) {
+  } else if ((endDate && endDate <= now) || exam.isCompleted) {
     status = "Ended";
+  } else {
+    status = "Draft";
   }
 
   return (
@@ -82,26 +90,15 @@ function Row({ exam }: RowProps) {
         <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
             <Button disabled variant="default" size="sm" icon={true} className="max-w-8 min-h-8 border"
               onClick={() => {
-                router.push(`/app/exams/edit/${exam._id}`);
+                copy(`${window.location.origin}/app/exams/get-started/${exam._id}`);
               }}
             >
-              <PencilIcon className="size-4 min-w-4 min-h-4 stroke-current stroke-2"/>
+              {copiedText ? "Copied!" : "Copy link"}
+              <DocumentDuplicateIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block" />
             </Button>
-          <Button
-            variant="default"
-            className="bg-brand-secondary-200 hover:bg-brand-secondary-100 border hover:border-brand-primary-950 "
-            size="sm"
-            icon={true}
-            onClick={() => {
-              copy(`${window.location.origin}/app/exams/get-started/${exam._id}`);
-            }}
-          >
-            {copiedText ? "Copied!" : "Copy link"}
-            <DocumentDuplicateIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block"/>
-          </Button>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }
@@ -111,13 +108,17 @@ function Application() {
     queryKey: ["exams"],
     queryFn: getExamList,
   });
+  const { data: draftExams } = useQuery({
+    queryKey: ["draftExams"],
+    queryFn: getDraftExams,
+  });
 
   const router = useRouter();
 
-  if (isLoading === false && data?.length === 0 && isError === false)
+  if (isLoading === false && data?.length === 0 && draftExams?.length === 0 && isError === false)
     return (
       <>
-        <DashboardHeader/>
+        <DashboardHeader />
         <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">All Quizzes</h3>
