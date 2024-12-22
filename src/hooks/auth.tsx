@@ -57,7 +57,7 @@ export async function connectWallet() {
       const accounts: string[] = await mina.getAccounts();
 
       if (accounts.length > 0) {
-        await switchChain("mina:testnet");
+        await switchChain("mina:devnet");
         return accounts[0];
       }
 
@@ -68,7 +68,7 @@ export async function connectWallet() {
       }
 
       const publicKeyBase58: string = minaAccounts[0];
-      const chain = await switchChain("mina:testnet");
+      const chain = await switchChain("mina:devnet");
       if (!chain) {
         throw new Error("Failed to switch chain. Please try again.");
       }
@@ -83,7 +83,7 @@ export async function connectWallet() {
       console.log("CURRENT CHAIN REQUEST", currentChainRequest);
       const currentChain = currentChainRequest.result;
       if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
-        await switchChain("mina:testnet");
+        await switchChain("mina:devnet");
       }
 
       const accounts: string[] = (
