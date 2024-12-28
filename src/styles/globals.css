@@ -827,3 +827,29 @@
     }
   }
 }
+
+/* Make MDX editor completely non-interactive */
+.non-interactive-editor {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.non-interactive-editor * {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  cursor: default !important;
+}
+
+/* Remove any focus indicators */
+.non-interactive-editor *:focus,
+.non-interactive-editor *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure scrolling still works if needed */
+.non-interactive-editor {
+  overflow-y: auto !important;
+}

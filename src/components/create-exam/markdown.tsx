@@ -1,5 +1,18 @@
 import React, { forwardRef } from "react";
-import { AdmonitionDirectiveDescriptor, BlockTypeSelect, CodeToggle, CreateLink, InsertAdmonition, InsertCodeBlock, InsertTable, InsertThematicBreak, ListsToggle, MDXEditor, MDXEditorMethods, tablePlugin } from "@mdxeditor/editor";
+import {
+  AdmonitionDirectiveDescriptor,
+  BlockTypeSelect,
+  CodeToggle,
+  CreateLink,
+  InsertAdmonition,
+  InsertCodeBlock,
+  InsertTable,
+  InsertThematicBreak,
+  ListsToggle,
+  MDXEditor,
+  MDXEditorMethods,
+  tablePlugin,
+} from "@mdxeditor/editor";
 import {
   headingsPlugin,
   listsPlugin,
@@ -34,7 +47,10 @@ interface MarkdownEditorProps {
 }
 
 export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
-  ({ onChange, markdown, readOnly, className, contentEditableClassName = "contentEditable" }, ref) => {
+  (
+    { onChange, markdown, readOnly, className, contentEditableClassName = "contentEditable" },
+    ref
+  ) => {
     const uploadFile = async (file: File) => {
       if (!file) return Promise.reject("No file selected");
 
@@ -67,8 +83,25 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
       linkPlugin(),
       codeBlockPlugin(),
       directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
-      tablePlugin({
+      imagePlugin({
+        imageUploadHandler: async (image: File) => {
+          const options = {
+            maxSizeMB: 1, // Maximum file size (MB)
+            useWebWorker: true, // Use Web Worker to improve performance
+          };
+          const url = await toast.promise(uploadFile(image), {
+            loading: "Uploading image...",
+            success: "Image uploaded successfully",
+            error: (error) => `Failed to upload image: ${error}`,
+          });
 
+          if (!url) {
+            return Promise.reject();
+          }
+          return Promise.resolve(url);
+        },
+      }),
+      tablePlugin({
         imageUploadHandler: async (image: File) => {
           const options = {
             maxSizeMB: 1, // Maximum file size (MB)
@@ -101,7 +134,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
           toolbarContents: () => (
             <>
               <UndoRedo />
-              <BlockTypeSelect/>
+              <BlockTypeSelect />
               <BoldItalicUnderlineToggles />
               <CodeToggle />
               <InsertTable />
@@ -109,6 +142,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
               <InsertAdmonition />
               <ListsToggle />
               <CreateLink />
+              <InsertImage />
             </>
           ),
         })
@@ -128,4 +162,3 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
     );
   }
 );
-

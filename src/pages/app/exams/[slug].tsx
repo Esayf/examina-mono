@@ -48,14 +48,22 @@ function ExamDetails() {
   const [choices, setChoices] = useState<number[]>([]);
 
   // Exam details query
-  const { data: examData, isLoading: isloadingData, isError: isErrorExam } = useQuery({
+  const {
+    data: examData,
+    isLoading: isloadingData,
+    isError: isErrorExam,
+  } = useQuery({
     queryKey: ["exam", examId],
     queryFn: () => getExamDetails(examId!),
     enabled: !!examId,
   });
 
   // Questions query
-  const { data: questions, isLoading: isLoadingQuestions, isError: isErrorQuestions } = useQuery({
+  const {
+    data: questions,
+    isLoading: isLoadingQuestions,
+    isError: isErrorQuestions,
+  } = useQuery({
     queryKey: ["questions", examId],
     queryFn: () => getExamQuestions(examId!),
     enabled: !!examId,
@@ -124,30 +132,30 @@ function ExamDetails() {
                   startDate={examData.exam.startDate}
                   duration={examData.exam.duration}
                   mutate={mutate}
-                  onTimeout={() => router.push('/')}
+                  onTimeout={() => router.push("/")}
                 />
               )}
               <div className="flex gap-2">
                 <Button
                   variant="destructive"
-                disabled={isPending}
-                onClick={() => {
-                  if (choices.every((choice) => choice === 0)) {
-                    toast.error("Please answer at least one question.");
-                    return;
-                  }
-                  mutate();
-                }}
-              >
-                {isPending ? (
-                  <>
-                    <Spinner className="size-6" />
-                    Submitting...
-                  </>
-                ) : (
-                  "Finish quiz"
-                )}
-              </Button>
+                  disabled={isPending}
+                  onClick={() => {
+                    if (choices.every((choice) => choice === 0)) {
+                      toast.error("Please answer at least one question.");
+                      return;
+                    }
+                    mutate();
+                  }}
+                >
+                  {isPending ? (
+                    <>
+                      <Spinner className="size-6" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Finish quiz"
+                  )}
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -164,9 +172,9 @@ function ExamDetails() {
             <div className="flex-1 flex gap-6 flex-col overflow-wrap break-words">
               <div className="border border-greyscale-light-300 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[360px] max-h-[400px] md:min-h-[400px] md:max-h-[1200px]">
                 <MDXEditor
-                  className="overflow-wrap break-words"
+                  className="overflow-wrap break-words non-interactive-editor"
                   ref={mdRef}
-                  readOnly
+                  readOnly={true}
                   markdown={currentQuestion?.text || ""}
                   plugins={[
                     headingsPlugin(),
@@ -174,7 +182,7 @@ function ExamDetails() {
                     quotePlugin(),
                     thematicBreakPlugin(),
                     markdownShortcutPlugin(),
-                    imagePlugin(),
+                    imagePlugin({ disableImageResize: true }),
                     tablePlugin(),
                     directivesPlugin(),
                     linkPlugin(),
