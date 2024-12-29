@@ -19,8 +19,7 @@ export const useSession = () => {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['session'],
     queryFn: getSession,
-    // @ts-ignore
-    cacheTime: 0,
+    staleTime: 0,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -84,7 +83,7 @@ export const useSession = () => {
 
   useEffect(() => {
     if (router.pathname.includes('get-started')) {
-      return;
+      isRendered.current = true;
     }
 
     if (isLoading) {
@@ -100,7 +99,6 @@ export const useSession = () => {
     if (router.pathname !== '/') {
       getAccounts().then((accounts: string[]) => {
         if (accounts.length === 0) {
-          // the browser wallet does not exist but there was a session in the server
           if (data) {
             logout().then(() => {
               dispatch(resetSession());
@@ -115,19 +113,16 @@ export const useSession = () => {
             return;
           }
         } else {
-          if (data) {
-            console.log('data', data);
-            if ('error' in data) {
-              toast.error(data.error);
-              return;
-            }
-
-            dispatch(setSession(data));
+          if (data && 'session' in data && data.session?.walletAddress &&
+            accounts[0] !== data.session.walletAddress) {
+            logout().then(() => {
+              dispatch(resetSession());
+            });
             return;
           }
 
-          if (!data) {
-            dispatch(resetSession());
+          if (data && !('error' in data)) {
+            dispatch(setSession(data));
             return;
           }
         }
