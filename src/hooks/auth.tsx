@@ -34,9 +34,10 @@ export async function switchChain(chainId: `mina:${string}`) {
 
     return chainId;
   } else {
-    const currentChain = (await mina.request({
-      method: "mina_chainId",
-    })
+    const currentChain = (
+      await mina.request({
+        method: "mina_chainId",
+      })
     ).result;
     if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
       throw new Error(`This network is not supported. Switch to devnet to continue.`);
@@ -53,7 +54,7 @@ export async function connectWallet() {
     }
     console.log("THIS IS MINA", mina);
 
-    if (mina.isAuro) {
+    if (mina.isAuro || !mina.isPallad) {
       const accounts: string[] = await mina.getAccounts();
 
       if (accounts.length > 0) {
@@ -76,10 +77,9 @@ export async function connectWallet() {
       return publicKeyBase58;
     }
     if (mina.isPallad) {
-      const currentChainRequest = (await mina.request({
+      const currentChainRequest = await mina.request({
         method: "mina_chainId",
-      })
-      )
+      });
       console.log("CURRENT CHAIN REQUEST", currentChainRequest);
       const currentChain = currentChainRequest.result;
       if (currentChain !== "29936104443aaf264a7f0192ac64b1c7173198c1ed404c1bcff5e562e05eb7f6") {
