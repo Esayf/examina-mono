@@ -128,8 +128,6 @@ export const useSession = () => {
 
           if (!data) {
             dispatch(resetSession());
-            toast.error('Please sign message while authentication to continue.');
-            router.push('/');
             return;
           }
         }
