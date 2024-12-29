@@ -105,7 +105,6 @@ export const useSession = () => {
             logout().then(() => {
               dispatch(resetSession());
               toast.error('Please connect wallet to continue.');
-              router.push('/');
             });
             return;
           }
@@ -113,7 +112,6 @@ export const useSession = () => {
           if (!data) {
             dispatch(resetSession());
             toast.error('Please login to continue.');
-            router.push('/');
             return;
           }
         } else {
