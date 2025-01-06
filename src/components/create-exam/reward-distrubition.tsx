@@ -15,12 +15,11 @@ import { Input } from "../ui/input";
 
 export const RewardDistributionForm = () => {
   const form = useStep2Form();
-  
   return (
     <>
     <div className="flex gap-4 justify-between flex-col sm:flex-row">
     <FormField
-        control={form.control}
+        disabled
         name="rewardType"
         render={({ field: { onChange, ...field } }) => (
           <FormItem className="flex-1">
@@ -36,7 +35,6 @@ export const RewardDistributionForm = () => {
               </SelectContent>
             </Select>
             <FormDescription>Select the reward type.</FormDescription>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -48,7 +46,7 @@ export const RewardDistributionForm = () => {
             <FormLabel>Minimum passing score</FormLabel>
             <FormControl>
               <Input
-                placeholder="Enter minimum passing score (0-100)"
+                placeholder="Enter minimum passing score (0-100) maxlen"
                 type="number"
                 min={0}
                 max={100}

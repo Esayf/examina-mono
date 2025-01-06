@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { iconComponentFor$ } from "@mdxeditor/editor";
+import { IconRight } from "react-day-picker";
 
 interface RowProps {
   exam: Exam;
@@ -88,7 +90,14 @@ function Row({ exam }: RowProps) {
           </Badge>
         </div>
         <div className="flex-1 p-5 min-w-[100px] min-h-[72px] flex justify-end gap-2">
-            <Button disabled variant="default" size="sm" icon={true} className="max-w-8 min-h-8 border"
+             <Button disabled={exam.isCompleted} variant="outline" size="icon-sm" className="max-w-8 max-h-8 min-w-8 min-h-8 border"
+             onClick={() => {
+              router.push("/app/create-exam")
+            }}
+            >
+              <PencilIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block" />
+            </Button>
+            <Button variant="default" size="sm" icon={true} className="border"
               onClick={() => {
                 copy(`${window.location.origin}/app/exams/get-started/${exam._id}`);
               }}

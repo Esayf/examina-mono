@@ -63,7 +63,12 @@ export const SaveAsDraftButton = () => {
   };
 
   return (
-    <Button variant="ghost" className="w-40" disabled={isPending} pill onClick={handleSave}>
+    <Button 
+    variant="ghost" 
+    className="w-40" 
+    disabled={isPending} 
+    pill 
+    onClick={handleSave}>
       {isPending ? <Spinner className="size-6" /> : "Save as Draft"}
     </Button>
   );

@@ -29,7 +29,7 @@ export const step2ValidationSchema = z
       return Number(value);
     }, z.number().min(0, "Total reward pool must be at least 0").optional()),
 
-    rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
+    /*rewardType: z.enum(["fixed", "percentage"]),*/
     
     rewardPerWinner: z.preprocess((value) => {
       if (
