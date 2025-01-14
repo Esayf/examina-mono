@@ -1,27 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import "./globals.css";
 
 /** Code mirror */
 
-.mdxeditor .cm-editor {
-  --sp-font-mono: var(--font-mono);
-  --sp-font-body: var(--font-body);
-  padding: var(--sp-space-4) 0;
-}
-
-.mdxeditor .sp-editor .cm-editor {
-  padding-bottom: 0;
-}
-
 .mdxeditor .cm-scroller {
-  padding: 0;
+  background-color: #fff !important;       /* Pembe yerine beyaz */
+  color: var(--baseText, #333) !important;
 }
 
+/* Aktif satır vurgusunu devre dışı bırakmak veya renklendirmek */
+.mdxeditor .cm-activeLine {
+  background-color: transparent !important; 
+}
+
+/* Focus çizgisi kapatmak */
 .mdxeditor .cm-focused {
-  outline: none;
+  outline: none !important;
+}
+
+/* Kod satırları line-height */
+.mdxeditor .cm-line {
+  line-height: 1.4 !important;
 }
 
 .mdxeditor .sp-wrapper {
@@ -67,7 +65,7 @@
   outline: 2px solid highlight;
 }
 ._editorRoot_uazmk_53 {
-  --accentBase: var(--color-brand-primary-500);
+  --accentBase: var(--plum-5);
   --accentBgSubtle: var(--color-brand-primary-50);
   --accentBg: var(--color-brand-primary-100);
   --accentBgHover: var(--blue-4);
@@ -82,7 +80,7 @@
 
   --basePageBg: white;
   --baseBase: var(--slate-1);
-  --baseBgSubtle: var(--slate-2);
+  --baseBgSubtle: var(--brand-secondary-50);
   --baseBg: var(--slate-3);
   --baseBgHover: var(--slate-4);
   --baseBgActive: var(--slate-5);
@@ -171,7 +169,7 @@
 }
 
 ._toolbarRoot_uazmk_160 {
-  @apply flex w-full sticky top-0 overflow-x-scroll row-auto pt-2 pl-2 gap-2 bg-greyscale-light-50 border-b border-b-greyscale-light-200 rounded-t-2xl z-0 p-2;
+  @apply flex w-full sticky top-0 overflow-x-scroll row-auto pt-2 pl-2 gap-2 mb-2 bg-greyscale-light-50 border-b border-b-greyscale-light-200 rounded-t-2xl z-10 p-2;
 }
 
 ._toolbarRoot_uazmk_160 div[role="separator"] {
@@ -194,40 +192,169 @@
 ._readOnlyToolbarRoot_uazmk_187 > div {
   opacity: 0.5;
 }
+/* Örnek: tailwind.config.js dosyanızda, extend ile
+   "prose" temelli bir stil de ekleyebilirsiniz.
+   Veya "globals.css" gibi bir dosyada .mdxeditor kuralları yazabilirsiniz. */
+
+   .mdxeditor h1 {
+    @apply text-4xl font-bold mt-0 mb-2;
+  }
+  
+  .mdxeditor h2 {
+    @apply text-3xl font-bold mt-0 mb-2;
+  }
+  
+  .mdxeditor h3 {
+    @apply text-2xl font-bold mt-0 mb-2;
+  }
+  
+  .mdxeditor h4 {
+    @apply text-xl font-bold mt-0 mb-2;
+  }
+  
+  .mdxeditor h5 {
+    @apply text-lg font-bold mt-0 mb-2;
+  }
+  
+  .mdxeditor h6 {
+    @apply text-base font-bold mt-0 mb-2;
+  }
+  
+  .mdxeditor p {
+    @apply mt-0 mb-4;
+  }
+  
+  .mdxeditor a {
+    @apply text-blue-500 no-underline;
+  }
+  .mdxeditor a:hover {
+    @apply text-blue-600 no-underline;
+  }
+  
+  .mdxeditor blockquote {
+    @apply border-l-4 border-gray-300 font-normal italic mt-8 mb-8 pl-6 text-gray-800 text-lg;
+  }
+  
+  .mdxeditor code {
+    @apply bg-gray-300 px-2 py-px rounded text-sm;
+  }
+  
+  .mdxeditor hr {
+    @apply border-b border-gray-300 mt-12 mb-12 rounded-full;
+  }
+  
+  /* UL / OL */
+  .mdxeditor ul {
+    @apply list-disc list-inside mt-4 mb-4;
+  }
+  .mdxeditor ol {
+    @apply list-decimal list-inside mt-4 mb-4;
+  }
+  
+/* örnek: styles/table.css */
+
+/* Değişkenlerin tanımlı olduğu :root var ise (örn. global.css’te) 
+:root {
+  --color-primary-50: #FFF3FD;
+  --color-primary-500: #d51fbd;
+  --color-primary-950: #2A0922;
+  --color-secondary-100: #FBE7DA;
+  --color-primary-600: #a216a2;
+  --color-white: #ffffff;
+  --font-family: 'Filson Pro', sans-serif;
+  ...
+} */
+
+/* Table */
+.mdxeditor-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 2rem 0;
+  font-family: var(--font-family, sans-serif);
+  background-color: var(--color-white);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.mdxeditor-thead {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-950);
+  font-size: 18px;
+  border: none;
+  overflow: hidden;
+}
+
+/* Çift satır renklendirme örneği */
+.mdxeditor-tr:nth-child(even) {
+  background-color: var(--color-primary-50);
+}
+
+/* Hover efekti */
+.mdxeditor-tbody tr:hover {
+  background-color: var(--color-secondary-100);
+  transition: background-color 0.3s ease;
+}
+
+/* Ortak TH/TD stilleri */
+.mdxeditor-th,
+.mdxeditor-td {
+  padding: 1.5rem;
+  text-align: left;
+  vertical-align: top;
+  font-style: normal;
+  border: none;
+  color: var(--color-primary-600);
+  outline: 0.5px solid var(--color-primary-950);
+  width: 100%;
+}
+
+/* Opsiyonel - thead içindeki ilk ve son sütun */
+.mdxeditor-thead th:first-child {
+  font-size: 16px;
+  border: none;
+}
+
+.mdxeditor-thead th:last-child {
+  font-size: 16px;
+  border: none;
+}
+
+
 
 .mdxeditor h1 {
   font-size: 2.5rem !important; /* Büyük başlık */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h2 {
   font-size: 2rem; /* Orta büyüklükte başlık */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h3 {
   font-size: 1.75rem; /* Daha küçük başlık */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h4 {
   font-size: 1.5rem; /* Daha küçük başlık */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h5 {
   font-size: 1.25rem; /* Daha küçük başlık */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h6 {
   font-size: 1.125rem; /* Daha küçük başlık */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.2;
 }
 
@@ -235,6 +362,16 @@
   font-size: 1rem; /* Paragraf */
   line-height: 1.375;
   font-weight: 300;
+}
+
+.mdxeditor img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem; /* Köşe yumuşatma */
+  margin: 1rem auto;    /* Ortalamak için */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
+  resize: both;
 }
 
 .mdxeditor ._toolbarRoot {
@@ -269,12 +406,50 @@
   background-color: var(--accentBgHover);
 }
 
+/* Örnek: Markdown Editor içindeki blockquote */
 .mdxeditor blockquote {
-  font-style: italic;
-  padding: 0.5rem 1rem;
-  border-left: 4px solid var(--accentLine);
-  background-color: var(--accentBgSubtle);
-  margin: 1rem 0;
+  position: relative;
+  margin: 2rem auto;        /* Üst/alt boşluk */
+  padding: 2rem;           /* İç boşluk */
+  max-width: 800px;        /* Genişlik sınırlaması (isteğe bağlı) */
+  font-style: italic;      /* Yazı tipi stili */
+  font-size: 1.25rem;      /* Boyut (daha büyük veya küçük seçebilirsiniz) */
+  line-height: 1.6;        
+  color: var(--color-primary-950);         /* Yazı rengi */
+  background-color: var(--color-primary-50); /* Açık bir zemin rengi */
+  border-radius: 12px;     /* Köşeleri yuvarlatma */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
+  text-align: left;        /* Ortalamak yerine sola hizalı (isteğe göre center) */
+  transition: transform 0.2s ease-in-out;  /* Hover animasyonu için */
+}
+
+/* Blok alıntının yanına büyük tırnak imgesi eklemek */
+.mdxeditor blockquote::before {
+  content: "“";            /* Sol üstte büyük bir tırnak işareti */
+  position: absolute;
+  top: -1rem;              
+  left: 1rem;             
+  font-size: 4rem;         /* Büyük boy tırnak */
+  color: rgba(0,0,0,0.1);  /* Hafif şeffaf renk */
+  pointer-events: none;    /* Metin seçerken engel olmaması için */
+}
+
+/* Hover anında hafif kabartma efekti */
+.mdxeditor blockquote:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 14px rgba(0,0,0,0.15);
+}
+
+.mdxeditor pre {
+  background-color: #fbfbfb; /* hafif gri */
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.mdxeditor pre code {
+  background: #fdf5f;
+  padding: 0;
+  margin: 0;
 }
 
 .mdxeditor ul {
@@ -465,6 +640,57 @@
   width: var(--spacing-48);
 }
 
+/* Toolbar item içinde tooltip göstermek için örnek: */
+
+._toolbarItemWrapper {
+  position: relative; /* Tooltip konumlandırmaya izin */
+  display: inline-block; /* Satır içi öğe olarak tutmak veya block da kullanabilirsiniz */
+}
+
+/* “hover” anında tooltipi aç */
+._toolbarItemWrapper:hover ._toolbarItemTooltip {
+  display: block;
+}
+
+/* Tooltip metnini tanımlayalım */
+._toolbarItemTooltip {
+  display: none; 
+  position: absolute;
+  bottom: 125%; /* Örnek: butonun biraz üstünde göstersin */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.5rem; 
+  font-size: var(--text-xs);
+  color: #fff; /* Kontrast yazı rengi */
+  background-color: #000; /* Örnek koyu zemin */
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  /* Geçişli animasyon isterseniz (isteğe bağlı): */
+  opacity: 0; 
+  transition: opacity 0.15s ease-in-out;
+}
+
+/* Hover’da opacity:1 yap */
+._toolbarItemWrapper:hover ._toolbarItemTooltip {
+  opacity: 1;
+}
+
+/* İsteğe bağlı: tooltipin altına küçük üçgen (arrow) eklemek */
+._toolbarItemTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;    /* tooltipin alt kenarına yerleştir */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;        /* üçgen boyutu */
+  border-style: solid;
+  border-color: #000 transparent transparent transparent; 
+  /* Yukarı bakan üçgen için: üst kenar #000, diğer kenarlar “transparent” */
+}
+
+
 ._toolbarNodeKindSelectItem_uazmk_347,
 ._selectItem_uazmk_300 {
   cursor: default;
@@ -504,15 +730,15 @@
 ._contentEditable_uazmk_379 {
   box-sizing: border-box;
   position: relative;
-  width: 100%;
   color: var(--baseTextContrast);
   overflow-y: auto;
   overflow-x: hidden;
   overflow-wrap: break-word;
   padding: var(--spacing-4);
   font-size: var(--text-base);
-  max-height: 180px; /* Toolbar ile çakışmayı önlemek için uygun bir maksimum yükseklik ayarlayın */
+  max-height: min(2000px, calc(100vh - 100px)); /* Örnek: toolbar 100px */
   z-index: 0;
+  outline: none;
 }
 
 ._contentEditable_uazmk_379:focus {
@@ -584,41 +810,6 @@
   padding-left: var(--spacing-2);
 }
 
-._propertyEditorTable_uazmk_438 {
-  table-layout: fixed;
-  border-spacing: var(--spacing-2);
-}
-
-._propertyEditorTable_uazmk_438 th {
-  text-align: left;
-  font-size: var(--text-sm);
-  padding: var(--spacing-2) var(--spacing-3);
-}
-
-._propertyEditorTable_uazmk_438 col:nth-child(1) {
-  width: 30%;
-}
-
-._propertyEditorTable_uazmk_438 col:nth-child(2) {
-  width: 70%;
-}
-
-._propertyEditorTable_uazmk_438 td:last-child ._iconButton_uazmk_456 {
-  margin-left: var(--spacing-4);
-  margin-right: var(--spacing-4);
-}
-
-._propertyEditorTable_uazmk_438 ._readOnlyColumnCell_uazmk_461 {
-  padding-left: 0;
-}
-
-._propertyEditorLabelCell_uazmk_466 {
-  font-weight: 400;
-}
-
-._readOnlyColumnCell_uazmk_461 {
-  padding-left: 0;
-}
 
 ._buttonsFooter_uazmk_474 {
   display: flex;
@@ -792,16 +983,38 @@
 
 ._linkDialogPopoverContent_uazmk_600,
 ._tableColumnEditorPopoverContent_uazmk_601,
-._dialogContent_uazmk_602 {
-  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.2));
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-0_5);
-  border-radius: var(--radius-medium);
-  border: 1px solid var(--baseBg);
-  background-color: var(--basePageBg);
-  padding: var(--spacing-1) var(--spacing-1);
-  font-size: var(--text-sm);
+/* Örnek: Insert Image modal’ını yakalayan sınıf veya data attribute buldunuz varsayalım. */
+/* DevTools’ta bulduğunuz class’ı gerçek class ile değiştirin. */
+.mdxeditor ._dialogContent_uazmk_602 {
+  background-color: white !important;
+  border-radius: 1rem !important;
+  border: 2px solid #e5e7eb !important; /* Tailwind “gray-200” */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+  padding: 1.5rem !important;
+  width: 500px !important;
+  max-width: 90% !important;
+}
+
+/* Varsayılan buton, input, label vs. override */
+.mdxeditor ._dialogContent_uazmk_602 button {
+  background-color: #0090ff !important; /* Örnek accent */
+  color: #fff !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+}
+
+/* Örneğin input alanının çerçevesini de yumuşatın */
+.mdxeditor ._dialogContent_uazmk_602 input[type="file"] {
+  border: 2px dashed #ccc !important;
+  padding: 1rem !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Onay ve İptal butonlarını ayrıştırmak isterseniz  (DevTools ile sınıfını bulmak gerekir) */
+.mdxeditor ._primaryActionButton_uazmk_701 {
+  background-color: #4ade80 !important; /* Tailwind “green-400” */
+  color: black !important;
 }
 
 ._largeDialogContent_uazmk_614 {
@@ -872,24 +1085,6 @@
   overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-._tooltipTrigger_uazmk_676 {
-  align-self: center;
-}
-
-._tooltipContent_uazmk_680 {
-  z-index: 2;
-  position: relative;
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-1) var(--spacing-2);
-  font-size: var(--text-xs);
-  background-color: var(--baseText);
-  color: var(--baseBase);
-}
-
-._tooltipContent_uazmk_680 svg {
-  fill: var(--baseText);
 }
 
 ._actionButton_uazmk_694 {
@@ -1986,13 +2181,6 @@ form._multiFieldForm_uazmk_1194 ._formField_uazmk_1200 label {
 ._superscript_1tncs_47 {
   font-size: 0.8em;
   vertical-align: super;
-}
-
-._code_1tncs_52 {
-  background-color: var(--baseBg);
-  padding: 1px 0.25rem;
-  font-family: var(--font-mono);
-  font-size: 94%;
 }
 
 ._nestedListItem_1tncs_59 {

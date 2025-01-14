@@ -1,65 +1,176 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ClockIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 interface CounterProps {
   startDate: string;
   duration: number;
   mutate: () => void;
   onTimeout: () => void;
+  /**
+   * Son dakikaya girildiğinde beep çalınsın mı?
+   * Varsayılan: false
+   */
+  beepOnLastMinute?: boolean;
 }
 
-export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps) => {
+export const Counter = ({
+  startDate,
+  duration,
+  mutate,
+  onTimeout,
+  beepOnLastMinute = false,
+}: CounterProps) => {
   const [startTimer, setStartTimer] = useState<boolean>(false);
-  const [remainingTimeMiliseconds, setRemainingTimeMiliseconds] = useState<number | null>(null);
+  const [remainingTimeSeconds, setRemainingTimeSeconds] = useState<number | null>(null);
 
+  // Kullanıcı etkileşimini sadece 1 kez kaydetmek için
+  const isUserInteractedRef = useRef(false);
+
+  // Ses çalmak için ref
+  const beepSoundRef = useRef<HTMLAudioElement | null>(null);
+
+  // “Click” ekleyerek “user gesture” kaydetme
   useEffect(() => {
-    setRemainingTimeMiliseconds((prev) => {
+    function handleUserInteraction() {
+      if (!isUserInteractedRef.current) {
+        isUserInteractedRef.current = true; 
+        // Artık tarayıcı beep sesi çalındığında büyük olasılıkla engellemeyecek
+      }
+    }
+
+    // Bir kere etkileşim aldıktan sonra engellememek için
+    document.addEventListener("click", handleUserInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+    };
+  }, []);
+
+  // "beep.mp3" ancak beepOnLastMinute true ise yükleniyor
+  useEffect(() => {
+    if (beepOnLastMinute && !beepSoundRef.current) {
+      beepSoundRef.current = new Audio("/sounds/beep.mp3");
+      beepSoundRef.current.volume = 0.8; // Ses şiddeti
+    }
+  }, [beepOnLastMinute]);
+
+  // Bileşen ilk yüklendiğinde kalan süreyi hesapla
+  useEffect(() => {
+    setRemainingTimeSeconds((prev) => {
       if (prev === null) {
         setStartTimer(true);
-        return Math.floor(
-          (new Date(startDate).getTime() + duration * 60000 - new Date().getTime()) / 1000
-        );
+        const now = Date.now();
+        const quizEndTime = new Date(startDate).getTime() + duration * 60_000;
+        const diffInSec = Math.floor((quizEndTime - now) / 1_000);
+        return diffInSec >= 0 ? diffInSec : 0;
       }
       return prev - 1;
     });
   }, [startDate, duration]);
 
+  // Timer mantığı
   useEffect(() => {
     const timer = setInterval(() => {
       if (startTimer) {
-        setRemainingTimeMiliseconds((currentTime) => {
-          if (currentTime !== null && currentTime <= 0) {
-            clearInterval(timer);
-            onTimeout();
-            return 0; // Sayaç sıfıra ulaştığında burada durduruluyor
+        setRemainingTimeSeconds((currentTime) => {
+          if (currentTime !== null) {
+            if (currentTime <= 0) {
+              clearInterval(timer);
+              onTimeout(); // Süre bitti
+              return 0;
+            }
+            // 60 saniyeye indiğinde beep
+            if (beepOnLastMinute && currentTime === 60) {
+              // Kullanıcı en az 1 kez tıklamışsa beep çalmaya çalış
+              if (isUserInteractedRef.current) {
+                beepSoundRef.current?.play().catch(() => {
+                  toast.error("Beep blocked by browser. Requires user gesture.");
+                });
+              } else {
+                // Kullanıcı hiç etkileşime girmemişse sessizce geçiyor
+                // (Opsiyonel) Burada “Lütfen sayfayla etkileşime girin” mesajı gösterebilirsiniz.
+              }
+            }
+            return currentTime - 1;
           }
-          return currentTime !== null ? currentTime - 1 : null;
+          return null;
         });
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [onTimeout, startTimer]);
+  }, [startTimer, onTimeout, beepOnLastMinute]);
 
-  const isLastMinute = remainingTimeMiliseconds !== null && remainingTimeMiliseconds <= 60;
+  // Son 1 dakikada uyarı
+  const isLastMinute =
+    remainingTimeSeconds !== null && remainingTimeSeconds <= 60 && remainingTimeSeconds > 0;
+
+  // Dakika:saniye
+  let display = "0:00";
+  if (remainingTimeSeconds !== null && remainingTimeSeconds >= 0) {
+    const m = Math.floor(remainingTimeSeconds / 60);
+    const s = remainingTimeSeconds % 60;
+    display = `${m}:${s.toString().padStart(2, "0")}`;
+  }
 
   return (
     <div
-      className={`flex items-center gap-2 py-1 px-2 min-w-[120px] border rounded-full ${
-        isLastMinute
-          ? "bg-ui-error-100 text-ui-error-600 animate-pulse border-ui-error-600 min-w-[200px]"
-          : "bg-ui-success-100 border-ui-success-500 text-ui-success-600 min-w-[120px]"
-      }`}
+      style={{ minWidth: "120px", maxWidth: "120px" }}
+      className={`
+        my-2 mx-auto
+        flex items-center justify-center gap-2 py-1 px-2 border rounded-full
+        transition-colors duration-300
+        ${
+          isLastMinute
+            ? "bg-red-50 text-red-600 border-red-500 animate-pulse"
+            : "bg-green-50 text-green-600 border-green-400"
+        }
+      `}
     >
-      <ClockIcon className={`size-6 ${isLastMinute ? "text-ui-error-600" : "text-ui-success-600"}`} />
-      <p className="font-semibold text-base py-1 px-2">
-        {remainingTimeMiliseconds !== null && remainingTimeMiliseconds >= 0
-          ? `${Math.floor(remainingTimeMiliseconds / 60)}:${(remainingTimeMiliseconds % 60)
-              .toString()
-              .padStart(2, "0")}`
-          : "0:00"} {/* Sayaç sıfıra ulaştığında 0:00 gösterilir */}
-      </p>
-      {isLastMinute && <p className="font-bold text-lg ml-2">Last seconds!</p>}
+      <ClockIcon
+        className={`w-5 h-5 ${isLastMinute ? "text-red-600" : "text-green-600"}`}
+      />
+      <p className="font-semibold text-base">{display}</p>
     </div>
   );
 };
+
+
+/*window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+var context = new AudioContext();
+
+function playSound(arr) {
+  var buf = new Float32Array(arr.length)
+  for (var i = 0; i < arr.length; i++) buf[i] = arr[i]
+  var buffer = context.createBuffer(1, buf.length, context.sampleRate)
+  buffer.copyToChannel(buf, 0)
+  var source = context.createBufferSource();
+  source.buffer = buffer;
+  source.connect(context.destination);
+  source.start(0);
+}
+
+function sineWaveAt(sampleNumber, to
+document.addEventListener("click", ()=> {
+  setTimeout(() => {
+    playSound(arr)
+  }, 5000);
+})
+
+// we need this one to prevent playing audio more than one time 
+let isScheduled = false;
+
+function getRemainingTime() {
+	// do something to calculate remaining time
+  return 5000
+}
+
+document.addEventListener("click", ()=> {
+  if (isScheduled) return
+	isScheduled = true
+  setTimeout(() => {
+    playSound(arr)
+  }, getRemainingTime());
+}) SWAP SORU DEĞİŞİMİ */

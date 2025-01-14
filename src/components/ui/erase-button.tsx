@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
@@ -12,19 +13,22 @@ interface EraseButtonProps {
 const EraseButton: React.FC<EraseButtonProps> = ({
   onRemove, // Dışarıdan gelen silme fonksiyonu
   size = "icon-sm",
-  duration = 1500, // Varsayılan uzun tıklama süresi
+  duration = 1000, // Varsayılan uzun tıklama süresi
   className = "",
 }) => {
   const [progress, setProgress] = useState(0); // İlerleme durumu
   const [pressing, setPressing] = useState(false); // Uzun tıklama durumu
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false); // Tooltip görünürlüğü
+  const [tooltipPosition, setTooltipPosition] = useState<DOMRect | null>(null);
 
   const handlePressStart = () => {
     setPressing(true);
     setProgress(0);
+    setShowTooltip(false); // Tooltip'i gizle
 
-    const interval = 50; // Animasyon adım süresi (50ms)
-    const step = (100 / duration) * interval; // İlerleme adımı (yüzde bazlı)
+    const interval = 80; // Animasyon adım süresi
+    const step = (100 / 1000) * interval; // İlerleme adımı
 
     const intervalId = setInterval(() => {
       setProgress((prev) => {
@@ -32,7 +36,7 @@ const EraseButton: React.FC<EraseButtonProps> = ({
         if (nextProgress >= 100) {
           clearInterval(intervalId); // İlerleme tamamlandığında interval'ı temizle
           onRemove(); // Silme işlemini tetikle
-          return 100; // Maksimum ilerleme
+          return 100;
         }
         return nextProgress;
       });
@@ -50,14 +54,45 @@ const EraseButton: React.FC<EraseButtonProps> = ({
     }
   };
 
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    setShowTooltip(true);
+    setTooltipPosition(e.currentTarget.getBoundingClientRect()); // Tooltip pozisyonunu hesapla
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
+  const renderTooltip = () => {
+    if (!tooltipPosition || !showTooltip) return null;
+
+    return createPortal(
+      <div
+        className="absolute bg-black text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-[9999]"
+        style={{
+          top: tooltipPosition.top + tooltipPosition.height / 2,
+          left: tooltipPosition.right + 8,
+          transform: "translateY(-50%)",
+        }}
+      >
+        Hold to delete
+      </div>,
+      document.body // Tooltip'i body'nin içine yerleştir
+    );
+  };
+
   return (
     <div
-    className={`relative flex items-center justify-center hover:scale-110 transition-transform duration-200 ${className}`}
-    style={{
-      width: "32px",
-      height: "32px",
-    }}>
-
+      className={`relative flex items-center justify-center hover:scale-110 transition-transform duration-200 ${className}`}
+      style={{
+        width: "32px",
+        height: "32px",
+      }}
+      onMouseEnter={handleMouseEnter} // Masaüstü cihazlarda hover
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Tooltip */}
+      {renderTooltip()}
 
       {/* Silme Butonu */}
       <Button
@@ -76,41 +111,42 @@ const EraseButton: React.FC<EraseButtonProps> = ({
           height: "32px",
         }}
       >
-
         {/* Halka Animasyonu */}
         {pressing && (
-        <div className="absolute inset-0 flex justify-center items-center">
-          <svg className="absolute inset-0 w-full h-full"
-          viewBox="0 0 32 32"
-          xmlns="http://www.w3.org/2000/svg">
-            <circle
-              className="text-brand-primary-800"
-              stroke="currentColor"
-              strokeWidth="3"
-              fill="transparent"
-              r="13"
-              cx="16"
-              cy="16"
-            />
-            <circle
-              className="text-brand-primary-500"
-              stroke="currentColor"
-              strokeWidth="3"
-              fill="transparent"
-              r="14"
-              cx="16"
-              cy="16"
-              strokeDasharray={88}
-              strokeDashoffset={88 - (progress / 100) * 88}
-              style={{
-                transition: "stroke-dashoffset 0.1s linear",
-                transformOrigin: "center",
-                transform: "rotate(-90deg)", // İlerleme üstten başlar
-              }}
-            />
-          </svg>
-        </div>
-      )}
+          <div className="absolute inset-0 flex justify-center items-center">
+            <svg
+              className="absolute inset-0 w-full h-full"
+              viewBox="0 0 32 32"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                className="text-brand-primary-800"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="transparent"
+                r="13"
+                cx="16"
+                cy="16"
+              />
+              <circle
+                className="text-brand-primary-500"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="transparent"
+                r="14"
+                cx="16"
+                cy="16"
+                strokeDasharray={88}
+                strokeDashoffset={88 - (progress / 100) * 88}
+                style={{
+                  transition: "stroke-dashoffset 0.1s linear",
+                  transformOrigin: "center",
+                  transform: "rotate(-90deg)",
+                }}
+              />
+            </svg>
+          </div>
+        )}
         <TrashIcon className="w-4 h-4" />
       </Button>
     </div>

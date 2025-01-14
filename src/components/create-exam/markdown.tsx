@@ -33,6 +33,7 @@ import imageCompression from "browser-image-compression";
 /*import "@mdxeditor/editor/style.css";*/
 import "@/styles/mdxeditor.css";
 
+
 import toast from "react-hot-toast";
 import { pinata } from "@/utils/config";
 import { KeyResponse } from "pinata-web3";
@@ -156,7 +157,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
         // ideally we should not use this editor to show preview
         readOnly={readOnly}
         plugins={plugins}
-        className="mdxeditor"
+        className={className ?? "mdxeditor"}
         contentEditableClassName={contentEditableClassName}
       />
     );

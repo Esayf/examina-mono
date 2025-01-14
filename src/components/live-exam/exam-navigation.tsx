@@ -21,16 +21,15 @@ export const ExamNavigation = ({
   return (
     <div className="flex gap-4 justify-between flex-row">
       <Button
-        variant="default"
-        icon={true}
-        iconPosition="left"
+        variant="outline"
+        size="icon"
         pill
         onClick={() => {
           setCurrentQuestionIndex((prev) => prev - 1);
         }}
         disabled={isPending || currentQuestionIndex === 0}
       >
-        <ArrowLeftIcon className="size-6" /> <span className="hidden sm:block">Prev</span>
+        <ArrowLeftIcon className="size-6" />
       </Button>
 
       <div className="flex items-center gap-2 overflow-x-auto">
@@ -54,15 +53,14 @@ export const ExamNavigation = ({
 
       <Button
         pill
-        variant="default"
-        icon={true}
-        iconPosition="right"
+        variant="outline"
+        size="icon"
         onClick={() => {
           setCurrentQuestionIndex((prev) => prev + 1);
         }}
         disabled={isPending || currentQuestionIndex === questions.length - 1}
       >
-        <span className="hidden sm:block">Next</span> <ArrowRightIcon className="size-6" />
+        <ArrowRightIcon className="size-6" />
       </Button>
     </div>
   );

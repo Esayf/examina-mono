@@ -210,19 +210,18 @@
     display: none;
   }
 }
-
+/*
 .hero_summary:hover {
   cursor: default;
-  background-color: var(--color-brand-tertiary-300);
   border: 1px solid var(--color-brand-tertiary-400);
-}
+}*/
 
 .hero_title {
   max-width: 1044px;
   font-size: 4.5rem;
   font-weight: 700;
   line-height: 1.2;
-  color: var(--color-brand-primary-950);
+  color: var(--color-brand-primary-900);
   z-index: 1;
   text-wrap: balance;
 
@@ -318,6 +317,58 @@
   }
 }
 
+/* Örnek yapboz animasyonu */
+@keyframes puzzleMove {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(5px, -5px) rotate(2deg);
+  }
+  50% {
+    transform: translate(-5px, 5px) rotate(-2deg);
+  }
+  75% {
+    transform: translate(3px, 3px) rotate(1deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
+/* .block, .div, .block-2, .block-3 gibi pattern elemanlarında animasyon uygulayın */
+.block,
+.div,
+.block-2,
+.block-3 {
+  animation: puzzleMove 4s infinite ease-in-out;
+  /* 
+    Gecikme eklemek isterseniz:
+    animation-delay: 0.5s;
+  */
+  /* 
+    Blokların boyutları veya arka planları eskiden nasılsa aynen kalabilir.
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    ...
+  */
+}
+
+/* nth-child, block-2, block-3 gibi farklı class’lar için farklı delay/duration vererek
+   daha “karışık” bir puzzle efekti elde edebilirsiniz. */
+.block:nth-child(2n) {
+  animation-delay: 0.5s;
+}
+.block-2 {
+  animation-duration: 5s;
+  animation-delay: 1s;
+}
+.block-3 {
+  animation-duration: 3s;
+  animation-delay: 0.75s;
+}
+
 /* Text Message Section */
 .text_cta_content {
   position: relative;
@@ -354,19 +405,13 @@
   text-align: center;
 }
 
-.text_cta_desc:hover {
-  cursor: pointer;
-  color: var(--color-brand-primary-700);
-  transition: color 0.5s ease;
-}
-
 /* Sections */
 .section_container {
   position: relative;
   width: 100%;
   min-height: 100svh;
   padding: 6rem 2.5rem;
-  background-color: var(--color-brand-secondary-50);
+  background-color: var(--color-brand-secondary-200);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -395,6 +440,8 @@
 .section_title {
   font-size: 1rem;
   font-weight: 600;
+  text-align: center;
+  z-index: 1;
   color: var(--color-brand-primary-950);
   @media (max-width: 768px) {
     font-size: 0.875rem;
@@ -410,11 +457,13 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
+  overflow: hidden;
 }
 
 .section_summary {
   font-size: 3rem;
   font-weight: 700;
+  z-index: 1;
   color: var(--color-brand-primary-950);
   @media (max-width: 768px) {
     font-size: 2rem;
@@ -422,11 +471,13 @@
 }
 
 .section_summary > span {
-  color: var(--color-brand-primary-700);
+  color: var(--color-brand-primary-900);
+  z-index: 1;
 }
 
 .section_desc {
   width: 100%;
+  z-index: 1;
   max-width: 994px;
   margin: 1rem auto 0;
   font-size: 1.25rem;
@@ -445,51 +496,185 @@
   justify-content: center;
   gap: 2rem;
   padding: 3rem 0;
+  z-index: 1;
 }
 
 .usage_card {
+  z-index: 1;
   flex: 1 1 300px;
-  max-width: 400px;
+  max-width: full;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: white;
+  background-color: var(--color-brand-secondary-50);
   border: 2px solid var(--color-brand-primary-950);
   border-radius: 24px;
   box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.15);
-  transition: background-color 0.3s ease;
+  /* Hover geçişlerini yumuşatmak için eklenen transition */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .usage_card:hover {
-  background-color: var(--color-brand-primary-200);
-  cursor: pointer;
+  background-color: var(--color-brand-tertiary-50); /* Daha açık bir ton */
+  box-shadow: 0px 8px 24px -8px rgba(0, 0, 59, 0.2);
+  /* Kartı hafif yukarı kaldırma (dilerseniz scale de ekleyebilirsiniz) */
+  transform: translateY(-4px);
+  cursor: default;
 }
 
 .usage_card_title_container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  z-index: 1;
 }
 
 .usage_card_title_step {
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-brand-primary-700);
+  z-index: 1;
 }
 
 .usage_card_title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-brand-primary-950);
+  z-index: 1;
 }
 
 .usage_card_desc {
   font-size: 1.125rem;
   font-weight: 400;
   color: var(--color-greyscale-light-700);
-  @media (max-width: 768px) {
+  z-index: 1;
+}
+
+/* Karttaki resmi saran kapsayıcı */
+.usage_card_image_container {
+  display: flex;
+  justify-content: center; /* Yatayda ortala */
+  align-items: center; /* Dikeyde ortala (yükseklik belli değilse fazla etkisi olmaz) */
+  margin-bottom: 1rem; /* Metinle arasında biraz boşluk bırak */
+}
+
+/* Resmin kendisi */
+.usage_card_image {
+  min-width: 368px;
+  max-width: 480px;
+  max-width: full;
+  min-height: 240px;
+  max-height: 240px;
+  padding: auto;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  border: 1px solid;
+  border-color: var(--color-greyscale-light-200);
+  justify-items: center;
+  object-fit: cover;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Daha iyi responsive uyum için medyaya göre font ölçüsünü düşürme */
+@media (max-width: 768px) {
+  .usage_card_desc {
     font-size: 1rem;
+  }
+}
+
+/* styles.css */
+.button-cta {
+  background-color: #fbeee0;
+  border: 2px solid #422800;
+  border-radius: 30px;
+  box-shadow: #422800 4px 4px 0 0;
+  color: #422800;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 0 18px;
+  line-height: 50px;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-cta:hover {
+  background-color: #fff;
+}
+
+.button-cta:active {
+  box-shadow: #422800 2px 2px 0 0;
+  transform: translate(2px, 2px);
+}
+
+@media (min-width: 768px) {
+  .button-cta {
+    min-width: 120px;
+    padding: 0 25px;
+  }
+}
+
+.button-cta2 {
+  align-items: center;
+  background-color: #fee6e3;
+  border: 2px solid #111;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #111;
+  cursor: pointer;
+  display: flex;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  height: 48px;
+  justify-content: center;
+  line-height: 24px;
+  max-width: 100%;
+  padding: 0 25px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-cta2:after {
+  background-color: #111;
+  border-radius: 8px;
+  content: "";
+  display: block;
+  height: 48px;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  top: -2px;
+  transform: translate(8px, 8px);
+  transition: transform 0.2s ease-out;
+  z-index: -1;
+}
+
+.button-cta2:hover:after {
+  transform: translate(0, 0);
+}
+
+.button-cta2:active {
+  background-color: #ffdeda;
+  outline: 0;
+}
+
+.button-cta2:hover {
+  outline: 0;
+}
+
+@media (min-width: 768px) {
+  .button-cta2 {
+    padding: 0 40px;
   }
 }
 
@@ -511,6 +696,7 @@
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  z-index: 1;
 }
 
 .section_button:hover {
@@ -530,11 +716,12 @@
   border: 2px solid var(--color-brand-primary-950);
   border-radius: 24px;
   box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.05);
+  z-index: 1;
 }
 
 .feature_card_container:hover {
   cursor: pointer;
-  background-color: var(--color-brand-primary-200);
+  background-color: var(--color-brand-primary-100);
 }
 
 .feature_card_container > * {
@@ -545,23 +732,126 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  z-index: 1;
 }
 
 .feature_card_title {
   font-size: 24px;
   font-weight: 700;
   color: var(--color-brand-primary-950);
+  z-index: 1;
 }
 
 .feature_card_desc {
   font-size: 1.125rem;
   font-weight: 400;
+  z-index: 1;
   color: var(--color-greyscale-light-700);
   @media (max-width: 768px) {
     font-size: 1rem;
   }
 }
 
+/* ====== Accordion (Mobile) ====== */
+.accordionWrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.accordionItem {
+  margin-bottom: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.accordionSummary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  outline: none;
+  list-style: none;
+}
+
+.accordionSummary::-webkit-details-marker {
+  display: none; /* summary varsayılan ikonu gizle */
+}
+
+.accordionPanel {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: #333;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* ====== Desktop Tag + Hover Tooltip ====== */
+.tagsWrapper {
+  position: relative;
+  width: 100%;
+  height: 500px; /* Örnek için sabit, isterseniz değiştirebilirsiniz */
+  margin: 0 auto;
+  overflow: hidden;
+  /* Dilerseniz absolute konumlandırma kullanıp random top/left verebilirsiniz. */
+}
+
+.tag {
+  position: absolute;
+  /* Rastgele konum vermek isterseniz top ve left'i inline-style veya JS ile random atayabilirsiniz */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tag:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.tagText {
+  display: inline-block;
+  background-color: #fff;
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+/* Konuşma balonu (tooltip) */
+.speechBubble {
+  display: none;
+  position: absolute;
+  bottom: 130%; /* Tag'in biraz üstünde */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  background: #333;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover'da balon göster */
+.tag:hover .speechBubble {
+  display: block;
+}
+
+/* Tooltip ok işareti için pseudo-element kullanabiliriz */
+.speechBubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+  transform: translateX(-50%);
+}
 /* Tech Card */
 .tech_card_container {
   padding: 2rem;
@@ -581,8 +871,7 @@
 
 .tech_card_container:hover {
   cursor: pointer;
-  outline: 3px solid var(--color-brand-primary-900);
-  background-color: var(--color-brand-primary-200);
+  background-color: var(--color-brand-primary-50);
   color: var(--color-brand-primary-950);
   .tech_card_title {
     color: var(--color-brand-primary-950);
@@ -625,7 +914,9 @@
   text-decoration: underline;
 }
 
-/* Sub Section */
+/* --------------------------------------------
+   SUB SECTION
+   -------------------------------------------- */
 .sub_section_container {
   position: relative;
   margin: 6rem 4rem;
@@ -634,33 +925,120 @@
   font-weight: 700;
   background-color: var(--color-brand-primary-900);
   color: var(--color-brand-secondary-200);
-  border-radius: 9999px;
+  border-radius: 9999px; /* Tam yuvarlak köşe */
   text-align: center;
-  transition: background-color 0.3s ease;
   z-index: 1;
+
+  /* Yumuşak bir geçiş için: */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* Başlangıçta gölge yok */
 }
 
 .sub_section_container:hover {
-  background-color: var(--color-brand-secondary-300);
+  /* Hover anında arka plan ve yazı rengi değişimi */
+  background-color: var(--color-brand-secondary-200);
   color: var(--color-brand-primary-800);
   cursor: pointer;
-  outline: 48px solid var(--color-brand-primary-800);
+
+  /* Outline (çerçeve) */
+  outline: 48px solid var(--color-brand-secondary-200);
   outline-style: solid;
-  transition: outline 0.5s ease;
+
+  /* Gölgeyi arttıralım */
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+
+  /* Daha yumuşak geçiş */
+  transition: outline 0.5s ease, box-shadow 0.5s ease;
 }
 
-.sub_section_text_container h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  color: inherit;
-}
-
+/* --------------------------------------------
+     ARKA PLAN ANİMASYONU (DEGRADE + TRANSFORM)
+     -------------------------------------------- */
 .sub_section_text_container_bg {
   position: absolute;
-  inset: 0;
+  inset: 0; /* top, right, bottom, left = 0 */
   width: 100%;
   height: 100%;
   z-index: 0;
+
+  /* Hafif degrade örneği */
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-secondary-200) 0%,
+    var(--color-brand-primary-900) 100%
+  );
+
+  transform: scale(1);
+  opacity: 1;
+
+  /* Hover sırasında değişecek transform/opacity için geçiş */
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Hover anında biraz büyütüp saydamlaştırıyoruz */
+.sub_section_container:hover .sub_section_text_container_bg {
+  transform: scale(1.08);
+  opacity: 0.85;
+}
+
+/* --------------------------------------------
+     BAŞLIK
+     -------------------------------------------- */
+.sub_section_text_container h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: inherit; /* Bulunduğu kapsayıcıdan renk alsın */
+}
+
+/* --------------------------------------------
+     MEDIA QUERIES
+     -------------------------------------------- */
+
+/* 1) Mobil (telefon) ekranlar (max-width: 576px) */
+@media (max-width: 576px) {
+  .sub_section_container {
+    /* Dar ekranlar için margin/padding azaltalım */
+    margin: 2rem 1rem;
+    padding: 2rem 1rem;
+
+    /* Yazı boyutunu küçültelim */
+    font-size: 2rem;
+
+    /* Klasik buton hissi için köşeleri biraz yuvarlat */
+    border-radius: 16px;
+
+    /* Outline ve gölgeyi mobilde pasif bırakmak isterseniz */
+    outline: none;
+    box-shadow: none;
+  }
+  .sub_section_container:hover {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .sub_section_text_container h1 {
+    font-size: 1.8rem;
+  }
+
+  /* Mobilde hover neredeyse devre dışı kalacağı için animasyonu kapatabiliriz */
+  .sub_section_container:hover .sub_section_text_container_bg {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* 2) Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+  .sub_section_container {
+    margin: 3rem 2rem;
+    padding: 4rem 2rem;
+    font-size: 2.4rem;
+    border-radius: 24px;
+  }
+
+  .sub_section_text_container h1 {
+    font-size: 2rem;
+  }
 }
 
 /* Footer */
@@ -670,14 +1048,14 @@
   align-items: center;
   gap: 1rem;
   padding: 3rem 2.5rem;
-  border-bottom: 1px solid var(--color-brand-secondary-200);
+  background-color: var(--color-brand-secondary-200);
 }
 
 .footer_container {
   display: flex;
   justify-content: space-between;
   padding: 1rem 2.5rem;
-  background-color: var(--color-brand-secondary-50);
+  background-color: var(--color-brand-secondary-200);
   align-items: center;
   @media (max-width: 768px) {
     flex-direction: column;

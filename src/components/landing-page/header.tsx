@@ -10,8 +10,6 @@ import { authenticate } from "@/hooks/auth";
 import { useAppDispatch } from "@/app/hooks";
 import Image from "next/image";
 import { ArrowUpRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect } from "react";
-import { IconRight } from "react-day-picker";
 
 interface HeaderProps {
   size: string;
@@ -28,24 +26,56 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
       toast.error("Failed to authenticate wallet!");
       return;
     }
-    toast.success("Welcome back!");
+    toast.success("Welcome back!", {
+      duration: 15000,
+      className: "chozToastSuccess",
+    });
     dispatch(setSession(res.session));
-    window.location.href = "/app";
+    window.location.href = "/app/dashboard/created";
   };
 
   return (
-    <div className={`${styles.header} bg-brand-secondary-100 border-b border-brand-secondary-100`}>
-      <div className={`${styles.header_container} w-full mx-auto flex items-center justify-between`}>
-        {/* Logo */}
-        <div className={`${styles.logo_container}`} style={{ maxHeight: "50px", width: "175.81px" }}>
+    <header
+      className={`
+        ${styles.header} 
+        bg-brand-secondary-100 
+        border-b border-brand-secondary-100
+      `}
+    >
+      {/* İçerik kapsayıcı: logo - linkler - buton(lar) */}
+      <div
+        className={`
+          ${styles.header_container} 
+          w-full 
+          mx-auto 
+          flex 
+          items-center 
+          px-4 
+          /* justify-between'i kaldırıyoruz, 
+             onun yerine 3 bölümlü layout yapacağız */
+        `}
+      >
+        {/* SOL: Logo */}
+        <div
+          className={`${styles.logo_container} flex-shrink-0`}
+          style={{ maxHeight: "50px", width: "175.81px" }}
+        >
           <Image src={Choz} height={36} alt="Choz Logo" />
         </div>
 
-        {/* Navigation for large screens */}
-        <div className="navbar_container">
-          <div className="flex gap-4">
+        {/* ORTA: Linkler (sadece md ve üzeri) */}
+        <nav
+          className={`
+            hidden 
+            md:flex 
+            flex-1 
+            items-center 
+            justify-center 
+            gap-6
+          `}
+        >
           <Button
-            className={`${styles.nav_button} hidden md:block`}
+            className={styles.nav_button}
             icon={false}
             pill={false}
             size="default"
@@ -55,55 +85,98 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             Docs
           </Button>
           <Button
-            className={`${styles.nav_button} hidden md:block`}
+            className={styles.nav_button}
+            icon={false}
+            pill={false}
+            size="default"
+            variant="link"
+            onClick={() => window.open("https://x.com/chozapp", "_blank")}
+          >
+            X (Twitter)
+          </Button>
+          <Button
+            className={styles.nav_button}
+            icon={false}
+            pill={false}
+            size="default"
+            variant="link"
+            onClick={() => window.open("https://www.linkedin.com/company/chozapp", "_blank")}
+          >
+            LinkedIn
+          </Button>
+          <Button
+            className={styles.nav_button}
             icon={false}
             pill={false}
             size="default"
             variant="link"
             onClick={() => window.open("https://choz.medium.com/", "_blank")}
           >
-              Blog
+            Blog
+          </Button>
+        </nav>
+
+        {/* SAĞ: Connect Wallet butonu (md ve üzeri) + Hamburger (md altı) */}
+        <div className="flex items-center gap-4 ml-4">
+          {/* CONNECT WALLET (masaüstünde gözüksün) */}
+          <div className="hidden md:block">
+            <Button
+              iconPosition="right"
+              icon
+              variant="outline"
+              pill
+              size="default"
+              onClick={handleAuthentication}
+            >
+              Connect wallet
+              <ArrowUpRightIcon className="w-5 h-5 hidden md:block" />
+            </Button>
+          </div>
+
+          {/* HAMBURGER (Sadece mobilde - md:hidden) */}
+          <div className="md:hidden flex items-center">
+            <Button
+              onClick={() => setMenuOpen(!menuOpen)}
+              variant="default"
+              pill
+              size="icon"
+              className="text-brand-primary-950 focus:outline-none"
+            >
+              {menuOpen ? <XMarkIcon className="w-8 h-8" /> : <Bars3Icon className="w-8 h-8" />}
             </Button>
           </div>
         </div>
-        <div className="gap-4 hidden md:block">
-          <Button
-            iconPosition="right"
-            icon={true}
-            variant="outline"
-            pill
-            size="default"
-            onClick={handleAuthentication}
-          >
-            Connect wallet<ArrowUpRightIcon className="w-5 h-5 hidden md:block" />
-          </Button>
-        </div>
-        <div className="md:hidden flex items-center">
-            <Button
-            onClick={() => setMenuOpen(!menuOpen)}
-            variant="default"
-            pill
-            size="icon"
-            className="text-brand-primary-950 focus:outline-none"
-          >
-              {menuOpen ? <XMarkIcon className="w-8 h-8" /> : <Bars3Icon className="w-8 h-8" />}
-            </Button>
-        </div>
-        
-      {/* Mobile Menu */}
+      </div>
+
+      {/* MOBİL MENÜ (md altında açılan) */}
       {menuOpen && (
-      <div className="absolute top-20 right-4 w-48 z-50 shadow-lg bg-brand-primary-400 rounded-3xl border border-brand-primary-950">
-      <div className="flex flex-col items-start p-4 gap-4">
-        <Button
-          className="w-full text-left text-brand-primary-950 bg-brand-secondary-200"
-          icon={true}
-          pill
-          size="default"
-          variant="default"
-          onClick={() => window.open("https://x.com/chozapp", "_blank")}
+        <div
+          className="
+            md:hidden 
+            absolute 
+            top-20 
+            right-4 
+            w-48 
+            z-50 
+            shadow-lg 
+            bg-brand-primary-400 
+            rounded-3xl 
+            border 
+            border-brand-primary-950
+          "
         >
-          X Account <ArrowUpRightIcon className="w-4 h-4" />
-        </Button>
+          <div className="flex flex-col items-start p-4 gap-4">
+            <Button
+              className="w-full text-left text-brand-primary-950 bg-brand-secondary-200"
+              icon
+              pill
+              size="default"
+              variant="default"
+              onClick={() => window.open("https://x.com/chozapp", "_blank")}
+            >
+              X Account
+              <ArrowUpRightIcon className="w-4 h-4" />
+            </Button>
             <Button
               className="w-full text-brand-primary-950 bg-brand-secondary-200"
               icon={false}
@@ -116,19 +189,19 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             </Button>
             <Button
               className="w-full bg-brand-secondary-200 text-brand-primary-950"
-              icon={true}
+              icon
               variant="default"
               pill
               size="default"
               onClick={handleAuthentication}
             >
-                Connect <ArrowUpRightIcon className="w-4 h-4" />
+              Connect
+              <ArrowUpRightIcon className="w-4 h-4" />
             </Button>
-            </div>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </header>
   );
 };
 

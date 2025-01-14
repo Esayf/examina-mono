@@ -24,7 +24,7 @@
     /* Secondary Colors */
     --color-brand-secondary-50: #fff9f5;
     --color-brand-secondary-100: #fbe7da;
-    --color-brand-secondary-200: #f6d5c0;
+    --color-brand-secondary-200: #FFDBC4;
     --color-brand-secondary-300: #f1bda2;
     --color-brand-secondary-400: #ec9468;
     --color-brand-secondary-500: #e7682a;
@@ -553,6 +553,7 @@
 
 /* Add these Radix UI base styles near the top of the file */
 @layer base {
+
   /* Radio Group styles */
   .RadioGroupRoot {
     display: flex;
@@ -820,6 +821,7 @@
   .flex-wrap-responsive > * {
     flex: 1 1 100%; /* Her bir eleman başlangıçta tam genişlik alır */
   }
+  
 
   @media (min-width: 768px) {
     .flex-wrap-responsive > * {
@@ -853,3 +855,79 @@
 .non-interactive-editor {
   overflow-y: auto !important;
 }
+
+.mdxeditor ._tooltipContent_uazmk_680 {
+  z-index: 999; /* Tüm öğelerin üstünde görünmesi için yeterli değer */
+  position: absolute; /* Trigger’a göre konumlanabilsin */
+  bottom: 120%;       /* Tetikleyicinin üstünde gözüksün; ihtiyaca göre ayarlayın */
+  left: 50%;
+  transform: translateX(-50%); 
+
+  /* Tasarım ve boyutlandırma */
+  border-radius: var(--radius-large);
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--text-xs);
+  background-color: var(--baseText);
+  color: var(--baseBase);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Hafif gölge efekti (opsiyonel) */
+
+  /* Başlangıçta gizli (transition ile animasyon yapılacak) */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Tooltip tetikleyiciyi saran kapsayıcı: */
+.mdxeditor ._tooltipTrigger_uazmk_676 {
+  position: relative; /* Tooltip’in konumunu ayarlayabilmek için gerekli */
+  display: inline-flex; /* İsteğe bağlı: inline-block / block / flex vb. */
+  align-self: center;   /* Orijinal kuralınızı koruyabilirsiniz */
+}
+
+/* Asıl tooltip */
+.mdxeditor ._tooltipContent_uazmk_680 {
+  z-index: 999; /* Tüm öğelerin üstünde görünmesi için yeterli değer */
+  position: absolute; /* Trigger’a göre konumlanabilsin */
+  bottom: 120%;       /* Tetikleyicinin üstünde gözüksün; ihtiyaca göre ayarlayın */
+  left: 50%;
+  transform: translateX(-50%); 
+
+  /* Tasarım ve boyutlandırma */
+  border-radius: var(--radius-large);
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--text-xs);
+  background-color: var(--baseText);
+  color: var(--baseBase);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Hafif gölge efekti (opsiyonel) */
+
+  /* Başlangıçta gizli (transition ile animasyon yapılacak) */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Tooltip içindeki svg ikonu renklendirme (opsiyonel) */
+.mdxeditor ._tooltipContent_uazmk_680 svg {
+  fill: var(--baseText);
+}
+
+/* Hover anında tooltip görünsün */
+.contenteditable ._tooltipTrigger_uazmk_676:hover ._tooltipContent_uazmk_680 {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Opsiyonel: Tooltip’in alt kenarına küçük bir “ok” (arrow) eklemek */
+._tooltipContent_uazmk_680::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Tooltip’in alt kenarına hizalanır */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  /* Yukarı bakan üçgen: üst tarafın rengi tooltip’in arka plan rengiyle aynı, 
+     diğer kenarlar şeffaf. */
+  border-color: var(--baseText) transparent transparent transparent;
+}
+

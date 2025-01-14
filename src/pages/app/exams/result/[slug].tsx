@@ -42,8 +42,8 @@ function ExamResult() {
     // other options like onSuccess, onError, etc.
     onSuccess: () => {
       //console.log(data);
-      toast.success("Email sent successfully");
-      router.replace("/app");
+      toast.success("Email sent successfully! Email will arrive once the quiz is finished.");
+      router.replace("/app/dashboard/created");
     },
     onError: (error: any) => {
       toast.error("Failed to send email");
@@ -70,9 +70,10 @@ function ExamResult() {
                   🥳 Allready done! 🥳
                 </p>
                 <br />
-                Receive your exam result via email. <span className="text-brand-primary-950 font-bold">If you skip this step,</span> you can still access
-                your result later using the exam link. Please note that without providing an email
-                address, you won&apos;t be able to view your result.
+                Receive your exam result via email.{" "}
+                <span className="text-brand-primary-950 font-bold">If you skip this step,</span> you
+                can still access your result later using the exam link. Please note that without
+                providing an email address, you won&apos;t be able to view your result.
               </p>
               <div className="flex gap-2 items-center">
                 <Input
@@ -85,7 +86,7 @@ function ExamResult() {
                   onClick={() => {
                     // validate email
                     if (mail === "" || !mail.includes("@") || !mail.includes(".")) {
-                      toast.error("Please enter valid email");
+                      toast.error("Please enter valid email.");
                       return;
                     }
 
@@ -96,7 +97,7 @@ function ExamResult() {
                 </Button>
               </div>
               <Link
-                href="/app"
+                href="/app/dashboard/created"
                 className="text-sm text-brand-primary-700 mx-auto font-bold hover:text-brand-primary-500 hover:bg-brand-primary-50 rounded-full px-2 py-1"
               >
                 I want to skip this step.
@@ -106,13 +107,13 @@ function ExamResult() {
               <p>
                 📌 <span className="font-bold">Facing any issues?</span>
                 <br />
-                  <span className="w-[10rem] mx-auto">
-                    Don&apos;t hesitate to reach out! Connect with us below.
+                <span className="w-[10rem] mx-auto">
+                  Don&apos;t hesitate to reach out! Connect with us below.
                 </span>
               </p>
               <div className="flex justify-center mt-4">
                 <div className="flex gap-4">
-                    <a href="https://x.com/chozio" target="_blank">
+                  <a href="https://x.com/chozio" target="_blank">
                     <Image height={32} width={32} src={X} alt="X logo" />
                   </a>
                   <a href="https://discord.gg/TkpVyfNqwQ" target="_blank">

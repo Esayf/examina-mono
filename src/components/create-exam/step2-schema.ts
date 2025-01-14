@@ -14,7 +14,7 @@ export const step2ValidationSchema = z
     description: z.string().min(3, "Description must be at least 3 characters"),
     startDate: z.date().refine((value) => {
       return value >= new Date(Date.now() + 5 * 60 * 1000 - 59000);
-    }, "Start date should be at least 5 minutes from now"),
+    }, "Start date should be at least 5 minutes from now."),
     duration: z.string(),
     rewardDistribution: z.boolean(),
     // the rest of the fields are only required if the reward distribution is activated

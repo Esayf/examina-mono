@@ -1,13 +1,23 @@
+"use client";
+
 import React, { useState } from "react";
 import Head from "next/head";
 import DashboardHeader from "@/components/ui/dashboard-header";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 
-import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
-import { Step1FormValues, step1ValidationSchema } from "@/components/create-exam/step1-schema";
+import {
+  Step2FormValues,
+  step2ValidationSchema,
+} from "@/components/create-exam/step2-schema";
+import {
+  Step1FormValues,
+  step1ValidationSchema,
+} from "@/components/create-exam/step1-schema";
 import { Step2 } from "@/components/create-exam/step2";
 import { Step1 } from "@/components/create-exam/step1";
+import { BackgroundPattern } from "@/components/landing-page/background-pattern";
 
 type FormValues = Step1FormValues | Step2FormValues;
 
@@ -31,12 +41,8 @@ function CreateExam() {
           correctAnswer: "",
           questionType: "mc",
           answers: [
-            {
-              answer: "",
-            },
-            {
-              answer: "",
-            },
+            { answer: "" },
+            { answer: "" },
           ],
         },
       ],
@@ -57,7 +63,10 @@ function CreateExam() {
   };
 
   return (
-    <div className="h-dvh flex flex-col">
+    <div className="relative h-dvh flex flex-col overflow-hidden">
+      {/* Background pattern en arkada */}
+      <BackgroundPattern className="absolute inset-0 -z-10 w-full h-full object-cover" />
+
       <Head>
         <title>Create new quiz | Choz </title>
         <meta
@@ -87,11 +96,16 @@ function CreateExam() {
         />
 
         {/* Additional Meta Tags */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="/app/create-exam" />
       </Head>
+
       <DashboardHeader withoutNav={false} withoutTabs={true} />
+
       <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
         <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
           <FormProvider {...methods}>

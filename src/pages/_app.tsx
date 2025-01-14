@@ -1,4 +1,6 @@
 import "@/styles/globals.css";
+import "@/styles/mdxeditor.css";
+
 import type { AppProps } from "next/app";
 import Layout from "./layout";
 import { Provider } from "react-redux";
@@ -74,3 +76,5 @@ export default function App({ Component, pageProps }: AppProps) {
     </QueryClientProvider>
   );
 }
+
+

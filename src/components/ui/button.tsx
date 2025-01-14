@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center box-border text-medium font-base whitespace-nowrap transition-colors rounded-xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center box-border text-normal font-base whitespace-nowrap transition-colors rounded-xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {

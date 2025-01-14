@@ -11,12 +11,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRightIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Header } from "@/components/landing-page/header";
 import { HeroSection } from "@/components/landing-page/hero-section";
+import { HowItWorksSection } from "@/components/landing-page/section-2";
+import { TextMessageSection } from "@/components/landing-page/text-message-section";
 
 // Images
 import Choz from "@/images/landing-header/logo-type.svg";
 import BG from "@/images/backgrounds/hero-section-bg.svg";
 import CTA from "@/images/backgrounds/text-cta-section-bg.svg";
-import SUBCTA from "@/images/backgrounds/sub-cta-bg.svg";
+import SUBCTA from "@/images/backgrounds/bg1.svg";
+import SECTION2 from "@/images/backgrounds/bg2.svg";
+import SECTION4 from "@/images/backgrounds/bg3.svg";
 import Mina from "@/images/landing_general/mina.svg";
 import OGImage from "@/images/backgrounds/ogimage.png";
 
@@ -26,27 +30,7 @@ import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
 import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 
-// Data Arrays
-const stepArr = [
-  {
-    stepText: "STEP 1",
-    stepTitle: "Seamlessly start 🥳",
-    stepDesc:
-      "Jump right in – no signup needed! Just connect and go! Simply press the 'Connect’ button to seamlessly link your Pallad or Auro Wallet.",
-  },
-  {
-    stepText: "STEP 2",
-    stepTitle: "Add your questions 💪",
-    stepDesc: "Design your quiz in minutes – choose questions, add rewards, and you’re set!",
-  },
-  {
-    stepText: "STEP 3",
-    stepTitle: "Quickly share 🚀",
-    stepDesc: "With a single click, your quiz is live and ready to engage your audience!",
-  },
-];
-
-const featureArr = [
+/*const featureArr = [
   {
     featureTitle: "Secure 🔒",
     featureDesc:
@@ -76,6 +60,34 @@ const featureArr = [
     featureTitle: "Smart 🧠",
     featureDesc:
       "Utilize the intelligence of our Choz Smart Contract, seamlessly integrating external exams for a more efficient and technologically advanced system.",
+  },
+];
+*/
+
+const featureArr = [
+  {
+    featureTitle: "Secure 🔒",
+    featureDesc: "Blockchain security powered by Mina Protocol.",
+  },
+  {
+    featureTitle: "Fast 🚀",
+    featureDesc: "No email or password—just Auro Wallet. Start instantly.",
+  },
+  {
+    featureTitle: "Free 🤑",
+    featureDesc: "Create and join exams for free in under a minute.",
+  },
+  {
+    featureTitle: "Private 🔒",
+    featureDesc: "No personal data or scores stored. Your privacy is safe.",
+  },
+  {
+    featureTitle: "Decentralized 🌐",
+    featureDesc: "Global connectivity secured by blockchain.",
+  },
+  {
+    featureTitle: "Smart 🧠",
+    featureDesc: "Choz Smart Contract integrates external exams seamlessly.",
   },
 ];
 
@@ -139,7 +151,7 @@ export default function Home() {
     }
     toast.success("Welcome back!");
     dispatch(setSession(res.session));
-    window.location.href = "/app";
+    window.location.href = "/app/dashboard/created";
   };
 
   const pageTitle = "Choz | Blockchain-Powered Quiz Platform for Rewards and Engagement";
@@ -161,14 +173,14 @@ export default function Home() {
         <meta property="og:url" content="https://choz.io" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:image" content="https://choz.io/ogimage.png"/>
+        <meta property="og:image" content="https://choz.io/ogimage.png" />
         <meta property="og:site_name" content="Choz" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chozapp" />
         <meta name="twitter:creator" content="@chozapp" />
-        <meta name="twitter:image" content="/ogimage.png"/>
+        <meta name="twitter:image" content="/ogimage.png" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
 
@@ -205,61 +217,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* How it Works Section */}
-        <section className={styles.section_container} aria-label="How it Works">
-          <div className={styles.container}>
-            <h2 className={styles.section_title}>HOW IT WORKS</h2>
-            <h3 className={styles.section_summary}>
-              <span>Your quizzes, simplified.</span>
-            </h3>
-            <p className={styles.section_desc}>
-              Whether for training, customer engagement, or pure fun, Choz brings together
-              everything you need for a seamless and impactful quiz experience.
-            </p>
-            <div className={styles.card_container} role="list">
-              {stepArr.map((step, index) => (
-                <div className={styles.usage_card} key={index} role="listitem">
-                  <div className={styles.usage_card_title_container}>
-                    <p className={styles.usage_card_title_step}>{step.stepText}</p>
-                    <h4 className={styles.usage_card_title}>{step.stepTitle}</h4>
-                  </div>
-                  <p className={styles.usage_card_desc}>{step.stepDesc}</p>
-                </div>
-              ))}
-            </div>
-            <div className={styles.section_button_container}>
-              <Link
-                href="/app/create-exam"
-                className={styles.cta_button}
-                aria-label="Start creating your first quiz on Choz"
-              >
-                <Button variant="default" pill={true} size="lg" icon={true} iconPosition="right">
-                  Create now
-                  <ArrowUpRightIcon className="size-6" aria-hidden="true" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* How It Works Section */}
+        <HowItWorksSection />
 
         {/* Text Message Section */}
-        <section
-          className={`${styles.section_container} ${styles.section_container_secondary}`}
-          aria-label="Value Proposition"
-        >
-          <div className={styles.text_cta_container}>
-            <div className={styles.section_background}>
-              <Image src={CTA} alt="CTA Background" className="w-full h-full object-cover" />
-            </div>
-            <div className={styles.text_cta_content}>
-              <h1 className={styles.text_cta_title}>Empower your audience</h1>
-              <h3 className={styles.text_cta_desc}>
-                At Choz, rewards do more than add value. They transform quizzes into exciting,
-                competitive experiences. Motivate your team, engage customers, or make learning fun.
-              </h3>
-            </div>
-          </div>
-        </section>
+        <TextMessageSection />
 
         {/* Features Section */}
         <section className={styles.section_container} aria-label="Features">
@@ -324,8 +286,13 @@ export default function Home() {
 
         {/* Sub CTA Section */}
         <section
-          className={`${styles.section_container} ${styles.section_container_secondary}`}
+          className={`
+            ${styles.section_container} 
+            ${styles.section_container_secondary} 
+            cursor-pointer
+          `}
           aria-label="Call to Action"
+          onClick={handleAuthentication} // Trigger wallet connect when clicked
         >
           <div className={styles.section_background}>
             <Image
@@ -339,7 +306,7 @@ export default function Home() {
           <div className={styles.sub_section_container}>
             <div className={styles.container}>
               <div className={styles.sub_section_text_container}>
-                <h2>It's rewarding, it's engaging, are you ready to dive in?</h2>
+                <h2>It&apos;s rewarding, it&apos;s engaging, are you ready to dive in?</h2>
               </div>
             </div>
           </div>
@@ -350,7 +317,7 @@ export default function Home() {
           className={`${styles.supporters_container} ${styles.section_container_secondary}`}
           aria-label="Supporters"
         >
-          <h2>💜 Supported by Industry Leaders 💜</h2>
+          <h2>proudly built on,</h2>
           <Link
             href="https://minaprotocol.com/"
             target="_blank"
@@ -362,7 +329,7 @@ export default function Home() {
             <Image
               src={Mina}
               alt="Mina Protocol - Blockchain Technology Partner"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover items-center"
               priority={true}
             />
           </Link>
