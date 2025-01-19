@@ -105,7 +105,7 @@ const EraseButton: React.FC<EraseButtonProps> = ({
           e.stopPropagation();
           e.preventDefault();
         }}
-        className="relative w-8 h-8 rounded-full items-center justify-center transition-all duration-200 hover:bg-transparent"
+        className="relative w-8 h-8 rounded-full items-center justify-center transition-all duration-200 hover:bg-brand-secondary-200"
         style={{
           width: "32px",
           height: "32px",
@@ -120,7 +120,7 @@ const EraseButton: React.FC<EraseButtonProps> = ({
               xmlns="http://www.w3.org/2000/svg"
             >
               <circle
-                className="text-brand-primary-800"
+                className="text-brand-secondary-400"
                 stroke="currentColor"
                 strokeWidth="3"
                 fill="transparent"
@@ -129,7 +129,7 @@ const EraseButton: React.FC<EraseButtonProps> = ({
                 cy="16"
               />
               <circle
-                className="text-brand-primary-500"
+                className="text-brand-primary-800"
                 stroke="currentColor"
                 strokeWidth="3"
                 fill="transparent"

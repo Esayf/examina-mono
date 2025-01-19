@@ -112,18 +112,30 @@
 
 /* Header */
 .header {
-  padding: 1rem 1.5rem;
+  /* Header'ın yatay boşlukları */
+  padding: 0 1.5rem;
+  /* Arkaplan ve alt sınır (border) */
   background-color: var(--color-brand-secondary-100);
   border-bottom: 1px solid var(--color-brand-secondary-100);
+
+  /* Daha küçük ekranlarda padding'i daraltma */
   @media (max-width: 768px) {
     padding: 0.75rem 1rem;
   }
-}
 
-.header > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* Header içerisindeki ana kapsayıcı için flex düzen */
+  > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* Ek olarak; çok dar ekranlarda dikey düzene geçmek isterseniz */
+    @media (max-width: 768px) {
+      flex-direction: row;
+      align-items: flex-start; /* veya center */
+      gap: 0.5rem; /* öğeler arası boşluk */
+    }
+  }
 }
 
 .navigation_container {
@@ -136,7 +148,7 @@
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--color-greyscale-light-900);
+  color: var(--color-brand-primary-950);
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
@@ -144,8 +156,7 @@
 
 .nav_button:hover {
   color: var(--color-brand-primary-950);
-  font-weight: 500;
-  background-color: var(--color-brand-primary-200);
+  background-color: var(--color-brand-secondary-200);
   border-radius: 9999px;
   text-decoration: none;
 }
@@ -155,21 +166,26 @@
 }
 
 /* Hero Section */
-
 .hero_section {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  padding: 3rem 2.5rem 16rem;
+  /* Burada yine üst padding’i azaltabilirsiniz */
+  padding: 2rem 2.5rem 16rem;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+
   display: flex;
-  align-items: center;
+  /* Dikeyde en üste yapıştır */
+  align-items: flex-start;
+  /* Yatayda ortala (isteğe bağlı) */
   justify-content: center;
   @media (max-width: 768px) {
-    padding: 0rem 0rem 0rem;
+    padding: 0rem;
+    align-items: flex-start;
     background-color: var(--color-brand-secondary-200);
+    /* Mobilde isterseniz align-items: center yaparak başka görünüm elde edebilirsiniz */
   }
 }
 
@@ -187,9 +203,12 @@
   align-items: center;
   gap: 1.5rem;
   text-align: center;
+  margin-top: 10rem; /* hero içindeki içeriği biraz aşağıya çeker */
+  /* veya padding-top: 2rem; */
   z-index: 1;
+
   @media (max-width: 768px) {
-    height: screen;
+    margin-top: 6rem;
     gap: 1rem;
   }
 }
@@ -202,8 +221,8 @@
   font-weight: 500;
   margin-bottom: 0.5rem;
   color: var(--color-brand-primary-950);
-  background-color: var(--color-brand-tertiary-200);
-  border: 1px solid var(--color-brand-tertiary-300);
+  background-color: var(--color-brand-secondary-100);
+  border: 1px solid var(--color-brand-secondary-300);
   border-radius: 9999px;
   z-index: 1;
   @media (max-width: 768px) {
@@ -218,7 +237,7 @@
 
 .hero_title {
   max-width: 1044px;
-  font-size: 4.5rem;
+  font-size: 4.675rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-brand-primary-900);
@@ -291,7 +310,7 @@
   font-size: 1.25rem;
   font-weight: 500;
   color: var(--color-brand-primary-950);
-  background-color: var(--color-brand-primary-400);
+  background-color: var(--color-brand-primary-800);
   border: 2px solid var(--color-brand-primary-950);
   border-radius: 9999px;
   cursor: pointer;
@@ -415,6 +434,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  border-bottom: 1px solid var(--color-brand-secondary-300);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -425,7 +445,7 @@
 }
 
 .section_container_secondary {
-  background-color: #fbe7da;
+  background-color: var(--color-brand-secondary-200);
   @media (max-width: 768px) {
     padding: 3rem 1rem;
   }
@@ -482,7 +502,7 @@
   margin: 1rem auto 0;
   font-size: 1.25rem;
   font-weight: 350;
-  color: var(--color-greyscale-light-700);
+  color: var(--color-brand-primary-950);
   @media (max-width: 768px) {
     font-size: 1rem;
   }
@@ -507,7 +527,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: var(--color-brand-secondary-50);
+  background-color: var(--color-brand-secondary-100);
   border: 2px solid var(--color-brand-primary-950);
   border-radius: 24px;
   box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.15);
@@ -516,11 +536,22 @@
 }
 
 .usage_card:hover {
-  background-color: var(--color-brand-tertiary-50); /* Daha açık bir ton */
+  background-color: var(--color-brand-primary-950); /* Daha açık bir ton */
   box-shadow: 0px 8px 24px -8px rgba(0, 0, 59, 0.2);
   /* Kartı hafif yukarı kaldırma (dilerseniz scale de ekleyebilirsiniz) */
   transform: translateY(-4px);
   cursor: default;
+
+  .usage_card_desc {
+    color: var(--color-brand-secondary-200);
+  }
+
+  .usage_card_title_step {
+    color: var(--color-brand-tertiary-500);
+  }
+  .usage_card_title {
+    color: var(--color-brand-secondary-300);
+  }
 }
 
 .usage_card_title_container {
@@ -547,7 +578,7 @@
 .usage_card_desc {
   font-size: 1.125rem;
   font-weight: 400;
-  color: var(--color-greyscale-light-700);
+  color: var(--color-brand-primary-900);
   z-index: 1;
 }
 
@@ -559,29 +590,42 @@
   margin-bottom: 1rem; /* Metinle arasında biraz boşluk bırak */
 }
 
-/* Resmin kendisi */
 .usage_card_image {
-  min-width: 368px;
+  /* Resmi kapsayan herhangi bir konteynerin genişliği kadar yer kaplayacak */
+  width: 100%;
+  /* Büyük ekranlarda en fazla 480px olsun (isteğe bağlı) */
   max-width: 480px;
-  max-width: full;
-  min-height: 240px;
-  max-height: 240px;
-  padding: auto;
+  /* Yüksekliği genişliğe göre otomatik ayarlansın, distorsiyon olmasın */
+  height: auto;
+
+  /* Ortalamak isterseniz display veya margin ekleyebilirsiniz */
+  display: block;
+  margin: 0 auto;
+
+  /* Şekil ve kenarlık stilleri */
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  border: 1px solid;
-  border-color: var(--color-greyscale-light-200);
-  justify-items: center;
+  border: 2px solid var(--color-greyscale-light-950);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px rgba(0, 0, 0, 0.05);
+
+  /* Görselin kesilmeyi nasıl yöneteceğini belirler */
   object-fit: cover;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.05);
+
+  /* Box-sizing, padding vb. işlemlerde boyut hesaplamasına etki eder */
+  box-sizing: border-box;
 }
 
-/* Daha iyi responsive uyum için medyaya göre font ölçüsünü düşürme */
+.usage_card_desc {
+  /* Varsayılan font ayarı */
+  font-size: 1.125rem; /* Örnek olarak 18px civarı */
+}
+
+/* Mobil (veya dar ekran) uyumuna göre boyut ayarları */
 @media (max-width: 768px) {
   .usage_card_desc {
+    /* Açıklama metni biraz küçülsün */
     font-size: 1rem;
   }
+  /* Eğer başka görsel veya farklı elemanlar varsa onları da buraya ekleyebilirsiniz */
 }
 
 /* styles.css */
@@ -704,63 +748,95 @@
   color: var(--color-brand-primary-700);
 }
 
-/* Feature Card */
+.feature_card_stack {
+  display: flex;
+  gap: 16px; /* Kartların üst üste binme derecesi */
+}
+/* Kart kapsayıcısı */
 .feature_card_container {
-  width: 384px;
-  padding: 48px 44px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  background-color: white;
-  border: 2px solid var(--color-brand-primary-950);
+  position: relative;
+  background: #ffffff;
+  color: var(--color-brand-primary-800);
   border-radius: 24px;
-  box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.05);
-  z-index: 1;
-}
-
-.feature_card_container:hover {
+  border: 2px solid var(--color-brand-primary-900);
+  padding: 25px 30px;
   cursor: pointer;
-  background-color: var(--color-brand-primary-100);
+  width: 100%;
+  min-width: 360px;
+  min-height: 320px;
+  transition: color 0.3s ease-in;
 }
 
-.feature_card_container > * {
-  text-align: left;
+/* Arka tarafta büyüyen dairesel maske */
+.feature_card_container::after {
+  content: "";
+  background: var(--color-brand-primary-900);
+  border-radius: 22px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+
+  /*
+    Başlangıçta küçük bir daire (circle) olarak kliplenecek.
+    circle(10% at 0% 0%) => Sol üst köşeden %10 çapında bir daire.
+  */
+  clip-path: circle(10% at 0% 0%);
+  transition: all 0.3s ease-in;
 }
 
-.feature_card_text_container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* Metin kapsayıcısı: z-index:1 ile üstte kalıyor */
+.feature_card_content {
+  position: relative;
   z-index: 1;
+  transition: color 0.3s ease-in;
 }
 
+/* Hover durumunda dairesel maske tüm kartı kaplıyor (circle(100%)) */
+.feature_card_container:hover::after {
+  clip-path: circle(100%);
+}
+
+/* Hover durumunda kartın içeriği (metin vs.) beyaza dönüyor */
+.feature_card_container:hover .feature_card_content {
+  color: var(--text-color);
+}
+
+/* Başlık */
 .feature_card_title {
-  font-size: 24px;
+  font-size: 1.5rem; /* 24px */
   font-weight: 700;
-  color: var(--color-brand-primary-950);
+  margin-bottom: 0.5rem;
+}
+
+/* Açıklama metni */
+.feature_card_desc {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 400;
+  line-height: 1.4;
   z-index: 1;
 }
 
-.feature_card_desc {
-  font-size: 1.125rem;
-  font-weight: 400;
-  z-index: 1;
-  color: var(--color-greyscale-light-700);
-  @media (max-width: 768px) {
+/* Ekran daraldığında yazıyı biraz küçültmek isterseniz: */
+@media (max-width: 768px) {
+  .feature_card_desc {
     font-size: 1rem;
   }
 }
-
-/* ====== Accordion (Mobile) ====== */
+/* =========================
+   ACCORDION (Mobil) 
+   ========================= */
 .accordionWrapper {
   max-width: 600px;
   margin: 0 auto;
+  text-align: left;
 }
 
 .accordionItem {
-  margin-bottom: 0.5rem;
-  border: 1px solid #e0e0e0;
+  margin-bottom: 0.75rem;
+  border: 1px solid #ddd;
   border-radius: 6px;
   background: #fff;
 }
@@ -774,38 +850,40 @@
 }
 
 .accordionSummary::-webkit-details-marker {
-  display: none; /* summary varsayılan ikonu gizle */
+  display: none; /* default summary ikonunu gizle */
 }
 
 .accordionPanel {
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
   color: #333;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #ddd;
 }
 
-/* ====== Desktop Tag + Hover Tooltip ====== */
+/* =========================
+   TAG + HOVER TOOLTIP (Desktop)
+   ========================= */
 .tagsWrapper {
   position: relative;
   width: 100%;
-  height: 500px; /* Örnek için sabit, isterseniz değiştirebilirsiniz */
+  min-height: 400px;
   margin: 0 auto;
   overflow: hidden;
-  /* Dilerseniz absolute konumlandırma kullanıp random top/left verebilirsiniz. */
+  /* Dilerseniz absolute konumlandırma + random top/left 
+     ekleyerek "dağınık" görünüm verebilirsiniz */
 }
 
+/* Her bir tag */
 .tag {
-  position: absolute;
-  /* Rastgele konum vermek isterseniz top ve left'i inline-style veya JS ile random atayabilirsiniz */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  display: inline-block;
+  margin: 0.5rem;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .tag:hover {
-  transform: translate(-50%, -50%) scale(1.05);
+  transform: scale(1.03);
 }
 
 .tagText {
@@ -815,18 +893,16 @@
   border-radius: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   font-weight: bold;
-  position: relative;
-  z-index: 1;
 }
 
-/* Konuşma balonu (tooltip) */
+/* Tooltip (speech bubble) */
 .speechBubble {
-  display: none;
+  display: none; /* başlangıçta gizli */
   position: absolute;
-  bottom: 130%; /* Tag'in biraz üstünde */
+  bottom: 120%; /* tag’in biraz üstünde */
   left: 50%;
   transform: translateX(-50%);
-  width: 200px;
+  width: 220px;
   background: #333;
   color: #fff;
   padding: 8px 10px;
@@ -834,14 +910,15 @@
   text-align: center;
   font-size: 0.9rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 99;
 }
 
-/* Hover'da balon göster */
+/* Hover edince tooltip görünür olsun */
 .tag:hover .speechBubble {
   display: block;
 }
 
-/* Tooltip ok işareti için pseudo-element kullanabiliriz */
+/* Tooltip'in küçük oku */
 .speechBubble::after {
   content: "";
   position: absolute;
@@ -852,66 +929,326 @@
   border-color: #333 transparent transparent transparent;
   transform: translateX(-50%);
 }
-/* Tech Card */
-.tech_card_container {
-  padding: 2rem;
-  width: 400px;
-  border: 2px solid var(--color-brand-primary-950);
-  background-color: var(--color-brand-secondary-50);
-  color: var(--color-greyscale-light-700);
-  border-radius: 24px;
-  box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.05);
+
+/* Landing.module.css */
+
+/* Landing.module.css (veya benzer bir css dosyanız) */
+
+/* Parent section kapsayıcısı */
+.team_section_container {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  /* Yukarı-aşağı boşluğu arttırabilirsiniz, ör: 4rem 0 */
+  padding: 4rem 40px;
+  background-color: var(--color-brand-secondary-200);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-bottom: 1px solid var(--color-brand-secondary-300);
+  overflow: hidden;
+
+  /* Kartları ortalamak için flex */
+  display: flex;
+  flex-direction: column; /* Başlık üstte, grid altta */
+  align-items: center;
+  justify-content: center; /* Yukarıdan başlaması için */
 }
 
+.team_section_container h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-brand-primary-900);
+  text-align: center;
+}
+
+/* Asıl grid container */
+.team_grid {
+  /* Flex yapısı: kartlar yan yana, taşarsa alt satıra geçsin */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem; /* Kartlar arası boşluk */
+  justify-content: center; /* Ortaya hizala */
+  align-items: flex-start; /* Kart içeriği üstten başlasın */
+}
+
+/* Kartlar */
+.team_card {
+  background-color: var(--color-brand-secondary-100);
+  border: 2px solid var(--color-brand-primary-900);
+  border-radius: 32px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  /* Kart boyutu */
+  width: 300px; /* Daha dar veya geniş yapmak isterseniz ayarlayabilirsiniz */
+  /* Yukarı-aşağı boşluk */
+  padding: 1rem;
+  text-align: center;
+}
+
+.team_card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-brand-primary-950);
+  color: var(--color-brand-secondary-300);
+  border-color: var(--color-brand-primary-900);
+}
+
+/* Daire foto alanı */
+.team_photo_container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* Kare aspect ratio */
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--color-base-white);
+}
+
+.team_photo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.team_card:hover .team_photo {
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* Kartın iç metinleri */
+.team_card h3 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-primary-900);
+}
+
+.team_card p {
+  margin: 0.25rem 0;
+  line-height: 1.4;
+  font-weight: 375;
+  color: var(--color-primary-950);
+}
+/* 
+  Ana container:
+  - Mobilde (varsayılan) tek sütun
+  - Tablet (>=768px) => 2 sütun
+  - Masaüstü (>=1024px) => 3 sütun
+*/
+/* Section veya ana kapsayıcı */
+.tech_card_section {
+  width: 100%;
+  min-height: 100svh; /* Tüm ekran yüksekliğini kapla */
+  display: flex; /* İçerik yerleşimini kontrol etmek için flex veya grid */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* İçerik ortalasın (isteğe bağlı) */
+  background-color: var(--color-brand-secondary-100); /* Örnek arka plan */
+}
+
+.tech_card_container {
+  position: relative;
+  width: 100%;
+  gap: 2rem;
+  /* Yukarı-aşağı boşluğu arttırabilirsiniz, ör: 4rem 0 */
+  padding: 4rem 40px;
+  background-color: var(--color-brand-secondary-200);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: hidden;
+
+  /* Kartları ortalamak için flex */
+  display: flex;
+  flex-direction: row; /* Başlık üstte, grid altta */
+  align-items: center;
+  justify-content: center; /* Yukarıdan başlaması için */
+}
+
+/* Tablet (768px üzeri) => 2 sütun */
+@media (min-width: 768px) {
+  .tech_card_container {
+    padding: 3rem 2rem;
+    flex-direction: row;
+  }
+}
+
+/* Masaüstü (1024px üzeri) => 3 sütun */
+@media (min-width: 1024px) {
+  .tech_card_container {
+    grid-template-columns: repeat(3, minmax(600px, 1fr));
+    padding: 4rem 3rem;
+  }
+}
+
+.tech_card_grid {
+  /* Flex yapısı: kartlar yan yana, taşarsa alt satıra geçsin */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem; /* Kartlar arası boşluk */
+  justify-content: center; /* Ortaya hizala */
+  align-items: flex-start; /* Kart içeriği üstten başlasın */
+}
+
+/* Kart */
+.tech_card {
+  position: relative;
+  /* Kart gridde sütunun genişliğine uysun, ancak çok büyümesin. */
+  width: 100%;
+  max-width: 600px; /* Mobil ve tablet için üst sınır */
+
+  min-height: 120px;
+  max-height: 180px;
+  padding: 1.5rem; /* Genel padding */
+
+  border: 2px solid var(--color-brand-primary-950);
+  border-radius: 20px;
+  background-color: var(--color-brand-secondary-100);
+  color: var(--color-greyscale-light-700);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  /* Hover ve diğer geçişler için animasyon */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+  overflow: hidden;
+}
+
+/* Masaüstünde (1024px üzeri) kartlar daha büyük + daha fazla padding */
+@media (min-width: 1440px) {
+  .tech_card {
+    max-width: 1860px;
+    padding: 2rem;
+    border-radius: 24px;
+  }
+}
+/* Masaüstünde (1024px üzeri) kartlar daha büyük + daha fazla padding */
+@media (min-width: 1024px) {
+  .tech_card {
+    max-width: 1360px;
+    padding: 2rem;
+    border-radius: 24px;
+  }
+}
+
+/* Hover efektleri */
+.tech_card:hover {
+  cursor: default;
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-brand-primary-950);
+  border: 2px solid var(--color-brand-primary-950);
+  color: var(--color-brand-secondary-400);
+}
+
+/* Hover'da link ve başlık renk değişimi */
+.tech_card:hover .tech_card_title {
+  color: var(--color-brand-secondary-300);
+}
+.tech_card:hover .tech_card_desc {
+  color: var(--color-brand-secondary-200);
+}
+.tech_card:hover .tech_card_link_container {
+  color: var(--color-brand-secondary-400);
+}
+
+/* Kart içi metin kapsayıcısı */
 .tech_card_text_container {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-}
-
-.tech_card_container:hover {
-  cursor: pointer;
-  background-color: var(--color-brand-primary-50);
-  color: var(--color-brand-primary-950);
-  .tech_card_title {
-    color: var(--color-brand-primary-950);
-  }
-  .tech_card_desc {
-    color: var(--color-brand-primary-950);
-  }
-}
-
-.tech_card_title {
-  font-size: 28px;
-  font-weight: 500;
-  color: var(--color-brand-primary-800);
-}
-
-.tech_card_desc {
-  font-size: 1rem;
-  font-weight: 400;
-  min-height: 120px;
-  color: var(--color-greyscale-light-600);
-}
-
-.tech_card_link_container {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-.techLink {
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-brand-primary-700);
+  max-width: 1280px;
+}
+/* Başlık */
+.tech_card_title {
+  font-size: 1.75rem; /* ~28px */
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-brand-primary-800);
+  transition: color 0.3s ease;
+}
+
+/* Açıklama metni */
+.tech_card_desc {
+  font-size: 1.1875rem; /* ~18px */
+  line-height: 1.5;
+  font-weight: 400;
+  min-height: 80px;
+  color: var(--color-brand-primary-900);
+  transition: color 0.3s ease;
+}
+
+/* Link Konteyneri */
+.tech_card_link_container {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+  z-index: 100;
+  color: var(--color-brand-primary-900);
+}
+
+.clickable {
+  cursor: pointer;
+}
+/* Link */
+.techLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   text-decoration: none;
+  color: var(--color-brand-primary-900);
+  transition: color 0.3s ease;
+  width: full;
 }
 
 .techLink:hover {
   text-decoration: underline;
+  color: var(--color-brand-secondary-500);
+}
+
+/* Tablet altında (768px altı) yazı boyutları ve padding */
+@media (max-width: 768px) {
+  .tech_card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+  .tech_card_title {
+    font-size: 1.5rem;
+  }
+  .tech_card_desc {
+    font-size: 0.95rem;
+  }
+}
+
+/* Daha küçük mobil (576px altı) */
+@media (max-width: 576px) {
+  .tech_card {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+  .tech_card_title {
+    font-size: 1.25rem;
+  }
+  .tech_card_desc {
+    font-size: 1rem;
+    line-height: 1.4;
+    min-height: unset;
+  }
 }
 
 /* --------------------------------------------
@@ -923,36 +1260,36 @@
   padding: 9rem 6rem;
   font-size: 4rem;
   font-weight: 700;
-  background-color: var(--color-brand-primary-900);
-  color: var(--color-brand-secondary-200);
+  background-color: var(--color-brand-primary-950);
+  color: var(--color-brand-secondary-300);
   border-radius: 9999px; /* Tam yuvarlak köşe */
   text-align: center;
   z-index: 1;
 
-  /* Yumuşak bir geçiş için: */
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* Başlangıçta gölge yok */
+  /* Başlangıç gölgesi */
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+
+  /* Yumuşak geçiş için süreleri artırıyoruz */
+  transition: transform 0.6s ease, filter 0.6s ease, background-color 0.6s ease, color 0.6s ease,
+    box-shadow 0.6s ease;
 }
 
 .sub_section_container:hover {
   /* Hover anında arka plan ve yazı rengi değişimi */
-  background-color: var(--color-brand-secondary-200);
-  color: var(--color-brand-primary-800);
+  background-color: var(--color-brand-primary-950);
+  color: var(--color-brand-secondary-400);
   cursor: pointer;
-
-  /* Outline (çerçeve) */
-  outline: 48px solid var(--color-brand-secondary-200);
-  outline-style: solid;
 
   /* Gölgeyi arttıralım */
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
 
-  /* Daha yumuşak geçiş */
-  transition: outline 0.5s ease, box-shadow 0.5s ease;
+  /* Boyut ve parlaklık animasyonu */
+  transform: scale(1.1);
+  filter: brightness(1.2);
 }
 
 /* --------------------------------------------
-     ARKA PLAN ANİMASYONU (DEGRADE + TRANSFORM)
+       ARKA PLAN ANİMASYONU (DEGRADE + TRANSFORM)
      -------------------------------------------- */
 .sub_section_text_container_bg {
   position: absolute;
@@ -961,18 +1298,16 @@
   height: 100%;
   z-index: 0;
 
-  /* Hafif degrade örneği */
   background: linear-gradient(
     135deg,
     var(--color-brand-secondary-200) 0%,
     var(--color-brand-primary-900) 100%
   );
-
   transform: scale(1);
   opacity: 1;
 
-  /* Hover sırasında değişecek transform/opacity için geçiş */
-  transition: transform 0.5s ease, opacity 0.5s ease;
+  /* Daha yumuşak geçiş */
+  transition: transform 0.6s ease, opacity 0.6s ease;
 }
 
 /* Hover anında biraz büyütüp saydamlaştırıyoruz */
@@ -982,7 +1317,7 @@
 }
 
 /* --------------------------------------------
-     BAŞLIK
+       BAŞLIK
      -------------------------------------------- */
 .sub_section_text_container h1 {
   font-size: 3rem;
@@ -991,26 +1326,25 @@
 }
 
 /* --------------------------------------------
-     MEDIA QUERIES
+       MEDIA QUERIES
+       (Dar ekranlarda animasyonu azaltabilir veya
+        boyutları küçültebilirsiniz)
      -------------------------------------------- */
 
 /* 1) Mobil (telefon) ekranlar (max-width: 576px) */
 @media (max-width: 576px) {
   .sub_section_container {
-    /* Dar ekranlar için margin/padding azaltalım */
     margin: 2rem 1rem;
     padding: 2rem 1rem;
-
-    /* Yazı boyutunu küçültelim */
     font-size: 2rem;
-
-    /* Klasik buton hissi için köşeleri biraz yuvarlat */
     border-radius: 16px;
 
-    /* Outline ve gölgeyi mobilde pasif bırakmak isterseniz */
+    /* Mobilde hover çok yaygın olmadığı için
+         gölge/outline gibi efektleri isterseniz kaldırabilirsiniz */
     outline: none;
     box-shadow: none;
   }
+
   .sub_section_container:hover {
     outline: none;
     box-shadow: none;
@@ -1020,7 +1354,7 @@
     font-size: 1.8rem;
   }
 
-  /* Mobilde hover neredeyse devre dışı kalacağı için animasyonu kapatabiliriz */
+  /* Mobilde hover devre dışı kalabileceği için animasyon iptali */
   .sub_section_container:hover .sub_section_text_container_bg {
     transform: none;
     opacity: 1;
@@ -1060,12 +1394,65 @@
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
   }
 }
 
 .footer_social_container {
-  display: flex;
-  gap: 1rem;
+  /* .hero-social-links'teki gibi */
+  display: flex; /* varsa mevcutsa koruyun veya inline-flex olarak değiştirebilirsiniz */
+  gap: 3rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.footer_social_container h3 {
+  /* .hero-social-links h3'teki gibi */
+  gap: 3rem; /* Eğer h3 içerisinde flex ögeler varsa anlamlı olur, yoksa silebilirsiniz. */
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.footer_social_container a {
+  /* .hero-social-links a'ya benzetilmiş hali */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-primary-500);
+  color: var(--color-white);
+  border-radius: 50%;
+  text-decoration: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  /* İsterseniz mevcut kodunuzdan bunu ekleyebilirsiniz:
+     border: 1px solid var(--color-brand-primary-950);
+     border-radius: 9999px; (daha fazla yuvarlatılmış görünüm için)
+  */
+}
+
+.footer_social_container a:hover {
+  /* Hover durumunda benzer efektler */
+  background-color: var(--color-primary-300);
+  transform: scale(1.15);
+}
+
+.footer_social_container img {
+  /* .hero-social-links img'e benzetilmiş hali */
+  width: 36px; /* İkon boyutu */
+  height: 36px;
+  object-fit: contain;
+  border-radius: 50%;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.footer_social_container img:hover {
+  transform: scale(1.2);
+  filter: brightness(1.2);
 }
 
 .footer_link {
@@ -1085,9 +1472,60 @@
   color: var(--color-brand-primary-950);
 }
 
+.hero_social_links {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10rem;
+}
+
+.hero_social_links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-black); /* İsteğinize göre düzenleyin */
+  color: #000; /* İsteğinize göre düzenleyin */
+  border-radius: 50%;
+  text-decoration: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hero_social_links a:hover {
+  transform: scale(1.15);
+  background-color: var(--color-brand-tertiary-500); /* Hover'da açık gri, isteğe göre düzenleyin */
+}
+
+.hero_social_links img {
+  width: 32px; /* İkon boyutu */
+  height: 32px;
+  object-fit: contain;
+  /* border-radius: 50%;  <-- Genellikle ikona ihtiyaç yoksa kaldırabilirsiniz */
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.hero_social_links img:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.logo_container {
+  width: 100%;
+}
+
+.footer_logo_container {
+  width: 254px;
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
 .copyright {
   font-size: 1rem;
   font-weight: 400;
+  width: 254px;
 }
 
 /* Responsive Design */
@@ -1146,23 +1584,21 @@
   }
 
   .logo_container {
-    width: 100%;
+    max-width: 100%;
   }
 
   .text_cta_content {
-    padding: 2rem 1rem;
-    margin: 0;
     overflow: hidden;
   }
 
   .text_cta_desc {
-    font-size: 1.5rem;
+    font-size: 3rem;
     line-height: 1.2;
   }
 
   .section_summary {
-    font-size: 2rem;
-    line-height: 1.2;
+    font-size: 2.5rem;
+    line-height: 1.5;
   }
 
   .usage_card {
@@ -1185,7 +1621,7 @@
   }
 }
 
-@media only screen and (min-width: px) {
+@media only screen and (max-width: 480px) {
   .hero_section {
     padding: 2rem 1rem 2rem;
     background-position: center;
@@ -1217,7 +1653,7 @@
   }
 
   .text_cta_desc {
-    font-size: 1.5rem;
+    font-size: 2rem;
     line-height: 1.2;
   }
 

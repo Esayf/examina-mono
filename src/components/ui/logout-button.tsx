@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftEndOnRectangleIcon, ArrowRightEndOnRectangleIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import { ArrowRightEndOnRectangleIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { logout } from "@/lib/Client/Auth";
 import { ConfirmLogoutModal } from "./confirm-logout-modal";
@@ -12,7 +12,6 @@ export const LogoutButton: React.FC = () => {
     try {
       await logout();
       toast.success("Logged out successfully");
-      // Örnek: anasayfaya yönlendirme
       window.location.replace(window.location.origin);
     } catch (error) {
       toast.error("Logout failed. Please try again!");
@@ -21,14 +20,26 @@ export const LogoutButton: React.FC = () => {
 
   return (
     <>
-      <Button
-        variant="outline"
-        size="icon"
-        pill
-        onClick={() => setShowConfirm(true)}
-      >
-        <ArrowRightEndOnRectangleIcon className="w-6 h-6" />
-      </Button>
+      {/* Mobil (md'den küçük) => Yazılı, size="default" */}
+      <div className="md:hidden">
+        <Button
+          variant="outline"
+          size="default"
+          pill
+          onClick={() => setShowConfirm(true)}
+          className="flex items-center gap-2 w-[158px]"
+        >
+          Logout
+          <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Desktop (md ve üzeri) => Sadece ikon, size="icon" */}
+      <div className="hidden md:block">
+        <Button variant="outline" size="icon" pill onClick={() => setShowConfirm(true)}>
+          <ArrowRightEndOnRectangleIcon className="w-6 h-6" />
+        </Button>
+      </div>
 
       <ConfirmLogoutModal
         isOpen={showConfirm}

@@ -2,22 +2,17 @@
 
 import React, { ReactNode } from "react";
 // Kendi Button bileşeniniz (örnek: shadcn ui button)
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface ModalProps {
-  isOpen: boolean;           // Modal’ın açık mı kapalı mı olduğu
-  onClose: () => void;       // Modal’ı kapatma callback’i
-  title?: string;            // Başlık (opsiyonel)
-  children: ReactNode;       // İçerik
+  isOpen: boolean; // Modal’ın açık mı kapalı mı olduğu
+  onClose: () => void; // Modal’ı kapatma callback’i
+  title?: string; // Başlık (opsiyonel)
+  children: ReactNode; // İçerik
 }
 
-export function Modal({
-  isOpen,
-  onClose,
-  title,
-  children,
-}: ModalProps) {
+export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -25,7 +20,7 @@ export function Modal({
       className="
         fixed inset-0 z-50
         flex items-center justify-center
-        bg-black/50   /* Yarı saydam karartma */
+        bg-black/60   /* Yarı saydam karartma */
         px-4 py-6
       "
     >
@@ -49,30 +44,20 @@ export function Modal({
             px-5 py-3
           "
         >
-          <h2 className="text-lg font-semibold text-gray-800">
-            {title || "My Custom Modal"}
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-800">{title || "My Custom Modal"}</h2>
 
           {/* Ghost Button + XMarkIcon */}
           <Button
-            variant="outline"
-            size={"icon"}
-            className="
-              transition-colors
-              focus:outline-none
-              focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary-400
-            "
             onClick={onClose}
-            aria-label="Close modal"
+            className="absolute top-4 right-4 p-3 rounded-full border-2 border-brand-primary-950 hover:bg-brand-secondary-200 text-brand-primary-900 hover:text-brand-primary-950 transition"
+            aria-label="Close"
           >
-            <XMarkIcon className="h-6 w-6" />
+            <XMarkIcon className="w-5 h-5" />
           </Button>
         </div>
 
         {/* Body (içerik) */}
-        <div className="px-5 py-4">
-          {children}
-        </div>
+        <div className="px-5 py-4">{children}</div>
       </div>
     </div>
   );

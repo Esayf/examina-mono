@@ -1,11 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  DayPicker,
-  DayPickerSingleProps,
-  SelectSingleEventHandler,
-} from "react-day-picker";
+import { DayPicker, DayPickerSingleProps, SelectSingleEventHandler } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,20 +24,10 @@ function Calendar({
    * Kullanıcı bir güne tıkladığında çağrılan fonksiyon.
    * Burada 'bugün'e tıklarsa '5 dk sonrası' mantığını koruyoruz.
    */
-  const handleDaySelect: SelectSingleEventHandler = (
-    day,
-    selectedDay,
-    activeModifiers,
-    e
-  ) => {
+  const handleDaySelect: SelectSingleEventHandler = (day, selectedDay, activeModifiers, e) => {
     // Eğer bugüne tıklanırsa, 5 dk sonrasını seç
     if (day?.toDateString() === new Date().toDateString()) {
-      onSelect?.(
-        new Date(Date.now() + 5 * 60 * 1000),
-        selectedDay,
-        activeModifiers,
-        e
-      );
+      onSelect?.(new Date(Date.now() + 5 * 60 * 1000), selectedDay, activeModifiers, e);
       return;
     }
     onSelect?.(day, selectedDay, activeModifiers, e);
@@ -68,17 +54,16 @@ function Calendar({
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 border border-brand-primary-950 hover:bg-brand-primary-200 hover:border-brand-primary-800"
+          "h-7 w-7 bg-transparent p-0 border border-brand-primary-950 hover:bg-brand-secondary-200 hover:border-brand-primary-800"
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next:
-          "absolute right-1 hover:bg-brand-primary-200 hover:border-brand-primary-800 hover:text-brand-primary-950",
+          "absolute right-1 hover:bg-brand-secondary-200 hover:border-brand-primary-800 hover:text-brand-primary-950",
 
         // --- Tablo yapısı ---
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
-        head_cell:
-          "text-greyscale-light-400 rounded-md w-9 font-normal text-[0.8rem]",
+        head_cell: "text-greyscale-light-400 rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: cn(
           "h-9 w-9 text-center text-sm p-0 relative",
@@ -99,8 +84,8 @@ function Calendar({
 
         // Seçili gün stili (Arka plan & yazı rengi)
         day_selected: cn(
-          "bg-brand-primary-200 font-bold text-brand-primary-950",  // Projenizde tanımlı bir renk olmalı
-          "hover:bg-primary hover:text-primary-foreground", 
+          "bg-brand-primary-200 font-bold text-brand-primary-950", // Projenizde tanımlı bir renk olmalı
+          "hover:bg-primary hover:text-primary-foreground",
           "focus:bg-primary focus:text-primary-foreground"
         ),
 
@@ -116,8 +101,7 @@ function Calendar({
 
         // Range ortasındaki günler
         day_range_end: "day-range-end",
-        day_range_middle:
-          "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
 
         day_hidden: "invisible",
 
@@ -125,12 +109,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => (
-          <ChevronLeftIcon className="h-4 w-4 stroke-2" />
-        ),
-        IconRight: ({ ...props }) => (
-          <ChevronRightIcon className="h-4 w-4 stroke-2" />
-        ),
+        IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4 stroke-2" />,
+        IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4 stroke-2" />,
       }}
       {...props}
     />

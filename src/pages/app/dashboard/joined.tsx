@@ -12,6 +12,7 @@ import { CopyLink } from "@/components/ui/copylink";
 import { Button } from "@/components/ui/button";
 import DashboardHeader from "@/components/ui/dashboard-header";
 import EmptyState from "@/images/emptystates.svg";
+import BGR from "@/images/backgrounds/bg-8-20.svg";
 import {
   Card,
   CardContent,
@@ -41,8 +42,7 @@ import { QRCodeCanvas } from "qrcode.react";
 
 /* 
    1) Katıldığı quiz verisini çekecek API fonksiyonu.
-   Kendi backend'inizde /api/exams/joined benzeri bir endpoint varsa
-   oraya istek gönderirsiniz.
+   - score & showLeaderboard gibi alanlar backend'den döndüğünü varsayıyoruz.
 */
 async function getJoinedExams() {
   const res = await fetch("/api/exams/joined");
@@ -50,13 +50,13 @@ async function getJoinedExams() {
   return res.json();
 }
 
-// Filtre için sabit seçenekler
+// Filtre seçenekleri
 const FILTER_OPTIONS = ["All", "Active", "Ended", "Upcoming"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
-type SortField = "title" | "startDate" | "endDate" | "duration" | "status";
+type SortField = "title" | "startDate" | "endDate" | "duration" | "status" | "score";
 
 /****************************************
- * Filtre ve sıralamada ok ikonu
+ * Sıralama ikonu
  ****************************************/
 function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: boolean) {
   if (currentField === sortField) {
@@ -147,7 +147,9 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         </button>
 
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">Share with</DialogTitle>
+          <DialogTitle className="text-md font-bold text-brand-primary-900">
+            Share with:
+          </DialogTitle>
         </DialogHeader>
 
         {/* Sosyal medya ikonları */}
@@ -200,6 +202,8 @@ interface JoinedExam {
   startDate: string;
   duration: number;
   isCompleted?: boolean;
+  score?: number; // Kullanıcının bu sınavdaki puanı
+  showLeaderboard?: boolean; // Bu sınav için bir leaderboard varsa
 }
 
 interface RowProps {
@@ -208,6 +212,7 @@ interface RowProps {
 
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const router = useRouter();
 
   // Status hesaplama
   const now = new Date();
@@ -227,6 +232,11 @@ function JoinedRow({ exam }: RowProps) {
   const quizLink = `${typeof window !== "undefined" ? window.location.origin : ""}/app/exams/${
     exam._id
   }`;
+
+  // Leaderboard'a gitme fonksiyonu (örnek)
+  const handleLeaderboard = () => {
+    router.push(`/app/exams/${exam._id}/leaderboard`);
+  };
 
   return (
     <div
@@ -284,6 +294,13 @@ function JoinedRow({ exam }: RowProps) {
             </p>
           </div>
 
+          {/* Score */}
+          <div className="hidden md:flex flex-1 p-5 min-w-[80px] max-w-[100px] border-r border-greyscale-light-100">
+            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+              {exam.score !== undefined ? `${exam.score} pts` : "N/A"}
+            </p>
+          </div>
+
           {/* Status */}
           <div className="flex-1 p-5 min-w-[80px] max-w-[160px]">
             <Badge
@@ -293,13 +310,14 @@ function JoinedRow({ exam }: RowProps) {
             </Badge>
           </div>
 
-          {/* Share quiz buton */}
+          {/* Actions: Share / Leaderboard */}
           <div
             className="
-              flex-1 p-5 min-w-[100px] min-h-[72px]
-              flex items-center justify-end
+              flex-1 p-5 min-w-[150px] min-h-[72px]
+              flex items-center justify-end gap-2
             "
           >
+            {/* Share quiz */}
             <Button
               variant="outline"
               iconPosition="right"
@@ -310,6 +328,18 @@ function JoinedRow({ exam }: RowProps) {
               Share quiz
               <ShareIcon className="w-4 h-4 mr-1" />
             </Button>
+
+            {/* Sınav Ended ise ve leaderboard varsa */}
+            {status === "Ended" && exam.showLeaderboard && (
+              <Button
+                variant="outline"
+                className="max-h-10 text-sm font-normal p-3"
+                onClick={handleLeaderboard}
+              >
+                View Leaderboard
+                <ArrowUpRightIcon className="w-4 h-4 ml-1" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -351,7 +381,7 @@ export default function JoinedExamsPage() {
                 </p>
               </div>
               <div className="flex justify-center">
-                <Button variant="default" onClick={() => router.push("/app/dashboard/created")}>
+                <Button variant="default" onClick={() => router.push("/app")}>
                   Go back
                   <ArrowUpRightIcon className="size-6 ml-1" />
                 </Button>
@@ -363,7 +393,7 @@ export default function JoinedExamsPage() {
     );
   }
 
-  // Status hesaplama (Active, Ended, vb.)
+  // Status hesaplama fonksiyonu
   function getStatus(exam: JoinedExam): string {
     const now = new Date();
     const startDate = new Date(exam.startDate);
@@ -414,10 +444,13 @@ export default function JoinedExamsPage() {
           valA = statusA;
           valB = statusB;
           break;
+        case "score":
+          valA = a.score || 0;
+          valB = b.score || 0;
+          break;
         default:
           valA = 0;
           valB = 0;
-          break;
       }
       if (valA < valB) return sortAsc ? -1 : 1;
       if (valA > valB) return sortAsc ? 1 : -1;
@@ -432,21 +465,28 @@ export default function JoinedExamsPage() {
 
   return (
     <>
-      <div className="h-dvh flex flex-col bg-brand-secondary-50">
-        {/* Dashboard üst header vb. */}
+      <div className="relative min-h-screen h-dvh flex flex-col z-0">
+        {/* Arkaplan görselini tüm sayfa alanı kaplayacak şekilde ekliyoruz */}
+        <div className="absolute inset-0 z-[-1]">
+          <Image
+            src={BGR}
+            alt="Hero Background"
+            fill
+            className="w-full h-full object-cover"
+            priority
+          />
+        </div>
         <DashboardHeader withoutTabs={false} withoutNav={true} />
-
         <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
           <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
-            <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col">
+            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-brand-primary-900 flex-1 flex flex-col">
               <CardHeader>
                 <CardHeaderContent>
-                  <CardTitle>Joined Quizzes</CardTitle>
+                  <CardTitle>Joined quizzes</CardTitle>
                   <CardDescription>
-                    All quizzes you participated in. You can share them easily!
+                    All quizzes you participated in. Check your score or share them easily!
                   </CardDescription>
                 </CardHeaderContent>
-                {/* Gerekirse farklı bir buton koyabilirsiniz */}
               </CardHeader>
 
               <CardContent className="px-0 pt-0 pb-5">
@@ -572,6 +612,30 @@ export default function JoinedExamsPage() {
                     <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
                       Duration
                       {renderSortIcon("duration", sortField, sortAsc)}
+                    </p>
+                  </div>
+
+                  {/* Score */}
+                  <div
+                    className="
+                      hidden md:flex flex-1 p-5
+                      min-w-[80px] max-w-[100px]
+                      border-r border-greyscale-light-200
+                      cursor-pointer select-none
+                      transition-colors duration-200 ease-in-out
+                      hover:bg-greyscale-light-50
+                    "
+                    onClick={() => {
+                      if (sortField === "score") setSortAsc(!sortAsc);
+                      else {
+                        setSortField("score");
+                        setSortAsc(true);
+                      }
+                    }}
+                  >
+                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
+                      Score
+                      {renderSortIcon("score", sortField, sortAsc)}
                     </p>
                   </div>
 

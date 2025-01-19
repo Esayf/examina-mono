@@ -19,14 +19,14 @@ export const QuestionFetchingError = () => {
               reasons:
             </p>
             <ul>
-              <li> - the exam session may have ended or not started,</li>
-              <li> - you may not have the necessary authorization to access the exam,</li>
+              <li> 📌 the exam session may have ended or not started,</li>
+              <li> 📌 you may not have the necessary authorization to access the exam,</li>
               <li>
                 {" "}
-                - our servers have burned down, and they may be raising the average temperature of
+                📌 our servers have burned down, and they may be raising the average temperature of
                 the world with the carbon dioxide they emit,
               </li>
-              <li> - or you may not have logged into the application.</li>
+              <li> 📌 or you may not have logged into the application.</li>
             </ul>
             <p>
               Please check your credentials and try again later. If the issue persists, please

@@ -23,7 +23,7 @@ export function BaseModal({ open, onClose, children }: BaseModalProps) {
       className="
         fixed inset-0 z-50 
         flex items-center justify-center 
-        bg-black/40
+        bg-black/60
       "
       role="dialog"
       aria-modal="true"

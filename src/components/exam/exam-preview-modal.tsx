@@ -22,7 +22,7 @@ export function ExamPreviewModal({ content, onClose }: ExamPreviewModalProps) {
       className="
         fixed inset-0 z-50
         flex items-center justify-center
-        bg-black bg-opacity-50
+        bg-black/60
       "
     >
       {/* İç Box */}
@@ -54,9 +54,7 @@ export function ExamPreviewModal({ content, onClose }: ExamPreviewModalProps) {
           3) "exam-preview" class'ı ekleyip "sınav stili"ne yakın CSS uygulayabilirsiniz
         */}
         <div className="prose max-w-none exam-preview-content">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {content}
-          </ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>
 
         {/* Alt tarafta kapatma / done */}

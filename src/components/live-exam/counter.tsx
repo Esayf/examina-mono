@@ -34,7 +34,7 @@ export const Counter = ({
   useEffect(() => {
     function handleUserInteraction() {
       if (!isUserInteractedRef.current) {
-        isUserInteractedRef.current = true; 
+        isUserInteractedRef.current = true;
         // Artık tarayıcı beep sesi çalındığında büyük olasılıkla engellemeyecek
       }
     }
@@ -118,9 +118,8 @@ export const Counter = ({
     <div
       style={{ minWidth: "120px", maxWidth: "120px" }}
       className={`
-        my-2 mx-auto
-        flex items-center justify-center gap-2 py-1 px-2 border rounded-full
-        transition-colors duration-300
+        flex items-center justify-center gap-2 border rounded-full
+        transition-colors duration-300 max-h-[52px] min-h-[52px] mr-4 ml-4
         ${
           isLastMinute
             ? "bg-red-50 text-red-600 border-red-500 animate-pulse"
@@ -128,14 +127,11 @@ export const Counter = ({
         }
       `}
     >
-      <ClockIcon
-        className={`w-5 h-5 ${isLastMinute ? "text-red-600" : "text-green-600"}`}
-      />
+      <ClockIcon className={`w-5 h-5 ${isLastMinute ? "text-red-600" : "text-green-600"}`} />
       <p className="font-semibold text-base">{display}</p>
     </div>
   );
 };
-
 
 /*window.AudioContext = window.AudioContext || window.webkitAudioContext;
 

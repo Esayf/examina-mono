@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ClockIcon } from "@heroicons/react/24/outline";
-import BackgroundPattern from "@/images/backgrounds/backgroundpattern.svg";
+import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
 import { ClipboardDocumentIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 
 function Footer() {
@@ -158,8 +158,8 @@ function ExamDetail() {
           <Card className="max-w-[36rem] w-full px-10 py-16 gap-4 flex flex-col">
             <b>Something went wrong &#128553;</b>
             <p>
-              Probably this test is invalid or outdated. But you may want to try your
-              luck again. Please click this magic button for that.
+              Probably this test is invalid or outdated. But you may want to try your luck again.
+              Please click this magic button for that.
             </p>
             <Button variant="ghost" className="self-start" onClick={() => refetch()}>
               TRY AGAIN
@@ -183,7 +183,7 @@ function ExamDetail() {
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
-        className="absolute flex justify-center items-center h-dvh"
+        className="absolute flex justify-center items-center h-dvh object-cover"
       />
       <Card className="max-w-[56rem] w-full px-10 pb-16 pt-12 bg-base-white z-10">
         <CardContent className="gap-9 flex flex-col">
@@ -242,6 +242,7 @@ function ExamDetail() {
               className="
                 min-h-[160px]
                 rounded-2xl
+                bg-base-white
                 border
                 border-greyscale-light-200
                 p-4
@@ -325,11 +326,12 @@ function ExamDetail() {
                     className="font-bold"
                   >
                     {session.session?.walletAddress &&
-                      `${session.session?.walletAddress.slice(0, 5)}...${session.session?.walletAddress.slice(-5)}`}
+                      `${session.session?.walletAddress.slice(
+                        0,
+                        5
+                      )}...${session.session?.walletAddress.slice(-5)}`}
                   </a>
                 </>
-              ) : isMobile ? (
-                "You have to use desktop browser to join this quiz."
               ) : (
                 <>
                   You must have an MINA wallet account before using it. Not there yet?{" "}

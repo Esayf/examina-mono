@@ -33,7 +33,6 @@ import imageCompression from "browser-image-compression";
 /*import "@mdxeditor/editor/style.css";*/
 import "@/styles/mdxeditor.css";
 
-
 import toast from "react-hot-toast";
 import { pinata } from "@/utils/config";
 import { KeyResponse } from "pinata-web3";
@@ -140,9 +139,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
               <CodeToggle />
               <InsertTable />
               <InsertThematicBreak />
-              <InsertAdmonition />
               <ListsToggle />
-              <CreateLink />
               <InsertImage />
             </>
           ),

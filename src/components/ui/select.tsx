@@ -20,7 +20,7 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     placeholder={placeholder}
     className={cn(
-      "flex h-12 w-full items-center justify-between placeholder:text-greyscale-light-400 rounded-2xl border border-input border-solid bg-background px-4 py-2 text-md font-light ring-offset-background ring-brand-primary-400 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-12 w-full items-center justify-between placeholder:text-greyscale-light-400 rounded-2xl border border-input border-solid bg-background px-4 py-2 text-md font-light ring-offset-background ring-brand-primary-800 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className,
       !props.value && "text-brand-primary-950"
     )}
@@ -40,10 +40,7 @@ const SelectScrollUpButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
-    className={cn(
-      "flex items-center justify-center h-6 w-full bg-white shadow-sm",
-      className
-    )}
+    className={cn("flex items-center justify-center h-6 w-full bg-white shadow-sm", className)}
     {...props}
   >
     <ChevronUpIcon className="h-5 w-5 stroke-current stroke-2" />
@@ -57,10 +54,7 @@ const SelectScrollDownButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
-    className={cn(
-      "flex items-center justify-center h-6 w-full bg-white shadow-sm",
-      className
-    )}
+    className={cn("flex items-center justify-center h-6 w-full bg-white shadow-sm", className)}
     {...props}
   >
     <ChevronDownIcon className="h-5 w-5 stroke-current stroke-2" />
@@ -119,7 +113,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center text-brand-primary-950 rounded-2xl hover:bg-brand-primary-50 py-3 pl-4 pr-2 text-md font-light outline-none focus:bg-brand-primary-50 focus:text-brand-primary-500 data-[disabled]:pointer-events-none data-[disabled]:opacity-30",
+      "relative flex w-full cursor-default select-none items-center text-brand-primary-900 rounded-2xl hover:bg-brand-secondary-50 py-3 pl-4 pr-2 text-md font-light outline-none focus:bg-brand-secondary-100 focus:text-brand-primary-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-30",
       !placeholder && "text-greyscale-light-400",
       className
     )}

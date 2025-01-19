@@ -158,32 +158,51 @@ export const PublishButton = () => {
         a spinner if we're actively publishing.
       */}
       <Button
-        variant="default"
-        size="default"
-        icon
-        iconPosition="right"
-        disabled={isPublishing}
-        pill
         onClick={handleOpenConfirmModal}
+        disabled={isPublishing}
         className={`
-          relative inline-flex items-center justify-center 
-          px-5 py-3 
-          font-medium text-brand-primary-950
-          rounded-full
-          bg-gradient-to-r from-brand-primary-500 to-brand-primary-400
-          hover:from-brand-primary-400 hover:to-brand-primary-500
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-300
-          transition-transform duration-100 ease-in-out
-          hover:scale-105 active:scale-95
-          shadow-md hover:shadow-lg
-        `}
+    group
+    relative inline-flex items-center justify-center
+    px-5 py-3
+    font-medium text-brand-secondary-200
+    rounded-full
+    bg-brand-primary-900
+    z-50
+
+    transform-gpu
+    transition-all duration-300 ease-out
+
+    /* Hover/Active tepkileri */
+    hover:-translate-y-0.5
+    hover:scale-105
+    active:scale-95
+    active:translate-y-0
+
+    /* Gölge */
+    shadow-sm
+    hover:shadow-md
+    active:shadow-sm
+
+    focus:outline-none
+    focus-visible:ring-2
+    focus-visible:ring-offset-2
+    focus-visible:ring-brand-primary-800
+  `}
       >
         {isPublishing ? (
-          <Spinner className="size-6" />
+          <Spinner className="w-6 h-6" />
         ) : (
           <>
+            {/* Metin her zaman görünür */}
             <span className="hidden sm:inline">Time to publish!</span>
-            <RocketLaunchIcon className="size-6" />
+
+            {/* Roket ikonu başlangıçta scale-0 (gizli) */}
+            <RocketLaunchIcon
+              className={`
+          w-6 h-6
+          sm:ml-2
+        `}
+            />
           </>
         )}
       </Button>

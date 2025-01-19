@@ -13,6 +13,7 @@ import { CopyLink } from "@/components/ui/copylink";
 // Örnek header, emptyState, vs.
 import DashboardHeader from "@/components/ui/dashboard-header";
 import EmptyState from "@/images/emptystates.svg";
+import BGR from "@/images/backgrounds/bg-8-20.svg";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,30 +43,25 @@ import {
 import { QRCodeCanvas } from "qrcode.react";
 
 // React-Icons
-import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa"; // Instagram & Discord kaldırıldı
+import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
-/****************************************
- * Sıralama ikon fonksiyonu
- ****************************************/
 const FILTER_OPTIONS = ["All", "Active", "Ended", "Upcoming", "Draft"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
 type SortField = "title" | "startDate" | "endDate" | "duration" | "status";
 
 function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: boolean) {
   if (currentField === sortField) {
-    // Aktif sütun -> asc mi desc mi?
     return sortAsc ? (
       <ArrowUpIcon className="w-4 h-4 inline ml-1" />
     ) : (
       <ArrowDownIcon className="w-4 h-4 inline ml-1" />
     );
   }
-  // Pasif sütun -> gri chevron
   return <ChevronUpDownIcon className="w-4 h-4 inline ml-1 text-gray-400" />;
 }
 
 /****************************************
- * SHARE MODAL (Chat, More, Instagram & Discord kaldırıldı)
+ * SHARE MODAL
  ****************************************/
 interface ShareModalProps {
   open: boolean;
@@ -74,8 +70,6 @@ interface ShareModalProps {
 }
 
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
-  // Paylaşım seçenekleri
-  // Instagram & Discord kaldırıldı
   const shareOptions = [
     {
       name: "Telegram",
@@ -117,7 +111,6 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
     },
   ];
 
-  // QR kodu PNG olarak indirme
   const downloadQRCode = () => {
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
     if (!canvas) return;
@@ -133,7 +126,6 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md mx-auto p-4 relative bg-base-white">
-        {/* Kapatma butonu */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -142,10 +134,11 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         </button>
 
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">Share with</DialogTitle>
+          <DialogTitle className="text-md font-bold text-brand-primary-900">
+            Share with:
+          </DialogTitle>
         </DialogHeader>
 
-        {/* İkonlar sıralı */}
         <div className="flex justify-center items-center gap-5 mt-4 mb-6">
           {shareOptions.map(({ name, icon, onClick }) => (
             <button
@@ -168,15 +161,12 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
           ))}
         </div>
 
-        {/* "Or share with link" yazısı */}
         <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
 
-        {/* Quiz link + CopyLink */}
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />
         </div>
 
-        {/* QR kod + Download QR */}
         <div className="flex flex-col items-center gap-3">
           <QRCodeCanvas id="quizQrCode" value={quizLink} size={150} bgColor="#FFFFFF" level="M" />
           <Button variant="outline" onClick={downloadQRCode}>
@@ -189,7 +179,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 }
 
 /****************************************
- * ROW Bileşeni (liste satırı)
+ * ROW Bileşeni
  ****************************************/
 interface Exam {
   _id: string;
@@ -206,7 +196,6 @@ interface RowProps {
 function Row({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  // exam status hesaplama
   const now = new Date();
   const startDate = new Date(exam.startDate);
   const endDate = new Date(startDate.getTime() + Number(exam.duration) * 60_000);
@@ -220,7 +209,6 @@ function Row({ exam }: RowProps) {
     status = "Ended";
   }
 
-  // quizLink
   const quizLink = `${
     typeof window !== "undefined" ? window.location.origin : ""
   }/app/exams/get-started/${exam._id}`;
@@ -229,10 +217,9 @@ function Row({ exam }: RowProps) {
     <div
       className={cn(
         "flex flex-col",
-        "transition-colors duration-200 ease-in-out hover:bg-brand-primary-50 hover:text-brand-primary-600"
+        "transition-colors duration-200 ease-in-out hover:bg-brand-secondary-100 hover:text-brand-primary-600"
       )}
     >
-      {/* Paylaş Modal */}
       <ShareModal
         open={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
@@ -243,11 +230,10 @@ function Row({ exam }: RowProps) {
         <div
           className="
             flex font-medium border-t border-greyscale-light-200 bg-white
-            hover:bg-brand-primary-50 hover:text-brand-primary-600 
+            hover:bg-brand-secondary-50 hover:text-brand-primary-800
             transition-colors duration-200 ease-in-out
           "
         >
-          {/* Title */}
           <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px] border-r border-greyscale-light-100">
             <p
               className="text-inherit text-base font-medium leading-6 overflow-hidden text-ellipsis whitespace-nowrap"
@@ -257,28 +243,24 @@ function Row({ exam }: RowProps) {
             </p>
           </div>
 
-          {/* Start Date */}
           <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
               {formatDate(startDate)}
             </p>
           </div>
 
-          {/* End Date */}
           <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
               {endDate ? formatDate(endDate) : "N/A"}
             </p>
           </div>
 
-          {/* Duration */}
           <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
               {exam.duration} min.
             </p>
           </div>
 
-          {/* Status */}
           <div className="flex-1 p-5 min-w-[80px] max-w-[160px]">
             <Badge
               variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
@@ -287,7 +269,6 @@ function Row({ exam }: RowProps) {
             </Badge>
           </div>
 
-          {/* Paylaş butonu */}
           <div
             className="
               flex-1 p-5 min-w-[100px] min-h-[72px]
@@ -301,7 +282,7 @@ function Row({ exam }: RowProps) {
               className="max-h-10 text-sm font-normal p-3"
               onClick={() => setIsShareModalOpen(true)}
             >
-              Share quiz
+              <span className="hidden md:block">Share quiz</span>
               <ShareIcon className="w-4 h-4 mr-1" />
             </Button>
           </div>
@@ -322,10 +303,7 @@ function Application() {
 
   const router = useRouter();
 
-  // Filtre
   const [filter, setFilter] = useState<FilterOption>("All");
-
-  // Sıralama: SON EKLENEN İLK SIRADA GÖZÜKSÜN
   const [sortField, setSortField] = useState<SortField>("startDate");
   const [sortAsc, setSortAsc] = useState(false);
 
@@ -346,9 +324,9 @@ function Application() {
                 </p>
               </div>
               <div className="flex justify-center">
-                <Button variant="default" onClick={() => router.push("/app/create-exam/")}>
-                  Create now
-                  <ArrowUpRightIcon className="size-6" color="brand-primary-950" />
+                <Button variant="outline" onClick={() => router.push("/app/create-exam/")}>
+                  Create new
+                  <ArrowUpRightIcon className="size-6" color="brand-primary-900" />
                 </Button>
               </div>
             </div>
@@ -378,7 +356,6 @@ function Application() {
     });
   }
 
-  // Sıralama fonksiyonu
   function sortExams(exams: Exam[]) {
     return [...exams].sort((a, b) => {
       let valA: number | string = "";
@@ -422,12 +399,13 @@ function Application() {
 
   return (
     <>
-      <div className="h-dvh flex flex-col bg-brand-secondary-50">
+      <div className="relative min-h-screen h-dvh flex flex-col z-0">
+        {/* Arkaplan görselini tüm sayfa alanı kaplayacak şekilde ekliyoruz */}
         <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
           <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
-            <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col">
-              <CardHeader>
+            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
+              <CardHeader className="border-b border-b-greyscale-light-200">
                 <CardHeaderContent>
                   <CardTitle>All quizzes</CardTitle>
                   <CardDescription>
@@ -448,7 +426,7 @@ function Application() {
 
               <CardContent className="px-0 pt-0 pb-5">
                 {/* Filtre Butonları */}
-                <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200">
+                <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200 overflow-auto">
                   {FILTER_OPTIONS.map((opt) => (
                     <button
                       key={opt}
@@ -602,21 +580,80 @@ function Application() {
 
                 {/* Tablonun içeriği */}
                 <div className="overflow-y-auto max-h-[560px]">
-                  {isFilteredEmpty ? (
-                    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-8">
-                      <Image
-                        src={EmptyState}
-                        height={220}
-                        width={280}
-                        alt="No quizzes for this filter"
-                      />
-                      <p className="text-md text-brand-primary-950 max-h-[581px] mt-1">
-                        No quizzes found for <strong>{filter}</strong> filter 😕
-                      </p>
-                    </div>
-                  ) : (
-                    finalExams.map((exam) => <Row key={exam._id} exam={exam} />)
-                  )}
+                  {(() => {
+                    // Yalnızca tablo işlevlerinin finalExams verisini getirmesi
+                    const now = new Date();
+                    function getStatus(exam: any) {
+                      const startDate = new Date(exam.startDate);
+                      const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
+                      if (startDate > now) return "Upcoming";
+                      if (startDate <= now && (!endDate || endDate > now) && !exam.isCompleted)
+                        return "Active";
+                      if ((endDate && endDate <= now) || exam.isCompleted) return "Ended";
+                      return "Upcoming";
+                    }
+                    function filterExams(exams: any[]) {
+                      return exams.filter((exam) => {
+                        const status = getStatus(exam);
+                        if (filter === "All") return true;
+                        return status === filter;
+                      });
+                    }
+                    function sortExams(exams: any[]) {
+                      return [...exams].sort((a, b) => {
+                        let valA: number | string = "";
+                        let valB: number | string = "";
+
+                        const statusA = getStatus(a);
+                        const statusB = getStatus(b);
+
+                        switch (sortField) {
+                          case "title":
+                            valA = a.title?.toLowerCase() || "";
+                            valB = b.title?.toLowerCase() || "";
+                            break;
+                          case "startDate":
+                            valA = new Date(a.startDate).getTime();
+                            valB = new Date(b.startDate).getTime();
+                            break;
+                          case "endDate":
+                            valA = new Date(a.startDate).getTime() + a.duration * 60_000;
+                            valB = new Date(b.startDate).getTime() + b.duration * 60_000;
+                            break;
+                          case "duration":
+                            valA = a.duration || 0;
+                            valB = b.duration || 0;
+                            break;
+                          case "status":
+                            valA = statusA;
+                            valB = statusB;
+                            break;
+                        }
+                        if (valA < valB) return sortAsc ? -1 : 1;
+                        if (valA > valB) return sortAsc ? 1 : -1;
+                        return 0;
+                      });
+                    }
+
+                    const filteredExams = filterExams(data || []);
+                    const finalExams = sortExams(filteredExams);
+                    if (finalExams.length === 0) {
+                      return (
+                        <div className="flex flex-col items-center justify-center py-10 gap-4 mt-8">
+                          <Image
+                            src={EmptyState}
+                            height={220}
+                            width={280}
+                            alt="No quizzes for this filter"
+                          />
+                          <p className="text-md text-brand-primary-950 max-h-[581px] mt-1">
+                            No quizzes found for <strong>{filter}</strong> filter 😕
+                          </p>
+                        </div>
+                      );
+                    }
+                    return finalExams.map((exam: any) => <Row key={exam._id} exam={exam} />);
+                  })()}
                 </div>
               </CardContent>
             </Card>

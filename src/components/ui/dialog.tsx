@@ -37,12 +37,7 @@ interface DialogTitleProps {
 /************************************************
  * ANA DIALOG
  ************************************************/
-export function Dialog({
-  open,
-  onOpenChange,
-  children,
-  hasBlur = true,
-}: DialogProps) {
+export function Dialog({ open, onOpenChange, children, hasBlur = true }: DialogProps) {
   if (!open) return null;
 
   return (
@@ -65,7 +60,7 @@ export function Dialog({
 
 /************************************************
  * OPSİYONEL OVERLAY
- * (İsterseniz Dialog içinde kullanıp 
+ * (İsterseniz Dialog içinde kullanıp
  *  ek tıklama davranışları yazabilirsiniz.)
  ************************************************/
 export function DialogOverlay({ onClick, children }: DialogOverlayProps) {
@@ -95,7 +90,7 @@ export function DialogContent({ children, className }: DialogContentProps) {
 
         ${className ?? ""}
       `}
-      onClick={(e) => e.stopPropagation()} 
+      onClick={(e) => e.stopPropagation()}
       // Kutuya tıklayınca kapanmayı engelle
     >
       {children}
@@ -107,19 +102,11 @@ export function DialogContent({ children, className }: DialogContentProps) {
  * DIALOG HEADER VE TITLE
  ************************************************/
 export function DialogHeader({ children }: DialogHeaderProps) {
-  return (
-    <div className="mb-4 mt-4 flex justify-between items-center">
-      {children}
-    </div>
-  );
+  return <div className="mb-4 mt-4 flex justify-between items-center">{children}</div>;
 }
 
 export function DialogTitle({ children, className }: DialogTitleProps) {
-  return (
-    <h1 className={className}>
-      {children}
-    </h1>
-  );
+  return <h1 className={className}>{children}</h1>;
 }
 
 /************************************************
@@ -129,7 +116,7 @@ export function DialogCloseButton({ onClose }: { onClose: () => void }) {
   return (
     <button
       onClick={onClose}
-      className="ml-4 text-gray-500 hover:text-gray-800 justify-middle"
+      className="absolute top-4 right-4 p-3 rounded-full border-2 border-brand-primary-950 hover:bg-brand-secondary-200 text-brand-primary-900 hover:text-brand-primary-950 transition"
       aria-label="Close"
     >
       <XMarkIcon className="w-5 h-5" />

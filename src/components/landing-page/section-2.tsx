@@ -4,9 +4,9 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 
 // Örnek görseller (SVG de olabilir)
-import Step1Img from "@/../src/images/landing_feature_card/step1.svg";
-import Step2Img from "@/../src/images/landing_feature_card/step2.svg";
-import Step3Img from "@/../src/images/landing_feature_card/step3.svg";
+import Step1Img from "@/../src/images/landing_feature_card/step-1 1.svg";
+import Step2Img from "@/../src/images/landing_feature_card/step-2 1.svg";
+import Step3Img from "@/../src/images/landing_feature_card/step-3 1.svg";
 
 import Link from "next/link";
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
@@ -46,7 +46,7 @@ const stepArray: Step[] = [
     stepText: "STEP 1",
     stepTitle: "Seamlessly start 🥳",
     stepDesc:
-      "Jump right in – no signup needed! Just connect and go! Simply press the 'Connect’ button to seamlessly link your Pallad or Auro Wallet.",
+      "Jump right in – no signup needed! Simply press the 'Connect wallet’ button to seamlessly link your Auro Wallet.",
     stepImg: Step1Img,
   },
   {
@@ -98,12 +98,15 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
                   />
                 </div>
               )}
-
-              <div className={styles.usage_card_title_container}>
-                <p className={styles.usage_card_title_step}>{step.stepText}</p>
-                <h4 className={styles.usage_card_title}>{step.stepTitle}</h4>
+              <div className="flex flex-col gap 2">
+                <div className={styles.usage_card_title_container}>
+                  <p className={styles.usage_card_title_step}>{step.stepText}</p>
+                  <h4 className={styles.usage_card_title}>{step.stepTitle}</h4>
+                </div>
+                <div>
+                  <p className={styles.usage_card_desc}>{step.stepDesc}</p>
+                </div>
               </div>
-              <p className={styles.usage_card_desc}>{step.stepDesc}</p>
             </div>
           ))}
         </div>
@@ -115,11 +118,15 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
             aria-label="Start creating your first quiz on Choz"
           >
             <Button
-              variant="default"
+              variant="tertiary"
               pill={true}
               size="lg"
               icon={true}
               iconPosition="right"
+              className="    transition-transform
+    duration-300
+    hover:scale-105
+    active:scale-95"
               onClick={async () => {
                 const res = await authenticate(session);
                 if (!res) {

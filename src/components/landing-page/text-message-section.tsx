@@ -14,19 +14,11 @@ export const TextMessageSection = () => {
     >
       <div className={styles.text_cta_container}>
         <div className={styles.section_background}>
-          <Image
-            src={CTA}
-            alt="CTA Background"
-            className="w-full h-full object-cover"
-          />
+          <Image src={CTA} alt="CTA Background" className="w-full h-full object-cover" />
         </div>
         <div className={styles.text_cta_content}>
           <TypewriterText
-            textArray={[
-              "Empower your audience",
-              "Boost your engagement",
-              "Reward your users",
-            ]}
+            textArray={["Empower your audience", "Boost your engagement", "Reward your users"]}
           />
           <h3 className={styles.text_cta_desc}>
             At Choz, rewards do more than add value. They transform quizzes into exciting,

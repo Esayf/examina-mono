@@ -48,6 +48,8 @@
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "eslint": "8.54.0",
     "eslint-config-next": "14.0.3",
     "framer-motion": "^11.17.0",

@@ -66,11 +66,7 @@ export const DurationPicker = <
             <FormControl>
               <SelectTrigger className="box-border justify-between">
                 <SelectValue
-                  placeholder={
-                    customDuration !== null
-                      ? `${customDuration} Minutes`
-                      : placeholder
-                  }
+                  placeholder={customDuration !== null ? `${customDuration} Minutes` : placeholder}
                 />
               </SelectTrigger>
             </FormControl>
@@ -123,27 +119,17 @@ export const DurationPicker = <
                 onKeyDown={(e) => {
                   // Kullanıcı harf gibi geçersiz karakter girerse engelle
                   // Ayrıca "0" girilmeye başlarken (ilk karakter olarak) da engellenebilir
-                  if (
-                    e.key.length === 1 &&
-                    !/[0-9]/.test(e.key) &&
-                    e.key !== "Backspace"
-                  ) {
+                  if (e.key.length === 1 && !/[0-9]/.test(e.key) && e.key !== "Backspace") {
                     e.preventDefault();
                   }
                 }}
                 className="number-input"
               />
-              {isUnderOne && (
-                <p className="mt-1 text-sm text-red-600">
-                  Minimum 1 dakika olmalı
-                </p>
-              )}
+              {isUnderOne && <p className="mt-1 text-sm text-red-600">Minimum 1 dakika olmalı</p>}
             </div>
           )}
 
-          <FormDescription className="text-xs text-ui-error-500">
-            {description}
-          </FormDescription>
+          <FormDescription className="text-xs text-ui-error-500">{description}</FormDescription>
           <FormMessage />
         </FormItem>
       )}

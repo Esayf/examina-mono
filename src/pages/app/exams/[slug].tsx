@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
+import { ArrowLeftIcon, ArrowRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import {
   imagePlugin,
@@ -40,8 +43,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { Counter } from "@/components/live-exam/counter";
 import { ExamNavigation } from "@/components/live-exam/exam-navigation";
 
-/** 
- * ProgressBar bileşeni 
+/**
+ * ProgressBar bileşeni
  */
 function ProgressBar({ current, total }: { current: number; total: number }) {
   const progress = total > 0 ? (current / total) * 100 : 0;
@@ -144,35 +147,39 @@ function LiveQuiz() {
   const currentIndex = currentQuestionIndex + 1;
 
   return (
-    <div className="flex flex-col">
-       {/* Sayaç (Counter) */}
-       {examData && (
-                <Counter
-                  startDate={examData.exam.startDate}
-                  duration={examData.exam.duration}
-                  mutate={mutate}
-                  onTimeout={() => router.push("/")}
-                  beepOnLastMinute
-                />
-              )}
-           
+    <div className="flex justify-center items-center h-dvh">
+      <Image
+        src={BackgroundPattern}
+        alt="Background pattern"
+        className="absolute flex justify-center items-center h-dvh object-cover"
+      />
       <div className="max-w-[76rem] w-full mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
-        
         <Card className="mt-7 mb-7 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
           <CardHeader>
             {/* CardHeader’de sadece exam title ve description (mobilde) */}
             <CardHeaderContent className="flex flex-row overflow-hidden justify-between">
-            <div className="flex flex-col overflow-hidden gap-3">
-              <CardTitle className="hidden md:block">{examData.exam.title}</CardTitle>
-                      <div className="flex flex-col w-full md:w-auto gap-2">
-                <ProgressBar current={currentIndex} total={questions.length} />
-                <span className="text-sm text-gray-700">
-                  Question {currentIndex} / {questions.length}
-                </span>
+              <div className="flex flex-col overflow-hidden gap-3">
+                <CardTitle className="hidden md:block">{examData.exam.title}</CardTitle>
+                <div className="flex flex-col w-full md:w-auto gap-2">
+                  <ProgressBar current={currentIndex} total={questions.length} />
+                  <span className="text-sm text-gray-700 hidden sm:block">
+                    Question {currentIndex} / {questions.length}
+                  </span>
+                </div>
               </div>
-              </div>
-                 {/* Finish Quiz Butonu */}
-                 <div className="flex justify-end md:justify-start gap-2">
+              {/* Finish Quiz Butonu */}
+              <div className="flex justify-end md:justify-start gap-2">
+                {/* Sayaç (Counter) */}
+                {examData && (
+                  <Counter
+                    startDate={examData.exam.startDate}
+                    duration={examData.exam.duration}
+                    mutate={mutate}
+                    onTimeout={() => router.push("/")}
+                    beepOnLastMinute
+                  />
+                )}
+
                 <Button
                   variant="default"
                   className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center"
@@ -204,18 +211,39 @@ function LiveQuiz() {
           {/* CardContent içinde, progress bar ve butonlar için ayrı bir satır... */}
           <CardContent className="p-5 flex flex-col gap-6 bg-base-white">
             {/* Üst kısım: ProgressBar, Soru X/Y, Sayaç (Counter) ve "Finish quiz" butonu */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full"></div>
+            <div className="flex gap-4 justify-between">
+              <Button
+                pill
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setCurrentQuestionIndex((prev) => prev - 1);
+                }}
+                disabled={isPending || currentQuestionIndex === 0}
+              >
+                <ArrowLeftIcon className="size-6" />
+              </Button>
+              {/* Navigasyon + Sorunun kendisi */}
+              <ExamNavigation
+                setCurrentQuestionIndex={setCurrentQuestionIndex}
+                isPending={isPending}
+                currentQuestionIndex={currentQuestionIndex}
+                questions={questions}
+                currentQuestion={currentQuestion}
+              />
+              <Button
+                pill
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setCurrentQuestionIndex((prev) => prev + 1);
+                }}
+                disabled={isPending || currentQuestionIndex === questions.length - 1}
+              >
+                <ArrowRightIcon className="size-6" />
+              </Button>
             </div>
-
-            {/* Navigasyon + Sorunun kendisi */}
-            <ExamNavigation
-              setCurrentQuestionIndex={setCurrentQuestionIndex}
-              isPending={isPending}
-              currentQuestionIndex={currentQuestionIndex}
-              questions={questions}
-              currentQuestion={currentQuestion}
-            />
-
             <div className="flex-1 flex gap-6 flex-col overflow-wrap break-words">
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[360px] max-h-[400px] text-xl md:min-h-[400px] md:max-h-[1200px]">
                 <MDXEditor
@@ -256,6 +284,30 @@ function LiveQuiz() {
                   ))}
                 </RadioGroup.Root>
               </div>
+            </div>
+            <div className="flex gap-4 justify-between">
+              <Button
+                pill
+                variant="outline"
+                onClick={() => {
+                  setCurrentQuestionIndex((prev) => prev - 1);
+                }}
+                disabled={isPending || currentQuestionIndex === 0}
+              >
+                <ArrowLeftIcon className="size-6 hidden md:block mr-2" />
+                Previous
+              </Button>
+              <Button
+                pill
+                variant="outline"
+                onClick={() => {
+                  setCurrentQuestionIndex((prev) => prev + 1);
+                }}
+                disabled={isPending || currentQuestionIndex === questions.length - 1}
+              >
+                Next
+                <ArrowRightIcon className="size-6 hidden md:block ml-2" />
+              </Button>
             </div>
           </CardContent>
         </Card>

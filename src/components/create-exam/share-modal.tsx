@@ -1,12 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { QRCodeCanvas } from "qrcode.react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -76,8 +71,7 @@ export default function ShareModal({ open, onClose, quizLink }: ShareModalProps)
     {
       name: "Instagram",
       icon: <FaInstagram />,
-      onClick: () =>
-        alert("Instagram sharing typically requires a custom approach. :)"),
+      onClick: () => alert("Instagram sharing typically requires a custom approach. :)"),
     },
     {
       name: "E-mail",
@@ -113,9 +107,7 @@ export default function ShareModal({ open, onClose, quizLink }: ShareModalProps)
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
     if (!canvas) return;
 
-    const pngUrl = canvas
-      .toDataURL("image/png")
-      .replace("image/png", "image/octet-stream");
+    const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
 
     const link = document.createElement("a");
     link.href = pngUrl;
@@ -133,10 +125,10 @@ export default function ShareModal({ open, onClose, quizLink }: ShareModalProps)
       */}
       <DialogContent className="w-full p-6 relative bg-base-white">
         {/* Kapatma butonu */}
-     {/* Kapatma butonu */}
-<button
-  onClick={onClose}
-  className="
+        {/* Kapatma butonu */}
+        <button
+          onClick={onClose}
+          className="
     absolute top-4 right-4
     p-2
     text-gray-500
@@ -148,16 +140,16 @@ export default function ShareModal({ open, onClose, quizLink }: ShareModalProps)
     focus:ring-gray-200
     transition-colors
   "
->
-  <XMarkIcon className="w-6 h-6" />
-</button>
-
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
         {/* Başlık */}
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">Share with</DialogTitle>
+          <DialogTitle className="text-md font-bold text-brand-primary-950">
+            Share with:
+          </DialogTitle>
         </DialogHeader>
-
-        {/* Paylaşım ikonları */}
+        z{/* Paylaşım ikonları */}
         <div className="flex justify-center items-center gap-5 mt-4 mb-6">
           {shareOptions.map(({ name, icon, onClick }) => (
             <button
@@ -179,26 +171,15 @@ export default function ShareModal({ open, onClose, quizLink }: ShareModalProps)
             </button>
           ))}
         </div>
-
         {/* Or share with link */}
-        <p className="text-center text-sm text-gray-500 mb-2">
-          Or share with link
-        </p>
-
+        <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
         {/* CopyLink input */}
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />
         </div>
-
         {/* QR code + Download */}
         <div className="flex flex-col items-center gap-3">
-          <QRCodeCanvas
-            id="quizQrCode"
-            value={quizLink}
-            size={150}
-            bgColor="#FFFFFF"
-            level="M"
-          />
+          <QRCodeCanvas id="quizQrCode" value={quizLink} size={150} bgColor="#FFFFFF" level="M" />
           <Button variant="outline" onClick={downloadQRCode}>
             Download QR
           </Button>
