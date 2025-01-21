@@ -79,7 +79,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
         {/* Kapat Butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-3 rounded-full border-2 border-brand-primary-950 hover:bg-brand-secondary-200 text-brand-primary-900 hover:text-brand-primary-950 transition"
+          className="absolute transition top-4 right-4 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-600 hover:border-brand-primary-900 hover:bg-brand-secondary-200"
           aria-label="Close"
         >
           <XMarkIcon className="w-5 h-5" />
@@ -135,8 +135,8 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
                 border-brand-primary-900
                 rounded-full
                 transition
-                disabled:bg-greyscale-light-200
-                disabled:border-greyscale-light-300
+                disabled:bg-greyscale-light-100
+                disabled:border-greyscale-light-200
                 disabled:text-greyscale-light-300
               "
               onClick={() => alert("WalletConnect flow...")}
@@ -156,8 +156,8 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
                 border-brand-primary-900
                 rounded-full
                 transition
-                disabled:bg-greyscale-light-200
-                disabled:border-greyscale-light-300
+                disabled:bg-greyscale-light-100
+                disabled:border-greyscale-light-200
                 disabled:text-greyscale-light-300
               "
               onClick={() => alert("WalletConnect flow...")}
@@ -177,8 +177,8 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
                 border-brand-primary-900
                 rounded-full
                 transition
-                disabled:bg-greyscale-light-200
-                disabled:border-greyscale-light-300
+                disabled:bg-greyscale-light-100
+                disabled:border-greyscale-light-200
                 disabled:text-greyscale-light-300
               "
               onClick={() => alert("WalletConnect flow...")}

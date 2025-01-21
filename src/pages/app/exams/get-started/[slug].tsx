@@ -1,48 +1,27 @@
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import { getExamDetails, startExam } from "@/lib/Client/Exam";
+import toast from "react-hot-toast";
+import {
+  ArrowUpRightIcon,
+  ClockIcon,
+  ClipboardDocumentIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/outline";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import { getExamDetails, startExam } from "@/lib/Client/Exam";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setSession } from "@/features/client/session";
 import { authenticate } from "@/hooks/auth";
 
-// Icons
 import Choz from "@/images/landing-header/choz.svg";
-import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
-import { isMobile } from "react-device-detect";
-import toast from "react-hot-toast";
-import { setSession } from "@/features/client/session";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ClockIcon } from "@heroicons/react/24/outline";
-import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
-import { ClipboardDocumentIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
-
-function Footer() {
-  return (
-    <div className="w-full bg-white/80 py-5 px-5">
-      <div className="flex justify-between items-center gap-8">
-        <Image src={Choz} alt="" />
-        <div className="hidden md:flex gap-8 items-center">
-          <a className="font-bold" href="#">
-            Overview
-          </a>
-          <a className="font-bold" href="#">
-            Blog
-          </a>
-          <a className="font-bold" href="#">
-            Docs
-          </a>
-        </div>
-        <p>© 2024 Choz</p>
-      </div>
-    </div>
-  );
-}
 
 function ExamDetail() {
   const router = useRouter();
@@ -51,92 +30,75 @@ function ExamDetail() {
   const session = useAppSelector((state) => state.session);
   const isConnected = Object.keys(session.session).length > 0;
 
+  // Saniyede bir güncellediğimiz "kalan süre" state
   const [timer, setTimer] = useState<number>(0);
 
+  // Sınav detaylarını çek
   const { data, isLoading, isPending, isError, refetch } = useQuery({
     queryKey: ["exam"],
     queryFn: () => getExamDetails(examID),
     enabled: !!examID && isConnected,
   });
 
-  // Initialize timer
+  // “kalan süre”’yi her saniye hesaplayan effect
   useEffect(() => {
-    if (data === undefined || "message" in data) return;
-    if (data?.exam?.startDate && timer === 0) {
-      setTimer(new Date(data.exam.startDate).getTime() - new Date().getTime());
-    }
-  }, [data]);
+    if (!data || "message" in data || !data.exam?.startDate) return;
 
-  // Decrement timer
-  useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev <= 0) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1000;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [timer]);
+    // Her seferinde “şimdi - examStartDate” farkını yeniden hesaplamak için bir fonksiyon
+    const calcTime = () => {
+      const distance = new Date(data.exam.startDate).getTime() - new Date().getTime();
+      setTimer(distance);
+    };
+
+    // İlk hesap
+    calcTime();
+
+    // Saniyede bir yeniden hesap
+    const intervalId = setInterval(calcTime, 1000);
+    return () => clearInterval(intervalId);
+  }, [data]); // data.exam?.startDate gibi de ekleyebilirsiniz
 
   /**
-   * A fun, user-friendly countdown/quiz state function.
+   * Geriye kalan süreye göre kullanıcıya durum mesajı
    */
   const formatTimeLeft = (milliseconds: number) => {
+    if (!data || !("exam" in data)) return "Loading or invalid data...";
+
     const totalSeconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    // If we still have positive time => exam hasn't started
     if (totalSeconds > 0) {
-      if (minutes > 1) {
-        return `Woohoo! ${minutes} minutes left until we kick off!`;
-      } else if (minutes === 1) {
-        return `Just 1 minute and ${seconds} seconds until the fun begins!`;
-      } else if (seconds > 0) {
-        return `Only ${seconds} seconds to go—get ready!`;
-      }
+      // Sınav henüz başlamadı
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      if (minutes > 1) return `Woohoo! ${minutes} minutes left until we kick off!`;
+      if (minutes === 1) return `Just 1 minute and ${seconds} seconds until the fun begins!`;
+      if (seconds > 0) return `Only ${seconds} seconds to go—get ready!`;
     }
 
-    // totalSeconds <= 0 => exam may be started or ended
-    if (data && "exam" in data) {
-      const timeSinceStart = Math.abs(milliseconds);
-      const examDurationMs = (data.exam?.duration ?? 0) * 60 * 1000;
+    // totalSeconds <= 0 => exam started or ended
+    const timeSinceStart = Math.abs(milliseconds);
+    const examDurationMs = (data.exam?.duration ?? 0) * 60 * 1000;
 
-      // If we've surpassed the duration => ended
-      if (timeSinceStart >= examDurationMs) {
-        return "Oh no! The quiz has ended. Better luck next time!";
-      }
-
-      // Otherwise, it started but isn't over
-      return "It's go time! The quiz is in progress—join before it ends!";
+    if (timeSinceStart >= examDurationMs) {
+      return "Oh no! The quiz has ended. Better luck next time!";
     }
-
-    return "Loading or invalid data...";
+    return "It's go time! The quiz is in progress—join before it ends!";
   };
 
-  // If exam is completed or user finished, redirect to results
+  // Sınav bitmiş veya kullanıcı bitirmişse result'a yönlendir
   useEffect(() => {
     if (!data) return;
-
     if ("message" in data) {
       toast.error(data.message);
       return;
     }
-
-    if (data.exam?.isCompleted === true && data.participatedUser) {
+    if (data.exam?.isCompleted && data.participatedUser) {
       router.push("/app/exams/result/" + data.exam._id);
-    }
-    if (data.participatedUser && data.participatedUser.isFinished) {
+    } else if (data.participatedUser?.isFinished) {
       router.push("/app/exams/result/" + data.exam._id);
     }
   }, [data]);
 
-  // Loading states
+  // Bazı loading / error durumları
   if (isConnected && (isLoading || isPending)) {
     return (
       <div className="flex w-full justify-center flex-col items-center h-dvh bg-[url('/bg.png')] bg-cover">
@@ -146,7 +108,6 @@ function ExamDetail() {
             <p>We are working hard to get the test details. Please wait a moment.</p>
           </Card>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -166,12 +127,11 @@ function ExamDetail() {
             </Button>
           </Card>
         </div>
-        <Footer />
       </div>
     );
   }
 
-  // If exam start is in the past and end time not passed => canStartExam = true
+  // Sınav başlama / bitiş kontrolü
   const canStartExam =
     data?.exam?.startDate &&
     new Date(data?.exam?.startDate) < new Date() &&
@@ -188,7 +148,7 @@ function ExamDetail() {
       <Card className="max-w-[56rem] w-full px-10 pb-16 pt-12 bg-base-white z-10">
         <CardContent className="gap-9 flex flex-col">
           <div className={cn("flex flex-col items-center", !data && "filter blur-sm")}>
-            <div className="flex items-center gap-3 my-4 font-bold text-center text-xl border-none border-greyscale-light-200 rounded-2xl p-4">
+            <div className="flex items-center gap-3 my-4 font-bold text-center text-xl">
               <h3
                 title={data?.exam.title}
                 className="
@@ -207,10 +167,10 @@ function ExamDetail() {
               </h3>
             </div>
             <div className="flex items-center text-center max-w-[480px] justify-center gap-2">
-              {/* If timer != 0, use formatTimeLeft. Otherwise, "Quiz has started" */}
-              <p>{timer !== 0 ? formatTimeLeft(timer) : "Quiz has started"}</p>
+              <p>{formatTimeLeft(timer)}</p>
             </div>
           </div>
+
           <div className={cn("flex flex-col gap-4", !data && "filter blur-sm")}>
             {/* Additional quiz info */}
             <div className="border rounded-2xl border-greyscale-light-200 p-4 bg-white space-y-3">
@@ -225,7 +185,8 @@ function ExamDetail() {
               <div className="flex items-center gap-2">
                 <Squares2X2Icon className="w-5 h-5 text-brand-primary-950" />
                 <span className="text-sm text-greyscale-light-700">
-                  Total Questions: <span className="font-bold">5</span>
+                  Total Questions:{" "}
+                  <span className="font-bold">{data?.exam?.questionCount ?? 0}</span>
                 </span>
               </div>
               {/* Duration */}
@@ -283,9 +244,9 @@ function ExamDetail() {
                   toast.loading("Starting exam...");
                   startExam(examID)
                     .then(() => {
-                      router.push(`/app/exams/${data?.exam._id}`);
                       toast.remove();
                       toast.success("You are ready to start the exam. Good luck!");
+                      router.push(`/app/exams/${data?.exam._id}`);
                     })
                     .catch((error) => {
                       console.log(error);
@@ -316,7 +277,7 @@ function ExamDetail() {
               </Button>
             )}
 
-            <p className="mt-auto text-center text-sm">
+            <p className="mt-4 text-center text-md">
               {session.session?.walletAddress ? (
                 <>
                   Your current wallet address is:{" "}
@@ -336,7 +297,7 @@ function ExamDetail() {
                 <>
                   You must have an MINA wallet account before using it. Not there yet?{" "}
                   <a
-                    className="font-bold"
+                    className="font-bold text-md"
                     href="https://www.aurowallet.com/download/"
                     target="_blank"
                   >

@@ -25,7 +25,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
   // Modal state (açık/kapalı)
   const [isConnectModalOpen, setConnectModalOpen] = useState(false);
 
-  // Cüzdan doğrulama fonksiyonu (Mina / Auro / vs.)
+  // Cüzdan doğrulama fonksiyonu
   const handleAuthentication = async () => {
     const res = await authenticate(session);
     if (!res) {
@@ -56,6 +56,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
         ${styles.header} 
         bg-brand-secondary-100 
         border-b border-brand-secondary-100
+        h-20
       `}
     >
       {/* Header Container */}
@@ -63,22 +64,20 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
         className={`
           ${styles.header_container} 
           w-full 
-          mx-auto 
           flex 
           items-center 
-          px-4
+          justify-between
         `}
       >
         {/* SOL: Logo */}
         <div
           className={`${styles.logo_container} flex-shrink-0`}
-          style={{ maxHeight: "50px", width: "175.81px" }}
+          style={{ maxHeight: "52px", alignContent: "center", width: "200px" }}
         >
           <Image src={Choz} height={36} alt="Choz Logo" />
         </div>
 
         {/* ORTA: Linkler (md ve üzeri) */}
-        {/* Social Links */}
         <div className="flex-row hidden md:block">
           <SocialLinks />
         </div>
@@ -114,7 +113,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               variant="default"
               pill
               size="icon"
-              className="text-brand-primary-950 focus:outline-none"
+              className="text-brand-secondary-200 focus:outline-none z-50"
             >
               {menuOpen ? <XMarkIcon className="w-8 h-8" /> : <Bars3Icon className="w-8 h-8" />}
             </Button>
@@ -122,59 +121,83 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
         </div>
       </div>
 
-      {/* MOBİL MENÜ (md altında açılır) */}
+      {/* 
+        MOBİL MENÜ (md altında açılır)
+        Menü tam ekran overlay olarak görünür, 
+        blur arka planla beraber ortada hizalanır.
+      */}
       {menuOpen && (
         <div
           className="
-            md:hidden 
-            absolute 
-            top-20 
-            right-4 
-            w-48 
-            z-50 
-            shadow-lg 
-            bg-brand-secondary-100 
-            rounded-3xl 
-            border 
-            border-brand-primary-950
+            fixed
+            inset-0
+            z-50
+            bg-black
+            bg-opacity-40
+            backdrop-blur-sm
+            flex
+            items-center
+            justify-center
           "
         >
-          <div className="flex flex-col items-start p-4 gap-4">
-            <Button
-              className="w-full text-left text-brand-primary-950 bg-brand-secondary-200"
-              icon
-              pill
-              size="default"
-              variant="default"
-              onClick={() => window.open("https://x.com/chozapp", "_blank")}
-            >
-              X Account
-              <ArrowUpRightIcon className="w-4 h-4" />
-            </Button>
+          {/* İçerik Kartı */}
+          <div
+            className="
+              w-[90%]
+              max-w-sm
+              bg-brand-secondary-100
+              border
+              border-brand-primary-950
+              rounded-3xl
+              p-6
+              items-center
+              mx-auto
+              my-auto
+              relative
+            "
+          >
+            {/* Menü İçeriği */}
+            <div className="flex flex-col items-start gap-2">
+              <Button
+                className="w-full justify-between"
+                icon
+                pill
+                size="default"
+                variant="outline"
+                onClick={() => window.open("https://x.com/chozapp", "_blank")}
+              >
+                X Account
+                <ArrowUpRightIcon className="w-5 h-5" />
+              </Button>
 
-            <Button
-              className="w-full text-brand-primary-950 bg-brand-secondary-200"
-              icon={false}
-              pill
-              size="default"
-              variant="default"
-              onClick={() => window.open("https://choz.medium.com/", "_blank")}
-            >
-              Blog
-            </Button>
+              <Button
+                className="w-full justify-between"
+                icon={false}
+                pill
+                size="default"
+                variant="outline"
+                onClick={() => window.open("https://choz.medium.com/", "_blank")}
+              >
+                Blog
+                <ArrowUpRightIcon className="w-5 h-5" />
+              </Button>
 
-            {/* Mobil: Connect Wallet (Modal) */}
-            <Button
-              className="w-full bg-brand-secondary-200 text-brand-primary-950"
-              icon
-              variant="default"
-              pill
-              size="default"
-              onClick={openConnectModal}
-            >
-              Connect
-              <ArrowUpRightIcon className="w-4 h-4" />
-            </Button>
+              {/* Mobil: Connect Wallet (Modal) */}
+              <Button
+                className="w-full justify-between"
+                icon
+                variant="outline"
+                pill
+                size="default"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openConnectModal();
+                }}
+              >
+                Connect
+                <ArrowUpRightIcon className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -183,9 +206,8 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
       <WalletModal
         isOpen={isConnectModalOpen}
         onClose={closeConnectModal}
-        // Bu onConfirm fonksiyonu opsiyonel,
-        // eğer wallet-selector bileşeninde "Confirm" veya "Connect Now" butonu kullanacaksanız
-        // orada onConfirm'i tetikleyebilirsiniz.
+        // Eğer wallet-selector içerisindeki
+        // "Confirm" veya "Connect Now" butonu tetikleyecekse:
         // onConfirm={confirmConnect}
       />
     </header>

@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: none;
+}
+
 @layer base {
   :root {
     /* Base Colors */
@@ -556,19 +563,20 @@
   /* Radio Group styles */
   .RadioGroupRoot {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
   }
 
   .RadioGruopContainer {
     background-color: white;
-    padding: 15px;
+    padding: 16px;
     border-radius: 24px;
     border: 1px solid var(--color-greyscale-light-200);
   }
 
   .RadioGroupContainer:hover {
-    border: 1px solid var(--color-brand-primary-800) !important;
+    border: 1px solid var(--color-brand-primary-200);
     background-color: var(--color-brand-primary-50) !important;
   }
 
@@ -578,7 +586,7 @@
     .RadioText {
       font-weight: 600;
       font-size: 16px;
-      color: var(--color-brand-primary-600) !important;
+      color: var(--color-brand-primary-800) !important;
     }
   }
 
@@ -593,7 +601,7 @@
 
   .RadioGroupItem:hover {
     background-color: var(--color-brand-secondary-50) !important;
-    border: 1px solid var(--color-brand-secondary-400) !important;
+    border: 1px solid var(--color-brand-secondary-900) !important;
   }
 
   .RadioGroupIndicator {
@@ -622,7 +630,15 @@
   }
 
   .RadioText:hover {
-    color: var(--color-brand-secondary-200);
+    color: var(--color-brand-primary-500);
+    .RadioGroupItem {
+      background-color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 100%;
+      border: 1px solid var(--color-brand-primary-500);
+      margin-right: 10px;
+    }
   }
 
   /* Select styles */
@@ -714,10 +730,10 @@
   .RadioGroupIndicator::after {
     content: "";
     display: block;
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background-color: var(--color-brand-primary-500);
+    background-color: var(--color-brand-primary-800);
   }
 
   /* Select */

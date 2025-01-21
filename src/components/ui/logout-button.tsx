@@ -27,7 +27,7 @@ export const LogoutButton: React.FC = () => {
           size="default"
           pill
           onClick={() => setShowConfirm(true)}
-          className="flex items-center gap-2 w-[158px]"
+          className="flex items-center gap-2 w-[158px] justify-between"
         >
           Logout
           <ArrowRightEndOnRectangleIcon className="w-5 h-5" />

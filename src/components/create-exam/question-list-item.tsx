@@ -14,8 +14,20 @@ interface QuestionListItemProps {
   isIncomplete?: boolean;
   className?: string;
   questionText: string;
+
+  // Yeni eklenen props (opsiyonel)
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onMoveUp?: (index: number) => void;
+  onMoveDown?: (index: number) => void;
 }
 
+/**
+ * QuestionListItem
+ *  - Solda soru sıra numarası + kısaltılmış metin
+ *  - Sağda "kırmızı ünlem" (opsiyonel), yukarı/aşağı butonları (opsiyonel), silme butonu (opsiyonel)
+ *  - Tüm satır bir <button>, tıklayınca `onClick`.
+ */
 export const QuestionListItem = ({
   index,
   onClick,
@@ -24,6 +36,10 @@ export const QuestionListItem = ({
   isIncomplete,
   className,
   questionText,
+  canMoveUp,
+  canMoveDown,
+  onMoveUp,
+  onMoveDown,
 }: QuestionListItemProps) => {
   // Metni 11 karakterle kısaltma (isterseniz tamamen kaldırabilirsiniz)
   const truncatedText =
@@ -45,7 +61,7 @@ export const QuestionListItem = ({
         className
       )}
     >
-      {/* Solda: Soru metni */}
+      {/* SOLDaki kısım: Soru No + kısaltılmış metin */}
       <div className="flex flex-col items-start gap-1 min-h-[48px]">
         <span
           className={cn(
@@ -56,9 +72,7 @@ export const QuestionListItem = ({
           Q{index + 1}
         </span>
 
-        {/* Burada sabit genişlik: w-24 (yaklaşık 6rem).
-            text-ellipsis ile taşan kısmı … yapıyoruz.
-            overflow-hidden & whitespace-nowrap, metin taşmaması için. */}
+        {/* Text: sabit genişlik verip overflow ellipsis */}
         <span
           className={cn(
             "text-sm text-greyscale-light-600",
@@ -69,15 +83,62 @@ export const QuestionListItem = ({
         </span>
       </div>
 
-      {/* Sağda: Sabit genişlikte kapsayıcı -> her zaman w-4 */}
-      <div className="ml-2 w-4 h-4 flex items-center justify-center">
-        {isIncomplete && <ErrorExclamation />}
-      </div>
+      {/* SAĞdaki kısım: ünlem, yukarı/aşağı butonlar, erase butonu */}
+      <div className="ml-auto flex items-center gap-2">
+        {/* Kırmızı ünlem -> isIncomplete */}
+        {isIncomplete && (
+          <div className="w-4 h-4 flex items-center justify-center">
+            <ErrorExclamation />
+          </div>
+        )}
 
-      {/* Silme butonu */}
-      {onRemove && (
-        <EraseButton onRemove={() => onRemove(index)} duration={1500} className="ml-2" />
-      )}
+        {/* Yukarı/Aşağı butonları (opsiyonel) */}
+        {canMoveUp && onMoveUp && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveUp(index);
+            }}
+            className="hover:bg-greyscale-light-100 p-1 rounded"
+          >
+            {/* HeroIcons vs. */}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path d="M5 15l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
+        {canMoveDown && onMoveDown && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveDown(index);
+            }}
+            className="hover:bg-greyscale-light-100 p-1 rounded"
+          >
+            {/* HeroIcons vs. */}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
+
+        {/* Silme butonu (EraseButton) */}
+        {onRemove && (
+          <EraseButton onRemove={() => onRemove(index)} duration={1500} className="inline-block" />
+        )}
+      </div>
     </button>
   );
 };

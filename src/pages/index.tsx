@@ -29,6 +29,7 @@ import Mert from "@/images/landing_team/mert-akyazi.png";
 import Yavuz from "@/images/landing_team/yavuz-selim-tuncer.png";
 import Secgin from "@/images/landing_team/secgin-karagulle.png";
 import Ege from "@/images/landing_team/ege-palaz.png";
+import BG from "@/images/backgrounds/backgroundfull.svg";
 import SECTION2 from "@/images/backgrounds/bg2.svg";
 import SECTION4 from "@/images/backgrounds/bg3.svg";
 import Mina from "@/images/landing_general/mina.svg";
@@ -40,6 +41,7 @@ import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
 import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 import SocialLinks from "@/components/landing-page/social-links";
+import TeamSection from "@/components/landing-page/team-section";
 
 const featureArr = [
   {
@@ -197,56 +199,8 @@ export default function Home() {
         <HowItWorksSection />
         {/* Text Message Section */}
         <TextMessageSection />
-        {/* Features Section */}
-        <section className={styles.team_section_container}>
-          <section className={styles.team_section}>
-            <h2>Our team 💜</h2>
-            <div className={styles.team_grid}>
-              {/* 4. Üye */}
-              <div className={styles.team_card}>
-                <div className={styles.team_photo_container}>
-                  <Image className={styles.team_photo} src={Secgin} alt="John" />
-                </div>
-                <h3>Seçgin Karagülle</h3>
-                <p>Frontend Developer</p>
-              </div>
-              {/* 2. Üye */}
-              <div className={styles.team_card}>
-                <div className={styles.team_photo_container}>
-                  <Image className={styles.team_photo} src={Mert} alt="David" />
-                </div>
-                <h3>Mert Akyazı </h3>
-                <p>CTO & Blockchain Developer</p>
-              </div>
-              {/* 1. Üye */}
-              <div className={styles.team_card}>
-                <div className={styles.team_photo_container}>
-                  <Image className={styles.team_photo} src={Esra} alt="Emily" />
-                </div>
-                <h3>Esra Akyazı </h3>
-                <p>CEO & Product Designer</p>
-              </div>
-
-              {/* 3. Üye */}
-              <div className={styles.team_card}>
-                <div className={styles.team_photo_container}>
-                  <Image className={styles.team_photo} src={Yavuz} alt="Sarah" />
-                </div>
-                <h3>Yavuz Selim Tunçer</h3>
-                <p>Co-Founder & Backend Developer </p>
-              </div>
-
-              {/* 5. Üye */}
-              <div className={styles.team_card}>
-                <div className={styles.team_photo_container}>
-                  <Image className={styles.team_photo} src={Ege} alt="Amelia" />
-                </div>
-                <h3>Ege Palaz</h3>
-                <p>Marketing Manager</p>
-              </div>
-            </div>
-          </section>
-        </section>
+        {/* Team Section */}
+        <TeamSection />
         {/* Technologies Section */}
         <TechSection techArr={techArr} />
         {/* Sub CTA Section */}

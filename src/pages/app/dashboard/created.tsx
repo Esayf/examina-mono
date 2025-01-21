@@ -128,7 +128,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       <DialogContent className="max-w-md mx-auto p-4 relative bg-base-white">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-600 hover:border-brand-primary-900 hover:bg-brand-secondary-200"
         >
           <XMarkIcon className="w-5 h-5" />
         </button>
@@ -161,7 +161,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
           ))}
         </div>
 
-        <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
+        <p className="text-center text-sm text-greyscale-light-500 mb-2">Or share with link</p>
 
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />

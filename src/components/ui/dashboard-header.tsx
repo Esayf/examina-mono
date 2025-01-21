@@ -52,9 +52,13 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
 
   return (
     <div className="bg-brand-secondary-100 border-b border-b-brand-secondary-100">
-      <div className="w-full flex justify-between items-center py-2 lg:py-4 px-4 lg:px-8">
-        <div className="cursor-pointer" onClick={() => {}}>
-          <Image src={Choz} alt="Choz Logo" />
+      <div className="w-full flex justify-between items-center py-3 px-4 lg:px-8">
+        {/* SOL: Logo */}
+        <div
+          className="flex-shrink-0"
+          style={{ maxHeight: "52px", alignContent: "center", width: "229.26px" }}
+        >
+          <Image src={Choz} height={36} alt="Choz Logo" />
         </div>
 
         {/* NAV (Desktop) */}
@@ -79,13 +83,13 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
               variant="link"
               size="default"
               className={cn(
-                "rounded-full cursor-default",
+                "rounded-full cursor-default hidden md:block",
                 activeTab === "joined"
                   ? "text-brand-primary-950 font-book"
                   : "text-brand-primary-950 hover:bg-brand-secondary-100 cursor-default"
               )}
             >
-              Joined (Verrry soon 😎)
+              Joined
             </Button>
 
             <Link href="/app/dashboard/created">
@@ -93,7 +97,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                 variant="link"
                 size="default"
                 className={cn(
-                  "rounded-full",
+                  "rounded-full hidden md:block",
                   activeTab === "created"
                     ? "text-brand-primary-950 font-book"
                     : "text-brand-primary-950 hover:bg-brand-secondary-100"
@@ -144,7 +148,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
               <div className="flex flex-col items-start p-4 gap-4">
                 <Button
                   variant="outline"
-                  className="w-full bg-brand-secondary-50 text-left text-brand-primary-950"
+                  className="w-full bg-brand-secondary-50 text-left text-brand-primary-950 justify-between"
                   icon={false}
                   pill
                   size="default"
@@ -153,13 +157,14 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                     setMenuOpen(false);
                   }}
                 >
-                  Created quizzes
+                  Created
+                  <ArrowUpRightIcon className="w-5 h-5"></ArrowUpRightIcon>
                 </Button>
 
                 <Button
                   variant="outline"
                   disabled
-                  className="w-full bg-brand-secondary-50 text-left text-brand-primary-950"
+                  className="w-full bg-brand-secondary-50 text-left text-brand-primary-950 justify-between"
                   icon={false}
                   pill
                   size="default"
@@ -168,11 +173,12 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                     setMenuOpen(false);
                   }}
                 >
-                  Joined quizzes
+                  Joined
+                  <ArrowUpRightIcon className="w-5 h-5"></ArrowUpRightIcon>
                 </Button>
 
                 {/* Logout button (Mobile) */}
-                <div className="w-full flex items-center">
+                <div className="w-full flex items-center justify-between">
                   <LogoutButton />
                 </div>
               </div>

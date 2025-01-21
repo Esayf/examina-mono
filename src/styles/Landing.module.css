@@ -981,12 +981,23 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 50;
 
   /* Kart boyutu */
   width: 300px; /* Daha dar veya geniş yapmak isterseniz ayarlayabilirsiniz */
   /* Yukarı-aşağı boşluk */
   padding: 1rem;
   text-align: center;
+}
+
+.background_image {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/images/backgrounds/backgroundfull.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .team_card:hover {
@@ -1455,6 +1466,13 @@
   filter: brightness(1.2);
 }
 
+.logo_container {
+  height: full;
+  min-height: 52px;
+  justify-content: start;
+  align-items: center;
+}
+
 .footer_link {
   color: var(--color-brand-primary-500);
   padding: 1rem 2rem;
@@ -1510,10 +1528,6 @@
 .hero_social_links img:hover {
   transform: scale(1.1);
   filter: brightness(1.2);
-}
-
-.logo_container {
-  width: 100%;
 }
 
 .footer_logo_container {

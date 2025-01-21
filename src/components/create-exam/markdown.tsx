@@ -44,11 +44,19 @@ interface MarkdownEditorProps {
   readOnly?: boolean;
   className?: string;
   contentEditableClassName?: string;
+  placeholder?: string;
 }
 
 export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
   (
-    { onChange, markdown, readOnly, className, contentEditableClassName = "contentEditable" },
+    {
+      onChange,
+      markdown,
+      readOnly,
+      className,
+      contentEditableClassName,
+      placeholder = "contentEditable",
+    },
     ref
   ) => {
     const uploadFile = async (file: File) => {

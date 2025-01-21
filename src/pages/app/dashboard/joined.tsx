@@ -141,9 +141,9 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         {/* Kapatma butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 text-greyscale-light-600 hover:bg-brand-primary-900 w-4 h-4 border-2 border-brand-primary-900 rounded-full p-4"
         >
-          <XMarkIcon className="w-5 h-5" />
+          <XMarkIcon className="w-6 h-6" />
         </button>
 
         <DialogHeader>

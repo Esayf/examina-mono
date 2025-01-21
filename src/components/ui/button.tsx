@@ -30,6 +30,7 @@ const buttonVariants = cva(
         lg: "h-15 px-8 py-4 text-lg",
         date: "max-h-[34px] h-[34px] leading-[34px] w-[48px] text-sm caret-auto text-center p-0 bg-brand-secondary-200 text-brand-primary-900 border border-brand-primary-950 hover:bg-brand-primary-300 hover:border-brand-primary-950 cursor-pointer",
         icon: "h-13 max-w-[52px] min-w-[52px]",
+        chevron: "h-8 max-w-[32px] min-w-[32px]",
         "icon-sm": "h-8 w-8",
         "date-picker": "w-full max-h-[48px] min-h-[48px] pl-4 pr-4 py-2",
       },

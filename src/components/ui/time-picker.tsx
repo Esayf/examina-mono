@@ -14,11 +14,13 @@ import { Button } from "@/components/ui/button";
 type Period = "AM" | "PM";
 
 interface TimePickerProps {
+  /** Dışarıdan gelen Date değeri (örn. üst bileşenden state) */
   date: Date | undefined;
+  /** Date güncellendiğinde üst bileşeni bilgilendirmek için. */
   setDate: (date: Date | undefined) => void;
 }
 
-/** Örnek time zone listesi */
+/** 1) Basit zaman dilimleri listesi (tablodaki örnek). */
 const allTimeZones = [
   { label: "UTC", value: "UTC" },
   { label: "UTC-8 (America/Los_Angeles)", value: "America/Los_Angeles" },
@@ -28,34 +30,59 @@ const allTimeZones = [
   { label: "UTC+3 (example)", value: "Europe/Istanbul" },
 ];
 
+/** 2) Dakikayı 30'a, sonrasını da bir sonraki saate (00'a) yuvarlayarak ileri çekme fonksiyonu */
+function roundUpToNextSlot(d: Date) {
+  const newD = new Date(d);
+  const m = newD.getMinutes();
+  if (m < 30) {
+    newD.setMinutes(30);
+  } else {
+    newD.setHours(newD.getHours() + 1, 0);
+  }
+  return newD;
+}
+
 export function TimePicker({ date, setDate }: TimePickerProps) {
-  const [period, setPeriod] = useState<Period>(date && date.getHours() >= 12 ? "PM" : "AM");
+  const [period, setPeriod] = useState<Period>("AM");
   const [hours, setHours] = useState("12");
   const [minutes, setMinutes] = useState("00");
-  const [worldTimes, setWorldTimes] = useState<Record<string, string>>({});
-  // Mobilde tam ekran tablo açmak için state:
-  const [showTimeZones, setShowTimeZones] = useState(false);
 
-  // Varsayılan değerleri yükle
+  // Mobilde tam ekran tablo açmak için:
+  const [showTimeZones, setShowTimeZones] = useState(false);
+  // Diğer saat dilimlerini göstermek için kaydettiğimiz zamanlar:
+  const [worldTimes, setWorldTimes] = useState<Record<string, string>>({});
+
+  /**
+   * 3) Komponent her renderlandığında veya date güncellenince çalışır.
+   *    - Eğer date yoksa veya geçmiş bir zamansa, "şu an"ı alıp roundUpToNextSlot ile ileri yuvarlarız.
+   *    - Değilse, hours, minutes, period state'lerini senkronize ederiz.
+   */
   useEffect(() => {
-    if (!date) {
-      setHours("12");
-      setMinutes("00");
-      setPeriod("AM");
-      return;
+    const now = new Date();
+    if (!date || date < now) {
+      // Date yoksa veya geçmişse => şu an'ı en yakın yarım/tam saate yuvarla
+      const newDate = roundUpToNextSlot(now);
+      setDate(newDate);
+      return; // Henüz date değiştiği için, hours & minutes atamasını bir sonraki render yapacak
     }
-    const h12 = date.getHours() % 12 || 12;
+
+    // Buraya geldiysek date gelecekte veya "şu an" demektir.
+    const h24 = date.getHours(); // 0..23
+    const h12 = h24 % 12 || 12; // 1..12
     setHours(h12.toString());
     setMinutes(date.getMinutes() >= 30 ? "30" : "00");
-    setPeriod(date.getHours() >= 12 ? "PM" : "AM");
-  }, [date]);
+    setPeriod(h24 >= 12 ? "PM" : "AM");
+  }, [date, setDate]);
 
-  // Yeni Date -> tüm global saatleri hesapla
+  /**
+   * 4) Date her değiştiğinde "worldTimes" tablomuza yeni değerler yazalım.
+   *    Not: Bu, date set edildikten sonra tabloyu güncel tutar.
+   */
   useEffect(() => {
     if (!date) return;
     const newTimes: Record<string, string> = {};
-
     allTimeZones.forEach((tz) => {
+      // "en-US" formatında, AM/PM + saat/dakika
       const offsetTime = date.toLocaleTimeString("en-US", {
         timeZone: tz.value,
         hour: "2-digit",
@@ -64,13 +91,19 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
       });
       newTimes[tz.label] = offsetTime;
     });
-
     setWorldTimes(newTimes);
   }, [date]);
 
+  /**
+   * 5) Kullanıcı dropdown'lardan saat/dakika/AM-PM seçince buraya gelir.
+   *    Eğer seçilen zaman 'geçmiş' olursa, yine anında roundUpToNextSlot(now) yaparız.
+   */
   function updateDate(hStr: string, mStr: string, p: Period) {
-    const newDate = date ? new Date(date) : new Date();
+    // Şu anki date var mı? Yoksa "şimdi" diyelim (çok gerek kalmaz,
+    // yukarıdaki effectte yoksa zaten setDate ile dolduruyoruz).
+    const baseDate = date ? new Date(date) : new Date();
 
+    // Kullanicinin seçtiği hour & minute
     let hh = parseInt(hStr, 10);
     if (Number.isNaN(hh) || hh < 1) hh = 1;
     if (hh > 12) hh = 12;
@@ -78,24 +111,35 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
     let mm = parseInt(mStr, 10);
     if (Number.isNaN(mm)) mm = 0;
 
+    // AM/PM dönüştür
     if (p === "PM") {
-      hh = (hh % 12) + 12;
+      hh = (hh % 12) + 12; // 1 PM => 13
     } else {
-      hh = hh % 12;
+      hh = hh % 12; // 12 AM => 0
     }
 
-    newDate.setHours(hh, mm, 0, 0);
-    setDate(newDate);
+    baseDate.setHours(hh, mm, 0, 0);
+
+    // Geçmiş olmasın => eğer bu saat "şu an"dan gerideyse yuvarla
+    const now = new Date();
+    let finalDate = baseDate < now ? roundUpToNextSlot(now) : baseDate;
+
+    // Değeri state'e bas
+    setDate(finalDate);
   }
 
+  // Bu üç handle fonksiyonda, önce local state'i güncelliyoruz,
+  // sonra "updateDate" ile asıl Date'i hesaplıyoruz.
   const handlePeriodChange = (val: string) => {
     setPeriod(val as Period);
     updateDate(hours, minutes, val as Period);
   };
+
   const handleHoursChange = (val: string) => {
     setHours(val);
     updateDate(val, minutes, period);
   };
+
   const handleMinutesChange = (val: string) => {
     setMinutes(val);
     updateDate(hours, val, period);
@@ -103,7 +147,7 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Saat seçimi (Hours, Minutes, AM/PM) */}
+      {/* Seçim alanları: Hours, Minutes, AM/PM */}
       <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
         {/* Hours */}
         <div className="flex flex-col">
@@ -151,15 +195,15 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
         </div>
       </div>
 
-      {/* Masaüstü görünüm: tablo doğrudan görünsün */}
+      {/* Masaüstü görünüm: tablo */}
       <div className="hidden md:block timezones-desktop-table">
         <table className="w-full text-left">
           <thead className="bg-brand-secondary-200 sticky top-0">
             <tr>
-              <th className="p-2 font-medium bg-brand-secondary-100 hover:bg-brand-secondary-100 border-b border-b-brand-secondary-200">
+              <th className="p-2 font-medium bg-brand-secondary-100 border-b border-b-brand-secondary-200">
                 Time Zone
               </th>
-              <th className="p-2 font-medium bg-brand-secondary-100 hover:bg-brand-secondary-100 border-b border-b-brand-secondary-200">
+              <th className="p-2 font-medium bg-brand-secondary-100 border-b border-b-brand-secondary-200">
                 Local Time
               </th>
             </tr>
@@ -167,10 +211,8 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
           <tbody>
             {allTimeZones.map((tz) => (
               <tr key={tz.label} className="hover:bg-brand-secondary-50">
-                <td className="p-2 bg-brand-secondary-50 hover:bg-brand-secondary-50 text-brand-primary-900">
-                  {tz.label}
-                </td>
-                <td className="p-2 bg-brand-secondary-50 hover:bg-brand-secondary-100 text-brand-primary-900">
+                <td className="p-2 bg-brand-secondary-50 text-brand-primary-900">{tz.label}</td>
+                <td className="p-2 bg-brand-secondary-50 text-brand-primary-900">
                   {worldTimes[tz.label] ?? "-"}
                 </td>
               </tr>
@@ -180,33 +222,24 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
       </div>
 
       {/* Bilgilendirici metin */}
-      <div className="bg-ui-warning-50 border border-yellow-300 p-3 rounded-2xl text-sm text-ui-warning-900">
+      <div className="bg-ui-warning-50 border border-yellow-00 p-3 rounded-2xl text-sm text-ui-warning-900">
         We automatically show several global time zones below.
         <span className="hidden md:inline">
           (UTC, LA, Berlin, Tokyo, Sydney...) No need to select a time zone!
         </span>
       </div>
 
-      {/* Mobil görünümde tablo yerine buton */}
+      {/* Mobilde tabloyu butonla açalım */}
       <div className="block md:hidden">
         <Button variant="outline" className="w-full mt-2" onClick={() => setShowTimeZones(true)}>
           Show time zones
         </Button>
       </div>
 
-      {/* Mobilde tablo tam ekran kaplasın */}
+      {/* Mobil tam ekran tablo */}
       {showTimeZones && (
-        /* Arka planı hafif karartarak odak veriyoruz. */
-        <div className="fixed inset-0 z-50 flex items-end">
-          {/* Alt taraftan çıkan panel */}
-          <div
-            className="
-      w-full bg-brand-secondary-50 border border-greyscale-light-200 rounded-2xl shadow-lg
-      p-4
-      animation-slide-up  /* Opsiyonel, yumuşak animasyon (ekleyebilirsiniz) */
-    "
-          >
-            {/* Üst kısım: Başlık + Kapat Butonu */}
+        <div className="fixed inset-0 z-50 flex items-end bg-black/20">
+          <div className="w-full bg-brand-secondary-50 border border-greyscale-light-200 rounded-2xl shadow-lg p-4">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-base font-semibold text-brand-primary-900">Global Time Zones</h2>
               <button
@@ -225,8 +258,6 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
                 </svg>
               </button>
             </div>
-
-            {/* İçerik: tablo */}
             <div className="max-h-[60vh] overflow-auto">
               <table className="w-full text-left text-sm">
                 <thead className="sticky top-0 bg-brand-secondary-100">

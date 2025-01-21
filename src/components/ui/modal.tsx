@@ -30,9 +30,9 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           w-full
           max-w-xl
           bg-white
-          border border-gray-300
+          border border-brand-primary-950
           rounded-3xl
-          shadow-lg
+          shadow-md
           overflow-hidden
         "
       >
@@ -40,8 +40,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         <div
           className="
             flex items-center justify-between
-            border-b border-gray-200
-            px-5 py-3
+            px-5 py-5 mt-1
           "
         >
           <h2 className="text-lg font-semibold text-gray-800">{title || "My Custom Modal"}</h2>
@@ -49,7 +48,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           {/* Ghost Button + XMarkIcon */}
           <Button
             onClick={onClose}
-            className="absolute top-4 right-4 p-3 rounded-full border-2 border-brand-primary-950 hover:bg-brand-secondary-200 text-brand-primary-900 hover:text-brand-primary-950 transition"
+            className="absolute top-4 right-4 w-10 h-10 bg-base-white text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-600 hover:border-brand-primary-900 hover:bg-brand-secondary-200"
             aria-label="Close"
           >
             <XMarkIcon className="w-5 h-5" />

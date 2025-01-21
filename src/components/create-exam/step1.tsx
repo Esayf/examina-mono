@@ -1,3 +1,4 @@
+"use client";
 import { useFieldArray, useForm } from "react-hook-form";
 import { step1ValidationSchema, useStep1Form } from "./step1-schema";
 import { Button } from "@/components/ui/button";
@@ -15,12 +16,26 @@ import {
   CardHeaderContent,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowRightIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  PlusIcon,
+  XMarkIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
 import { QuestionListItem } from "./question-list-item";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import BGR from "@/images/backgrounds/bg-8-20.svg";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  // ★ Ekledik:
+  FormDescription,
+} from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -76,7 +91,7 @@ export function Answers({ index }: AnswersProps) {
     prevQuestionType.current = questionType;
   }, [questionType, replace]);
 
-  // highlight new answer when changed
+  // highlight new answer when changed (mevcut kod)
   useEffect(() => {
     const subscription = form.watch((_, { name, type }) => {
       if (name?.startsWith("questions") && type === "change") {
@@ -100,6 +115,7 @@ export function Answers({ index }: AnswersProps) {
             <FormLabel className="flex gap-2 items-center rounded-full">
               Enter the answer options and select the correct one
             </FormLabel>
+
             <RadioGroup
               className={radioGroupClassName}
               value={selectedValue}
@@ -119,7 +135,6 @@ export function Answers({ index }: AnswersProps) {
                 const isFalseOption = field.answer === "False";
                 const isSelected = radioField.value === i.toString();
 
-                // Renk ayarları
                 let tfColorClass = "";
                 if (questionType === "tf" && isTrueOption) {
                   tfColorClass = isSelected
@@ -141,7 +156,8 @@ export function Answers({ index }: AnswersProps) {
                         <FormItem>
                           <div className="relative">
                             <Input
-                              placeholder={`Enter the ${i + 1}. option`}
+                              // ★ Yukarıda "Enter the X. option" idi:
+                              placeholder={`Option ${i + 1}`}
                               maxLength={200}
                               {...inputField}
                               onChange={(e) => inputField.onChange(e)}
@@ -217,12 +233,15 @@ export function Answers({ index }: AnswersProps) {
                 );
               })}
             </RadioGroup>
+            <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
+              You can add up to 6 options for multiple choice, or 2 options (True/False).
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      {form.watch(`questions.${index}.questionType`) === "mc" && fields.length < 6 && (
+      {form.watch(`questions.${index}.questionType`) === "mc" && fields.length < 4 && (
         <Button
           variant={"outline"}
           size="icon"
@@ -248,15 +267,17 @@ interface Step1Props {
 export const Step1 = ({ onNext }: Step1Props) => {
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitted },
     trigger,
     watch,
   } = useStep1Form();
 
+  // Field Array => questions
   const {
     fields,
     insert,
     remove: removeQuestion,
+    move, // Reordering eklendi
   } = useFieldArray({
     control,
     name: "questions",
@@ -267,6 +288,10 @@ export const Step1 = ({ onNext }: Step1Props) => {
   const [recentlyAddedIndex, setRecentlyAddedIndex] = useState<number | null>(null);
   const activeQuestion = fields[activeQuestionIndex];
 
+  // Refs for auto-scroll
+  const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  // 2 sn sonra highlight iptal
   useEffect(() => {
     if (recentlyAddedIndex !== null) {
       const timer = setTimeout(() => setRecentlyAddedIndex(null), 2000);
@@ -274,24 +299,41 @@ export const Step1 = ({ onNext }: Step1Props) => {
     }
   }, [recentlyAddedIndex]);
 
-  // remove question callback
+  // remove question callback + aktif index güncelle
   const remove = (index: number) => {
     removeQuestion(index);
-    // Aktif sorunun index’ini güncelle
     setActiveQuestionIndex((prev) => Math.min(prev > 0 ? prev - 1 : prev, fields.length - 2));
   };
 
+  // “beforeunload” => form kaydedilmediyse uyar
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSubmitted) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, isSubmitted]);
+
+  // Soru değişince kaydır
+  useEffect(() => {
+    if (questionRefs.current[activeQuestionIndex]) {
+      questionRefs.current[activeQuestionIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [activeQuestionIndex]);
+
+  // “Next” => validasyon
   const handleNext = async () => {
-    // Form validasyonu
     const isValid = await trigger();
     if (!isValid) {
-      const questionsWithErrors = errors.questions
-        ? Object.keys(errors.questions).map((key) => Number(key))
-        : [];
+      const questionsWithErrors = errors.questions ? Object.keys(errors.questions).map(Number) : [];
       toast(
-        `Ooops, some questions seem lonely! Mind giving them a look? 🥺 : ${questionsWithErrors
-          .map((q) => q + 1)
-          .join(", ")}`,
+        `Please complete this questions:\n\n${questionsWithErrors.map((q) => q + 1).join(", ")}`,
         { duration: 9000 }
       );
       return;
@@ -299,13 +341,18 @@ export const Step1 = ({ onNext }: Step1Props) => {
     onNext();
   };
 
+  // Kaç tane tamamlandı?
+  const completedCount = questions.filter((q) => q.question && q.correctAnswer).length;
+  const totalCount = fields.length;
+
   return (
     <Card className="flex-1 flex flex-col overflow-y-auto">
       <CardHeader>
+        {/* Sol buton (dummy) */}
         <Button
           onClick={() => {}}
           variant="outline"
-          className="flex items-center justify-center stroke-current text-3xl align-middle cursor-pointer bg-brand-secondary-200 text-brand-primary-900 hover:brand-secondary-200 hover:cursor-default"
+          className="hidden md:block items-center justify-center stroke-current text-3xl align-middle cursor-pointer bg-brand-secondary-200 text-brand-primary-900 hover:brand-secondary-200 hover:cursor-default"
           size="icon"
           pill
         >
@@ -318,6 +365,19 @@ export const Step1 = ({ onNext }: Step1Props) => {
             interactive experience.
           </CardDescription>
         </CardHeaderContent>
+
+        <div className="flex flex-col items-end gap-1 mr-4">
+          <p className="text-sm text-greyscale-light-600">
+            {completedCount} / {totalCount} completed
+          </p>
+          <div className="w-32 h-2 bg-greyscale-light-300 rounded-full overflow-hidden">
+            <div
+              className="bg-brand-primary-700 h-full transition-all duration-300"
+              style={{ width: `${(completedCount / Math.max(1, totalCount)) * 100}%` }}
+            />
+          </div>
+        </div>
+
         <Button variant="outline" size="icon" onClick={handleNext} pill>
           <ArrowRightIcon className="size-6" />
         </Button>
@@ -327,6 +387,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
         {/* Sol tarafta aktif soru */}
         <div className="w-full flex flex-col flex-1 md:max-w-full gap-4" key={activeQuestion.id}>
           <div className="flex flex-col gap-6 flex-0">
+            {/* questionType */}
             <FormField
               key={activeQuestion.id}
               control={control}
@@ -336,6 +397,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   <FormLabel className="flex gap-2 items-center rounded-full">
                     Select the question type
                   </FormLabel>
+
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="box-border">
@@ -345,7 +407,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
                     <SelectContent className="z-50 max-h-48 overflow-y-auto">
                       <SelectItem value="mc">Multiple choice</SelectItem>
                       <SelectItem value="tf">True/False</SelectItem>
-                      {/* Diğerleri devre dışı (yakında) */}
+                      {/* Diğerleri devre dışı */}
                       <SelectItem disabled value="ord">
                         Ordering (soon)
                       </SelectItem>
@@ -375,12 +437,16 @@ export const Step1 = ({ onNext }: Step1Props) => {
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
+                    E.g. choose "Multiple choice" if you want up to 4 answer options, or
+                    "True/False" for a simple question.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Soru metni (Markdown) */}
+            {/* question (markdown) */}
             <FormField
               control={control}
               name={`questions.${activeQuestionIndex}.question`}
@@ -389,6 +455,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   <FormLabel className="flex gap-2 items-center rounded-full">
                     Enter the question below. You can use the markdown editor to customize it ☺︎
                   </FormLabel>
+
                   <FormControl>
                     <div className="border border-greyscale-light-200 rounded-2xl min-h-[240px] max-h-[960px] bg-base-white resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800">
                       <MarkdownEditor
@@ -396,38 +463,94 @@ export const Step1 = ({ onNext }: Step1Props) => {
                         markdown={field.value}
                         onChange={field.onChange}
                         contentEditableClassName="contentEditable"
+                        placeholder="E.g. What is the capital of France?"
                       />
                     </div>
                   </FormControl>
+                  <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
+                    E.g. "What is the capital of France?" – you can use *Markdown* syntax here.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Cevap şıkları */}
+            {/* Answers */}
             <Answers index={activeQuestionIndex} />
           </div>
         </div>
 
         {/* Sağ tarafta soru listesi */}
         <Card>
-          <CardHeader className="px-5 min-h-[68px] max-h-[68px]">Questions List</CardHeader>
-          <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4">
+          <CardHeader className="px-5 min-w-[300px] min-h-[68px] max-h-[68px]">
+            Questions List
+          </CardHeader>
+          <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4 max-h-[200px] lg:max-h-full">
             <div className="flex-1 flex flex-col">
               {fields.map((_, index) => {
                 const questionHasError = errors.questions && !!errors.questions[index];
+
+                // Sıra belirleme
+                const isFirst = index === 0;
+                const isLast = index === fields.length - 1;
+
                 return (
-                  <div key={index} className="relative w-full">
-                    <QuestionListItem
-                      index={index}
-                      onClick={() => setActiveQuestionIndex(index)}
-                      isActive={activeQuestionIndex === index}
-                      onRemove={fields.length > 1 ? remove : undefined}
-                      isIncomplete={questionHasError}
-                      questionText={questions[index]?.question || "No content!"}
-                    />
+                  <div
+                    key={index}
+                    className="relative w-full border-b border-brand-secondary-100 last:border-none"
+                    ref={(el) => {
+                      if (el) questionRefs.current[index] = el;
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <QuestionListItem
+                        index={index}
+                        onClick={() => setActiveQuestionIndex(index)}
+                        isActive={activeQuestionIndex === index}
+                        onRemove={fields.length > 1 ? remove : undefined}
+                        isIncomplete={questionHasError}
+                        // ★ No content => "Question #X (untitled)"
+                        questionText={
+                          questions[index]?.question || `Question #${index + 1} (untitled)`
+                        }
+                        className="flex-1"
+                      />
+
+                      <div className="flex">
+                        <Button
+                          variant="ghost"
+                          size="chevron"
+                          disabled={isFirst} // ilk sorudaysa yukarı gidemez
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isFirst) {
+                              move(index, index - 1);
+                              setActiveQuestionIndex(index - 1);
+                            }
+                          }}
+                        >
+                          <ChevronUpIcon className="w-4 h-4" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="chevron"
+                          disabled={isLast} // son sorudaysa aşağı gidemez
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isLast) {
+                              move(index, index + 1);
+                              setActiveQuestionIndex(index + 1);
+                            }
+                          }}
+                        >
+                          <ChevronDownIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+
                     {recentlyAddedIndex === index && (
-                      <div className="absolute top-[-30px] left-0 bg-green-100 text-green-800 text-xs py-1 px-2 rounded shadow">
+                      <div className="absolute -top-4 left-0 bg-green-100 text-green-800 text-xs py-1 px-2 rounded shadow">
                         New question added!
                       </div>
                     )}
@@ -441,8 +564,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
               <Button
                 variant="outline"
                 size="default"
-                icon={true}
-                iconPosition="right"
+                icon
                 onClick={() => {
                   const newIndex = activeQuestionIndex + 1;
                   insert(newIndex, {
@@ -455,10 +577,10 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   setRecentlyAddedIndex(newIndex);
                 }}
               >
-                <span className="hidden md:block">Add question</span>
-                <PlusIcon className="size-5 h-5 w-5 stroke-current" />
-                <FormMessage />
+                Add question
+                <PlusIcon className="h-5 w-5 stroke-current" />
               </Button>
+              <FormMessage />
             </FormItem>
           </CardFooter>
         </Card>

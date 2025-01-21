@@ -24,12 +24,10 @@ interface TimePickerSelectProps {
  */
 export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
   // AM/PM belirle
-  const [period, setPeriod] = React.useState<Period>(
-    date && date.getHours() >= 12 ? "PM" : "AM"
-  );
+  const [period, setPeriod] = React.useState<Period>(date && date.getHours() >= 12 ? "PM" : "AM");
 
   // Saat ve dakika (string)
-  const [hours, setHours] = React.useState("12");   // "1"–"12"
+  const [hours, setHours] = React.useState("12"); // "1"–"12"
   const [minutes, setMinutes] = React.useState("00"); // "00"–"59"
 
   // date değişince senkronize et
@@ -40,7 +38,7 @@ export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
       setPeriod("AM");
       return;
     }
-    const h12 = (date.getHours() % 12) || 12; 
+    const h12 = date.getHours() % 12 || 12;
     setHours(h12.toString());
     setMinutes(date.getMinutes().toString().padStart(2, "0"));
     setPeriod(date.getHours() >= 12 ? "PM" : "AM");
@@ -77,13 +75,9 @@ export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
   };
 
   // Saat seçenekleri (1..12)
-  const hourOptions = Array.from({ length: 12 }, (_, i) =>
-    i === 0 ? 12 : i
-  );
+  const hourOptions = Array.from({ length: 12 }, (_, i) => (i === 0 ? 12 : i));
   // Dakika seçenekleri (00..59)
-  const minuteOptions = Array.from({ length: 60 }, (_, i) =>
-    i.toString().padStart(2, "0")
-  );
+  const minuteOptions = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
 
   return (
     <div className="flex flex-row gap-4">
@@ -140,3 +134,5 @@ export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
     </div>
   );
 }
+
+export { SelectValue, SelectItem, SelectContent, SelectTrigger, Select };

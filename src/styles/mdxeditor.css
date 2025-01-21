@@ -169,7 +169,7 @@
 }
 
 ._toolbarRoot_uazmk_160 {
-  @apply flex w-full sticky top-0 overflow-x-scroll row-auto pt-2 pl-2 gap-2 mb-2 bg-brand-secondary-50 border-b border-greyscale-light-200 rounded-t-2xl z-10 p-2;
+  @apply flex w-full sticky top-0 overflow-x-scroll row-auto pt-2 pl-2 gap-4 mb-2 bg-brand-secondary-50 border-b border-greyscale-light-200 rounded-t-2xl z-10 p-2;
 }
 
 ._toolbarRoot_uazmk_160 div[role="separator"] {
@@ -414,6 +414,9 @@ ol {
   font-style: italic; /* Yazı tipi stili */
   font-size: 1.25rem; /* Boyut (daha büyük veya küçük seçebilirsiniz) */
   line-height: 1.6;
+  overflow: auto;
+  white-space: normal;
+  word-break: break-all;
   color: var(--color-primary-950); /* Yazı rengi */
   background-color: var(--color-primary-50); /* Açık bir zemin rengi */
   border-radius: 12px; /* Köşeleri yuvarlatma */
@@ -522,6 +525,7 @@ ol {
   border-radius: 9999px;
   width: 36px;
   height: 36px;
+  gap: 8px;
   justify-content: center;
   align-items: center;
 }
@@ -543,7 +547,7 @@ ol {
 @media (hover: hover) {
   ._toolbarToggleItem_uazmk_206:hover,
   ._toolbarButton_uazmk_237:hover {
-    @apply bg-brand-secondary-100 rounded-full w-9 h-9 justify-center items-center;
+    @apply bg-brand-secondary-100 min-w-[32px] max-w-[32px] rounded-full w-8 h-8 justify-center items-center;
   }
 }
 

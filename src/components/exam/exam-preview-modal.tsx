@@ -41,7 +41,7 @@ export function ExamPreviewModal({ content, onClose }: ExamPreviewModalProps) {
         {/* Kapatma butonu (sağ üst) */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-3 right-3 text-gray-500 border border-brand-primary-950 rounded-full p-4 hover:text-gray-700"
         >
           <XMarkIcon className="h-5 w-5" />
         </button>

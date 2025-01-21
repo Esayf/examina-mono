@@ -20,7 +20,7 @@ export const ExamNavigation = ({
 }: ExamNavigationProps) => {
   return (
     <div className="flex gap-4 justify-center flex-row">
-      <div className="flex items-center gap-2 overflow-x-auto">
+      <div className="flex items-center gap-2 max-w-[160px] md:max-w-full overflow-x-auto">
         {questions.map((el, index) => {
           const isActive = el.number === currentQuestion?.number;
           return (

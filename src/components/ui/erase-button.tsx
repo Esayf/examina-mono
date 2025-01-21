@@ -11,31 +11,33 @@ interface EraseButtonProps {
 }
 
 const EraseButton: React.FC<EraseButtonProps> = ({
-  onRemove, // Dışarıdan gelen silme fonksiyonu
+  onRemove,
   size = "icon-sm",
-  duration = 1000, // Varsayılan uzun tıklama süresi
+  duration = 1000, // Varsayılan 1000'di, isterseniz burayı 600'e de çekebilirsiniz
   className = "",
 }) => {
-  const [progress, setProgress] = useState(0); // İlerleme durumu
-  const [pressing, setPressing] = useState(false); // Uzun tıklama durumu
+  const [progress, setProgress] = useState(0);
+  const [pressing, setPressing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-  const [showTooltip, setShowTooltip] = useState(false); // Tooltip görünürlüğü
+  const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState<DOMRect | null>(null);
 
   const handlePressStart = () => {
     setPressing(true);
     setProgress(0);
-    setShowTooltip(false); // Tooltip'i gizle
+    setShowTooltip(false);
 
-    const interval = 80; // Animasyon adım süresi
-    const step = (100 / 1000) * interval; // İlerleme adımı
+    // ▼ YENİ Değişiklik: total 600ms
+    const totalTime = 600; // 0.6 saniye
+    const interval = 40; // 40ms aralıkla artış
+    const step = (100 / totalTime) * interval; // 600ms için adım
 
     const intervalId = setInterval(() => {
       setProgress((prev) => {
         const nextProgress = prev + step;
         if (nextProgress >= 100) {
-          clearInterval(intervalId); // İlerleme tamamlandığında interval'ı temizle
-          onRemove(); // Silme işlemini tetikle
+          clearInterval(intervalId);
+          onRemove();
           return 100;
         }
         return nextProgress;
@@ -48,15 +50,12 @@ const EraseButton: React.FC<EraseButtonProps> = ({
   const handlePressEnd = () => {
     setPressing(false);
     setProgress(0);
-
-    if (timer) {
-      clearInterval(timer); // Zamanlayıcıyı temizle
-    }
+    if (timer) clearInterval(timer);
   };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     setShowTooltip(true);
-    setTooltipPosition(e.currentTarget.getBoundingClientRect()); // Tooltip pozisyonunu hesapla
+    setTooltipPosition(e.currentTarget.getBoundingClientRect());
   };
 
   const handleMouseLeave = () => {
@@ -77,48 +76,34 @@ const EraseButton: React.FC<EraseButtonProps> = ({
       >
         Hold to delete
       </div>,
-      document.body // Tooltip'i body'nin içine yerleştir
+      document.body
     );
   };
 
   return (
     <div
       className={`relative flex items-center justify-center hover:scale-110 transition-transform duration-200 ${className}`}
-      style={{
-        width: "32px",
-        height: "32px",
-      }}
-      onMouseEnter={handleMouseEnter} // Masaüstü cihazlarda hover
+      style={{ width: "32px", height: "32px" }}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Tooltip */}
       {renderTooltip()}
-
-      {/* Silme Butonu */}
       <Button
         variant="ghost"
         size={size}
-        onPointerDown={handlePressStart} // Uzun tıklama başladığında
-        onPointerUp={handlePressEnd} // Tıklama bırakıldığında
-        onPointerLeave={handlePressEnd} // Fare butondan ayrıldığında
+        onPointerDown={handlePressStart}
+        onPointerUp={handlePressEnd}
+        onPointerLeave={handlePressEnd}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
         }}
         className="relative w-8 h-8 rounded-full items-center justify-center transition-all duration-200 hover:bg-brand-secondary-200"
-        style={{
-          width: "32px",
-          height: "32px",
-        }}
+        style={{ width: "32px", height: "32px" }}
       >
-        {/* Halka Animasyonu */}
         {pressing && (
           <div className="absolute inset-0 flex justify-center items-center">
-            <svg
-              className="absolute inset-0 w-full h-full"
-              viewBox="0 0 32 32"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 32 32">
               <circle
                 className="text-brand-secondary-400"
                 stroke="currentColor"

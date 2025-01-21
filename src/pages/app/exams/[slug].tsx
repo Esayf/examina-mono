@@ -42,6 +42,8 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Counter } from "@/components/live-exam/counter";
 import { ExamNavigation } from "@/components/live-exam/exam-navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 /**
  * ProgressBar bileşeni
@@ -151,13 +153,13 @@ function LiveQuiz() {
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
-        className="absolute flex justify-center items-center h-dvh object-cover"
+        className="absolute flex justify-center items-center min-h-screen object-cover"
       />
-      <div className="max-w-[76rem] w-full mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[76rem] md:min-h-[900px] md:max-h-[900px] w-full mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
         <Card className="mt-7 mb-7 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
           <CardHeader>
             {/* CardHeader’de sadece exam title ve description (mobilde) */}
-            <CardHeaderContent className="flex flex-row overflow-hidden justify-between">
+            <CardHeaderContent className="flex flex-row overflow-auto justify-between">
               <div className="flex flex-col overflow-hidden gap-3">
                 <CardTitle className="hidden md:block">{examData.exam.title}</CardTitle>
                 <div className="flex flex-col w-full md:w-auto gap-2">
@@ -177,12 +179,13 @@ function LiveQuiz() {
                     mutate={mutate}
                     onTimeout={() => router.push("/")}
                     beepOnLastMinute
+                    quizId={""}
                   />
                 )}
 
                 <Button
                   variant="default"
-                  className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center"
+                  className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center z-50 mr-1"
                   icon={true}
                   iconPosition={"right"}
                   disabled={isPending}
@@ -202,14 +205,14 @@ function LiveQuiz() {
                   ) : (
                     "Finish quiz"
                   )}
-                  <ArrowUpRightIcon className="size-6 ml-1" />
+                  <ArrowUpRightIcon className="size-6 ml-1 hidden md:block" />
                 </Button>
               </div>
             </CardHeaderContent>
           </CardHeader>
 
           {/* CardContent içinde, progress bar ve butonlar için ayrı bir satır... */}
-          <CardContent className="p-5 flex flex-col gap-6 bg-base-white">
+          <CardContent className="p-5 flex flex-col gap-6 bg-base-white overflow-auto md:min-h-[646px]">
             {/* Üst kısım: ProgressBar, Soru X/Y, Sayaç (Counter) ve "Finish quiz" butonu */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full"></div>
             <div className="flex gap-4 justify-between">
@@ -245,25 +248,13 @@ function LiveQuiz() {
               </Button>
             </div>
             <div className="flex-1 flex gap-6 flex-col overflow-wrap break-words">
-              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[360px] max-h-[400px] text-xl md:min-h-[400px] md:max-h-[1200px]">
-                <MDXEditor
-                  className="overflow-wrap break-words non-interactive-editor"
-                  ref={mdRef}
-                  readOnly={true}
-                  markdown={currentQuestion?.text || ""}
-                  plugins={[
-                    headingsPlugin({ allowedHeadingLevels: [1, 2, 3, 4, 5, 6] }),
-                    listsPlugin(),
-                    quotePlugin(),
-                    thematicBreakPlugin(),
-                    markdownShortcutPlugin(),
-                    imagePlugin({ disableImageResize: true }),
-                    tablePlugin(),
-                    directivesPlugin(),
-                    linkPlugin(),
-                    codeBlockPlugin(),
-                  ]}
-                />
+              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[240px] max-h-[260px] text-xl md:min-h-[240px] md:max-h-[300px]">
+                <ReactMarkdown
+                  className="prose w-full break-words overflow-wrap"
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {currentQuestion?.text || ""}
+                </ReactMarkdown>
               </div>
 
               <div className="flex-1">

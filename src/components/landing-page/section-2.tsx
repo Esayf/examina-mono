@@ -4,9 +4,9 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 
 // Örnek görseller (SVG de olabilir)
-import Step1Img from "@/../src/images/landing_feature_card/step-1 1.svg";
-import Step2Img from "@/../src/images/landing_feature_card/step-2 1.svg";
-import Step3Img from "@/../src/images/landing_feature_card/step-3 1.svg";
+import Step1Img from "@/../src/images/landing_feature_card/stepp1.svg";
+import Step2Img from "@/../src/images/landing_feature_card/stepp2.svg";
+import Step3Img from "@/../src/images/landing_feature_card/stepp3.svg";
 
 import Link from "next/link";
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";

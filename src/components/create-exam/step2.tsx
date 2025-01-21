@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DurationPicker } from "./duration-picker";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -50,29 +50,52 @@ import remarkGfm from "remark-gfm";
 import { PreviewModal } from "./preview-modal";
 import { LiveExamPreview } from "./live-exam-preview";
 import { useStep1Form } from "./step1-schema";
+import { toast } from "react-hot-toast"; // <-- ek
 
 interface Step2Props {
   onBack: () => void;
 }
 
 export const Step2 = ({ onBack }: Step2Props) => {
+  // 1) Form Hook ve isDirty / isSubmitted takibi
   const form = useStep2Form();
+  const {
+    formState: { isDirty, isSubmitted },
+  } = form;
+
+  // 2) Step1 verileri
   const { getValues: getStep1Values } = useStep1Form();
   const step1Values = getStep1Values();
   const rewardDistribution = form.watch("rewardDistribution");
 
-  // Form alanlarını izliyoruz
+  // 3) Alanlar izleme
   const titleValue = form.watch("title") || "";
   const descriptionValue = form.watch("description") || "";
   const startDateValue = form.watch("startDate");
   const durationValue = form.watch("duration");
 
-  // Preview Modal kontrolü
+  // 4) Preview Modal
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  // 5) beforeunload'da uyarı: eğer form dirty + not submitted
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSubmitted) {
+        // Tarayıcının default uyarısı
+        e.preventDefault();
+        e.returnValue = "";
+        // Toast ek bilgi (çoğu tarayıcı sayfa kapanırken kısa bir anlık gösterebilir veya hiç göstermeyebilir)
+        toast.error("Your quiz details may be lost if you leave or refresh the page!");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isDirty, isSubmitted]);
 
   return (
     <>
-      {/* Asıl Form Kartı */}
       <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col overflow-y-auto">
         <CardHeader>
           <Button variant="outline" size="icon" pill onClick={onBack}>

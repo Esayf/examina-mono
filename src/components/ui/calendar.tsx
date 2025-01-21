@@ -14,18 +14,12 @@ function Calendar({
   classNames,
   showOutsideDays = true,
   onSelect,
-  // Varsayılan tekil seçim
   mode = "single",
-  // Takvimde seçili gün için
   selected,
   ...props
 }: CalendarProps) {
-  /**
-   * Kullanıcı bir güne tıkladığında çağrılan fonksiyon.
-   * Burada 'bugün'e tıklarsa '5 dk sonrası' mantığını koruyoruz.
-   */
+  // "Bugüne tıklayınca 5 dakika sonrasını seç" özelliği duruyor.
   const handleDaySelect: SelectSingleEventHandler = (day, selectedDay, activeModifiers, e) => {
-    // Eğer bugüne tıklanırsa, 5 dk sonrasını seç
     if (day?.toDateString() === new Date().toDateString()) {
       onSelect?.(new Date(Date.now() + 5 * 60 * 1000), selectedDay, activeModifiers, e);
       return;
@@ -38,29 +32,21 @@ function Calendar({
       mode={mode}
       selected={selected}
       showOutsideDays={showOutsideDays}
-      // Seçileni güncelleme fonksiyonunu daypicker'a paslıyoruz
       onSelect={handleDaySelect}
       className={cn("w-auto", className)}
       classNames={{
-        // --- Takvim ayları layout ---
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-
-        // --- Takvim başlığı ---
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
-
-        // --- Gezinti butonları (Ay ileri/geri) ---
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 border border-brand-primary-950 hover:bg-brand-secondary-200 hover:border-brand-primary-800"
+          "h-7 w-7 bg-transparent p-1 border border-brand-primary-950 hover:bg-brand-secondary-200 hover:border-brand-primary-800"
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next:
           "absolute right-1 hover:bg-brand-secondary-200 hover:border-brand-primary-800 hover:text-brand-primary-950",
-
-        // --- Tablo yapısı ---
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell: "text-greyscale-light-400 rounded-md w-9 font-normal text-[0.8rem]",
@@ -74,43 +60,28 @@ function Calendar({
           "last:[&:has([aria-selected])]:rounded-r-md",
           "focus-within:relative focus-within:z-20"
         ),
-
-        // --- Gün stilleri (normal + hover) ---
         day: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-regular aria-selected:opacity-100 transition-colors",
-          "hover:bg-greyscale-light-200 hover:text-brand-primary-950"
+          "hover:bg-brand-secondary-100 hover:text-brand-primary-950"
         ),
-
-        // Seçili gün stili (Arka plan & yazı rengi)
         day_selected: cn(
-          "bg-brand-primary-200 font-bold text-brand-primary-950", // Projenizde tanımlı bir renk olmalı
-          "hover:bg-primary hover:text-primary-foreground",
-          "focus:bg-primary focus:text-primary-foreground"
+          "bg-brand-secondary-300 font-bold text-brand-primary-900",
+          "hover:bg-brand-secondary-200 focus:text-brand-primary-800",
+          "focus:bg-brand-secondary-200 focus:text-brand-primary-900"
         ),
-
-        // Bugün
-        day_today: "bg-accent text-accent-foreground",
-
-        // Dışarıdaki günler (önceki/sonraki ay)
+        day_today: "bg-accent text-accent-foreground w-9 h-9",
         day_outside:
           "text-greyscale-light-400 opacity-50 aria-selected:bg-accent/50 aria-selected:text-greyscale-light-400 aria-selected:opacity-30",
-
-        // Devre dışı gün
         day_disabled: "text-greyscale-light-400 opacity-50",
-
-        // Range ortasındaki günler
         day_range_end: "day-range-end",
         day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-
         day_hidden: "invisible",
-
-        // Ek classNames (üst bileşenler override edebilir)
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4 stroke-2" />,
-        IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4 stroke-2" />,
+        IconLeft: (iconProps) => <ChevronLeftIcon className="h-4 w-4 stroke-2" {...iconProps} />,
+        IconRight: (iconProps) => <ChevronRightIcon className="h-4 w-4 stroke-2" {...iconProps} />,
       }}
       {...props}
     />

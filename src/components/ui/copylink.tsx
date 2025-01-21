@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
 
 interface CopyLinkProps {
-  link: string;  // Kopyalanacak link
+  link: string; // Kopyalanacak link
   label?: string; // Opsiyonel etiket (ör. "Joining Link")
 }
 
@@ -23,9 +23,7 @@ export function CopyLink({ link, label = "Your Quiz Link" }: CopyLinkProps) {
   return (
     <div className="flex flex-col gap-1">
       {/* (isteğe bağlı) Üst etiket */}
-      <label className="text-sm font-medium text-gray-800">
-        {label}
-      </label>
+      <label className="text-sm font-medium text-gray-800">{label}</label>
 
       <div className="relative flex items-center gap-2">
         {/* Göstermek için bir input (readOnly) */}
@@ -36,7 +34,7 @@ export function CopyLink({ link, label = "Your Quiz Link" }: CopyLinkProps) {
           className="
             w-full px-3 py-2 rounded-md border border-gray-300
             bg-gray-50 text-brand-primary-950
-            focus:outline-none focus:border-brand-primary-800 focus:bg-brand-primary-50
+            focus:outline-none focus:border-brand-primary-800 focus:bg-brand-secondary-50
           "
         />
 
@@ -45,13 +43,13 @@ export function CopyLink({ link, label = "Your Quiz Link" }: CopyLinkProps) {
           onClick={handleCopy}
           className="
             relative flex items-center justify-center
-            w-13 h-12 rounded-full
+            w-14 h-12 rounded-full
             bg-white text-brand-primary-950
-            hover:bg-brand-primary-100 focus:outline-none
+            hover:bg-brand-secondary-200 focus:outline-none
           "
         >
-          <ClipboardDocumentIcon className="w-7 h-7" />
-          
+          <ClipboardDocumentIcon className="w-6 h-6" />
+
           {/* “Copied” tooltip */}
           {copied && (
             <div
@@ -62,7 +60,7 @@ export function CopyLink({ link, label = "Your Quiz Link" }: CopyLinkProps) {
                 whitespace-nowrap
               "
             >
-             Copied!
+              Copied!
               <div
                 className="
                   absolute bottom-[-6px] left-1/2 -translate-x-1/2
