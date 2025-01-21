@@ -14,6 +14,7 @@ export interface Exam {
   isCompleted: boolean;
   questionCount: number;
   uniqueId: number;
+  isArchived: boolean;
 }
 
 function getExamList(): Promise<Exam[]> {

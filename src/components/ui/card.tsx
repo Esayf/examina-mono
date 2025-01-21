@@ -65,7 +65,10 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("hidden md:block text-sm font-light text-greyscale-light-500 overflow-y-auto overflow-x-hidden overflow-wrap break-words", className)}
+    className={cn(
+      "hidden md:block text-sm font-light text-brand-primary-900 overflow-y-auto overflow-x-hidden overflow-wrap break-words",
+      className
+    )}
     {...props}
   />
 ));
@@ -78,7 +81,11 @@ CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center px-5 pb-4", className)} {...props} />
+    <div
+      ref={ref}
+      className={cn("flex items-center px-5 pb-4 justify-center", className)}
+      {...props}
+    />
   )
 );
 CardFooter.displayName = "CardFooter";

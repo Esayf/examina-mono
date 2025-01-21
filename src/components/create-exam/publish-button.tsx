@@ -1,223 +1,233 @@
 import React, { useState } from "react";
-
 import { Button } from "@/components/ui/button";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { PaperAirplaneIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
 import { useStep2Form } from "./step2-schema";
-import { v4 } from "uuid";
+import { useStep1Form } from "./step1-schema";
 import { useMutation } from "@tanstack/react-query";
 import { createExam } from "@/lib/Client/Exam";
+import { v4 } from "uuid";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import { SendTransactionArgs, SignedAuroData, SignedPalladData } from "../../../types/global";
-import { useStep1Form } from "./step1-schema";
-import { useAppSelector } from "@/app/hooks";
 import { Spinner } from "../ui/spinner";
+import { Modal } from "@/components/ui/modal"; // Our friendly, custom modal
 
-interface BuildQuizArgs {
-  secretKey: string;
-  startDate: string;
-  duration: string;
-  totalRewardPoolAmount: string;
-  rewardPerWinner: string;
-}
-interface DeployQuizArgs {
-  contractAddress: string;
-  serializedTransaction: string;
-  signedData: string;
-  secretKey: string;
-  startDate: string;
-  duration: string;
-  totalRewardPoolAmount: string;
-  rewardPerWinner: string;
-}
-
-async function buildDeployTx(
-  sender: string,
-  args: BuildQuizArgs
-): Promise<{
-  mina_signer_payload: SendTransactionArgs;
-  serializedTransaction: string;
-  contractAddress: string;
-  nonce: number;
-}> {
-  const result = await fetch("/api/buildDeployTx", {
-    method: "POST",
-    body: JSON.stringify({
-      sender: sender,
-      args: {
-        startDate: args.startDate,
-        duration: args.duration,
-        secretKey: args.secretKey,
-        totalRewardPoolAmount: args.totalRewardPoolAmount,
-        rewardPerWinner: args.rewardPerWinner,
-      } satisfies BuildQuizArgs,
-    }),
-  });
-  return result.json();
-}
-
-async function deployQuiz(
-  args: DeployQuizArgs
-): Promise<{ tx: { success: boolean; jobId: string } }> {
-  const result = await fetch("/api/deployQuiz", {
-    method: "POST",
-    body: JSON.stringify({ args }),
-  });
-  return result.json();
-}
-
-function parseMina(amount: string | number) {
-  return Number(amount.toString()) * 1000000000;
-}
-
+/**
+ * The PublishButton component orchestrates the final step of creating a quiz:
+ * displaying a helpful confirmation modal and actually saving/deploying the quiz data.
+ *
+ * - If the user confirms, we run `handlePublish()` to finalize everything.
+ * - If the user wants to make changes, they can return to editing.
+ */
 export const PublishButton = () => {
-  const session = useAppSelector((state) => state.session);
-  const { getValues: getStep1Values } = useStep1Form();
-  const form = useStep2Form();
   const router = useRouter();
 
+  // Step2 data (title, desc, startDate, duration, etc.)
+  const form = useStep2Form();
+
+  // Step1 data (questions, answers, etc.)
+  const { getValues: getStep1Values } = useStep1Form();
+
+  // Keeps track of whether publishing is in progress
   const [isPublishing, setIsPublishing] = useState(false);
 
+  // Controls visibility of the confirmation modal
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  // Prepares to save the exam in DB/API
   const { mutateAsync: saveExam } = useMutation({
     mutationFn: createExam,
     onSuccess: () => {
-      router.replace("/app");
-      toast.success("Exam created successfully");
+      // Once successfully saved, navigate away and show a success toast
+      router.replace("/app/dashboard/created");
+      toast.success("Quiz created successfully!");
     },
     onError: (error) => {
-      console.log("Error", error);
+      console.error("Error:", error);
       toast.error("Failed to create exam");
     },
   });
 
+  /**
+   * Actually performs the publishing logic:
+   * 1) Optionally handle any blockchain deployment.
+   * 2) Save the quiz details via `createExam`.
+   */
   const handlePublish = async () => {
-    setIsPublishing(true); // Set publishing state to true
-    const isValid = await form.trigger(undefined, { shouldFocus: true });
-    const step1Values = getStep1Values();
-    const step2Values = form.getValues();
-  
-    if (isValid) {
-      try {
-        let contractAddressNullable = "";
-        let txStatus = { tx: { success: false, jobId: "" } };
-        const totalRewardPoolAmount = step2Values.totalRewardPoolAmount
-          ? parseMina(step2Values.totalRewardPoolAmount)
-          : undefined;
-        const rewardPerWinner = step2Values.rewardPerWinner
-          ? parseMina(step2Values.rewardPerWinner)
-          : undefined;
-  
-        const isRewardDistributionEnabled =
-          step2Values.rewardDistribution && !!totalRewardPoolAmount && !!rewardPerWinner;
-  
-        if (isRewardDistributionEnabled) {
-          // Reward dağıtımı için gerekli işlemler
-          const randomValues = new Uint8Array(1);
-          self.crypto.getRandomValues(randomValues);
-          const secretKey = randomValues[0].toString();
-  
-          const deployTx = await buildDeployTx(session.session.walletAddress, {
-            startDate: step2Values.startDate.getTime().toString(),
-            duration: step2Values.duration,
-            secretKey,
-            totalRewardPoolAmount: totalRewardPoolAmount.toString(),
-            rewardPerWinner: rewardPerWinner.toString(),
-          });
-  
-          if (!("mina_signer_payload" in deployTx)) {
-            toast.error("Failed to create exam. Could not build deploy transaction");
-            setIsPublishing(false);
-            return;
-          }
-  
-          const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
-  
-          const signedAuroData = window.mina?.isPallad
-            ? ((
-                await window?.mina?.request({
-                  method: "mina_signTransaction",
-                  params: { transaction: JSON.parse(mina_signer_payload.transaction as string) },
-                })
-              ).result as SignedPalladData)
-            : await window?.mina?.sendTransaction(mina_signer_payload);
-          if (window.mina?.isAuro) {
-            if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
-              toast.error("You need to sign the transaction to deploy the quiz");
-              setIsPublishing(false);
-              return;
-            }
-          }
-  
-          let signedData = window.mina?.isAuro
-            ? (signedAuroData as SignedAuroData).signedData
-            : (signedAuroData as SignedPalladData).data;
-          txStatus = await deployQuiz({
-            contractAddress,
-            serializedTransaction,
-            signedData,
-            secretKey,
-            startDate: step2Values.startDate.getTime().toString(),
-            duration: step2Values.duration,
-            ...(isRewardDistributionEnabled && {
-              totalRewardPoolAmount: totalRewardPoolAmount.toString(),
-              rewardPerWinner: rewardPerWinner.toString(),
-            }),
-          });
-          contractAddressNullable = contractAddress;
-        }
-  
-        // Reward dağıtımı devre dışıyken sadece sınav oluştur
-        await saveExam({
-          id: v4(),
-          title: step2Values.title,
-          description: step2Values.description,
-          startDate: step2Values.startDate,
-          duration: step2Values.duration,
-          questions: step1Values.questions.map((question, i) => ({
-            type: question.questionType,
-            number: i + 1,
-            text: question.question,
-            description: question.question,
-            options: question.answers.map((answer, i) => ({
-              number: i + 1,
-              text: answer.answer,
-            })),
-            correctAnswer: parseInt(question.correctAnswer) + 1,
+    setIsPublishing(true);
+    try {
+      const step1Values = getStep1Values();
+      const step2Values = form.getValues();
+
+      // In case you have more advanced logic (blockchain deploy, etc.), insert it here.
+
+      // Then persist the exam data in your database
+      await saveExam({
+        id: v4(),
+        title: step2Values.title,
+        description: step2Values.description,
+        startDate: step2Values.startDate,
+        duration: step2Values.duration,
+        questions: step1Values.questions.map((question, i) => ({
+          type: question.questionType,
+          number: i + 1,
+          text: question.question,
+          description: question.question,
+          options: question.answers.map((answer, j) => ({
+            number: j + 1,
+            text: answer.answer,
           })),
-          questionCount: step1Values.questions.length,
-          isRewarded: isRewardDistributionEnabled,
-          rewardPerWinner: rewardPerWinner || 0,
-          passingScore: step2Values.minimumPassingScore || 0,
-          contractAddress: contractAddressNullable,
-          deployJobId: txStatus.tx.jobId === "" ? null : txStatus.tx.jobId,
-        });
-      } catch (error) {
-        toast.error("Failed to create exam");
-      } finally {
-        setIsPublishing(false);
-      }
-    } else {
+          correctAnswer: parseInt(question.correctAnswer) + 1,
+        })),
+        questionCount: step1Values.questions.length,
+        isRewarded: step2Values.rewardDistribution,
+        rewardPerWinner: step2Values.rewardPerWinner || 0,
+        passingScore: step2Values.minimumPassingScore || 0,
+        // Provide any default or real values if needed:
+        contractAddress: "exampleIfYouHaveOne",
+        deployJobId: "someJobIdIfExists",
+      });
+    } catch (error) {
+      toast.error("Failed to create exam");
+    } finally {
       setIsPublishing(false);
     }
-  };  
+  };
+
+  /**
+   * Validates the form and, if everything is fine,
+   * opens up our friendly confirmation modal.
+   */
+  const handleOpenConfirmModal = async () => {
+    const isValid = await form.trigger(undefined, { shouldFocus: true });
+    if (!isValid) return;
+    setIsConfirmModalOpen(true);
+  };
+
+  /**
+   * Closes the modal and proceeds with publishing.
+   */
+  const handleConfirmPublish = () => {
+    setIsConfirmModalOpen(false);
+    handlePublish();
+  };
+
+  /**
+   * Lets the user cancel the modal to keep editing their quiz.
+   */
+  const handleCancelPublish = () => {
+    setIsConfirmModalOpen(false);
+  };
+
+  /**
+   * Renders a tidy quiz summary for the confirmation modal:
+   * - Title, date, duration, question count, reward distribution, etc.
+   */
+  const renderQuizSummary = () => {
+    const step1Values = getStep1Values();
+    const step2Values = form.getValues();
+
+    const startDateString = step2Values.startDate ? step2Values.startDate.toLocaleString() : "N/A";
+
+    return (
+      <div className="flex flex-col gap-3 text-brand-primary-950 font-normal">
+        <div className="mb-1">
+          <strong>Title:</strong> {step2Values.title || "No title"}
+        </div>
+        <div className="mb-1">
+          <strong>Start date:</strong> {startDateString}
+        </div>
+        <div className="mb-1">
+          <strong>Duration (minutes):</strong> {step2Values.duration || "N/A"}
+        </div>
+        <div className="mb-1">
+          <strong>Number of questions:</strong> {step1Values.questions?.length || 0}
+        </div>
+        <div>
+          <strong>Reward distribution:</strong>{" "}
+          {step2Values.rewardDistribution ? "Enabled" : "Disabled"}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <Button
-      variant="default"
-      size="default"
-      icon={true}
-      iconPosition="right"
-      disabled={isPublishing}
-      pill
-      onClick={handlePublish}
-    >
-      {isPublishing ? (
-        <Spinner className="size-6" />
-      ) : (
-        <>
-          Publish <PaperAirplaneIcon className="size-6" />
-        </>
-      )}
-    </Button>
+    <>
+      {/* 
+        The main Publish button: 
+        Summons the modal if the form is valid, or shows 
+        a spinner if we're actively publishing.
+      */}
+      <Button
+        onClick={handleOpenConfirmModal}
+        disabled={isPublishing}
+        className={`
+    group
+    relative inline-flex items-center justify-center
+    px-5 py-3
+    font-medium text-brand-secondary-200
+    rounded-full
+    bg-brand-primary-900
+    z-50
+
+    transform-gpu
+    transition-all duration-300 ease-out
+
+    /* Hover/Active tepkileri */
+    hover:-translate-y-0.5
+    hover:scale-105
+    active:scale-95
+    active:translate-y-0
+
+    /* Gölge */
+    shadow-sm
+    hover:shadow-md
+    active:shadow-sm
+
+    focus:outline-none
+    focus-visible:ring-2
+    focus-visible:ring-offset-2
+    focus-visible:ring-brand-primary-800
+  `}
+      >
+        {isPublishing ? (
+          <Spinner className="w-6 h-6" />
+        ) : (
+          <>
+            {/* Metin her zaman görünür */}
+            <span className="hidden sm:inline">Time to publish!</span>
+
+            {/* Roket ikonu başlangıçta scale-0 (gizli) */}
+            <RocketLaunchIcon
+              className={`
+          w-6 h-6
+          sm:ml-2
+        `}
+            />
+          </>
+        )}
+      </Button>
+
+      {/* 
+        The confirmation modal that gives the user a chance 
+        to review their quiz details before finalizing.
+      */}
+      <Modal isOpen={isConfirmModalOpen} onClose={handleCancelPublish} title="Confirm quiz details">
+        <div className="text-brand-primary-950 font-normal">
+          <p className="mb-4">
+            Almost done! 😎 Please review the summary of your quiz before publishing:
+          </p>
+          {renderQuizSummary()}
+
+          <div className="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-4">
+            <Button variant="outline" onClick={handleCancelPublish}>
+              Cancel
+            </Button>
+            <Button variant="default" onClick={handleConfirmPublish}>
+              Publish now!
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 };

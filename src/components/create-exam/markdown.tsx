@@ -44,11 +44,19 @@ interface MarkdownEditorProps {
   readOnly?: boolean;
   className?: string;
   contentEditableClassName?: string;
+  placeholder?: string;
 }
 
 export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
   (
-    { onChange, markdown, readOnly, className, contentEditableClassName = "contentEditable" },
+    {
+      onChange,
+      markdown,
+      readOnly,
+      className,
+      contentEditableClassName,
+      placeholder = "contentEditable",
+    },
     ref
   ) => {
     const uploadFile = async (file: File) => {
@@ -139,9 +147,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
               <CodeToggle />
               <InsertTable />
               <InsertThematicBreak />
-              <InsertAdmonition />
               <ListsToggle />
-              <CreateLink />
               <InsertImage />
             </>
           ),
@@ -156,7 +162,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
         // ideally we should not use this editor to show preview
         readOnly={readOnly}
         plugins={plugins}
-        className="mdxeditor"
+        className={className ?? "mdxeditor"}
         contentEditableClassName={contentEditableClassName}
       />
     );

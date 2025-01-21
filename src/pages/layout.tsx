@@ -3,7 +3,6 @@ import React from "react";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/next";
 
-
 // Components
 
 // Custom hooks
@@ -17,10 +16,10 @@ type Props = {
 function Layout({ children }: Props) {
   useSession();
   return (
-    <div>
-      <main className="bg-brand-secondary-50">{children}</main>
+    <main className="bg-brand-secondary-100">
+      {children}
       <Toaster position="top-left" />
-    </div>
+    </main>
   );
 }
 
