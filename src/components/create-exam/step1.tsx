@@ -319,7 +319,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
   // Soru değişince kaydır
   useEffect(() => {
-    if (questionRefs.current[activeQuestionIndex]) {
+    if (questions.length > 0 && questionRefs && questionRefs.current[activeQuestionIndex]) {
       questionRefs.current[activeQuestionIndex].scrollIntoView({
         behavior: "smooth",
         block: "start",
