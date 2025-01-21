@@ -317,15 +317,14 @@ export const Step1 = ({ onNext }: Step1Props) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty, isSubmitted]);
 
-  // Soru değişince kaydır
   useEffect(() => {
-    if (questions.length > 0 && questionRefs && questionRefs.current[activeQuestionIndex]) {
-      questionRefs.current[activeQuestionIndex].scrollIntoView({
+    if (questions.length > 0 && questionRefs.current && questionRefs.current[activeQuestionIndex]) {
+      questionRefs.current[activeQuestionIndex]?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
-  }, [activeQuestionIndex]);
+  }, [activeQuestionIndex, questions]);
 
   // “Next” => validasyon
   const handleNext = async () => {
