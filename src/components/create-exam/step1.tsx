@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/select";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveAsDraftButton } from "./save-as-draft-button";
 import { toast } from "react-hot-toast"; // react-hot-toast import
 
 /************************************
@@ -71,8 +72,10 @@ export function Answers({ index }: AnswersProps) {
 
   // Opsiyonel correctAnswer form
   const correctAnswerForm = useForm({
-    defaultValues: { correctAnswer: "" },
-    resolver: zodResolver(step1ValidationSchema),
+    defaultValues: {
+      correctAnswer: "",
+    },
+    resolver: zodResolver(step1ValidationSchema), // Zod resolver kullanımı
   });
 
   const questionType = form.watch(`questions.${index}.questionType`);
@@ -364,20 +367,8 @@ export const Step1 = ({ onNext }: Step1Props) => {
             interactive experience.
           </CardDescription>
         </CardHeaderContent>
-
-        <div className="flex flex-col items-end gap-1 mr-4">
-          <p className="text-sm text-greyscale-light-600">
-            {completedCount} / {totalCount} completed
-          </p>
-          <div className="w-32 h-2 bg-greyscale-light-300 rounded-full overflow-hidden">
-            <div
-              className="bg-brand-primary-700 h-full transition-all duration-300"
-              style={{ width: `${(completedCount / Math.max(1, totalCount)) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        <Button variant="outline" size="icon" onClick={handleNext} pill>
+        <SaveAsDraftButton />
+        <Button size="icon" onClick={onNext} pill>
           <ArrowRightIcon className="size-6" />
         </Button>
       </CardHeader>
@@ -396,7 +387,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   <FormLabel className="flex gap-2 items-center rounded-full">
                     Select the question type
                   </FormLabel>
-
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="box-border">

@@ -41,6 +41,7 @@ import { Switch } from "../ui/switch";
 import "../../styles/mdxeditor.css";
 import "../../styles/globals.css";
 import { cn } from "@/lib/utils";
+import { SaveAsDraftButton } from "./save-as-draft-button";
 import { MarkdownEditor } from "./markdown";
 
 import ReactMarkdown from "react-markdown";
@@ -109,6 +110,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             </CardDescription>
           </CardHeaderContent>
           <div className="flex flex-row justify-center gap-2">
+            <SaveAsDraftButton />
             {/* Preview Button (Modal'ı açar) */}
             <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
               <span className="hidden sm:inline">Preview quiz</span>

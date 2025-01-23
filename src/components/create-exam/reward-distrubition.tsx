@@ -29,9 +29,15 @@ export const RewardDistributionForm = () => {
                   <SelectValue placeholder="Select reward type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Monetary (MINA Token)">Monetary reward (MINA Token)</SelectItem>
-                  <SelectItem disabled value="NFT (Coming soon)">NFT reward (Coming soon)</SelectItem>
-                  <SelectItem disabled value="Custom (Coming soon)">Custom reward (Coming soon)</SelectItem>
+                  <SelectItem value="Monetary (MINA Token)">
+                    Monetary reward (MINA Token)
+                  </SelectItem>
+                  <SelectItem disabled value="NFT (Coming soon)">
+                    NFT reward (Coming soon)
+                  </SelectItem>
+                  <SelectItem disabled value="Custom (Coming soon)">
+                    Custom reward (Coming soon)
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>Select the reward type.</FormDescription>

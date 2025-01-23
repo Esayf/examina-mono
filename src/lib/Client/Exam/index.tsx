@@ -14,6 +14,15 @@ export interface Exam {
   isCompleted: boolean;
   questionCount: number;
   uniqueId: number;
+  isRewarded: boolean;
+  rewardPerWinner: number;
+  isDistributed: boolean;
+  passingScore: number;
+  contractAddress: string;
+  deployJobId: string | null;
+  isPrivate: boolean;
+  createdAt: string;
+  updatedAt: string;
   isArchived: boolean;
 }
 
@@ -22,6 +31,46 @@ function getExamList(): Promise<Exam[]> {
     const requestBase = new RequestBase();
     requestBase
       .get("/exams/myExams")
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function getDraftExams(): Promise<Exam[]> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .get("/drafts")
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+export interface DraftExam extends Exam {
+  questions: {
+    text: string;
+    options: {
+      number: number;
+      text: string;
+    }[];
+    correctAnswer: number;
+    number: number;
+  }[];
+}
+
+function getDraftExam(examID: string): Promise<DraftExam> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .get(`/drafts/${examID}`)
       .then((response) => {
         resolve(response.data);
       })
@@ -146,6 +195,82 @@ function createExam(exam: ExamState) {
   });
 }
 
+type CreateDraftInput = {
+  title: string;
+  description?: string | undefined;
+  startDate?: string | undefined;
+  duration?: number | undefined;
+  questionCount?: number | undefined;
+  isRewarded?: boolean | undefined;
+  isPrivate?: boolean | undefined;
+  questions?:
+    | {
+        number: number;
+        text: string;
+        options: {
+          number: number;
+          text: string;
+        }[];
+        correctAnswer: number;
+      }[]
+    | undefined;
+  rewardPerWinner?: number | undefined;
+  passingScore?: number | undefined;
+};
+
+export interface SaveDraftError {
+  error: string;
+  message: string;
+  errors: {
+    field: string;
+    message: string;
+  }[];
+}
+
+function saveDraftExam(draft: CreateDraftInput) {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .post("/drafts", draft)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function updateDraftExam(draft: CreateDraftInput & { id: string }) {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    const { id, ...rest } = draft;
+
+    requestBase
+      .put(`/drafts/${id}`, rest)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function deleteDraftExam(examID: string) {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .delete(`/drafts/${examID}`)
+      .then((response: any) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 async function submitQuiz(examId: string, answers: number[], questions: string[]) {
   const _answers: any = [];
 
@@ -205,8 +330,13 @@ function getScore(examID: string) {
 export {
   getExamList,
   createExam,
+  saveDraftExam,
+  updateDraftExam,
+  deleteDraftExam,
   getExamDetails,
   getExamQuestions,
+  getDraftExams,
+  getDraftExam,
   submitAnswers,
   getScore,
   startExam,
