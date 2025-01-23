@@ -139,6 +139,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             items-center
             justify-center
           "
+          onClick={() => setMenuOpen(false)} // Tüm overlay'e tıklanınca menüyü kapat
         >
           {/* İçerik Kartı */}
           <div
@@ -155,6 +156,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               my-auto
               relative
             "
+            onClick={(e) => e.stopPropagation()} // İçerik alanına tıklamaları durdur (menü kapanmasın)
           >
             {/* Menü İçeriği */}
             <div className="flex flex-col items-start gap-2">
