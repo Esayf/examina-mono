@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { getExamList } from "@/lib/Client/Exam";
+import { getExamList, getDraftExams } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
 // Kopyalama bileşeni
@@ -37,6 +37,7 @@ import {
   ArrowDownIcon,
   ChevronUpDownIcon,
   ShareIcon,
+  PencilIcon,
 } from "@heroicons/react/24/outline";
 
 // QR code
@@ -195,6 +196,7 @@ interface RowProps {
 
 function Row({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const router = useRouter();
 
   const now = new Date();
   const startDate = new Date(exam.startDate);
@@ -269,16 +271,21 @@ function Row({ exam }: RowProps) {
             </Badge>
           </div>
 
-          <div
-            className="
-              flex-1 p-5 min-w-[100px] min-h-[72px]
-              flex items-center justify-end
-            "
-          >
+          <div className="flex-1 p-5 min-w-[150px] min-h-[72px] flex items-center justify-end gap-2">
+            <Button
+              disabled={exam.isCompleted}
+              variant="outline"
+              size="icon-sm"
+              className="max-w-8 max-h-8 min-w-8 min-h-8 border"
+              onClick={() => router.push("/app/create-exam")}
+            >
+              <PencilIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block" />
+            </Button>
+
             <Button
               variant="outline"
               iconPosition="right"
-              icon={true}
+              icon
               className="max-h-10 text-sm font-normal p-3"
               onClick={() => setIsShareModalOpen(true)}
             >
@@ -296,9 +303,18 @@ function Row({ exam }: RowProps) {
  * ANA SAYFA (QUIZ LİST)
  ****************************************/
 function Application() {
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data: exams,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["exams"],
     queryFn: getExamList,
+  });
+
+  const { data: draftExams } = useQuery({
+    queryKey: ["draftExams"],
+    queryFn: getDraftExams,
   });
 
   const router = useRouter();
@@ -307,7 +323,7 @@ function Application() {
   const [sortField, setSortField] = useState<SortField>("startDate");
   const [sortAsc, setSortAsc] = useState(false);
 
-  if (!isLoading && data?.length === 0 && !isError) {
+  if (!isLoading && (exams || []).length === 0 && (draftExams || []).length === 0 && !isError) {
     return (
       <>
         <DashboardHeader />
@@ -352,6 +368,7 @@ function Application() {
     return exams.filter((exam) => {
       const status = getStatus(exam);
       if (filter === "All") return true;
+      if (filter === "Draft") return !exam.startDate;
       return status === filter;
     });
   }
@@ -393,7 +410,7 @@ function Application() {
     });
   }
 
-  const filtered = filterExams(data || []);
+  const filtered = filterExams(exams || []);
   const finalExams = sortExams(filtered);
   const isFilteredEmpty = finalExams.length === 0;
 
@@ -596,6 +613,7 @@ function Application() {
                       return exams.filter((exam) => {
                         const status = getStatus(exam);
                         if (filter === "All") return true;
+                        if (filter === "Draft") return !exam.startDate;
                         return status === filter;
                       });
                     }
@@ -635,7 +653,7 @@ function Application() {
                       });
                     }
 
-                    const filteredExams = filterExams(data || []);
+                    const filteredExams = filterExams(exams || []);
                     const finalExams = sortExams(filteredExams);
                     if (finalExams.length === 0) {
                       return (
