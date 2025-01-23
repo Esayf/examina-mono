@@ -257,6 +257,20 @@ function updateDraftExam(draft: CreateDraftInput & { id: string }) {
   });
 }
 
+function deleteDraftExam(examID: string) {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .delete(`/drafts/${examID}`)
+      .then((response: any) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 async function submitQuiz(examId: string, answers: number[], questions: string[]) {
   const _answers: any = [];
 
@@ -318,6 +332,7 @@ export {
   createExam,
   saveDraftExam,
   updateDraftExam,
+  deleteDraftExam,
   getExamDetails,
   getExamQuestions,
   getDraftExams,

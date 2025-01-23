@@ -36,6 +36,13 @@ class RequestBase {
       data,
     });
   }
+
+  delete(url: string): Promise<AxiosResponse> {
+    return this.instance.request({
+      url,
+      method: "DELETE",
+    });
+  }
 }
 
 export default RequestBase;

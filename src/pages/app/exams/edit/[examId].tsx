@@ -4,8 +4,11 @@ import DashboardHeader from "@/components/ui/dashboard-header";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
-import { Step1FormValues, step1ValidationSchema } from "@/components/create-exam/step1-schema";
+import { Step2FormValues } from "@/components/create-exam/step2-schema";
+import { Step1FormValues } from "@/components/create-exam/step1-schema";
+import { step2ValidationSchema } from "@/components/create-exam/step2-schema";
+import { step1ValidationSchema } from "@/components/create-exam/step1-schema";
+
 import { Step2 } from "@/components/create-exam/step2";
 import { Step1 } from "@/components/create-exam/step1";
 import { useRouter } from "next/router";
@@ -102,10 +105,9 @@ const EditExam = () => {
   const router = useRouter();
   const examId = router.query.examId as string;
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["draft", examId],
     queryFn: () => getDraftExam(examId),
-    enabled: !!examId,
   });
 
   if (isLoading) {
