@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: none;
+}
+
 @layer base {
   :root {
     /* Base Colors */
@@ -23,8 +30,8 @@
 
     /* Secondary Colors */
     --color-brand-secondary-50: #fff9f5;
-    --color-brand-secondary-100: #fbe7da;
-    --color-brand-secondary-200: #f6d5c0;
+    --color-brand-secondary-100: #ffeee0;
+    --color-brand-secondary-200: #ffdbc4;
     --color-brand-secondary-300: #f1bda2;
     --color-brand-secondary-400: #ec9468;
     --color-brand-secondary-500: #e7682a;
@@ -556,29 +563,30 @@
   /* Radio Group styles */
   .RadioGroupRoot {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
   }
 
   .RadioGruopContainer {
     background-color: white;
-    padding: 15px;
+    padding: 16px;
     border-radius: 24px;
     border: 1px solid var(--color-greyscale-light-200);
   }
 
   .RadioGroupContainer:hover {
-    border: 1px solid var(--color-brand-primary-800) !important;
+    border: 1px solid var(--color-brand-primary-200);
     background-color: var(--color-brand-primary-50) !important;
   }
 
   .RadioGroupContainer__active {
-    border: 1px solid var(--color-brand-primary-400);
-    background-color: var(--color-brand-primary-50);
+    border: 1px solid var(--color-brand-primary-800);
+    background-color: var(--color-brand-secondary-50);
     .RadioText {
       font-weight: 600;
       font-size: 16px;
-      color: var(--color-brand-primary-600) !important;
+      color: var(--color-brand-primary-800) !important;
     }
   }
 
@@ -592,8 +600,8 @@
   }
 
   .RadioGroupItem:hover {
-    background-color: var(--color-brand-primary-50) !important;
-    border: 1px solid var(--color-brand-primary-400) !important;
+    background-color: var(--color-brand-secondary-50) !important;
+    border: 1px solid var(--color-brand-secondary-900) !important;
   }
 
   .RadioGroupIndicator {
@@ -611,6 +619,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    background-color: var(--color-brand-primary-800);
   }
 
   .RadioText {
@@ -621,7 +630,15 @@
   }
 
   .RadioText:hover {
-    color: var(--color-brand-primary-600);
+    color: var(--color-brand-primary-500);
+    .RadioGroupItem {
+      background-color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 100%;
+      border: 1px solid var(--color-brand-primary-500);
+      margin-right: 10px;
+    }
   }
 
   /* Select styles */
@@ -713,10 +730,10 @@
   .RadioGroupIndicator::after {
     content: "";
     display: block;
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background-color: var(--color-brand-primary-500);
+    background-color: var(--color-brand-primary-800);
   }
 
   /* Select */
@@ -826,4 +843,191 @@
       flex: 1; /* Daha geniş ekranlarda eşit şekilde yan yana dizilir */
     }
   }
+}
+
+/* Make MDX editor completely non-interactive */
+.non-interactive-editor {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.non-interactive-editor * {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  cursor: default !important;
+}
+
+/* Remove any focus indicators */
+.non-interactive-editor *:focus,
+.non-interactive-editor *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure scrolling still works if needed */
+.non-interactive-editor {
+  overflow-y: auto !important;
+}
+
+.mdxeditor ._tooltipContent_uazmk_680 {
+  z-index: 999; /* Tüm öğelerin üstünde görünmesi için yeterli değer */
+  position: absolute; /* Trigger’a göre konumlanabilsin */
+  bottom: 120%; /* Tetikleyicinin üstünde gözüksün; ihtiyaca göre ayarlayın */
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* Tasarım ve boyutlandırma */
+  border-radius: var(--radius-large);
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--text-xs);
+  background-color: var(--baseText);
+  color: var(--baseBase);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Hafif gölge efekti (opsiyonel) */
+
+  /* Başlangıçta gizli (transition ile animasyon yapılacak) */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Tooltip tetikleyiciyi saran kapsayıcı: */
+.mdxeditor ._tooltipTrigger_uazmk_676 {
+  position: relative; /* Tooltip’in konumunu ayarlayabilmek için gerekli */
+  display: inline-flex; /* İsteğe bağlı: inline-block / block / flex vb. */
+  align-self: center; /* Orijinal kuralınızı koruyabilirsiniz */
+}
+
+/* Asıl tooltip */
+.mdxeditor ._tooltipContent_uazmk_680 {
+  z-index: 999; /* Tüm öğelerin üstünde görünmesi için yeterli değer */
+  position: absolute; /* Trigger’a göre konumlanabilsin */
+  bottom: 120%; /* Tetikleyicinin üstünde gözüksün; ihtiyaca göre ayarlayın */
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* Tasarım ve boyutlandırma */
+  border-radius: var(--radius-large);
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--text-xs);
+  background-color: var(--baseText);
+  color: var(--baseBase);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Hafif gölge efekti (opsiyonel) */
+
+  /* Başlangıçta gizli (transition ile animasyon yapılacak) */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Tooltip içindeki svg ikonu renklendirme (opsiyonel) */
+.mdxeditor ._tooltipContent_uazmk_680 svg {
+  fill: var(--baseText);
+}
+
+/* Hover anında tooltip görünsün */
+.contenteditable ._tooltipTrigger_uazmk_676:hover ._tooltipContent_uazmk_680 {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Opsiyonel: Tooltip’in alt kenarına küçük bir “ok” (arrow) eklemek */
+._tooltipContent_uazmk_680::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Tooltip’in alt kenarına hizalanır */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  /* Yukarı bakan üçgen: üst tarafın rengi tooltip’in arka plan rengiyle aynı, 
+     diğer kenarlar şeffaf. */
+  border-color: var(--baseText) transparent transparent transparent;
+}
+
+/* Bu örnekler Tailwind utility sınıflarını kullanarak yapılmıştır. 
+   İsterseniz globals.css veya benzeri bir yerde overide yapabilirsiniz. */
+
+/* Örnek: Mobil popover arka planı ve animasyonu */
+.timezones-popover {
+  animation: fadeIn 0.2s ease-in-out forwards;
+}
+
+/* Basit fade-in animasyonu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+/* Masaüstü tablo container - isterseniz .desktop-table gibi ayrı bir sınıf da ekleyebilirsiniz */
+.timezones-desktop-table {
+  max-height: 8rem; /* = 32 (Tailwind’de .max-h-32) */
+  overflow-y: auto;
+  border: 1px solid #e5e7eb; /* = gray-200 */
+  border-radius: 0.75rem; /* = rounded-lg */
+}
+
+.timezones-desktop-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.timezones-desktop-table th,
+.timezones-desktop-table td {
+  padding: 0.5rem 0.75rem; /* = p-2, p-3 */
+  text-align: left;
+  font-size: 0.875rem; /* = text-sm */
+}
+
+/* Hover sırasında hafif arka plan */
+.timezones-desktop-table tr:hover {
+  background-color: #f9fafb; /* = gray-50 */
+}
+
+/* Mobil tam ekran popover container */
+.timezones-mobile-full {
+  position: fixed;
+  inset: 0; /* top, right, bottom, left = 0 */
+  z-index: 50; /* önde gözükmesi için */
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 0; /* tam ekran için */
+}
+
+/* Başlık (header) */
+.timezones-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem; /* = p-4 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* isterseniz border-bottom: 1px solid #eee; da eklenebilir */
+}
+
+/* Tablonun kendisi (içerik) */
+.timezones-mobile-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem; /* = p-4 */
+}
+
+/* Close butonu */
+.timezones-mobile-header .close-button {
+  color: #4b5563; /* = text-gray-600 */
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.timezones-mobile-header .close-button:hover {
+  color: #1f2937; /* = text-gray-800 */
 }

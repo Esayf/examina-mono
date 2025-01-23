@@ -1,46 +1,27 @@
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import { getExamDetails, startExam } from "@/lib/Client/Exam";
-
-import { authenticate } from "../../../../hooks/auth";
-
-// Icons
-import Choz from "@/images/landing-header/choz.svg";
-import { ArrowUpRightIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
-import { isMobile } from "react-device-detect";
 import toast from "react-hot-toast";
+import {
+  ArrowUpRightIcon,
+  ClockIcon,
+  ClipboardDocumentIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/outline";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+import { getExamDetails, startExam } from "@/lib/Client/Exam";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setSession } from "@/features/client/session";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
-import { humanize } from "@/utils/formatter";
+import { authenticate } from "@/hooks/auth";
+
+import Choz from "@/images/landing-header/choz.svg";
+import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ClockIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
-import BackgroundPattern from "@/images/backgrounds/backgroundpattern.svg";
-
-function Footer() {
-  return (
-    <div className="w-full bg-white/80 py-5 px-5">
-      <div className="flex justify-between items-center gap-8">
-        <Image src={Choz} alt="" />
-        <div className="hidden md:flex gap-8 items-center">
-          <a className="font-bold" href="#">
-            Overview
-          </a>
-          <a className="font-bold" href="#">
-            Blog
-          </a>
-          <a className="font-bold" href="#">
-            Docs
-          </a>
-        </div>
-        <p>© 2024 Examina</p>
-      </div>
-    </div>
-  );
-}
 
 function ExamDetail() {
   const router = useRouter();
@@ -49,72 +30,75 @@ function ExamDetail() {
   const session = useAppSelector((state) => state.session);
   const isConnected = Object.keys(session.session).length > 0;
 
+  // Saniyede bir güncellediğimiz "kalan süre" state
   const [timer, setTimer] = useState<number>(0);
 
+  // Sınav detaylarını çek
   const { data, isLoading, isPending, isError, refetch } = useQuery({
     queryKey: ["exam"],
     queryFn: () => getExamDetails(examID),
     enabled: !!examID && isConnected,
   });
 
+  // “kalan süre”’yi her saniye hesaplayan effect
   useEffect(() => {
-    if (data === undefined || "message" in data) return;
-    if (data?.exam?.startDate && timer === 0) {
-      setTimer(new Date(data.exam.startDate).getTime() - new Date().getTime());
-    }
-  }, [data]);
+    if (!data || "message" in data || !data.exam?.startDate) return;
 
-  useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev <= 0) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1000;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [timer]);
+    // Her seferinde “şimdi - examStartDate” farkını yeniden hesaplamak için bir fonksiyon
+    const calcTime = () => {
+      const distance = new Date(data.exam.startDate).getTime() - new Date().getTime();
+      setTimer(distance);
+    };
 
+    // İlk hesap
+    calcTime();
+
+    // Saniyede bir yeniden hesap
+    const intervalId = setInterval(calcTime, 1000);
+    return () => clearInterval(intervalId);
+  }, [data]); // data.exam?.startDate gibi de ekleyebilirsiniz
+
+  /**
+   * Geriye kalan süreye göre kullanıcıya durum mesajı
+   */
   const formatTimeLeft = (milliseconds: number) => {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+    if (!data || !("exam" in data)) return "Loading or invalid data...";
 
-    if (minutes > 1) {
-      return `Starts in ${minutes} minutes`;
-    } else if (minutes === 1) {
-      return `Starts in ${minutes} minute and ${seconds} seconds`;
-    } else if (seconds > 0) {
-      return `Starts in ${seconds} seconds`;
-    } else {
-      if(data && "exam" in data && Math.abs(timer) >= (data.exam?.duration ?? 0) * 60 * 1000) {
-        return "Oopps! 🥴 Quiz has ended. You can't join this quiz.";
-      }
-      return `Exam has started ${Math.abs(minutes) > 0 ? Math.abs(minutes) + " minutes" : Math.abs(seconds) + " seconds"} ago`;
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    if (totalSeconds > 0) {
+      // Sınav henüz başlamadı
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      if (minutes > 1) return `Woohoo! ${minutes} minutes left until we kick off!`;
+      if (minutes === 1) return `Just 1 minute and ${seconds} seconds until the fun begins!`;
+      if (seconds > 0) return `Only ${seconds} seconds to go—get ready!`;
     }
+
+    // totalSeconds <= 0 => exam started or ended
+    const timeSinceStart = Math.abs(milliseconds);
+    const examDurationMs = (data.exam?.duration ?? 0) * 60 * 1000;
+
+    if (timeSinceStart >= examDurationMs) {
+      return "Oh no! The quiz has ended. Better luck next time!";
+    }
+    return "It's go time! The quiz is in progress—join before it ends!";
   };
 
+  // Sınav bitmiş veya kullanıcı bitirmişse result'a yönlendir
   useEffect(() => {
     if (!data) return;
-
     if ("message" in data) {
       toast.error(data.message);
       return;
     }
-
-    if (data.exam?.isCompleted === true && data.participatedUser) {
+    if (data.exam?.isCompleted && data.participatedUser) {
       router.push("/app/exams/result/" + data.exam._id);
-    }
-    if(data.participatedUser && data.participatedUser.isFinished) {
+    } else if (data.participatedUser?.isFinished) {
       router.push("/app/exams/result/" + data.exam._id);
-
     }
   }, [data]);
 
+  // Bazı loading / error durumları
   if (isConnected && (isLoading || isPending)) {
     return (
       <div className="flex w-full justify-center flex-col items-center h-dvh bg-[url('/bg.png')] bg-cover">
@@ -124,8 +108,6 @@ function ExamDetail() {
             <p>We are working hard to get the test details. Please wait a moment.</p>
           </Card>
         </div>
-
-        <Footer />
       </div>
     );
   }
@@ -145,63 +127,116 @@ function ExamDetail() {
             </Button>
           </Card>
         </div>
-        <Footer />
       </div>
     );
   }
 
-  const canStartExam = data?.exam?.startDate && new Date(data?.exam?.startDate) < new Date() && new Date(data?.exam?.startDate).getTime() + data?.exam?.duration * 60 * 1000 > new Date().getTime();
+  // Sınav başlama / bitiş kontrolü
+  const canStartExam =
+    data?.exam?.startDate &&
+    new Date(data?.exam?.startDate) < new Date() &&
+    new Date(data?.exam?.startDate).getTime() + (data?.exam?.duration ?? 0) * 60 * 1000 >
+      Date.now();
 
   return (
     <div className="flex justify-center items-center h-dvh">
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
-        className="absolute flex justify-center items-center h-dvh"
+        className="absolute flex justify-center items-center h-dvh object-cover"
       />
-      <Card className="max-w-[36rem] w-full px-10 pb-16 pt-12 bg-base-white z-10">
+      <Card className="max-w-[56rem] w-full px-10 pb-16 pt-12 bg-base-white z-10">
         <CardContent className="gap-9 flex flex-col">
           <div className={cn("flex flex-col items-center", !data && "filter blur-sm")}>
-  {/*           <p className="text-sm font-semibold text-brand-primary-950">
-              <b>{data?.exam.creator}</b>{" "}
-              <span className="text-brand-primary-950 font-light">invited you to join this quiz</span>
-            </p> */}
-            <div className="flex items-center gap-3 my-4 font-bold text-center text-xl border-none border-greyscale-light-200 rounded-2xl p-4">
-              <RocketLaunchIcon className="size-7 stroke-brand-primary-950 stroke-2" />
-              <h3 title={data?.exam.title} className="text-brand-primary-950 text-center max-w-[360px] overflow-x-auto break-all overflow-wrap">
+            <div className="flex items-center gap-3 my-4 font-bold text-center text-xl">
+              <h3
+                title={data?.exam.title}
+                className="
+                  text-brand-primary-950
+                  text-center
+                  font-semibold
+                  mx-auto
+                  text-2xl sm:text-xl md:text-2xl lg:text-3xl
+                  max-w-[360px] sm:max-w-[480px] md:max-w-[640px] lg:max-w-[720px]
+                  overflow-x-auto
+                  break-normal
+                  break-words
+                "
+              >
                 {data?.exam.title}
               </h3>
             </div>
-            <div className="flex items-center text-center max-w-[360px] justify-center gap-2">
-              <ClockIcon className="size-6 stroke-greyscale-light-700" />
-              <p>{timer != 0 ? formatTimeLeft(timer) : "Quiz has started"}</p>
+            <div className="flex items-center text-center max-w-[480px] justify-center gap-2">
+              <p>{formatTimeLeft(timer)}</p>
             </div>
           </div>
+
           <div className={cn("flex flex-col gap-4", !data && "filter blur-sm")}>
-            <div className="border rounded-2xl border-greyscale-light-200 p-4">
-              <div className="flex justify-between text-sm">
-                <b>Type</b>
-                <p>Quiz</p>
+            {/* Additional quiz info */}
+            <div className="border rounded-2xl border-greyscale-light-200 p-4 bg-white space-y-3">
+              {/* Type */}
+              <div className="flex items-center gap-2">
+                <ClipboardDocumentIcon className="w-5 h-5 text-brand-primary-950" />
+                <span className="text-sm text-greyscale-light-700">
+                  Type: <span className="font-bold">Quiz</span>
+                </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <b>Total Questions</b>
-                <p>{data?.exam.questionCount ? data?.exam.questionCount : "10"}</p>
+              {/* Total Questions */}
+              <div className="flex items-center gap-2">
+                <Squares2X2Icon className="w-5 h-5 text-brand-primary-950" />
+                <span className="text-sm text-greyscale-light-700">
+                  Total Questions:{" "}
+                  <span className="font-bold">{data?.exam?.questionCount ?? 0}</span>
+                </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <b>Duration</b>
-                <p>{data?.exam.duration} minutes</p>
+              {/* Duration */}
+              <div className="flex items-center gap-2">
+                <ClockIcon className="w-5 h-5 text-brand-primary-950" />
+                <span className="text-sm text-greyscale-light-700">
+                  Duration: <span className="font-bold">{data?.exam?.duration ?? 120} minutes</span>
+                </span>
               </div>
             </div>
-            <div className="border-none min-h-[160px] rounded-2xl border-greyscale-light-200 p-4">
-              <p className="mt-1 flex-col max-h-[240px] text-base text-greyscale-light-700 font-light leading-5 overflow-y-auto overflow-x-hidden break-all overflow-wrap">{data?.exam.description}</p>
+
+            {/* Description */}
+            <div
+              className="
+                min-h-[160px]
+                rounded-2xl
+                bg-base-white
+                border
+                border-greyscale-light-200
+                p-4
+                shadow-sm
+              "
+            >
+              <div
+                className="
+                  mt-1
+                  text-base
+                  text-greyscale-light-700
+                  font-light
+                  leading-relaxed
+                  max-h-[240px]
+                  overflow-y-auto
+                  whitespace-normal
+                  break-normal
+                "
+              >
+                <ReactMarkdown className="mdxeditor" remarkPlugins={[remarkGfm]}>
+                  {data?.exam?.description ?? ""}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
+
+          {/* Action buttons */}
           <div className="flex flex-col gap-4">
             {session.session?.walletAddress ? (
               <Button
                 variant="default"
                 size="default"
-                icon={true}
+                icon
                 iconPosition="right"
                 className="self-center"
                 disabled={!canStartExam && isConnected}
@@ -209,12 +244,12 @@ function ExamDetail() {
                   toast.loading("Starting exam...");
                   startExam(examID)
                     .then(() => {
-                      router.push(`/app/exams/${data?.exam._id}`);
                       toast.remove();
                       toast.success("You are ready to start the exam. Good luck!");
+                      router.push(`/app/exams/${data?.exam._id}`);
                     })
                     .catch((error) => {
-                      console.log(error)
+                      console.log(error);
                       toast.remove();
                       toast.error("Failed to start exam!");
                     });
@@ -224,7 +259,7 @@ function ExamDetail() {
               </Button>
             ) : (
               <Button
-                icon={true}
+                icon
                 iconPosition="right"
                 className="self-center"
                 onClick={async () => {
@@ -234,7 +269,6 @@ function ExamDetail() {
                     return;
                   }
                   toast.success("Successfully authenticated wallet!");
-
                   dispatch(setSession(res));
                 }}
               >
@@ -243,7 +277,7 @@ function ExamDetail() {
               </Button>
             )}
 
-            <p className="mt-auto text-center text-sm ">
+            <p className="mt-4 text-center text-md">
               {session.session?.walletAddress ? (
                 <>
                   Your current wallet address is:{" "}
@@ -253,18 +287,20 @@ function ExamDetail() {
                     className="font-bold"
                   >
                     {session.session?.walletAddress &&
-                      `${(session.session?.walletAddress).slice(
+                      `${session.session?.walletAddress.slice(
                         0,
                         5
-                      )}...${(session.session?.walletAddress).slice(-5)}`}
+                      )}...${session.session?.walletAddress.slice(-5)}`}
                   </a>
                 </>
-              ) : isMobile ? (
-                "You have to use desktop browser to join this quiz."
               ) : (
                 <>
-                  You must have an wallet account before using it. Not there yet?{" "}
-                  <a className="font-bold" href="https://wallet.aurora.dev/" target="_blank">
+                  You must have an MINA wallet account before using it. Not there yet?{" "}
+                  <a
+                    className="font-bold text-md"
+                    href="https://www.aurowallet.com/download/"
+                    target="_blank"
+                  >
                     Create now!
                   </a>
                 </>

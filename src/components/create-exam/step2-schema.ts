@@ -10,11 +10,11 @@ const looseOptional = <T extends z.ZodTypeAny>(schema: T) =>
 
 export const step2ValidationSchema = z
   .object({
-    title: z.string().min(3, "Title must be at least 3 characters"),
-    description: z.string().min(3, "Description must be at least 3 characters"),
+    title: z.string().min(3, "Quiz title must be at least 3 characters."),
+    description: z.string().min(3, "Quiz description must be at least 3 characters."),
     startDate: z.date().refine((value) => {
       return value >= new Date(Date.now() + 5 * 60 * 1000 - 59000);
-    }, "Start date should be at least 5 minutes from now"),
+    }, "Start date should be at least 5 minutes from now."),
     duration: z.string(),
     rewardDistribution: z.boolean(),
     // the rest of the fields are only required if the reward distribution is activated
@@ -29,8 +29,8 @@ export const step2ValidationSchema = z
       return Number(value);
     }, z.number().min(0, "Total reward pool must be at least 0").optional()),
 
-    /*rewardType: z.enum(["fixed", "percentage"]),*/
-    
+    //rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
+
     rewardPerWinner: z.preprocess((value) => {
       if (
         value === null ||
@@ -64,7 +64,7 @@ export const step2ValidationSchema = z
           path: ["rewardPerWinner"],
         });
       }
-  
+
       // Mantıksal kontrol: Reward per winner > total pool
       if (
         values.rewardPerWinner &&
@@ -79,7 +79,6 @@ export const step2ValidationSchema = z
       }
     }
   });
-  
 
 export type Step2FormValues = z.infer<typeof step2ValidationSchema>;
 

@@ -1,12 +1,12 @@
 import React from "react";
 import mask from "@/images/backgrounds/backgroundpattern.svg";
 import styles from "@/styles/Landing.module.css";
+import { cn } from "@/lib/utils";
 
-export const BackgroundPattern = (): JSX.Element => {
+export function BackgroundPattern({ className }: { className?: string }) {
     return (
-        <div className={styles.background_pattern}>
-            <div className={styles.overlap_group}>
-                <img className={styles.mask} alt="Mask" src={mask} />
+      <div className={cn(styles.background_pattern, className)}>
+        <img className={styles.mask} alt="Mask" src={mask} />
 
                 <div className="content">
                     <div className={styles.blocks}>
@@ -612,6 +612,5 @@ export const BackgroundPattern = (): JSX.Element => {
                     </div>
                 </div>
             </div>
-        </div>
     );
 };

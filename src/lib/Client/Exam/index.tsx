@@ -23,6 +23,7 @@ export interface Exam {
   isPrivate: boolean;
   createdAt: string;
   updatedAt: string;
+  isArchived: boolean;
 }
 
 function getExamList(): Promise<Exam[]> {
