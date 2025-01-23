@@ -158,9 +158,10 @@ function ExamDetail() {
                   mx-auto
                   text-2xl sm:text-xl md:text-2xl lg:text-3xl
                   max-w-[360px] sm:max-w-[480px] md:max-w-[640px] lg:max-w-[720px]
-                  overflow-x-auto
+                  overflow-auto
                   break-normal
-                  break-words
+                  whitespace-normal
+                  mb-6
                 "
               >
                 {data?.exam.title}
@@ -223,7 +224,15 @@ function ExamDetail() {
                   break-normal
                 "
               >
-                <ReactMarkdown className="mdxeditor" remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown
+                  className="mdxeditor"
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    img: ({ node, ...props }) => (
+                      <img {...props} className="max-w-full h-auto" loading="lazy" />
+                    ),
+                  }}
+                >
                   {data?.exam?.description ?? ""}
                 </ReactMarkdown>
               </div>

@@ -31,7 +31,7 @@ export default function TechSection({ techArr }: TechSectionProps) {
       className={`${styles.section_container} ${styles.section_container_secondary}`}
       aria-label="Technologies"
     >
-      <div className={styles.container}>
+      <div className={styles.section_container_secondary}>
         <h2 className={styles.section_title}>OUR TECHNOLOGIES</h2>
         <h3 className={styles.section_summary}>
           <span>We use these techs.</span>

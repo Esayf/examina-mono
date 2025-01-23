@@ -165,54 +165,94 @@
   text-decoration: none;
 }
 
-/* Hero Section */
+/* ============================= */
+/* 1) HERO SECTION (dış sarmalayıcı) */
+/* ============================= */
 .hero_section {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  /* Burada yine üst padding’i azaltabilirsiniz */
-  padding: 2rem 2.5rem 16rem;
+  /* Varsayılan “padding” (üst, yandan, alt) */
+  padding: 2rem 2.5rem 18rem;
+
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 
   display: flex;
-  /* Dikeyde en üste yapıştır */
-  align-items: flex-start;
-  /* Yatayda ortala (isteğe bağlı) */
-  justify-content: center;
-  @media (max-width: 768px) {
-    padding: 0rem;
-    align-items: flex-start;
+  align-items: center; /* Dikey hizalama */
+  justify-content: center; /* Yatay hizalama */
+
+  /* Masaüstü (varsayılan) */
+}
+
+/* Mobil ekranlar (max 768px) */
+@media (max-width: 768px) {
+  .hero_section {
+    padding: 2rem 1rem 10rem; /* Yanları biraz daralt, alt boşluk biraz azaltılabilir */
+    align-items: center; /* Mobilde de en üste sabitlerseniz: center vs. istek doğrultusunda */
     background-color: var(--color-brand-secondary-200);
-    /* Mobilde isterseniz align-items: center yaparak başka görünüm elde edebilirsiniz */
   }
 }
 
+/* ============================= */
+/* 2) HERO CONTAINER (iç sarmalayıcı) */
+/* ============================= */
 .hero_container {
   position: relative;
   z-index: 1;
-  @media (max-width: 768px) {
-    height: screen;
-  }
+
+  /* Geniş ekranlarda ortada durabilir */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* Yüksekliği otomatik kalsın, isterseniz min-height ekleyebilirsiniz */
 }
 
+/* ============================= */
+/* 3) HERO CONTENT (içerik) */
+/* ============================= */
 .hero_content_container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
   text-align: center;
-  margin-top: 10rem; /* hero içindeki içeriği biraz aşağıya çeker */
-  /* veya padding-top: 2rem; */
-  z-index: 1;
 
-  @media (max-width: 768px) {
-    margin-top: 6rem;
+  /* Varsayılan: büyük ekranlarda içeriği biraz aşağıya çekmek */
+  margin: 10rem auto 0 auto;
+  gap: 1.5rem;
+  z-index: 1;
+}
+
+/* 1440px altına inince margin’i azalt */
+@media (max-width: 1440px) {
+  .hero_content_container {
+    margin-top: 5rem;
     gap: 1rem;
   }
 }
 
+/* 1280px altına inince daha da azalt */
+@media (max-width: 1280px) {
+  .hero_content_container {
+    margin-top: 2rem;
+    gap: 1rem;
+  }
+}
+
+/* 768px altına inince mobil düzen */
+@media (max-width: 768px) {
+  .hero_content_container {
+    margin-top: 2rem; /* Mobilde daha az boşluk */
+    gap: 1rem;
+    padding: 0 1rem; /* İçerik dar ekranlarda kenarlara yapışmasın */
+  }
+}
+
+/* ============================= */
+/* 4) HERO SUMMARY (kısa alt başlık) */
+/* ============================= */
 .hero_summary {
   display: inline-flex;
   align-items: center;
@@ -225,71 +265,86 @@
   border: 1px solid var(--color-brand-secondary-300);
   border-radius: 9999px;
   z-index: 1;
-  @media (max-width: 768px) {
+}
+
+/* Mobilde gizle */
+@media (max-width: 768px) {
+  .hero_summary {
     display: none;
   }
 }
-/*
-.hero_summary:hover {
-  cursor: default;
-  border: 1px solid var(--color-brand-tertiary-400);
-}*/
 
+/* ============================= */
+/* 5) HERO TITLE (ana başlık) */
+/* ============================= */
 .hero_title {
   max-width: 1044px;
   font-size: 4.675rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-brand-primary-900);
+  text-wrap: balance; /* Tarayıcı desteğine göre çalışır */
   z-index: 1;
-  text-wrap: balance;
+}
 
-  @media (max-width: 768px) {
+/* Tablet ve mobil için daha küçük font */
+@media (max-width: 768px) {
+  .hero_title {
     font-size: 3.25rem;
     line-height: 1.2;
   }
 }
 
+/* ============================= */
+/* 6) HOVER TEXT (Choose) */
+/* ============================= */
+.hover_text {
+  position: relative;
+  transition: color 0.3s ease;
+}
 .hover_text::after {
-  content: ""; /* Varsayılan durumda içerik boş */
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
   width: 100%;
   height: 100%;
+  transition: opacity 0.5s ease-in-out;
   display: flex;
   justify-content: center;
   align-items: left;
   margin-right: 0.5rem;
 }
-
 .hover_text:hover::after {
-  content: "Choose"; /* Hover sırasında yazıyı değiştir */
-  opacity: 1; /* Görünür hale getir */
-  color: var(--color-brand-tertiary-900); /* Yazı rengi */
-  z-index: 1; /* Yazıyı üstte göster */
+  content: "Choose";
+  opacity: 1;
+  color: var(--color-brand-tertiary-900);
+  z-index: 1;
   font-weight: 700;
   margin-right: 0.5rem;
 }
-
 /* Orijinal yazıyı gizlemek için */
 .hover_text:hover {
-  color: transparent; /* Orijinal metni şeffaf yap */
+  color: transparent;
 }
 
+/* ============================= */
+/* 7) HIGHLIGHT WORD */
+/* ============================= */
 .highlight_word {
   color: var(--color-brand-primary-700);
   cursor: pointer;
   position: relative;
   transition: color 0.3s ease;
 }
-
 .highlight_word:hover {
   color: var(--color-brand-primary-950);
 }
 
+/* ============================= */
+/* 8) HERO DESC (alt metin) */
+/* ============================= */
 .hero_desc {
   width: 100%;
   font-size: 1.25rem;
@@ -298,13 +353,19 @@
   margin-bottom: 1rem;
   color: var(--color-brand-primary-950);
   z-index: 1;
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
+  .hero_desc {
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.4;
     margin-bottom: 0.5rem;
   }
 }
 
+/* ============================= */
+/* 9) HERO BUTTON */
+/* ============================= */
 .hero_button {
   padding: 0.75rem 2rem;
   font-size: 1.25rem;
@@ -315,6 +376,7 @@
   border-radius: 9999px;
   cursor: pointer;
   z-index: 1;
+  transition: background-color 0.3s, color 0.3s, outline 0.3s;
 }
 
 .hero_button:hover {
@@ -323,15 +385,21 @@
   outline: 4px solid var(--color-brand-primary-600);
 }
 
+/* ============================= */
+/* 10) HERO BACKGROUND (arka plan) */
+/* ============================= */
 .hero_bg {
   position: absolute;
-  right: 0px;
-  bottom: 0px;
-  top: 0px;
-  left: 0px;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
   z-index: 0;
   object-fit: cover;
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
+  .hero_bg {
     height: 100%;
   }
 }
@@ -445,7 +513,7 @@
 }
 
 .section_container_secondary {
-  background-color: var(--color-brand-secondary-200);
+  background-color: var(--color-brand-secondary-300);
   @media (max-width: 768px) {
     padding: 3rem 1rem;
   }
@@ -528,7 +596,7 @@
   flex-direction: column;
   gap: 1rem;
   background-color: var(--color-brand-secondary-100);
-  border: 2px solid var(--color-brand-primary-950);
+  border: 1px solid var(--color-greyscale-light-100);
   border-radius: 24px;
   box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.15);
   /* Hover geçişlerini yumuşatmak için eklenen transition */
@@ -538,6 +606,7 @@
 .usage_card:hover {
   background-color: var(--color-brand-primary-950); /* Daha açık bir ton */
   box-shadow: 0px 8px 24px -8px rgba(0, 0, 59, 0.2);
+  border: 1px solid var(--color-brand-primary-950);
   /* Kartı hafif yukarı kaldırma (dilerseniz scale de ekleyebilirsiniz) */
   transform: translateY(-4px);
   cursor: default;
@@ -1073,7 +1142,6 @@
   gap: 2rem;
   /* Yukarı-aşağı boşluğu arttırabilirsiniz, ör: 4rem 0 */
   padding: 4rem 40px;
-  background-color: var(--color-brand-secondary-200);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -1693,5 +1761,40 @@
 
   .usage_card_title_container {
     gap: 0rem;
+  }
+
+  /* Diğer kodların altına ekleyebilirsiniz */
+
+  /* Footer yazılı linkler menü */
+  .footer_nav_container {
+    display: flex;
+    justify-content: center; /* Ortaya hizala */
+    align-items: center;
+    gap: 1.5rem; /* Linkler arası boşluk */
+    padding: 2rem 1rem;
+    background-color: var(--color-brand-secondary-200); /* İsteğinize göre arka plan rengi */
+    border-top: 1px solid #e0e0e0; /* Üst çizgi */
+    border-bottom: 1px solid #e0e0e0; /* Alt çizgi */
+  }
+
+  .footer_nav_container a {
+    font-size: 0.875rem; /* ~14px */
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer_nav_container a:hover {
+    color: #000; /* Üzerine gelince koyu renk */
+  }
+
+  /* Mobil uyum */
+  @media (max-width: 768px) {
+    .footer_nav_container {
+      flex-wrap: wrap; /* Alt satıra geçebilsin */
+      gap: 1rem; /* Daha küçük boşluk */
+      padding: 1rem;
+    }
   }
 }

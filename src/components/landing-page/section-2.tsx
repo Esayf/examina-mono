@@ -118,7 +118,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
             aria-label="Start creating your first quiz on Choz"
           >
             <Button
-              variant="tertiary"
+              variant="default"
               pill={true}
               size="lg"
               icon={true}

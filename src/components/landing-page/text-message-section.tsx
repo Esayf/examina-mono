@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import CTA from "@/images/backgrounds/text-cta-section-bg.svg"; // Bu yol örnek, kendi projenize göre güncelleyin
+import CTA from "@/images/backgrounds/background-text.svg"; // Bu yol örnek, kendi projenize göre güncelleyin
 import { TypewriterText } from "@/components/ui/typewriter-text"; // TypewriterText'in yolu
 import styles from "@/styles/Landing.module.css"; // CSS dosyanızın yolu
 

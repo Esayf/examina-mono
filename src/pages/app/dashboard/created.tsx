@@ -61,7 +61,7 @@ function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: 
 }
 
 /****************************************
- * SHARE MODAL
+ * 1) SHARE MODAL (YALNIZCA BURASI GÜNCELLENDİ)
  ****************************************/
 interface ShareModalProps {
   open: boolean;
@@ -69,48 +69,73 @@ interface ShareModalProps {
   quizLink: string;
 }
 
+/** Tek parametre içinde "metin + link" oluşturma */
+function getShareMessage(quizLink: string) {
+  return `Hey! I just created a #Choz quiz—want to challenge yourself?
+
+Click here to join:
+${quizLink}
+
+Let's see how you do! 🚀
+#ChozQuizzes`;
+}
+
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
+  // Tek parametreli mesaj
+  const shareText = getShareMessage(quizLink);
+
+  // Paylaşım seçenekleri
   const shareOptions = [
     {
       name: "Telegram",
       icon: <FaTelegramPlane />,
-      onClick: () =>
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(quizLink)}`, "_blank"),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://t.me/share/url?text=${text}`, "_blank");
+      },
     },
     {
       name: "Twitter",
       icon: <FaTwitter />,
-      onClick: () =>
-        window.open(
-          `https://twitter.com/intent/tweet?url=${encodeURIComponent(quizLink)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+      },
     },
     {
       name: "Facebook",
       icon: <FaFacebookF />,
-      onClick: () =>
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        // Facebook'ta link preview "u" parametresinden gelir, "quote" da ek metin olabilir
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(quizLink)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            quizLink
+          )}&quote=${text}`,
           "_blank"
-        ),
+        );
+      },
     },
     {
       name: "E-mail",
       icon: <FaEnvelope />,
-      onClick: () => window.open(`mailto:?subject=Quiz&body=${encodeURIComponent(quizLink)}`),
+      onClick: () => {
+        const subject = encodeURIComponent("Check out this quiz!");
+        const body = encodeURIComponent(shareText);
+        window.open(`mailto:?subject=${subject}&body=${body}`);
+      },
     },
     {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
-      onClick: () =>
-        window.open(
-          `https://wa.me/?text=${encodeURIComponent(`Check this quiz out! ${quizLink}`)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+      },
     },
   ];
 
+  // QR kod indirme
   const downloadQRCode = () => {
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
     if (!canvas) return;
@@ -125,7 +150,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto p-4 relative bg-base-white">
+      <DialogContent className="max-w-md mx-auto px-4 py-4 relative bg-base-white max-h-[524px]">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-600 hover:border-brand-primary-900 hover:bg-brand-secondary-200"
@@ -162,7 +187,6 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         </div>
 
         <p className="text-center text-sm text-greyscale-light-500 mb-2">Or share with link</p>
-
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />
         </div>
@@ -179,7 +203,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 }
 
 /****************************************
- * ROW Bileşeni
+ * 2) ROW Bileşeni
  ****************************************/
 interface Exam {
   _id: string;
@@ -293,7 +317,7 @@ function Row({ exam }: RowProps) {
 }
 
 /****************************************
- * ANA SAYFA (QUIZ LİST)
+ * 3) ANA SAYFA (QUIZ LİST)
  ****************************************/
 function Application() {
   const { data, isLoading, isError } = useQuery({
@@ -400,10 +424,9 @@ function Application() {
   return (
     <>
       <div className="relative min-h-screen h-dvh flex flex-col z-0">
-        {/* Arkaplan görselini tüm sayfa alanı kaplayacak şekilde ekliyoruz */}
         <DashboardHeader withoutTabs={false} withoutNav={true} />
-        <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
+        <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
+          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
             <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
               <CardHeader className="border-b border-b-greyscale-light-200">
                 <CardHeaderContent>
@@ -424,7 +447,7 @@ function Application() {
                 </Button>
               </CardHeader>
 
-              <CardContent className="px-0 pt-0 pb-5">
+              <CardContent className="px-0 pt-0 pb-2">
                 {/* Filtre Butonları */}
                 <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200 overflow-auto">
                   {FILTER_OPTIONS.map((opt) => (
@@ -465,7 +488,6 @@ function Application() {
                       hover:bg-greyscale-light-50
                     "
                     onClick={() => {
-                      // Tıklanınca "title" üzerinden sıralamayı değiştir
                       if (sortField === "title") setSortAsc(!sortAsc);
                       else {
                         setSortField("title");
@@ -581,7 +603,6 @@ function Application() {
                 {/* Tablonun içeriği */}
                 <div className="overflow-y-auto max-h-[560px]">
                   {(() => {
-                    // Yalnızca tablo işlevlerinin finalExams verisini getirmesi
                     const now = new Date();
                     function getStatus(exam: any) {
                       const startDate = new Date(exam.startDate);

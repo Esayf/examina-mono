@@ -12,6 +12,12 @@ import Image from "next/image";
 import { ArrowUpRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { WalletModal } from "@/components/ui/wallet-selector"; // Modal bileşeni
 import SocialLinks from "./social-links";
+import X from "@/images/logo/x-logo.png";
+import Github from "@/images/logo/github-logo.png";
+// Örn. Telegram yerine LinkedIn:
+import Linkedin from "@/images/logo/linkedin-logo.png";
+import Medium from "@/images/logo/medium-logo.png";
+import Auro from "@/images/logo/auro-logo-brand.svg";
 
 interface HeaderProps {
   size: string;
@@ -115,7 +121,11 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               size="icon"
               className="text-brand-secondary-200 focus:outline-none z-50"
             >
-              {menuOpen ? <XMarkIcon className="w-8 h-8" /> : <Bars3Icon className="w-8 h-8" />}
+              {menuOpen ? (
+                <XMarkIcon className="w-8 h-8 z-50" />
+              ) : (
+                <Bars3Icon className="w-8 h-8" />
+              )}
             </Button>
           </div>
         </div>
@@ -131,14 +141,14 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
           className="
             fixed
             inset-0
-            z-50
-            bg-black
-            bg-opacity-40
-            backdrop-blur-sm
+            z-20
+            bg-brand-secondary-300/80
+            backdrop-blur-md
             flex
             items-center
             justify-center
           "
+          onClick={() => setMenuOpen(false)}
         >
           {/* İçerik Kartı */}
           <div
@@ -155,6 +165,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               my-auto
               relative
             "
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Menü İçeriği */}
             <div className="flex flex-col items-start gap-2">
@@ -167,7 +178,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
                 onClick={() => window.open("https://x.com/chozapp", "_blank")}
               >
                 X Account
-                <ArrowUpRightIcon className="w-5 h-5" />
+                <img src={X.src} alt="X Logo" className="w-8 h-8" />
               </Button>
 
               <Button
@@ -178,8 +189,31 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
                 variant="outline"
                 onClick={() => window.open("https://choz.medium.com/", "_blank")}
               >
-                Blog
-                <ArrowUpRightIcon className="w-5 h-5" />
+                Github Docs
+                <img src={Github.src} alt="Github Logo" className="w-8 h-8" />
+              </Button>
+              <Button
+                className="w-full justify-between"
+                icon={false}
+                pill
+                size="default"
+                variant="outline"
+                onClick={() => window.open("https://choz.medium.com/", "_blank")}
+              >
+                Linkedin
+                <img src={Linkedin.src} alt="Linkedin Logo" className="w-8 h-8" />
+              </Button>
+
+              <Button
+                className="w-full justify-between"
+                icon={false}
+                pill
+                size="default"
+                variant="outline"
+                onClick={() => window.open("https://choz.medium.com/", "_blank")}
+              >
+                Medium Blog
+                <img src={Medium.src} alt="Medium Logo" className="w-8 h-8" />
               </Button>
 
               {/* Mobil: Connect Wallet (Modal) */}
@@ -194,8 +228,8 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
                   openConnectModal();
                 }}
               >
-                Connect
-                <ArrowUpRightIcon className="w-5 h-5" />
+                Connect wallet
+                <img src={Auro.src} alt="Auro Logo" className="w-8 h-8" />
               </Button>
             </div>
           </div>

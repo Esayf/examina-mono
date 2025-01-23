@@ -102,11 +102,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             <ArrowLeftIcon className="size-5 shrink-0" />
           </Button>
           <CardHeaderContent>
-            <CardTitle>Complete your quiz details</CardTitle>
-            <CardDescription>
-              Enter quiz details before creating questions, this will give participants information
-              about the quiz.
-            </CardDescription>
+            <CardTitle className="hidden md:block">Complete your quiz details</CardTitle>
           </CardHeaderContent>
           <div className="flex flex-row justify-center gap-2">
             {/* Preview Button (Modal'ı açar) */}
@@ -125,8 +121,9 @@ export const Step2 = ({ onBack }: Step2Props) => {
             control={form.control}
             name="title"
             render={({ field }) => {
+              const maxChars = 50;
               const characterCount = field.value?.length || 0;
-              const isOverLimit = characterCount > 60;
+              const isOverLimit = characterCount > maxChars;
 
               return (
                 <FormItem>
@@ -135,10 +132,9 @@ export const Step2 = ({ onBack }: Step2Props) => {
                   <FormControl>
                     <div className="relative">
                       <Input
-                        maxLength={60}
                         placeholder="e.g. General Knowledge Challenge! 💪😎"
                         className={cn(
-                          "rounded-2xl border",
+                          "rounded-2xl border max-h-[52px]",
                           isOverLimit
                             ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                             : "border-greyscale-light-300"
@@ -151,7 +147,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
                           isOverLimit ? "text-red-500" : "text-greyscale-light-500"
                         )}
                       >
-                        {`${characterCount}/60`}
+                        {`${characterCount}/50`}
                       </div>
                     </div>
                   </FormControl>
@@ -159,6 +155,11 @@ export const Step2 = ({ onBack }: Step2Props) => {
                     A descriptive title will give participants an indication of what the quiz is
                     about.
                   </FormDescription>
+                  {isOverLimit && (
+                    <p className="text-red-500 text-sm mt-1">
+                      The description exceeds the maximum allowed {maxChars} characters.
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               );
@@ -204,7 +205,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
               return (
                 <FormItem>
                   <p className="text-lg font-bold text-brand-primary-950 mb-2">3. About quiz</p>
-                  <FormLabel>Any guidelines or final remarks you'd like to include?”</FormLabel>
+                  <FormLabel>Any guidelines or final remarks you'd like to include?</FormLabel>
                   <FormControl>
                     <div
                       className={cn(

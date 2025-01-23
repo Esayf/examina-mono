@@ -1,10 +1,9 @@
 import { cn } from "@/lib/utils";
 import EraseButton from "../ui/erase-button";
+import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
 // Ufak kırmızı ünlem (ikon veya basit text)
-const ErrorExclamation = () => {
-  return <div className="text-ui-error-600 text-lg font-bold">!</div>;
-};
+const ErrorExclamation = () => <div className="text-ui-error-600 text-lg font-bold">!</div>;
 
 interface QuestionListItemProps {
   index: number;
@@ -15,7 +14,7 @@ interface QuestionListItemProps {
   className?: string;
   questionText: string;
 
-  // Yeni eklenen props (opsiyonel)
+  // Yukarı / Aşağı opsiyonları
   canMoveUp?: boolean;
   canMoveDown?: boolean;
   onMoveUp?: (index: number) => void;
@@ -24,45 +23,44 @@ interface QuestionListItemProps {
 
 /**
  * QuestionListItem
- *  - Solda soru sıra numarası + kısaltılmış metin
- *  - Sağda "kırmızı ünlem" (opsiyonel), yukarı/aşağı butonları (opsiyonel), silme butonu (opsiyonel)
- *  - Tüm satır bir <button>, tıklayınca `onClick`.
+ *  - Eski “px-5 py-2 w-full” layout
+ *  - Hover’da hafif scale efekti
+ *  - Eksikse kırmızı ünlem
+ *  - Yukarı / Aşağı oklar “stopPropagation”
+ *  - Silme butonu
  */
-export const QuestionListItem = ({
+export function QuestionListItem({
   index,
   onClick,
   isActive,
   onRemove,
   isIncomplete,
-  className,
   questionText,
+  className,
   canMoveUp,
   canMoveDown,
   onMoveUp,
   onMoveDown,
-}: QuestionListItemProps) => {
-  // Metni 11 karakterle kısaltma (isterseniz tamamen kaldırabilirsiniz)
-  const truncatedText =
-    questionText && questionText.length > 11
-      ? `${questionText.slice(0, 11)}...`
-      : questionText || "No content!";
+}: QuestionListItemProps) {
+  const truncated =
+    questionText?.length > 11 ? `${questionText.slice(0, 11)}...` : questionText || "Untitled";
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
       className={cn(
-        "relative flex justify-between items-center px-5 py-2 w-full min-h-[48px]",
-        "transition-all duration-200 hover:scale-[1.01] rounded-sm text-left",
-        // Aktif olduğunda
+        "group relative flex justify-between items-center px-5 py-2 w-full min-h-[56px]",
+        "transition-all duration-200 hover:scale-[1.01] rounded-sm text-left cursor-pointer",
         isActive ? "bg-brand-secondary-50 text-brand-primary-800" : "text-greyscale-light-500",
-        // Alt çizgi
         "border-b border-brand-secondary-100",
         "hover:bg-brand-secondary-50",
         className
       )}
     >
-      {/* SOLDaki kısım: Soru No + kısaltılmış metin */}
-      <div className="flex flex-col items-start gap-1 min-h-[48px]">
+      {/* SOLDaki kısım: Soru no + kısaltılmış metin */}
+      <div className="flex flex-col items-start gap-1 min-h-[52px]">
         <span
           className={cn(
             "font-medium text-sm",
@@ -72,73 +70,56 @@ export const QuestionListItem = ({
           Q{index + 1}
         </span>
 
-        {/* Text: sabit genişlik verip overflow ellipsis */}
-        <span
-          className={cn(
-            "text-sm text-greyscale-light-600",
-            "w-24 overflow-hidden whitespace-nowrap text-ellipsis"
-          )}
-        >
-          {truncatedText}
+        {/* text */}
+        <span className="text-sm text-greyscale-light-600 w-24 overflow-hidden whitespace-nowrap text-ellipsis">
+          {truncated}
         </span>
       </div>
 
-      {/* SAĞdaki kısım: ünlem, yukarı/aşağı butonlar, erase butonu */}
+      {/* SAĞ kısım: ünlem, yukarı/aşağı, silme */}
       <div className="ml-auto flex items-center gap-2">
-        {/* Kırmızı ünlem -> isIncomplete */}
+        {/* Kırmızı ünlem (eksik) */}
         {isIncomplete && (
           <div className="w-4 h-4 flex items-center justify-center">
             <ErrorExclamation />
           </div>
         )}
 
-        {/* Yukarı/Aşağı butonları (opsiyonel) */}
+        {/* Yukarı buton */}
         {canMoveUp && onMoveUp && (
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onMoveUp(index);
             }}
-            className="hover:bg-greyscale-light-100 p-1 rounded"
+            className="p-1 rounded-full transition-colors duration-200 hover:bg-brand-secondary-200"
+            disabled={!canMoveUp}
           >
-            {/* HeroIcons vs. */}
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path d="M5 15l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ChevronUpIcon className="w-4 h-4" />
           </button>
         )}
+
+        {/* Aşağı buton */}
         {canMoveDown && onMoveDown && (
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onMoveDown(index);
             }}
-            className="hover:bg-greyscale-light-100 p-1 rounded"
+            className="p-1 rounded-full transition-colors duration-200 hover:bg-brand-secondary-200"
+            disabled={!canMoveDown}
           >
-            {/* HeroIcons vs. */}
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ChevronDownIcon className="w-4 h-4" />
           </button>
         )}
 
-        {/* Silme butonu (EraseButton) */}
+        {/* Silme butonu */}
         {onRemove && (
           <EraseButton onRemove={() => onRemove(index)} duration={1500} className="inline-block" />
         )}
       </div>
-    </button>
+    </div>
   );
-};
+}

@@ -206,10 +206,7 @@ export default function Home() {
         {/* Sub CTA Section */}
         <SubCtaSection handleAuthentication={handleAuthentication} />
         {/* Supporters Section */}
-        <section
-          className={`${styles.supporters_container} ${styles.section_container_secondary}`}
-          aria-label="Supporters"
-        >
+        <section className={`${styles.supporters_container}`} aria-label="Supporters">
           <h2>proudly built on.</h2>
           <Link
             href="https://minaprotocol.com/"
@@ -227,6 +224,7 @@ export default function Home() {
             />
           </Link>
         </section>
+
         {/* Footer */}
         <footer className={styles.footer_container} role="contentinfo">
           <div className={styles.footer_logo_container}>
@@ -237,7 +235,6 @@ export default function Home() {
 
           {/* Social Links */}
           <SocialLinks />
-
           <p className={styles.copyright + " whitespace-nowrap"}>
             © {new Date().getFullYear()} Choz - All rights reserved
           </p>

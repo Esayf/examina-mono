@@ -1,22 +1,29 @@
-import { authenticate } from "@/hooks/auth";
+"use client";
+
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setSession } from "@/features/client/session";
+import { authenticate } from "@/hooks/auth";
 
 import { useEffect, useState, MouseEvent } from "react";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 
-import styles from "../../styles/Landing.module.css";
-import BGR from "@/images/backgrounds/bg-5.svg";
-import { Button } from "@/components/ui/button";
-import { PaintBrushIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import styles from "../../styles/Landing.module.css"; // <-- CSS Module yolunuzu düzenleyin
+import BGR from "@/images/backgrounds/bg-5.svg"; // <-- Arka plan görseli
+import { Button } from "@/components/ui/button"; // <-- Projenizdeki Button bileşeni
+import { DocumentDuplicateIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-interface HeroSectionProps {
-  hasTopButton?: boolean;
-  hasBackgroundPattern?: boolean;
-}
+// React Icons (Discord, Twitter vb.)
+import { FaDiscord, FaTwitter, FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
 
+// Kopyalanabilir link + QR Code
+import { CopyLink } from "@/components/ui/copylink"; // CopyLink bileşeni
+import { QRCodeCanvas } from "qrcode.react";
+
+/* ------------------------------------------------------
+   1) Hero Titles Dizisi
+   ------------------------------------------------------ */
 const heroTitles = [
   "#Choz to turn every decision into an advantage",
   "#Choz to learn something new every day",
@@ -167,22 +174,227 @@ const heroTitles = [
   "#Choz to see eternity in each moment", // 71
 ];
 
+/* ------------------------------------------------------
+   2) getShareMessage: Paylaşım metni
+   ------------------------------------------------------ */
+function getShareMessage(quote: string) {
+  return `🚀 Check out my #Choz Inspiration! 🚀
+
+"${quote}"
+
+Join me in using #Choz to find a daily dose of positivity & motivation!
+`;
+}
+
+/* ------------------------------------------------------
+   3) ShareModal Bileşeni
+   ------------------------------------------------------ */
+function ShareModal({
+  isOpen,
+  onClose,
+  quote,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  quote: string;
+}) {
+  if (!isOpen) return null;
+
+  const shareMessage = getShareMessage(quote);
+
+  // -- Paylaşım Fonksiyonları --
+  // 3.1 Discord => Sadece metni kopyalar
+  const handleShareDiscord = async () => {
+    try {
+      await navigator.clipboard.writeText(shareMessage);
+      toast.success("Copied! Now open Discord and paste it.");
+    } catch {
+      toast.error("Failed to copy!");
+    }
+  };
+
+  // 3.2 Twitter
+  const handleShareTwitter = () => {
+    const text = encodeURIComponent(shareMessage);
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+  };
+
+  // 3.3 WhatsApp
+  const handleShareWhatsApp = () => {
+    const text = encodeURIComponent(shareMessage);
+    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+  };
+
+  // 3.4 Telegram
+  const handleShareTelegram = () => {
+    const text = encodeURIComponent(shareMessage);
+    window.open(`https://t.me/share/url?url=&text=${text}`, "_blank");
+  };
+
+  // 3.5 Copy to Clipboard (genel)
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(shareMessage);
+      toast.success("Copied to clipboard!");
+    } catch {
+      toast.error("Failed to copy!");
+    }
+  };
+
+  // -- Quiz Link (Kullanıcı belki direkt linki kopyalamak isteyebilir) --
+  // (Bazı senaryolarda bir link olacaksa, ekleyebilirsiniz. Burada tek cümle var ama yine de gösteriyoruz.)
+  const quizLink = "https://#ChozInspiration"; // Örneğin "https://example.com/inspiration"
+
+  // QR Kodu indirme
+  const downloadQRCode = () => {
+    const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+    const link = document.createElement("a");
+    link.href = pngUrl;
+    link.download = "quiz-qrcode.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="bg-white w-[90%] max-w-md rounded-3xl p-6 border-1 border-greyscale-light-200 relative"
+      >
+        {/* Kapatma butonu */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-greyscale-light-300 hover:text-gray-600 p-2 transition"
+        >
+          <XMarkIcon className="w-5 h-5" />
+        </button>
+
+        <h3 className="text-lg font-bold mb-4">Share your inspiration</h3>
+
+        {/* Metin kutusu */}
+        <div className="mb-6 bg-brand-secondary-100 p-3 rounded-2xl border border-greyscale-light-300 text-base text-brand-primary-900 whitespace-pre-wrap">
+          {shareMessage}
+        </div>
+
+        {/* İkon tabanlı paylaşım seçenekleri */}
+        <div className="flex justify-center items-center flex-wrap gap-5 mb-6">
+          {/* Discord */}
+          <button
+            onClick={handleShareDiscord}
+            className="
+              flex flex-col items-center
+              text-gray-700 hover:text-black
+              focus:outline-none
+              transition-transform duration-150
+              hover:scale-105 active:scale-95
+            "
+          >
+            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
+              <FaDiscord className="text-xl" />
+            </div>
+            <span className="text-xs font-medium">Discord</span>
+          </button>
+
+          {/* Twitter */}
+          <button
+            onClick={handleShareTwitter}
+            className="
+              flex flex-col items-center
+              text-gray-700 hover:text-black
+              focus:outline-none
+              transition-transform duration-150
+              hover:scale-105 active:scale-95
+            "
+          >
+            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
+              <FaTwitter className="text-xl" />
+            </div>
+            <span className="text-xs font-medium">Twitter</span>
+          </button>
+
+          {/* WhatsApp */}
+          <button
+            onClick={handleShareWhatsApp}
+            className="
+              flex flex-col items-center
+              text-gray-700 hover:text-black
+              focus:outline-none
+              transition-transform duration-150
+              hover:scale-105 active:scale-95
+            "
+          >
+            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
+              <FaWhatsapp className="text-xl" />
+            </div>
+            <span className="text-xs font-medium">WhatsApp</span>
+          </button>
+
+          {/* Telegram */}
+          <button
+            onClick={handleShareTelegram}
+            className="
+              flex flex-col items-center
+              text-gray-700 hover:text-black
+              focus:outline-none
+              transition-transform duration-150
+              hover:scale-105 active:scale-95
+            "
+          >
+            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
+              <FaTelegramPlane className="text-xl" />
+            </div>
+            <span className="text-xs font-medium">Telegram</span>
+          </button>
+        </div>
+
+        {/* “Copy Message” büyük buton */}
+        <div className="mb-6 flex justify-center">
+          <Button variant="outline" onClick={handleCopyMessage} className="flex items-center gap-2">
+            Copy Message
+            <DocumentDuplicateIcon className="w-5 h-5" />
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------
+   4) HeroSection Bileşeni - Günde 1 Kere Shuffle
+   ------------------------------------------------------ */
+interface HeroSectionProps {
+  hasTopButton?: boolean;
+  hasBackgroundPattern?: boolean;
+}
+
 export function HeroSection({
   hasTopButton = true,
   hasBackgroundPattern = true,
 }: HeroSectionProps) {
+  // Redux vb. session
   const session = useAppSelector((state) => state.session);
   const dispatch = useAppDispatch();
 
   const [randomHeroTitle, setRandomHeroTitle] = useState("");
   const [titleKey, setTitleKey] = useState(0);
 
-  // Günde 1 kez shuffle (localStorage)
+  // Shuffle kontrol değişkenleri
   const [canShuffle, setCanShuffle] = useState(true);
   const [isShuffling, setIsShuffling] = useState(false);
   const [finalChoice, setFinalChoice] = useState(false);
 
-  // Framer Motion animasyon
+  // Modal durumu
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  // Framer Motion animasyon varyantları
   const finalVariants = {
     initial: { opacity: 0, y: 10, scale: 1 },
     animate: { opacity: 1, y: 0, scale: 1 },
@@ -195,49 +407,42 @@ export function HeroSection({
     },
   };
 
+  /* ------------------------------------------
+     4.1. localStorage => günlük shuffle
+  ------------------------------------------ */
   useEffect(() => {
-    // localStorage'dan kontrol et
     const storedTitle = localStorage.getItem("dailyInspiration");
     const storedDay = localStorage.getItem("dailyShuffleDay");
     const todayDay = new Date().toDateString();
 
+    // Eğer bugün shuffle yapıldıysa:
     if (storedDay === todayDay && storedTitle) {
       setRandomHeroTitle(storedTitle);
-      setCanShuffle(true);
-      setFinalChoice(false);
+      // Artık shuffle yapılamasın:
+      setCanShuffle(false);
+      setFinalChoice(true); // shuffle sonucu
     } else {
-      // Yeni gün veya ilk kez
+      // Yeni gün (veya hiç yok)
       localStorage.setItem("dailyShuffleDay", todayDay);
+      // Varsayılan
       setRandomHeroTitle("#Choz to turn quizzes into rewarding experiences");
       setCanShuffle(true);
       setFinalChoice(false);
     }
   }, []);
 
-  // Rastgele cümle
+  /* ------------------------------------------
+     Rastgele cümle seç
+  ------------------------------------------ */
   const shuffleTitle = () => {
     const randomIndex = Math.floor(Math.random() * heroTitles.length);
     setRandomHeroTitle(heroTitles[randomIndex]);
     setTitleKey((prev) => prev + 1);
   };
 
-  // Kimlik doğrulama
-  const handleAuthentication = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const res = await authenticate(session);
-    if (!res) {
-      toast.error("Failed to authenticate wallet!");
-      return;
-    }
-    toast.success("Welcome back!", {
-      duration: 15000,
-      className: "chozToastSuccess",
-    });
-    dispatch(setSession(res.session));
-    window.location.href = "/app/dashboard/created";
-  };
-
-  // Shuffle (3 sn)
+  /* ------------------------------------------
+     4.2. Tek seferlik Shuffle (2sn animasyon)
+  ------------------------------------------ */
   const handleShuffleDailyInspiration = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (!canShuffle || isShuffling) {
@@ -247,6 +452,7 @@ export function HeroSection({
     setFinalChoice(false);
     setIsShuffling(true);
 
+    // Shuffle animasyonu
     const intervalId = setInterval(() => {
       shuffleTitle();
     }, 100);
@@ -258,43 +464,26 @@ export function HeroSection({
       setCanShuffle(false);
       setFinalChoice(true);
 
-      // final cümleyi localStorage'da sakla
+      // final cümleyi localStorage'a kaydet
       localStorage.setItem("dailyInspiration", randomHeroTitle);
-    }, 3000);
+      localStorage.setItem("dailyShuffleDay", new Date().toDateString());
+    }, 2000);
   };
 
-  // Kopyalama
-  const handleCopyQuote = async () => {
-    try {
-      await navigator.clipboard.writeText(randomHeroTitle);
-      toast.success("Copied to clipboard!");
-    } catch {
-      toast.error("Failed to copy!");
-    }
-  };
-
-  // Buton metni
+  /* ------------------------------------------
+     4.3. Buton metni / stili
+  ------------------------------------------ */
   const getButtonText = () => {
     if (isShuffling) return "Shuffling...";
-    if (finalChoice) return "Copy here, see you tomorrow!";
-    return "#Choz your daily inspiration 💜";
+    if (finalChoice) return "Share your daily #Choz";
+    return "Shuffle";
   };
 
-  // Buton tıklama
-  const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (finalChoice) {
-      handleCopyQuote();
-    } else {
-      handleShuffleDailyInspiration(e);
-    }
-  };
-
-  // finalChoice true => yeşil
   const getButtonClass = () => {
     if (finalChoice) {
       return `
         bg-brand-secondary-200
-        hover:bg-brand-secondary-300 
+        hover:bg-brand-secondary-300
         text-brand-primary-900
         transition-transform
         duration-300
@@ -311,10 +500,36 @@ export function HeroSection({
     `;
   };
 
-  const getTitleClass = () => {
-    return `${styles.hero_title}`;
+  /* ------------------------------------------
+     4.4. Butona tıklama => ya shuffle, ya share
+  ------------------------------------------ */
+  const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (finalChoice) {
+      setIsShareModalOpen(true);
+    } else {
+      handleShuffleDailyInspiration(e);
+    }
   };
 
+  // Kimlik doğrulama (opsiyonel)
+  const handleAuthentication = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    const res = await authenticate(session);
+    if (!res) {
+      toast.error("Failed to authenticate wallet!");
+      return;
+    }
+    toast.success("Welcome back!", {
+      duration: 15000,
+      className: "chozToastSuccess",
+    });
+    dispatch(setSession(res.session));
+    window.location.href = "/app/dashboard/created";
+  };
+
+  /* ------------------------------------------
+     Return => Hero Section + Modal
+  ------------------------------------------ */
   return (
     <section className={styles.hero_section}>
       {hasBackgroundPattern && (
@@ -323,9 +538,19 @@ export function HeroSection({
         </div>
       )}
 
+      {/* SHARE MODAL */}
+      <AnimatePresence>
+        {isShareModalOpen && (
+          <ShareModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            quote={randomHeroTitle}
+          />
+        )}
+      </AnimatePresence>
+
       <div className={styles.hero_container}>
         <div className={styles.hero_content_container}>
-          {/* Kısa alt başlık */}
           <h5 className={styles.hero_summary}>Create or join—either way, you win! 😎</h5>
 
           {/* Dinamik hero başlık */}
@@ -333,7 +558,7 @@ export function HeroSection({
             <AnimatePresence mode="wait">
               <motion.h1
                 key={titleKey}
-                className={getTitleClass()}
+                className={styles.hero_title}
                 variants={finalVariants}
                 initial="initial"
                 animate={finalChoice ? "final" : "animate"}
@@ -344,22 +569,19 @@ export function HeroSection({
             </AnimatePresence>
           </div>
 
-          {/* Alt açıklama */}
           <h3 className={styles.hero_desc}>
             Empower your quizzes with rewards, boost engagement, transform learning or whatever you
             want.
           </h3>
 
-          {/* Butonlar */}
           {hasTopButton && (
             <div className="flex flex-col gap-4 mt-4 md:flex-row">
-              {/* Shuffle or Copy butonu */}
               <Button
                 size="lg"
                 icon={false}
                 className={getButtonClass()}
                 onClick={handleButtonClick}
-                disabled={isShuffling || (!canShuffle && !finalChoice)}
+                disabled={isShuffling}
               >
                 {getButtonText()}
                 {finalChoice && <DocumentDuplicateIcon className="inline-block w-5 h-5 ml-2" />}

@@ -1,7 +1,6 @@
 @import "./globals.css";
 
 /** Code mirror */
-
 .mdxeditor .cm-scroller {
   background-color: #fff !important; /* Pembe yerine beyaz */
   color: var(--baseText, #333) !important;
@@ -177,6 +176,7 @@
   border-left: 1px solid var(--baseBorder);
   border-right: 1px solid var(--baseBorder);
   height: var(--spacing-4);
+  max-width: 300px;
 }
 
 ._toolbarRoot_uazmk_160 svg {
@@ -448,8 +448,9 @@ ol {
   border-radius: 8px;
   overflow-x: auto;
 }
+
 .mdxeditor pre code {
-  background: #fdf5f;
+  background-color: #fdf5ff;
   padding: 0;
   margin: 0;
 }

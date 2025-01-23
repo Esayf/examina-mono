@@ -47,6 +47,7 @@ import {
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast"; // react-hot-toast import
+import { MediaUpload } from "./media-upload";
 
 /************************************
  * Answers Component
@@ -69,15 +70,8 @@ export function Answers({ index }: AnswersProps) {
     form.setValue(`questions.${index}.correctAnswer`, value);
   };
 
-  // Opsiyonel correctAnswer form
-  const correctAnswerForm = useForm({
-    defaultValues: { correctAnswer: "" },
-    resolver: zodResolver(step1ValidationSchema),
-  });
-
   const questionType = form.watch(`questions.${index}.questionType`);
   const prevQuestionType = useRef(questionType);
-  const [recentlyAddedIndex, setRecentlyAddedIndex] = useState<number | null>(null);
 
   // questionType değişince tf -> [True,False], mc -> ["",""]
   useEffect(() => {
@@ -91,19 +85,9 @@ export function Answers({ index }: AnswersProps) {
     prevQuestionType.current = questionType;
   }, [questionType, replace]);
 
-  // highlight new answer when changed (mevcut kod)
-  useEffect(() => {
-    const subscription = form.watch((_, { name, type }) => {
-      if (name?.startsWith("questions") && type === "change") {
-        const currentIndex = parseInt(name.split(".")[1], 10);
-        setRecentlyAddedIndex(currentIndex);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
-
-  const radioGroupClassName =
-    questionType === "tf" ? "grid grid-cols-2 gap-2 w-full min-h-[64px]" : "flex flex-col gap-2";
+  // Eskiden "flex-col" veya "grid" varsa -> şimdi yatay olsun:
+  // Yan yana dizilecek, aralarında boşluk (gap) olacak.
+  const radioGroupClassName = "flex flex-row flex-wrap gap-2 w-full";
 
   return (
     <div className="flex flex-col">
@@ -112,10 +96,11 @@ export function Answers({ index }: AnswersProps) {
         name={`questions.${index}.correctAnswer`}
         render={({ field: radioField }) => (
           <FormItem className="mb-4">
-            <FormLabel className="flex gap-2 items-center rounded-full">
-              Enter the answer options and select the correct one
+            <FormLabel className="flex gap-2 items-center rounded-full text-lg font-bold">
+              Answer options
             </FormLabel>
 
+            {/* RadioGroup yatay dizilim */}
             <RadioGroup
               className={radioGroupClassName}
               value={selectedValue}
@@ -127,7 +112,7 @@ export function Answers({ index }: AnswersProps) {
             >
               {fields.map((field, i) => {
                 const charCount = field.answer?.length || 0;
-                const isOverLimit = charCount > 200;
+                const isOverLimit = charCount > 76; // Örneğin 76 karakter sınırı
                 const hasTrashIcon = fields.length > 2;
 
                 // True/False renklendirme
@@ -138,37 +123,47 @@ export function Answers({ index }: AnswersProps) {
                 let tfColorClass = "";
                 if (questionType === "tf" && isTrueOption) {
                   tfColorClass = isSelected
-                    ? "bg-green-100 border-green-400 text-green-800 hover:bg-green-200 focus-visible-ring-green-800"
-                    : "bg-green-50 text-green-700 border-green-200 hover:bg-green-100";
+                    ? "bg-green-100 border-green-400 text-green-800 text-xl min-h-[96px] max-h-[96px] font-bold hover:bg-green-200"
+                    : "bg-green-50 text-green-700 border-green-200 text-xl min-h-[96px] max-h-[96px] font-bold hover:bg-green-100";
                 } else if (questionType === "tf" && isFalseOption) {
                   tfColorClass = isSelected
-                    ? "bg-red-100 border-red-400 text-red-800 hover:bg-red-200"
-                    : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100";
+                    ? "bg-red-100 border-red-400 text-red-800 text-xl min-h-[96px] max-h-[96px] font-bold hover:bg-red-200"
+                    : "bg-red-50 text-red-700 border-red-200 text-xl min-h-[96px] max-h-[96px] font-bold hover:bg-red-100";
                 }
 
                 return (
                   <FormField
-                    control={form.control}
                     key={field.id}
+                    control={form.control}
                     name={`questions.${index}.answers.${i}.answer`}
                     render={({ field: inputField }) => (
                       <>
                         <FormItem>
                           <div className="relative">
                             <Input
-                              // ★ Yukarıda "Enter the X. option" idi:
+                              as="textarea"
                               placeholder={`Option ${i + 1}`}
-                              maxLength={200}
+                              maxLength={76}
                               {...inputField}
-                              onChange={(e) => inputField.onChange(e)}
+                              // Değişiklik yapıldığında
+                              onKeyDown={(e: { key: string; preventDefault: () => void }) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault(); // Enter'ı iptal: yeni satır olmayacak
+                                }
+                              }}
+                              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                                inputField.onChange(e);
+                                form.setValue(
+                                  `questions.${index}.answers.${i}.answer`,
+                                  e.target.value
+                                );
+                              }}
                               className={cn(
-                                "gap-4 pl-12 pr-32 py-6 rounded-2xl border transition-colors duration-200",
-
+                                "pl-12 pr-32 py-6 min-h-[80px] w-full rounded-3xl border items-center transition-colors duration-200",
                                 questionType === "tf" && tfColorClass,
                                 isSelected && questionType !== "tf"
-                                  ? "border-greyscale-light-200 bg-brand-secondary-50 ring-0"
+                                  ? "border-2 border-brand-primary-900 bg-brand-secondary-50 ring-0"
                                   : "",
-
                                 questionType === "tf" && "cursor-pointer",
                                 isOverLimit ? "border-ui-error-500 focus:ring-ui-error-500" : ""
                               )}
@@ -180,9 +175,11 @@ export function Answers({ index }: AnswersProps) {
                                   form.setValue(`questions.${index}.correctAnswer`, i.toString());
                                 }
                               }}
+                              // Input'un solunda radio item
                               startElement={
                                 <RadioGroupItem value={i.toString()} checked={isSelected} />
                               }
+                              // Sağ tarafta silme butonu
                               endElement={
                                 hasTrashIcon && (
                                   <div className="relative group inline-block">
@@ -208,6 +205,7 @@ export function Answers({ index }: AnswersProps) {
                                 )
                               }
                             />
+                            {/* Karakter sayısı (tf dışında göster) */}
                             {questionType !== "tf" && (
                               <div
                                 className={cn(
@@ -216,31 +214,28 @@ export function Answers({ index }: AnswersProps) {
                                   isOverLimit ? "text-red-500" : "text-greyscale-light-500"
                                 )}
                               >
-                                {`${inputField.value?.length || 0}/200`}
+                                {`${inputField.value?.length || 0}/76`}
                               </div>
                             )}
                           </div>
                           {isOverLimit && (
                             <p className="text-red-500 text-sm mt-1">
-                              The answer option exceeds the maximum allowed 200 characters.
+                              The answer option exceeds the maximum allowed 76 characters.
                             </p>
                           )}
                         </FormItem>
-                        <FormMessage />
                       </>
                     )}
                   />
                 );
               })}
             </RadioGroup>
-            <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
-              You can add up to 6 options for multiple choice, or 2 options (True/False).
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
 
+      {/* Çoktan seçmeli (mc) -> en fazla 4 */}
       {form.watch(`questions.${index}.questionType`) === "mc" && fields.length < 4 && (
         <Button
           variant={"outline"}
@@ -360,17 +355,13 @@ export const Step1 = ({ onNext }: Step1Props) => {
         </Button>
         <CardHeaderContent>
           <CardTitle>Let’s create your questions!</CardTitle>
-          <CardDescription>
-            Create questions that inspire, challenge, and engage participants for a truly
-            interactive experience.
-          </CardDescription>
         </CardHeaderContent>
 
         <div className="flex flex-col items-end gap-1 mr-4">
-          <p className="text-sm text-greyscale-light-600">
+          <p className="text-sm text-greyscale-light-600 hidden md:block">
             {completedCount} / {totalCount} completed
           </p>
-          <div className="w-32 h-2 bg-greyscale-light-300 rounded-full overflow-hidden">
+          <div className="w-32 h-2 bg-greyscale-light-300 rounded-full overflow-hidden hidden md:block">
             <div
               className="bg-brand-primary-700 h-full transition-all duration-300"
               style={{ width: `${(completedCount / Math.max(1, totalCount)) * 100}%` }}
@@ -387,60 +378,31 @@ export const Step1 = ({ onNext }: Step1Props) => {
         {/* Sol tarafta aktif soru */}
         <div className="w-full flex flex-col flex-1 md:max-w-full gap-4" key={activeQuestion.id}>
           <div className="flex flex-col gap-6 flex-0">
-            {/* questionType */}
             <FormField
-              key={activeQuestion.id}
               control={control}
               name={`questions.${activeQuestionIndex}.questionType`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex gap-2 items-center rounded-full">
-                    Select the question type
+                  <FormLabel className="flex items-center text-lg font-bold gap-2">
+                    Question type
                   </FormLabel>
 
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="box-border">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="z-50 max-h-48 overflow-y-auto">
-                      <SelectItem value="mc">Multiple choice</SelectItem>
-                      <SelectItem value="tf">True/False</SelectItem>
-                      {/* Diğerleri devre dışı */}
-                      <SelectItem disabled value="ord">
-                        Ordering (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ma">
-                        Matching (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="sa">
-                        Likert (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ps">
-                        Poll/Survey (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="dd">
-                        Drag and Drop (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="vb">
-                        Video based (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ib">
-                        Image based (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ess">
-                        Essay (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="fill">
-                        Fill in the blank (soon)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
-                    E.g. choose "Multiple choice" if you want up to 4 answer options, or
-                    "True/False" for a simple question.
-                  </FormDescription>
+                  {/* Select yerine iki buton */}
+                  <div className="flex gap-3 mt-1">
+                    <Button
+                      variant={field.value === "mc" ? "default" : "outline"}
+                      onClick={() => field.onChange("mc")}
+                    >
+                      Multiple choice
+                    </Button>
+                    <Button
+                      variant={field.value === "tf" ? "default" : "outline"}
+                      onClick={() => field.onChange("tf")}
+                    >
+                      True/False
+                    </Button>
+                  </div>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -452,12 +414,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
               name={`questions.${activeQuestionIndex}.question`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex gap-2 items-center rounded-full">
-                    Enter the question below. You can use the markdown editor to customize it ☺︎
+                  <FormLabel className="flex gap-2 items-center text-lg font-bold">
+                    Question
                   </FormLabel>
 
                   <FormControl>
-                    <div className="border border-greyscale-light-200 rounded-2xl min-h-[240px] max-h-[960px] bg-base-white resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800">
+                    <div className="border border-greyscale-light-200 rounded-2xl min-h-[15rem] max-h-[60rem] bg-base-white resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800">
                       <MarkdownEditor
                         className="mdxeditor w-full h-full"
                         markdown={field.value}
@@ -467,14 +429,28 @@ export const Step1 = ({ onNext }: Step1Props) => {
                       />
                     </div>
                   </FormControl>
-                  <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
-                    E.g. "What is the capital of France?" – you can use *Markdown* syntax here.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* ★ YENİ: MediaUpload */}
+            <FormField
+              control={control}
+              name={`questions.${activeQuestionIndex}.media`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional: Add Media</FormLabel>
+                  <MediaUpload
+                    onMediaUpload={(file) => {
+                      field.onChange(file);
+                    }}
+                  />
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* Answers */}
             <Answers index={activeQuestionIndex} />
           </div>
@@ -482,8 +458,8 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
         {/* Sağ tarafta soru listesi */}
         <Card>
-          <CardHeader className="px-5 min-w-[300px] min-h-[68px] max-h-[68px]">
-            Questions List
+          <CardHeader className="px-5 min-w-[20rem] min-h-[4rem] max-h-[4rem]">
+            <CardTitle>Questions List</CardTitle>
           </CardHeader>
           <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4 max-h-[200px] lg:max-h-full">
             <div className="flex-1 flex flex-col">

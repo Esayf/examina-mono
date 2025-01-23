@@ -54,7 +54,17 @@ export function ExamPreviewModal({ content, onClose }: ExamPreviewModalProps) {
           3) "exam-preview" class'ı ekleyip "sınav stili"ne yakın CSS uygulayabilirsiniz
         */}
         <div className="prose max-w-none exam-preview-content">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          {/* Quiz Description (Markdown) */}
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              img: ({ node, ...props }) => (
+                <img {...props} className="max-w-full h-auto" loading="lazy" />
+              ),
+            }}
+          >
+            {content || "No content"}
+          </ReactMarkdown>
         </div>
 
         {/* Alt tarafta kapatma / done */}
