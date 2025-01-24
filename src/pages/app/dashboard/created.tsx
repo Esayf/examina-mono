@@ -306,7 +306,7 @@ function Row({ exam }: RowProps) {
             size="icon-sm"
             className="max-w-8 max-h-8 min-w-8 min-h-8"
             onClick={() => handleDelete(exam._id)}
-            disabled={isDeleting}
+            disabled={isDeleting || Boolean(exam.startDate && new Date(exam.startDate).getTime() <= Date.now() + 60 * 60 * 1000)}
           >
             {isDeleting ? (
               <Spinner className="size-4" />
