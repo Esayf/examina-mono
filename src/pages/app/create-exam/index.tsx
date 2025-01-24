@@ -55,7 +55,6 @@ function CreateExam() {
   useEffect(() => {
     const handleRouteChange = (url: string, e: any) => {
       if (isDirty && !isSubmitted) {
-        console.log("url", url, "\nany", e);
         const confirmation = window.confirm(
           "You have unsaved changes. Are you sure you want to leave?"
         );
