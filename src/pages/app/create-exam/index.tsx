@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import DashboardHeader from "@/components/ui/dashboard-header";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 import {
   Step2FormValues,
@@ -25,8 +26,8 @@ const validationSchema = [step1ValidationSchema, step2ValidationSchema] as const
 
 function CreateExam() {
   const [currentStep, setCurrentStep] = useState(0);
-
   const currentValidationSchema = validationSchema[currentStep];
+  const router = useRouter();
 
   const methods = useForm<FormValues>({
     shouldUnregister: false,
@@ -49,7 +50,43 @@ function CreateExam() {
     },
   });
 
-  const { trigger } = methods;
+  const { trigger, formState: { isDirty, isSubmitted } } = methods;
+
+  useEffect(() => {
+    const handleRouteChange = (url: string, e: any) => {
+      if (isDirty && !isSubmitted) {
+        console.log("url", url, "\nany", e);
+        const confirmation = window.confirm(
+          "You have unsaved changes. Are you sure you want to leave?"
+        );
+        if (!confirmation) {
+          router.events.emit("routeChangeError",  "your error message", url, { shallow: false });
+          throw "Route change aborted.";
+        }
+      }
+    };
+
+    const handleRouteChangeError = (err: any) => {
+      if (err !== "Route change aborted.") return;
+      // URL'i geri al ve istediğiniz callback'i çalıştırın
+      window.history.pushState(null, '', router.asPath);
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSubmitted) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    
+    router.events.on("routeChangeStart", handleRouteChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isDirty, isSubmitted, router]);
 
   const handleNext = async () => {
     const isStepValid = await trigger(undefined, {
