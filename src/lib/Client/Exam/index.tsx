@@ -40,7 +40,7 @@ function getExamList(): Promise<Exam[]> {
   });
 }
 
-function getDraftExams(): Promise<Exam[]> {
+function getDraftExams(): Promise<DraftExam[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
@@ -63,6 +63,7 @@ export interface DraftExam extends Exam {
     }[];
     correctAnswer: number;
     number: number;
+    questionType: "mc" | "tf";
   }[];
 }
 
