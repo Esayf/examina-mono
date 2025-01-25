@@ -47,12 +47,10 @@ export const SaveAsDraftButton = () => {
       ...step1Values,
       ...step2Values,
       title: step2Values.title || "Untitled",
-      // Only convert dates and numbers if they exist
       startDate: step2Values.startDate ? new Date(step2Values.startDate).toISOString() : undefined,
       duration: step2Values.duration ? parseInt(step2Values.duration) : undefined,
       questions:
         step1Values.questions?.map((question: any, i: number) => ({
-          type: question.questionType,
           number: i + 1,
           text: question.question || "",
           description: question.question || "",
@@ -61,7 +59,8 @@ export const SaveAsDraftButton = () => {
               number: i + 1,
               text: answer.answer || "",
             })) || [],
-          correctAnswer: question.correctAnswer ? parseInt(question.correctAnswer) + 1 : undefined,
+          correctAnswer: question.correctAnswer ? parseInt(question.correctAnswer) : undefined,
+          questionType: question.questionType,
         })) || [],
     });
   };

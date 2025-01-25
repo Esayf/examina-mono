@@ -57,10 +57,9 @@ function ExamForm({ exam }: ExamFormProps) {
           rewardDistribution: exam.isRewarded,
           questions: exam.questions.map((q) => ({
             answers: q.options.map((o) => ({ answer: o.text })),
-            correctAnswer: q.correctAnswer ? q.correctAnswer.toString() : undefined,
+            correctAnswer: q.correctAnswer >= 0 ? q.correctAnswer.toString() : undefined,
             question: q.text,
-            // FIXME: this info doesn't exist in the draft exam
-            questionType: "mc" as const,
+            questionType: q.questionType || "mc",
           })),
         }
       : {
