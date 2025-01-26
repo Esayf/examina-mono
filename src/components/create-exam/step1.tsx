@@ -489,58 +489,21 @@ export const Step1 = ({ onNext }: Step1Props) => {
                       if (el) questionRefs.current[index] = el;
                     }}
                   >
-                    <div className="flex items-center justify-between">
-                      <QuestionListItem
-                        index={index}
-                        onClick={() => setActiveQuestionIndex(index)}
-                        isActive={activeQuestionIndex === index}
-                        onRemove={fields.length > 1 ? remove : undefined}
-                        isIncomplete={questionHasError}
-                        // ★ No content => "Question #X (untitled)"
-                        questionText={
-                          questions[index]?.question || `Question #${index + 1} (untitled)`
-                        }
-                        className="flex-1"
-                      />
-
-                      <div className="flex">
-                        <Button
-                          variant="ghost"
-                          size="chevron"
-                          disabled={isFirst} // ilk sorudaysa yukarı gidemez
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isFirst) {
-                              move(index, index - 1);
-                              setActiveQuestionIndex(index - 1);
-                            }
-                          }}
-                        >
-                          <ChevronUpIcon className="w-4 h-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="chevron"
-                          disabled={isLast} // son sorudaysa aşağı gidemez
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isLast) {
-                              move(index, index + 1);
-                              setActiveQuestionIndex(index + 1);
-                            }
-                          }}
-                        >
-                          <ChevronDownIcon className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {recentlyAddedIndex === index && (
-                      <div className="absolute -top-4 left-0 bg-green-100 text-green-800 text-xs py-1 px-2 rounded shadow">
-                        New question added!
-                      </div>
-                    )}
+                  <QuestionListItem
+                    index={index}
+                    isActive={activeQuestionIndex === index}
+                    onRemove={fields.length > 1 ? remove : undefined}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                    move={move}
+                    setActiveQuestionIndex={setActiveQuestionIndex}
+                    recentlyAddedIndex={recentlyAddedIndex}
+                    isIncomplete={questionHasError}
+                    // ★ No content => "Question #X (untitled)"
+                    questionText={
+                      questions[index]?.question || `Question #${index + 1} (untitled)`
+                    }
+                  />
                   </div>
                 );
               })}
