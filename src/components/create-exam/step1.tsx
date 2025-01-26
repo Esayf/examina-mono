@@ -464,7 +464,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
             Questions List
           </CardHeader>
           <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4 max-h-[200px] lg:max-h-full">
-            <div className="flex-1 flex flex-col">
               {fields.map((_, index) => {
                 const questionHasError = errors.questions && !!errors.questions[index];
 
@@ -535,7 +534,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   </div>
                 );
               })}
-            </div>
           </CardContent>
           <CardFooter>
             <FormItem>
