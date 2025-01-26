@@ -91,6 +91,8 @@ export function Answers({ index }: AnswersProps) {
     } else if (questionType === "mc") {
       replace([{ answer: "" }, { answer: "" }]);
     }
+    form.clearErrors(`questions.${index}.answers`);
+
     prevQuestionType.current = questionType;
   }, [questionType, replace]);
 
@@ -183,6 +185,7 @@ export function Answers({ index }: AnswersProps) {
                                   form.setValue(`questions.${index}.correctAnswer`, i.toString());
                                 }
                               }}
+                              onBlur={() => form.trigger(`questions.${index}.answers.${i}.answer`)}
                               startElement={
                                 <RadioGroupItem value={i.toString()} checked={isSelected} />
                               }
@@ -317,6 +320,13 @@ export const Step1 = ({ onNext }: Step1Props) => {
       });
     }
   }, [activeQuestionIndex, questions]);
+
+  useEffect(() => {
+    fields.forEach((field, index) => {
+      if (index !== activeQuestionIndex)
+        trigger(`questions.${index}`);
+    });
+  }, [activeQuestionIndex]);
 
   // “Next” => validasyon
   const handleNext = async () => {
