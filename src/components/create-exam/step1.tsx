@@ -290,6 +290,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
   });
 
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const prevActiveQuestionIndex = useRef(activeQuestionIndex);
   const questions = watch("questions");
   const [recentlyAddedIndex, setRecentlyAddedIndex] = useState<number | null>(null);
   const activeQuestion = fields[activeQuestionIndex];
@@ -322,10 +323,9 @@ export const Step1 = ({ onNext }: Step1Props) => {
   }, [activeQuestionIndex, questions]);
 
   useEffect(() => {
-    fields.forEach((field, index) => {
-      if (index !== activeQuestionIndex)
-        trigger(`questions.${index}`);
-    });
+    if (prevActiveQuestionIndex.current == activeQuestionIndex) return;
+    trigger(`questions.${prevActiveQuestionIndex.current}`);
+    prevActiveQuestionIndex.current = activeQuestionIndex;
   }, [activeQuestionIndex]);
 
   // “Next” => validasyon
