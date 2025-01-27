@@ -6,12 +6,16 @@ import {
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 // Ufak kırmızı ünlem (ikon veya basit text)
 const ErrorExclamation = () => {
   return <div className="text-ui-error-600 text-lg font-bold">!</div>;
 };
 
 interface QuestionListItemProps {
+  id: string;
   index: number;
   isActive: boolean;
   onRemove?: (index: number) => void;
@@ -34,6 +38,7 @@ interface QuestionListItemProps {
  *  - Tüm satır bir <button>, tıklayınca `onClick`.
  */
 export const QuestionListItem = ({
+  id,
   index,
   isActive,
   onRemove,
@@ -45,14 +50,45 @@ export const QuestionListItem = ({
   setActiveQuestionIndex,
   recentlyAddedIndex,
 }: QuestionListItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1 : 0,
+  };
+
   // Metni 11 karakterle kısaltma (isterseniz tamamen kaldırabilirsiniz)
   const truncatedText =
     questionText.length > 11
       ? `${questionText.slice(0, 11)}...`
       : questionText || "No content!";
-
+  
   return (
-    <div className="flex items-center justify-between">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "flex items-center justify-between bg-white",
+        "w-full",
+        isDragging && "opacity-50 shadow-lg z-50"
+      )}
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-2"
+      >
+        ⋮⋮ {/* Sürükle işareti */}
+      </div>
+      
       <button
         onClick={() => setActiveQuestionIndex(index)}
         className={cn(

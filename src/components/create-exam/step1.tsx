@@ -299,17 +299,11 @@ export const Step1 = ({ onNext }: Step1Props) => {
   // Refs for auto-scroll
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
-  useEffect(() => {
-    if (fields.length > 0)
-      setValue("questions.0.correctAnswer", "0");
-  }, []);
-
   // remove question callback + aktif index güncelle
   const remove = (index: number) => {
     removeQuestion(index);
     setActiveQuestionIndex((prev) => Math.min(prev > 0 ? prev - 1 : prev, fields.length - 2));
   };
-
 
   useEffect(() => {
     if (questions.length > 0 && questionRefs.current && questionRefs.current[activeQuestionIndex]) {
@@ -495,7 +489,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   const newIndex = activeQuestionIndex + 1;
                   insert(newIndex, {
                     question: "",
-                    correctAnswer: "0",
+                    correctAnswer: "",
                     answers: [{ answer: "" }, { answer: "" }],
                     questionType: "mc",
                   });
