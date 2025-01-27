@@ -23,7 +23,7 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
-import { QuestionListItem } from "./question-list-item";
+import QuestionList from "./question-list";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import BGR from "@/images/backgrounds/bg-8-20.svg";
@@ -276,6 +276,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
     formState: { errors },
     trigger,
     watch,
+    setValue,
   } = useStep1Form();
 
   // Field Array => questions
@@ -298,13 +299,10 @@ export const Step1 = ({ onNext }: Step1Props) => {
   // Refs for auto-scroll
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
-  // 2 sn sonra highlight iptal
   useEffect(() => {
-    if (recentlyAddedIndex !== null) {
-      const timer = setTimeout(() => setRecentlyAddedIndex(null), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [recentlyAddedIndex]);
+    if (fields.length > 0)
+      setValue("questions.0.correctAnswer", "0");
+  }, []);
 
   // remove question callback + aktif index güncelle
   const remove = (index: number) => {
@@ -474,39 +472,18 @@ export const Step1 = ({ onNext }: Step1Props) => {
             Questions List
           </CardHeader>
           <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4 max-h-[200px] lg:max-h-full">
-              {fields.map((_, index) => {
-                const questionHasError = errors.questions && !!errors.questions[index];
-
-                // Sıra belirleme
-                const isFirst = index === 0;
-                const isLast = index === fields.length - 1;
-
-                return (
-                  <div
-                    key={index}
-                    className="relative w-full border-b border-brand-secondary-100 last:border-none"
-                    ref={(el) => {
-                      if (el) questionRefs.current[index] = el;
-                    }}
-                  >
-                  <QuestionListItem
-                    index={index}
-                    isActive={activeQuestionIndex === index}
-                    onRemove={fields.length > 1 ? remove : undefined}
-                    isFirst={isFirst}
-                    isLast={isLast}
-                    move={move}
-                    setActiveQuestionIndex={setActiveQuestionIndex}
-                    recentlyAddedIndex={recentlyAddedIndex}
-                    isIncomplete={questionHasError}
-                    // ★ No content => "Question #X (untitled)"
-                    questionText={
-                      questions[index]?.question || `Question #${index + 1} (untitled)`
-                    }
-                  />
-                  </div>
-                );
-              })}
+            <QuestionList
+              fields={fields}
+              questions={questions}
+              activeQuestionIndex={activeQuestionIndex}
+              setActiveQuestionIndex={setActiveQuestionIndex}
+              questionRefs={questionRefs}
+              errors={errors}
+              remove={remove}
+              move={move}
+              recentlyAddedIndex={recentlyAddedIndex}
+              setRecentlyAddedIndex={setRecentlyAddedIndex}
+            />
           </CardContent>
           <CardFooter>
             <FormItem>
@@ -518,7 +495,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
                   const newIndex = activeQuestionIndex + 1;
                   insert(newIndex, {
                     question: "",
-                    correctAnswer: "",
+                    correctAnswer: "0",
                     answers: [{ answer: "" }, { answer: "" }],
                     questionType: "mc",
                   });
