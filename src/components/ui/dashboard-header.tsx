@@ -116,7 +116,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
           {isConnected && session.session?.walletAddress && (
             <Button variant="outline" size="default" icon={false} className="hidden md:block">
               <a
-                href={`https://minascan.io/mainnet/account/${session.session.walletAddress}/`}
+                href={`https://minascan.io/mainnet/account/${session.session.walletAddress}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-md font-book text-brand-primary-950 no-underline"
