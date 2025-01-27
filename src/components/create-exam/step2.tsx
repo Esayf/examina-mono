@@ -52,6 +52,7 @@ import { PreviewModal } from "./preview-modal";
 import { LiveExamPreview } from "./live-exam-preview";
 import { useStep1Form } from "./step1-schema";
 import { toast } from "react-hot-toast"; // <-- ek
+import BackGroundImageUploader from "./backGroundImageUploader";
 
 interface Step2Props {
   onBack: () => void;
@@ -231,6 +232,9 @@ export const Step2 = ({ onBack }: Step2Props) => {
             }}
           />
 
+          {/* 3.5) Background Image Uploader */}
+          <BackGroundImageUploader />
+          
           {/* 4) Reward Distribution */}
           <FormField
             control={form.control}
