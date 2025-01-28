@@ -6,9 +6,12 @@ import { Modal } from "../ui/modal";
 import { useState } from "react";
 import { pinata } from "@/utils/config";
 import { KeyResponse } from "pinata-web3";
+import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
+import { FormField, FormItem } from "../ui/form";
+import { toast } from "react-hot-toast";
 
 // TODO: bu fonksiyonu başka bir yerde de kullanıyoruz, bunu bir utils klasörüne taşıyabiliriz
-const uploadFile = async (file: File) => {
+const uploadFile = async (file: File): Promise<string> => {
   if (!file) return Promise.reject("No file selected");
   const keyRequest = await fetch("/api/key");
   const keyData = (await keyRequest.json()) as KeyResponse | { message: string };
@@ -17,22 +20,63 @@ const uploadFile = async (file: File) => {
 
   const upload = await pinata.upload.file(file).key(keyData.JWT);
 
-  return `/api/proxy?hash=${upload.IpfsHash}`;
+  return upload.IpfsHash;
 };
 
+// TODO: className is too long and repetitive, we can store it in a variable
+const buttonClassName = `
+  group
+  relative inline-flex items-center justify-center
+  px-5 py-3
+  font-medium text-brand-secondary-200
+  rounded-full
+  bg-brand-primary-900
+
+  transform-gpu
+  transition-all duration-300 ease-out
+
+  /* Hover/Active tepkileri */
+  hover:-translate-y-0.5
+  hover:scale-105
+  active:scale-95
+  active:translate-y-0
+
+  /* Gölge */
+  shadow-sm
+  hover:shadow-md
+  active:shadow-sm
+
+  focus:outline-none
+  focus-visible:ring-2
+  focus-visible:ring-offset-2
+  focus-visible:ring-brand-primary-800
+`
+
 // TODO: bu componentın bir form field olacak şekilde düzenlenmesi gerekiyor
-const BackGroundImageUploader = () => {
+const BackgroundImageUploader = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
+  name,
+  control,
+}: {
+  control: ControllerProps<TFieldValues, TName>["control"];
+  name: ControllerProps<TFieldValues, TName>["name"];
+}) => {
+
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<String | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isUploaded, setIsUploaded] = useState<boolean>(false);
 
   const handleCancel = () => {
+    if (selectedImage && !isUploaded) toast.error("Image has not been uploaded yet.");
     setIsImageModalOpen(false);
-    setSelectedImage(null);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsUploaded(false);
     const file: File | undefined = e.target.files?.[0];
     if (!file) return;
     
@@ -62,57 +106,38 @@ const BackGroundImageUploader = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSaveAsBackground = async () => {
-    console.log("save as background");
-    setIsImageModalOpen(false);
+  const handleSaveAsBackground = async (field: { onChange: (value: string) => void }) => {
     if (!selectedImage) return;
     
-    const imageUrl = await uploadFile(selectedImage);
-    console.log("imageUrl", imageUrl);
-    setUploadedImageUrl(imageUrl);
+    setIsUploading(true);
+    try {
+      const imageUrl = await uploadFile(selectedImage);
+      field.onChange(imageUrl);
+    } catch (error) {
+      console.error("Error uploading image", error);
+    }
+    finally {
+      setIsUploading(false);
+      setIsImageModalOpen(false);
+      setIsUploaded(true);
+    }
   }
   
   // TODO: remove image from pinata
   // only if there are no other exams using this image
-  const handleRemoveImage = () => {
+  const handleRemoveImage = (field: { onChange: () => void }) => {
     setSelectedImage(null);
-    setUploadedImageUrl(null);
+    field.onChange();
   }
 
   return (
-    <>
-      <p className="text-lg font-bold text-brand-primary-950">4. Background image</p>
-      <Button
+    <FormField control={control} name={name}
+    render={({ field }) => (
+      <FormItem>
+        <p className="text-lg font-bold text-brand-primary-950">4. Background image</p>
+        <Button
         onClick={()=>{setIsImageModalOpen(true)}}
-        disabled={false}
-        // TODO: className is too long and repetitive, we can store it in a variable
-        className={`
-        group
-        relative inline-flex items-center justify-center
-        px-5 py-3
-        font-medium text-brand-secondary-200
-        rounded-full
-        bg-brand-primary-900
-
-        transform-gpu
-        transition-all duration-300 ease-out
-
-        /* Hover/Active tepkileri */
-        hover:-translate-y-0.5
-        hover:scale-105
-        active:scale-95
-        active:translate-y-0
-
-        /* Gölge */
-        shadow-sm
-        hover:shadow-md
-        active:shadow-sm
-
-        focus:outline-none
-        focus-visible:ring-2
-        focus-visible:ring-offset-2
-        focus-visible:ring-brand-primary-800
-      `}
+        className={buttonClassName}
       >
         <span className="hidden sm:inline">Upload</span>
         <FaImage className={`w-6 h-6 sm:ml-2`}/>
@@ -138,7 +163,7 @@ const BackGroundImageUploader = () => {
                 />
                 <Button
                   variant="outline"
-                  onClick={handleRemoveImage}
+                  onClick={()=>{handleRemoveImage(field)}}
                   className="mt-2"
                 >
                   Remove Image
@@ -174,16 +199,19 @@ const BackGroundImageUploader = () => {
           <div className="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-4">
             <Button
               variant="default"
-              onClick={handleSaveAsBackground}
-              disabled={!selectedImage}
+              onClick={()=>{handleSaveAsBackground(field)}}
+              disabled={!selectedImage || isUploading || isUploaded}
             >
-              Save As Background
+              {isUploading ? "Uploading..." : 
+              isUploaded ? "Uploaded" : "Save As Background"}
             </Button>
           </div>
         </div>
       </Modal>
-    </>
+      </FormItem>
+    )}
+    />
   );
 };
 
-export default BackGroundImageUploader;
+export default BackgroundImageUploader;

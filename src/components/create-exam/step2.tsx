@@ -52,7 +52,7 @@ import { PreviewModal } from "./preview-modal";
 import { LiveExamPreview } from "./live-exam-preview";
 import { useStep1Form } from "./step1-schema";
 import { toast } from "react-hot-toast"; // <-- ek
-import BackGroundImageUploader from "./backGroundImageUploader";
+import BackgroundImageUploader from "./background-image-uploader"
 
 interface Step2Props {
   onBack: () => void;
@@ -232,10 +232,10 @@ export const Step2 = ({ onBack }: Step2Props) => {
             }}
           />
 
-          {/* 3.5) Background Image Uploader */}
-          <BackGroundImageUploader />
+          {/* 4) Background Image Uploader */}
+          <BackgroundImageUploader control={form.control} name={"backgroundImage"}/>
           
-          {/* 4) Reward Distribution */}
+          {/* 5) Reward Distribution */}
           <FormField
             control={form.control}
             name="rewardDistribution"
@@ -251,7 +251,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
             )}
           />
 
-          {/* 5) RewardDistributionForm */}
+          {/* 6) RewardDistributionForm */}
           {rewardDistribution && <RewardDistributionForm />}
         </CardContent>
       </Card>

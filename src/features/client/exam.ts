@@ -19,6 +19,7 @@ export interface ExamState {
   passingScore: number | null;
   contractAddress: string | null;
   deployJobId: string | null;
+  backgroundImage: string | null;
 }
 
 // Define the initial state using that type

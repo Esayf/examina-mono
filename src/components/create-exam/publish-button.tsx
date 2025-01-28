@@ -67,6 +67,7 @@ export const PublishButton = () => {
         description: step2Values.description,
         startDate: step2Values.startDate,
         duration: step2Values.duration,
+        backgroundImage: step2Values.backgroundImage || null,
         questions: step1Values.questions.map((question, i) => ({
           type: question.questionType,
           number: i + 1,
