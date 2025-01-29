@@ -39,6 +39,7 @@ import {
   ShareIcon,
   PencilIcon,
   TrashIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 
 // QR code
@@ -290,6 +291,14 @@ function Row({ exam }: RowProps) {
 
         {/* Actions */}
         <div className="flex-1 p-5 min-w-[150px] flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="icon-sm"
+            className="max-w-8 max-h-8 min-w-8 min-h-8 border"
+            onClick={() => router.push(`/app/exams/details/${exam._id}`)}
+          >
+            <EyeIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block" />
+          </Button>
           <Button
             disabled={Boolean(
               exam.startDate && new Date(exam.startDate).getTime() <= Date.now() + 60 * 60 * 1000
