@@ -80,7 +80,7 @@ export const Answers = ({ index }: AnswersProps) => {
               className={
                 questionType === "tf"
                   ? "flex flex-row gap-4 items-center" // Yatay dizilim
-                  : "flex flex-col gap-1"             // Dikey dizilim
+                  : "flex flex-col gap-1" // Dikey dizilim
               }
               value={selectedValue}
               onValueChange={(value) => {
@@ -128,7 +128,9 @@ export const Answers = ({ index }: AnswersProps) => {
                             placeholder={`Enter the ${i + 1}. option`}
                             maxLength={200}
                             {...inputField}
-                            onChange={(e) => inputField.onChange(e)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                              inputField.onChange(e)
+                            }
                             className={cn(
                               "gap-4 pl-12 pr-32 py-6 rounded-2xl border transition-colors duration-200",
                               questionType === "tf" && tfColorClass,
@@ -141,25 +143,15 @@ export const Answers = ({ index }: AnswersProps) => {
                               if (questionType === "tf") {
                                 radioField.onChange(i.toString());
                                 handleSelection(i.toString());
-                                form.setValue(
-                                  `questions.${index}.correctAnswer`,
-                                  i.toString()
-                                );
+                                form.setValue(`questions.${index}.correctAnswer`, i.toString());
                               }
                             }}
                             startElement={
-                              <RadioGroupItem
-                                value={i.toString()}
-                                checked={isSelected}
-                              />
+                              <RadioGroupItem value={i.toString()} checked={isSelected} />
                             }
                             endElement={
                               hasTrashIcon && (
-                                <Button
-                                  size="icon-sm"
-                                  variant="ghost"
-                                  onClick={() => remove(i)}
-                                >
+                                <Button size="icon-sm" variant="ghost" onClick={() => remove(i)}>
                                   <TrashIcon className="size-4" />
                                 </Button>
                               )
@@ -180,8 +172,7 @@ export const Answers = ({ index }: AnswersProps) => {
                         </div>
                         {isOverLimit && (
                           <p className="text-red-500 text-sm mt-1">
-                            The answer option exceeds the maximum allowed 200
-                            characters.
+                            The answer option exceeds the maximum allowed 200 characters.
                           </p>
                         )}
                         <FormMessage />
