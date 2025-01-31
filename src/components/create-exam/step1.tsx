@@ -302,18 +302,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
     setActiveQuestionIndex((prev) => Math.min(prev > 0 ? prev - 1 : prev, fields.length - 2));
   };
 
-  // "beforeunload" => form kaydedilmediyse uyar
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty && !isSubmitted) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty, isSubmitted]);
-
   useEffect(() => {
     if (questions.length > 0 && questionRefs.current && questionRefs.current[activeQuestionIndex]) {
       questionRefs.current[activeQuestionIndex]?.scrollIntoView({
