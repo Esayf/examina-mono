@@ -133,13 +133,14 @@ export const QuestionListItem = ({
             </div>
           )}
 
-          {/* Silme butonu (EraseButton) */}
-          {onRemove && (
-            <EraseButton onRemove={() => onRemove(index)} duration={1500} className="inline-block" />
-          )}
+
         </div>
       </button>
       <div className="flex">
+        {/* Silme butonu (EraseButton) */}
+        {onRemove && (
+          <EraseButton onRemove={() => onRemove(index)} duration={1500} className="inline-block" />
+        )}
         <Button
           variant="ghost"
           size="chevron"
