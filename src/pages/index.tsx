@@ -7,8 +7,6 @@ import Image from "next/image";
 import Head from "next/head";
 
 // Components
-import { Button } from "@/components/ui/button";
-import { ArrowUpRightIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Header } from "@/components/landing-page/header";
 import { HeroSection } from "@/components/landing-page/hero-section";
 import { HowItWorksSection } from "@/components/landing-page/section-2";
@@ -18,28 +16,15 @@ import SubCtaSection from "@/components/landing-page/sub-cta-section";
 
 // Images
 import Choz from "@/images/landing-header/logo-type.svg";
-import X from "@/images/logo/x-logo.png";
-import Github from "@/images/logo/github-logo.png";
-import Telegram from "@/images/logo/telegram-logo.png";
-import Medium from "@/images/logo/medium-logo.png";
-import CTA from "@/images/backgrounds/text-cta-section-bg.svg";
-import SUBCTA from "@/images/backgrounds/bg1.svg";
-import Esra from "@/images/landing_team/esra-akyazi.png";
-import Mert from "@/images/landing_team/mert-akyazi.png";
-import Yavuz from "@/images/landing_team/yavuz-selim-tuncer.png";
-import Secgin from "@/images/landing_team/secgin-karagulle.png";
-import Ege from "@/images/landing_team/ege-palaz.png";
-import BG from "@/images/backgrounds/backgroundfull.svg";
-import SECTION2 from "@/images/backgrounds/bg2.svg";
-import SECTION4 from "@/images/backgrounds/bg3.svg";
 import Mina from "@/images/landing_general/mina.svg";
 import OGImage from "@/images/backgrounds/ogimage.png";
+import AppleTouchIcon from "public/apple-touch-icon.png";
+import Favicon from "public/favicon.ico";
 
 // State Management
 import { authenticate } from "@/hooks/auth";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
-import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 import SocialLinks from "@/components/landing-page/social-links";
 import TeamSection from "@/components/landing-page/team-section";
 
@@ -147,37 +132,45 @@ export default function Home() {
           content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform, secure testing, blockchain quiz platform, zero-knowledge proof quizzes, decentralized quiz platform, secure quizzes blockchain, quiz rewards system, Web3 quiz platform, private quiz platform, Mina Protocol quizzes, blockchain-powered assessment, zero-knowledge exam system, decentralized learning tools, secure online quizzes, gamified blockchain quizzes, anonymous quiz platform, Web3 education tools, zkProof quiz platform, online quiz rewards, privacy-first quiz system, next-generation quiz platform, Choz blockchain quiz, gamification education platform, interactive learning tools, competitive quiz platform, blockchain rewards education, secure exam hosting, Web3 gamified education, decentralized competitive quizzes, exam privacy protection, smart contract education, blockchain-powered teaching tools"
         />
 
+        {/* Temel SEO Meta Tagleri */}
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Choz" />
+        <meta name="copyright" content="Choz" />
+        <meta name="application-name" content="Choz" />
+
         {/* Open Graph / Facebook */}
+        <meta property="og:site_name" content="Choz" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://choz.io" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:image" content="https://choz.io/ogimage.png" />
-        <meta property="og:site_name" content="Choz" />
+        <meta property="og:image" content={OGImage.src} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Choz Platform Overview" />
+        <meta property="og:locale" content="en_US" />
 
-        {/* Twitter */}
+        {/* Twitter/X */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chozapp" />
         <meta name="twitter:creator" content="@chozapp" />
-        <meta name="twitter:image" content="/ogimage.png" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={OGImage.src} />
+        <meta name="twitter:image:alt" content="Choz Platform Overview" />
 
-        {/* Additional Meta Tags */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <meta name="robots" content="index, follow, max-image-preview:large" />
-        <meta name="author" content="Choz" />
-        <meta name="application-name" content="Choz" />
-
-        {/* PWA Tags */}
-        <meta name="theme-color" content="#ffffff" />
-        <meta name="mobile-web-app-capable" content="yes" />
+        {/* PWA ve Mobil Optimizasyon */}
+        <meta name="theme-color" content="#FFFFFF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Choz" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href={Favicon.src} type="image/x-icon" />
+        <link rel="apple-touch-icon" href={AppleTouchIcon.src} />
 
-        {/* Language and Locale */}
-        <meta property="og:locale" content="en_US" />
+        {/* Canonical ve Dil Etiketleri */}
         <link rel="canonical" href="https://choz.io" />
         <link rel="alternate" href="https://choz.io" hrefLang="x-default" />
         <link rel="alternate" href="https://choz.io" hrefLang="en" />
@@ -202,14 +195,13 @@ export default function Home() {
         {/* Team Section */}
         <TeamSection />
         {/* Technologies Section */}
-        <TechSection techArr={techArr} />
+        <TechSection
+          techArr={techArr.map((tech) => ({ ...tech, techExplanation: tech.techDesc }))}
+        />
         {/* Sub CTA Section */}
         <SubCtaSection handleAuthentication={handleAuthentication} />
         {/* Supporters Section */}
-        <section
-          className={`${styles.supporters_container} ${styles.section_container_secondary}`}
-          aria-label="Supporters"
-        >
+        <section className={`${styles.supporters_container}`} aria-label="Supporters">
           <h2>proudly built on.</h2>
           <Link
             href="https://minaprotocol.com/"
@@ -227,6 +219,7 @@ export default function Home() {
             />
           </Link>
         </section>
+
         {/* Footer */}
         <footer className={styles.footer_container} role="contentinfo">
           <div className={styles.footer_logo_container}>
@@ -237,7 +230,6 @@ export default function Home() {
 
           {/* Social Links */}
           <SocialLinks />
-
           <p className={styles.copyright + " whitespace-nowrap"}>
             © {new Date().getFullYear()} Choz - All rights reserved
           </p>

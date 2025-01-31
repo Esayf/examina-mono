@@ -81,12 +81,12 @@ export function DialogContent({ children, className }: DialogContentProps) {
     <div
       className={`
         relative
-        rounded-2xl
+        rounded-3xl
         p-6
         shadow-lg
         border border-greyscale-light-300
         w-full
-        max-h-full
+        h-full
 
         ${className ?? ""}
       `}

@@ -18,13 +18,20 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// 1) Farklı cihaz boyutlarını temsil eden bir enum ya da obje
+enum Device {
+  MOBILE = "mobile",
+  TABLET = "tablet",
+  DESKTOP = "desktop",
+}
+
 interface PreviewModalProps {
-  open: boolean; // Modal'ın açık/kapalı durumu
-  onClose: () => void; // Modal'ı kapatmak için fonksiyon
-  title: string; // Quiz Title
-  description: string; // Quiz Description (Markdown)
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  description: string;
   startDate?: string | Date;
-  duration?: string; // Dakika (string olarak geliyorsa parse edeceğiz)
+  duration?: string;
   questionsCount?: number;
 }
 
@@ -37,19 +44,25 @@ export function PreviewModal({
   duration,
   questionsCount,
 }: PreviewModalProps) {
-  // false = Start (Quiz) Preview, true = LiveExamPreview
+  // false => "Ekran 1: Quiz Preview"
+  // true  => "Ekran 2: LiveExamPreview"
   const [showQuizPreview, setShowQuizPreview] = useState(false);
 
-  // Modal her açıldığında "Start Preview" ekranına dönmek için:
+  // 2) Seçili cihaz boyutu
+  const [previewDevice, setPreviewDevice] = useState<Device>(Device.DESKTOP);
+
   useEffect(() => {
     if (open) {
-      // Modal yeni açıldıysa showQuizPreview'ı resetliyoruz
       setShowQuizPreview(false);
     }
   }, [open]);
 
-  // duration string ise sayıya çeviriyoruz
   const numericDuration = duration ? Number(duration) : 120;
+
+  // 3) Cihaz boyutu değiştiren fonksiyon
+  const handleChangeDevice = (device: Device) => {
+    setPreviewDevice(device);
+  };
 
   return (
     <Dialog
@@ -58,9 +71,11 @@ export function PreviewModal({
         if (!val) onClose();
       }}
     >
+      {/* Arkaplan resmi */}
       <div className={styles.hero_bg}>
-        <Image src={BGR} alt="Hero Background" fill className="w-full h-full object-cover" />
+        <Image src={BGR} alt="Hero Background" fill className="object-cover w-full h-full" />
       </div>
+
       <DialogContent
         className="
           bg-brand-secondary-50
@@ -74,175 +89,171 @@ export function PreviewModal({
           flex
           flex-col
           gap-6
-          pb-16
-          px-10
+          pb-8
+          px-4
+          sm:px-6
+          md:px-10
           mt-4
+          overflow-auto
         "
       >
-        <DialogHeader className="flex items-center justify-center text-center">
-          <DialogTitle className="text-md font-bold text-center">
-            {showQuizPreview ? "Live Exam Preview" : "Here’s how your quiz will appear:"}
+        {/* Header: Title & Close */}
+        <DialogHeader className="flex flex-row items-center justify-between mt-2">
+          <DialogTitle className="text-lg font-bold text-brand-primary-900">
+            {showQuizPreview ? "Live Exam Preview" : "Quiz Preview"}
           </DialogTitle>
+          <Button variant="outline" onClick={onClose}>
+            Close preview
+          </Button>
         </DialogHeader>
 
-        {/* 
-          ---------------------------------------------------------
-          EKRAN 1: Start (Quiz) Preview
-          ---------------------------------------------------------
-        */}
-        {!showQuizPreview && (
-          <div
-            className="
-              mx-auto
-              border border-greyscale-light-200
-              rounded-3xl
-              p-6
-              whitespace-normal
-              break-normal
-              overflow-y-auto
-              min-h-[400px]
-              w-full
-              max-w-[90vw]
-              sm:max-w-[600px]
-              lg:min-w-[880px]
-              lg:max-h-[678px]
-              shadow-sm
-              bg-white
-            "
+        {/* 4) Üstte cihaz seçimi butonları */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-medium text-greyscale-light-800 mr-2">Device:</span>
+          <Button
+            variant={previewDevice === Device.MOBILE ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleChangeDevice(Device.MOBILE)}
           >
-            {/* Üst Kısım: Quiz Başlık + Start Date */}
-            <div className="flex flex-col items-center mb-6 mt-6 gap-6">
-              <h3
-                className="
-                  text-brand-primary-950
-                  text-center
-                  font-bold
-                  mx-auto
-                  text-xl sm:text-2xl md:text-3xl
-                  whitespace-normal
-                  break-normal
-                  p-4 gap-3
-                  max-w-[80vw]
-                  sm:max-w-[280px]
-                  md:max-w-[480px]
-                  lg:max-w-[600px]
-                  overflow-auto
-                "
-              >
-                {title || "Untitled Quiz"}
-              </h3>
+            Mobile
+          </Button>
+          <Button
+            variant={previewDevice === Device.TABLET ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleChangeDevice(Device.TABLET)}
+          >
+            Tablet
+          </Button>
+          <Button
+            variant={previewDevice === Device.DESKTOP ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleChangeDevice(Device.DESKTOP)}
+          >
+            Desktop
+          </Button>
+        </div>
 
-              {/* Start Date */}
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-sm text-greyscale-light-700">
-                  Start date:{" "}
-                  <span className="font-bold">
-                    {startDate ? new Date(startDate).toLocaleString() : "Not set"}
+        {/* Bu container ile içerik boyutunu simüle edeceğiz */}
+        <div
+          className={`
+            mt-4 mx-auto border border-greyscale-light-200 shadow-sm bg-base-white relative
+            overflow-y-auto overflow-x-hidden
+            flex flex-col items-center
+            ${previewDevice === Device.MOBILE ? "w-[390px] h-[844px]" : ""}
+            ${previewDevice === Device.TABLET ? "w-[768px] h-[1024px]" : ""}
+            ${previewDevice === Device.DESKTOP ? "w-[1024px] h-[600px]" : ""}
+            rounded-xl
+          `}
+        >
+          {/* EKRAN 1: Start (Quiz) Preview */}
+          {!showQuizPreview && (
+            <div className="w-full p-0 sm:p-6">
+              {/* Üst Kısım: Quiz Başlık + Start Date */}
+              <div className="flex flex-col items-center mb-6 mt-2 gap-6">
+                <h3
+                  className="
+                    text-brand-primary-950
+                    text-center
+                    font-bold
+                    mx-auto
+                    text-xl sm:text-2xl md:text-3xl
+                    whitespace-normal
+                    break-normal
+                    p-4 gap-3
+                    max-w-[90%]
+                  "
+                >
+                  {title || "Untitled Quiz"}
+                </h3>
+
+                {/* Start Date */}
+                <div className="flex items-center gap-2 mb-2 sm:mb-4">
+                  <span className="text-xs sm:text-sm text-greyscale-light-700">
+                    Start date:{" "}
+                    <span className="font-bold">
+                      {startDate ? new Date(startDate).toLocaleString() : "Not set"}
+                    </span>
                   </span>
-                </span>
-              </div>
-            </div>
-
-            {/* Info Box (Type, Total Q, Duration) */}
-            <div className="border border-greyscale-light-200 rounded-2xl p-4 bg-white space-y-3 mb-6 md:my-6 md:mx-10">
-              {/* Type */}
-              <div className="flex items-center gap-2">
-                <ClipboardDocumentIcon className="w-5 h-5 text-brand-primary-950" />
-                <span className="text-sm text-greyscale-light-700">
-                  Type: <span className="font-bold">Quiz</span>
-                </span>
+                </div>
               </div>
 
-              {/* Total Questions */}
-              <div className="flex items-center gap-2">
-                <Squares2X2Icon className="w-5 h-5 text-brand-primary-950" />
-                <span className="text-sm text-greyscale-light-700">
-                  Total Questions: <span className="font-bold">{questionsCount}</span>
-                </span>
+              {/* Info Box (Type, Total Q, Duration) */}
+              <div className="border border-greyscale-light-200 rounded-2xl p-4 bg-white space-y-3 mb-6 sm:mx-10">
+                <div className="flex items-center gap-2">
+                  <ClipboardDocumentIcon className="w-5 h-5 text-brand-primary-950" />
+                  <span className="text-xs sm:text-sm text-greyscale-light-700">
+                    Type: <span className="font-bold">Quiz</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Squares2X2Icon className="w-5 h-5 text-brand-primary-950" />
+                  <span className="text-xs sm:text-sm text-greyscale-light-700">
+                    Total Questions: <span className="font-bold">{questionsCount}</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ClockIcon className="w-5 h-5 text-brand-primary-950" />
+                  <span className="text-xs sm:text-sm text-greyscale-light-700">
+                    Duration: <span className="font-bold">{numericDuration} minutes</span>
+                  </span>
+                </div>
               </div>
 
-              {/* Duration */}
-              <div className="flex items-center gap-2">
-                <ClockIcon className="w-5 h-5 text-brand-primary-950" />
-                <span className="text-sm text-greyscale-light-700">
-                  Duration: <span className="font-bold">{numericDuration} minutes</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Quiz Description (Markdown) */}
-            <ReactMarkdown
-              className="
-                prose
-                max-w-full
-                text-base
-                text-greyscale-light-900
-                border
-                border-greyscale-light-200
-                rounded-2xl
-                p-4
-                whitespace-normal
-                break-words
-                overflow-y-auto
-                pb-4
-                h-auto
-                min-h-[160px]
-                md:max-h-[220px]
-                md:mx-10
-              "
-              remarkPlugins={[remarkGfm]}
-            >
-              {description || "No description yet..."}
-            </ReactMarkdown>
-
-            {/* "Join quiz" butonu -> LiveExamPreview ekranına geç */}
-            <div className="flex justify-center mt-6">
-              <Button
-                variant="default"
-                size="default"
-                icon
-                iconPosition="right"
-                onClick={() => setShowQuizPreview(true)}
+              {/* Quiz Description (Markdown) */}
+              <ReactMarkdown
+                className="
+                  prose
+                  text-sm sm:text-base
+                  max-w-full
+                  text-greyscale-light-900
+                  border
+                  border-greyscale-light-200
+                  rounded-2xl
+                  p-4
+                  whitespace-normal
+                  break-words
+                  overflow-y-auto
+                  pb-4
+                  h-auto
+                  min-h-[120px]
+                "
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  img: ({ node, ...props }) => (
+                    <img {...props} className="max-w-full h-auto" loading="lazy" />
+                  ),
+                }}
               >
-                Join quiz
-                <ArrowUpRightIcon className="size-4" />
-              </Button>
+                {description || "No description yet..."}
+              </ReactMarkdown>
+
+              {/* "Join quiz" butonu -> LiveExamPreview ekranına geç */}
+              <div className="flex justify-center mt-6">
+                <Button
+                  variant="default"
+                  size="default"
+                  icon
+                  iconPosition="right"
+                  onClick={() => setShowQuizPreview(true)}
+                >
+                  Join quiz
+                  <ArrowUpRightIcon className="size-4 ml-1" />
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* 
-          ---------------------------------------------------------
-          EKRAN 2: LiveExamPreview (Sınav Gösterimi)
-          ---------------------------------------------------------
-        */}
-        {showQuizPreview && (
-          <div
-            className="
-              mx-auto
-              border border-greyscale-light-200
-              rounded-3xl
-              p-6
-              whitespace-normal
-              break-normal
-              min-h-[400px]
-              w-full
-              max-w-[90vw]
-              sm:max-w-[600px]
-              lg:min-w-[880px]
-              lg:max-h-[678px]
-              shadow-sm
-              bg-white
-            "
-          >
-            <LiveExamPreview />
-          </div>
-        )}
-
-        {/* Close butonu (Modal'ı kapatmak için) */}
-        <Button variant="outline" className="mx-auto" onClick={onClose}>
-          Close preview
-        </Button>
+          {/* EKRAN 2: LiveExamPreview (onGoBack => setShowQuizPreview(false)) */}
+          {showQuizPreview && (
+            <div className="w-full p-0 sm:p-6">
+              <LiveExamPreview
+                onGoBack={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

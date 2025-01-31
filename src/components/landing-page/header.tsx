@@ -12,6 +12,12 @@ import Image from "next/image";
 import { ArrowUpRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { WalletModal } from "@/components/ui/wallet-selector"; // Modal bileşeni
 import SocialLinks from "./social-links";
+import X from "@/images/logo/x-logo.png";
+import Github from "@/images/logo/github-logo.png";
+// Örn. Telegram yerine LinkedIn:
+import Linkedin from "@/images/logo/linkedin-logo.png";
+import Medium from "@/images/logo/medium-logo.png";
+import Auro from "@/images/logo/auro-logo-brand.svg";
 
 interface HeaderProps {
   size: string;
@@ -54,9 +60,10 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
     <header
       className={`
         ${styles.header} 
+        fixed top-0 left-0 w-full
+        z-[9999]
         bg-brand-secondary-100 
-        border-b border-brand-secondary-100
-        h-20
+        border-b border-brand-secondary-100 h-22
       `}
     >
       {/* Header Container */}
@@ -67,6 +74,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
           flex 
           items-center 
           justify-between
+          z-50
         `}
       >
         {/* SOL: Logo */}
@@ -83,9 +91,9 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
         </div>
 
         {/* SAĞ: Masaüstü Connect + Mobil Menü */}
-        <div className="flex items-center gap-4 ml-4">
+        <div className="flex items-center gap-4 justify-normal">
           {/* Masaüstü: Connect Wallet (Modal açar) */}
-          <div className="hidden md:block justify-end items-center">
+          <div className="hidden md:block justify-center mb-1 items-center">
             <button
               className="group relative inline-block h-[60px] w-[200px] overflow-hidden rounded-full text-lg text-brand-primary-900 hover:text-brand-secondary-200 mt-3"
               onClick={openConnectModal}
@@ -105,8 +113,6 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               </span>
             </button>
           </div>
-
-          {/* HAMBURGER (Sadece mobilde) */}
           <div className="md:hidden flex items-center">
             <Button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -115,26 +121,23 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               size="icon"
               className="text-brand-secondary-200 focus:outline-none z-50"
             >
-              {menuOpen ? <XMarkIcon className="w-8 h-8" /> : <Bars3Icon className="w-8 h-8" />}
+              {menuOpen ? (
+                <XMarkIcon className="w-8 h-8 z-50" />
+              ) : (
+                <Bars3Icon className="w-8 h-8" />
+              )}
             </Button>
           </div>
         </div>
       </div>
-
-      {/* 
-        MOBİL MENÜ (md altında açılır)
-        Menü tam ekran overlay olarak görünür, 
-        blur arka planla beraber ortada hizalanır.
-      */}
       {menuOpen && (
         <div
           className="
             fixed
             inset-0
-            z-50
-            bg-black
-            bg-opacity-40
-            backdrop-blur-sm
+            z-20
+            bg-brand-secondary-300/80
+            backdrop-blur-md
             flex
             items-center
             justify-center
@@ -169,7 +172,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
                 onClick={() => window.open("https://x.com/chozapp", "_blank")}
               >
                 X Account
-                <ArrowUpRightIcon className="w-5 h-5" />
+                <img src={X.src} alt="X Logo" className="w-8 h-8" />
               </Button>
 
               <Button
@@ -180,8 +183,31 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
                 variant="outline"
                 onClick={() => window.open("https://choz.medium.com/", "_blank")}
               >
-                Blog
-                <ArrowUpRightIcon className="w-5 h-5" />
+                Github Docs
+                <img src={Github.src} alt="Github Logo" className="w-8 h-8" />
+              </Button>
+              <Button
+                className="w-full justify-between"
+                icon={false}
+                pill
+                size="default"
+                variant="outline"
+                onClick={() => window.open("https://choz.medium.com/", "_blank")}
+              >
+                Linkedin
+                <img src={Linkedin.src} alt="Linkedin Logo" className="w-8 h-8" />
+              </Button>
+
+              <Button
+                className="w-full justify-between"
+                icon={false}
+                pill
+                size="default"
+                variant="outline"
+                onClick={() => window.open("https://choz.medium.com/", "_blank")}
+              >
+                Medium Blog
+                <img src={Medium.src} alt="Medium Logo" className="w-8 h-8" />
               </Button>
 
               {/* Mobil: Connect Wallet (Modal) */}
@@ -196,8 +222,8 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
                   openConnectModal();
                 }}
               >
-                Connect
-                <ArrowUpRightIcon className="w-5 h-5" />
+                Connect wallet
+                <img src={Auro.src} alt="Auro Logo" className="w-8 h-8" />
               </Button>
             </div>
           </div>
@@ -205,13 +231,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
       )}
 
       {/* Modal Bileşeni (wallet-selector) */}
-      <WalletModal
-        isOpen={isConnectModalOpen}
-        onClose={closeConnectModal}
-        // Eğer wallet-selector içerisindeki
-        // "Confirm" veya "Connect Now" butonu tetikleyecekse:
-        // onConfirm={confirmConnect}
-      />
+      <WalletModal isOpen={isConnectModalOpen} onClose={closeConnectModal} />
     </header>
   );
 };

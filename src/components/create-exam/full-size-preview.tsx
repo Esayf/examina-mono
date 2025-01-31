@@ -13,7 +13,7 @@ interface FullScreenPreviewProps {
   description: string; // Markdown açıklama
   startDate?: string | Date;
   duration?: string; // string olarak geliyorsa parse edeceğiz
-  questionsCount?: number;
+  questionsCount?: number; // Toplam soru sayısı
 }
 
 export function FullScreenPreview({
@@ -24,7 +24,7 @@ export function FullScreenPreview({
   duration,
   questionsCount,
 }: FullScreenPreviewProps) {
-  // false = “Start” ekranı, true = “LiveExamPreview” ekranı
+  // false => “Start” ekranı, true => “LiveExamPreview” ekranı
   const [showQuizPreview, setShowQuizPreview] = useState(false);
 
   // Duration parse
@@ -35,7 +35,7 @@ export function FullScreenPreview({
       className="
         fixed inset-0 z-50
         flex items-center justify-center
-        bg-black/60 /* Arka plan karartma, ister pastel yapabilirsiniz */
+        bg-black/60   /* Arka plan karartma */
         p-4
       "
     >
@@ -61,15 +61,24 @@ export function FullScreenPreview({
         {/* Kapatma Butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-3 rounded-full border-2 border-brand-primary-950 hover:bg-brand-secondary-200 text-brand-primary-900 hover:text-brand-primary-950 transition"
+          className="
+            absolute top-4 right-4
+            p-3
+            rounded-full
+            border-2 border-brand-primary-950
+            hover:bg-brand-secondary-200
+            text-brand-primary-900
+            hover:text-brand-primary-950
+            transition
+          "
           aria-label="Close"
         >
           <XMarkIcon className="w-5 h-5" />
         </button>
 
-        {/* ---------------------------------------------------------
+        {/* ===================================
             EKRAN 1: Start (Quiz) Preview
-           --------------------------------------------------------- */}
+           =================================== */}
         {!showQuizPreview && (
           <div className="flex flex-col gap-4 flex-1 overflow-y-auto">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center">
@@ -90,7 +99,7 @@ export function FullScreenPreview({
                 <strong>Type:</strong> Quiz
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Total Questions:</strong>
+                <strong>Total Questions:</strong> {questionsCount ?? 0}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Duration:</strong> {numericDuration} minutes
@@ -99,8 +108,15 @@ export function FullScreenPreview({
 
             {/* Description (Markdown) */}
             <div className="border border-gray-200 rounded-xl p-4 bg-white h-auto max-h-[240px] overflow-y-auto">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {description || "No description..."}
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  img: ({ node, ...props }) => (
+                    <img {...props} className="max-w-full h-auto" loading="lazy" />
+                  ),
+                }}
+              >
+                {description || "No description"}
               </ReactMarkdown>
             </div>
 
@@ -120,18 +136,31 @@ export function FullScreenPreview({
           </div>
         )}
 
-        {/* ---------------------------------------------------------
-            EKRAN 2: LiveExamPreview (Sınav Gösterimi)
-           --------------------------------------------------------- */}
+        {/* ===================================
+            EKRAN 2: LiveExamPreview
+           =================================== */}
         {showQuizPreview && (
           <div className="flex flex-col gap-4 flex-1 overflow-y-auto">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center">
-              Live Exam Preview
-            </h2>
+            {/* “Go Back” butonu */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="icon"
+                className="mb-2"
+                onClick={() => setShowQuizPreview(false)}
+              >
+                Go Back
+              </Button>
+            </div>
 
+            {/* LiveExamPreview içeriği */}
             <div className="flex-1 border border-gray-200 rounded-xl p-4 bg-gray-50">
               {/* Sizin “LiveExamPreview” bileşeniniz, tam akış */}
-              <LiveExamPreview />
+              <LiveExamPreview
+                onGoBack={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </div>
           </div>
         )}

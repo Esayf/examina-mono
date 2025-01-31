@@ -1,162 +1,101 @@
-// ... diğer importlar
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { ClockIcon } from "@heroicons/react/24/outline";
 
 interface CounterProps {
-  startDate: string; // Sunucu veya başka yerden gelen başlangıç zamanı
+  startDate: string; // Başlangıç tarihi (ISO string)
   duration: number; // Dakika cinsinden
-  quizId: string; // Hangi quize ait? Key olarak kullanırız
-  onTimeout: () => void;
   mutate: () => void;
-  beepOnLastMinute?: boolean;
+  onTimeout: () => void;
+  classname?: string;
 }
 
-export const Counter = ({
-  startDate,
-  duration,
-  quizId,
-  onTimeout,
-  mutate,
-  beepOnLastMinute = false,
-}: CounterProps) => {
-  const [remainingTimeSeconds, setRemainingTimeSeconds] = useState<number | null>(null);
+export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps) => {
+  // Kalan süreyi milisaniye olarak tutuyoruz
+  const [remainingMs, setRemainingMs] = useState<number>(0);
+  const [audioContextAllowed, setAudioContextAllowed] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Audio, user gesture vs. için ref
-  const beepSoundRef = useRef<HTMLAudioElement | null>(null);
-  const isUserInteractedRef = useRef(false);
-
+  // Ses izni için etkileşim handler'ı
   useEffect(() => {
-    // 1) Önce localStorage’ta kayıtlı endTime var mı diye bak
-    const storedEndTime = localStorage.getItem(`quizEndTime-${quizId}`);
-    let endTime: number;
-
-    if (storedEndTime) {
-      // Kullanıcı quiz'e daha önce başlamış
-      endTime = parseInt(storedEndTime, 10);
-    } else {
-      // Yeni başlıyorsa endTime’ı hesapla ve sakla
-      endTime = new Date(startDate).getTime() + duration * 60_000;
-      localStorage.setItem(`quizEndTime-${quizId}`, endTime.toString());
-    }
-
-    // Şu anki kalan süreyi hesapla
-    const diffInSec = Math.floor((endTime - Date.now()) / 1000);
-    setRemainingTimeSeconds(diffInSec >= 0 ? diffInSec : 0);
-  }, [startDate, duration, quizId]);
-
-  // Beep ses dosyasını yükleme
-  useEffect(() => {
-    if (beepOnLastMinute && !beepSoundRef.current) {
-      beepSoundRef.current = new Audio("/sounds/beep.mp3");
-      beepSoundRef.current.volume = 0.8;
-    }
-  }, [beepOnLastMinute]);
-
-  // Kullanıcı etkileşimi takibi (beep engeli olmasın diye)
-  useEffect(() => {
-    function handleUserInteraction() {
-      if (!isUserInteractedRef.current) {
-        isUserInteractedRef.current = true;
+    const handleUserInteraction = () => {
+      if (!audioContextAllowed) {
+        // Ses dosyasını önceden yükle
+        const audio = new Audio("/audio/beep.mp3");
+        audio
+          .play()
+          .then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            setAudioContextAllowed(true);
+          })
+          .catch(() => console.warn("Ses izni alınamadı"));
+        audioRef.current = audio;
       }
-    }
+    };
+
     document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("touchstart", handleUserInteraction);
+
     return () => {
       document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
     };
   }, []);
 
-  // Timer
   useEffect(() => {
-    // Eğer remainingTimeSeconds null veya 0 ise interval başlatmaya gerek yok
-    if (remainingTimeSeconds === null || remainingTimeSeconds <= 0) return;
+    // 1) Bitiş zamanını hesapla
+    const start = new Date(startDate).getTime();
+    const endTime = start + duration * 60_000;
 
-    const timer = setInterval(() => {
-      setRemainingTimeSeconds((prev) => {
-        if (prev === null) return null;
-        if (prev <= 1) {
-          clearInterval(timer);
-          onTimeout();
-          return 0;
+    // 2) "tick" fonksiyonu: her 1 saniyede farkı hesapla
+    const tick = () => {
+      const now = Date.now();
+      const diff = endTime - now;
+
+      if (diff <= 0) {
+        if (audioContextAllowed && audioRef.current) {
+          audioRef.current.play().catch(() => console.warn("Ses çalınamadı"));
         }
+        onTimeout();
+        setRemainingMs(0);
+        clearInterval(timerId);
+      } else {
+        setRemainingMs(diff);
+      }
+    };
 
-        // 60 saniyeye iniyorsa beep
-        if (beepOnLastMinute && prev === 61) {
-          if (isUserInteractedRef.current) {
-            beepSoundRef.current?.play().catch(() => {
-              // Hata loglayabilirsiniz
-            });
-          }
-        }
+    // İlk "tick"i hemen çalıştır
+    tick();
 
-        return prev - 1;
-      });
-    }, 1000);
+    // 3) Her 1 sn'de bir "tick" çalıştır
+    const timerId = setInterval(tick, 1000);
 
-    return () => clearInterval(timer);
-  }, [remainingTimeSeconds, onTimeout, beepOnLastMinute]);
+    // Temizlik
+    return () => clearInterval(timerId);
+  }, [startDate, duration, onTimeout, audioContextAllowed, audioRef]);
 
-  // Dakika:saniye format
-  let display = "0:00";
-  if (remainingTimeSeconds !== null) {
-    const m = Math.floor(remainingTimeSeconds / 60);
-    const s = remainingTimeSeconds % 60;
-    display = `${m}:${s.toString().padStart(2, "0")}`;
-  }
+  // Milisaniyeyi saniyeye çevir
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
 
-  const isLastMinute =
-    remainingTimeSeconds !== null && remainingTimeSeconds <= 60 && remainingTimeSeconds > 0;
+  const isLastMinute = totalSeconds <= 60 && totalSeconds > 0;
 
   return (
     <div
-      className={`flex items-center justify-center gap-2 border rounded-full
-        transition-colors duration-300 max-h-[52px] min-h-[52px] mr-4 ml-6
+      className={`
+        flex items-center gap-2 py-1 px-2 w-[164px] justify-center max-h-[52px] border rounded-full mr-2
         ${
           isLastMinute
-            ? "bg-red-50 text-red-600 border-red-500 animate-pulse"
-            : "bg-green-50 text-green-600 border-green-400"
+            ? "bg-ui-error-100 text-lg text-ui-error-600 animate-pulse border-ui-error-600"
+            : "bg-ui-success-100 text-lg border-ui-success-500 text-ui-success-600"
         }
       `}
-      style={{ minWidth: "120px", maxWidth: "120px" }}
     >
-      {/* Heroicons ClockIcon vs. */}
-      <p className="font-semibold text-base">{display}</p>
+      <p className="font-semibold text-xl py-1 px-2">
+        {totalSeconds <= 0 ? "0:00" : `${minutes}:${seconds.toString().padStart(2, "0")}`}
+      </p>
+      {isLastMinute}
     </div>
   );
 };
-
-/*window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-var context = new AudioContext();
-
-function playSound(arr) {
-  var buf = new Float32Array(arr.length)
-  for (var i = 0; i < arr.length; i++) buf[i] = arr[i]
-  var buffer = context.createBuffer(1, buf.length, context.sampleRate)
-  buffer.copyToChannel(buf, 0)
-  var source = context.createBufferSource();
-  source.buffer = buffer;
-  source.connect(context.destination);
-  source.start(0);
-}
-
-function sineWaveAt(sampleNumber, to
-document.addEventListener("click", ()=> {
-  setTimeout(() => {
-    playSound(arr)
-  }, 5000);
-})
-
-// we need this one to prevent playing audio more than one time 
-let isScheduled = false;
-
-function getRemainingTime() {
-	// do something to calculate remaining time
-  return 5000
-}
-
-document.addEventListener("click", ()=> {
-  if (isScheduled) return
-	isScheduled = true
-  setTimeout(() => {
-    playSound(arr)
-  }, getRemainingTime());
-}) SWAP SORU DEĞİŞİMİ */

@@ -7,7 +7,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "border border-greyscale-light-200 bg-base-white text-card-foreground shadow-sm rounded-2xl sm:rounded-3xl flex flex-col sticky top-0",
+        "border border-greyscale-light-200 bg-base-white text-card-foreground shadow-sm rounded-3xl flex flex-col sticky top-0",
         className
       )}
       {...props}
@@ -28,7 +28,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
     <div
       ref={ref}
       className={cn(
-        "bg-base-white flex items-center justify-between p-5 gap-6 border-b border-b-greyscale-light-200 rounded-t-2xl rounded-b-none sm:rounded-t-3xl font-medium text-base-brand-primary-950",
+        "bg-base-white flex items-center justify-between p-5 gap-6 border-b border-b-greyscale-light-200 rounded-t-3xl rounded-b-none sm:rounded-t-3xl font-medium text-base-brand-primary-950",
         className
       )}
       {...props}

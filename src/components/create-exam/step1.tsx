@@ -4,7 +4,7 @@ import { step1ValidationSchema, useStep1Form } from "./step1-schema";
 import { Button } from "@/components/ui/button";
 import { MarkdownEditor } from "./markdown";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import DashboardHeader from "@/components/ui/dashboard-header";
 
 import {
@@ -27,13 +27,13 @@ import { QuestionListItem } from "./question-list-item";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import BGR from "@/images/backgrounds/bg-8-20.svg";
+import { SaveAsDraftButton } from "@/components/create-exam/save-as-draft-button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  // ★ Ekledik:
   FormDescription,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -46,8 +46,8 @@ import {
 } from "@/components/ui/select";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SaveAsDraftButton } from "./save-as-draft-button";
-import { toast } from "react-hot-toast"; // react-hot-toast import
+import { toast } from "react-hot-toast";
+import { MediaUpload } from "./media-upload";
 
 /************************************
  * Answers Component
@@ -75,12 +75,11 @@ export function Answers({ index }: AnswersProps) {
     defaultValues: {
       correctAnswer: "",
     },
-    resolver: zodResolver(step1ValidationSchema), // Zod resolver kullanımı
+    resolver: zodResolver(step1ValidationSchema),
   });
 
   const questionType = form.watch(`questions.${index}.questionType`);
   const prevQuestionType = useRef(questionType);
-  const [recentlyAddedIndex, setRecentlyAddedIndex] = useState<number | null>(null);
 
   // questionType değişince tf -> [True,False], mc -> ["",""]
   useEffect(() => {
@@ -94,19 +93,8 @@ export function Answers({ index }: AnswersProps) {
     prevQuestionType.current = questionType;
   }, [questionType, replace]);
 
-  // highlight new answer when changed (mevcut kod)
-  useEffect(() => {
-    const subscription = form.watch((_, { name, type }) => {
-      if (name?.startsWith("questions") && type === "change") {
-        const currentIndex = parseInt(name.split(".")[1], 10);
-        setRecentlyAddedIndex(currentIndex);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
-
-  const radioGroupClassName =
-    questionType === "tf" ? "grid grid-cols-2 gap-2 w-full min-h-[64px]" : "flex flex-col gap-2";
+  // Mobilde tek sütun, desktop'ta 2'li grid
+  const radioGroupClassName = "grid grid-cols-1 md:grid-cols-2 gap-2 w-full";
 
   return (
     <div className="flex flex-col">
@@ -115,10 +103,9 @@ export function Answers({ index }: AnswersProps) {
         name={`questions.${index}.correctAnswer`}
         render={({ field: radioField }) => (
           <FormItem className="mb-4">
-            <FormLabel className="flex gap-2 items-center rounded-full">
-              Enter the answer options and select the correct one
-            </FormLabel>
+            <FormLabel>Answer options</FormLabel>
 
+            {/* Responsive grid container */}
             <RadioGroup
               className={radioGroupClassName}
               value={selectedValue}
@@ -130,7 +117,7 @@ export function Answers({ index }: AnswersProps) {
             >
               {fields.map((field, i) => {
                 const charCount = field.answer?.length || 0;
-                const isOverLimit = charCount > 200;
+                const isOverLimit = charCount > 76; // Örneğin 76 karakter sınırı
                 const hasTrashIcon = fields.length > 2;
 
                 // True/False renklendirme
@@ -141,109 +128,113 @@ export function Answers({ index }: AnswersProps) {
                 let tfColorClass = "";
                 if (questionType === "tf" && isTrueOption) {
                   tfColorClass = isSelected
-                    ? "bg-green-100 border-green-400 text-green-800 hover:bg-green-200 focus-visible-ring-green-800"
-                    : "bg-green-50 text-green-700 border-green-200 hover:bg-green-100";
+                    ? "bg-green-100 border-green-400 text-green-800 text-xl min-h-[6rem] max-h-[6rem] font-bold hover:bg-green-200"
+                    : "bg-green-50 text-green-700 border-green-200 text-xl min-h-[6rem] max-h-[6rem] font-bold hover:bg-green-100";
                 } else if (questionType === "tf" && isFalseOption) {
                   tfColorClass = isSelected
-                    ? "bg-red-100 border-red-400 text-red-800 hover:bg-red-200"
-                    : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100";
+                    ? "bg-red-100 border-red-400 text-red-800 text-xl min-h-[6rem] max-h-[6rem] font-bold hover:bg-red-200"
+                    : "bg-red-50 text-red-700 border-red-200 text-xl min-h-[6rem] max-h-[6rem] font-bold hover:bg-red-100";
                 }
 
                 return (
                   <FormField
-                    control={form.control}
                     key={field.id}
+                    control={form.control}
                     name={`questions.${index}.answers.${i}.answer`}
                     render={({ field: inputField }) => (
-                      <>
-                        <FormItem>
-                          <div className="relative">
-                            <Input
-                              // ★ Yukarıda "Enter the X. option" idi:
-                              placeholder={`Option ${i + 1}`}
-                              maxLength={200}
-                              {...inputField}
-                              onChange={(e) => inputField.onChange(e)}
-                              className={cn(
-                                "gap-4 pl-12 pr-32 py-6 rounded-2xl border transition-colors duration-200",
-
-                                questionType === "tf" && tfColorClass,
-                                isSelected && questionType !== "tf"
-                                  ? "border-greyscale-light-200 bg-brand-secondary-50 ring-0"
-                                  : "",
-
-                                questionType === "tf" && "cursor-pointer",
-                                isOverLimit ? "border-ui-error-500 focus:ring-ui-error-500" : ""
-                              )}
-                              readOnly={questionType === "tf"}
-                              onClick={() => {
-                                if (questionType === "tf") {
-                                  radioField.onChange(i.toString());
-                                  handleSelection(i.toString());
-                                  form.setValue(`questions.${index}.correctAnswer`, i.toString());
-                                }
-                              }}
-                              startElement={
-                                <RadioGroupItem value={i.toString()} checked={isSelected} />
+                      <FormItem className="w-full">
+                        <div className="relative">
+                          <Input
+                            as="textarea"
+                            placeholder={`Option ${i + 1}`}
+                            maxLength={76}
+                            {...inputField}
+                            // Değişiklik yapıldığında
+                            onKeyDown={(e: { key: string; preventDefault: () => void }) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault(); // Enter'ı iptal: yeni satır olmayacak
                               }
-                              endElement={
-                                hasTrashIcon && (
-                                  <div className="relative group inline-block">
-                                    <Button
-                                      size="icon-sm"
-                                      variant="ghost"
-                                      onClick={() => remove(i)}
-                                    >
-                                      <XMarkIcon className="size-4" />
-                                    </Button>
-                                    <div
-                                      className={`
-                                        hidden group-hover:block
-                                        absolute -top-10 left-1/2 -translate-x-1/2
-                                        px-2 py-1 rounded-md text-white bg-black
-                                        text-xs whitespace-nowrap
-                                        animate-fadeIn z-50
-                                      `}
-                                    >
-                                      Are you sure?
-                                    </div>
-                                  </div>
-                                )
-                              }
-                            />
-                            {questionType !== "tf" && (
-                              <div
-                                className={cn(
-                                  "absolute top-1/2 -translate-y-1/2 text-sm bg-transparent px-1 z-10",
-                                  hasTrashIcon ? "right-10" : "right-4",
-                                  isOverLimit ? "text-red-500" : "text-greyscale-light-500"
-                                )}
-                              >
-                                {`${inputField.value?.length || 0}/200`}
-                              </div>
+                            }}
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                              inputField.onChange(e);
+                              form.setValue(
+                                `questions.${index}.answers.${i}.answer`,
+                                e.target.value
+                              );
+                            }}
+                            className={cn(
+                              "pl-12 pr-32 py-6 min-h-[80px] w-full rounded-3xl border items-center transition-colors duration-200",
+                              questionType === "tf" && tfColorClass,
+                              isSelected && questionType !== "tf"
+                                ? "border-2 border-brand-primary-900 bg-brand-secondary-50 ring-0"
+                                : "",
+                              questionType === "tf" && "cursor-pointer",
+                              isOverLimit ? "border-ui-error-500 focus:ring-ui-error-500" : ""
                             )}
-                          </div>
-                          {isOverLimit && (
-                            <p className="text-red-500 text-sm mt-1">
-                              The answer option exceeds the maximum allowed 200 characters.
-                            </p>
+                            readOnly={questionType === "tf"}
+                            onClick={() => {
+                              if (questionType === "tf") {
+                                radioField.onChange(i.toString());
+                                handleSelection(i.toString());
+                                form.setValue(`questions.${index}.correctAnswer`, i.toString());
+                              }
+                            }}
+                            // Input'un solunda radio item
+                            startElement={
+                              <RadioGroupItem value={i.toString()} checked={isSelected} />
+                            }
+                            // Sağ tarafta silme butonu
+                            endElement={
+                              hasTrashIcon && (
+                                <div className="relative group inline-block">
+                                  <Button size="icon-sm" variant="ghost" onClick={() => remove(i)}>
+                                    <XMarkIcon className="size-4" />
+                                  </Button>
+                                  <div
+                                    className={`
+                                      hidden group-hover:block
+                                      absolute -top-10 left-1/2 -translate-x-1/2
+                                      px-2 py-1 rounded-md text-white bg-black
+                                      text-xs whitespace-nowrap
+                                      animate-fadeIn z-50
+                                    `}
+                                  >
+                                    Are you sure?
+                                  </div>
+                                </div>
+                              )
+                            }
+                          />
+                          {/* Karakter sayısı (tf dışında göster) */}
+                          {questionType !== "tf" && (
+                            <div
+                              className={cn(
+                                "absolute top-1/2 -translate-y-1/2 text-sm bg-transparent px-1 z-10",
+                                hasTrashIcon ? "right-10" : "right-4",
+                                isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+                              )}
+                            >
+                              {`${inputField.value?.length || 0}/76`}
+                            </div>
                           )}
-                        </FormItem>
-                        <FormMessage />
-                      </>
+                        </div>
+                        {isOverLimit && (
+                          <p className="text-red-500 text-sm mt-1">
+                            The answer option exceeds the maximum allowed 76 characters.
+                          </p>
+                        )}
+                      </FormItem>
                     )}
                   />
                 );
               })}
             </RadioGroup>
-            <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
-              You can add up to 6 options for multiple choice, or 2 options (True/False).
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
 
+      {/* Çoktan seçmeli (mc) -> en fazla 4 */}
       {form.watch(`questions.${index}.questionType`) === "mc" && fields.length < 4 && (
         <Button
           variant={"outline"}
@@ -308,7 +299,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
     setActiveQuestionIndex((prev) => Math.min(prev > 0 ? prev - 1 : prev, fields.length - 2));
   };
 
-
   useEffect(() => {
     if (questions.length > 0 && questionRefs.current && questionRefs.current[activeQuestionIndex]) {
       questionRefs.current[activeQuestionIndex]?.scrollIntoView({
@@ -318,7 +308,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
     }
   }, [activeQuestionIndex, questions]);
 
-  // “Next” => validasyon
+  // "Next" => validasyon
   const handleNext = async () => {
     const isValid = await trigger();
     if (!isValid) {
@@ -336,6 +326,23 @@ export const Step1 = ({ onNext }: Step1Props) => {
   const completedCount = questions.filter((q) => q.question && q.correctAnswer).length;
   const totalCount = fields.length;
 
+  const handleMove = useCallback(
+    (currentIndex: number, direction: number) => {
+      const newIndex = currentIndex + direction;
+      move(currentIndex, newIndex);
+      setActiveQuestionIndex(newIndex); // Aktif indeksi yeni pozisyona güncelle
+
+      // Scroll işlemi için 50ms sonra tetikle (state güncellemesi tamamlansın diye)
+      setTimeout(() => {
+        questionRefs.current[newIndex]?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }, 50);
+    },
+    [move]
+  );
+
   return (
     <Card className="flex-1 flex flex-col overflow-y-auto">
       <CardHeader>
@@ -350,74 +357,57 @@ export const Step1 = ({ onNext }: Step1Props) => {
           ☺︎
         </Button>
         <CardHeaderContent>
-          <CardTitle>Let’s create your questions!</CardTitle>
-          <CardDescription>
-            Create questions that inspire, challenge, and engage participants for a truly
-            interactive experience.
-          </CardDescription>
+          <CardTitle>Let's create your questions!</CardTitle>
         </CardHeaderContent>
-        <SaveAsDraftButton />
-        <Button size="icon" onClick={onNext} pill>
-          <ArrowRightIcon className="size-6" />
-        </Button>
+
+        <div className="flex flex-col items-end gap-1 mr-4">
+          <p className="text-sm text-greyscale-light-600 hidden md:block">
+            {completedCount} / {totalCount} completed
+          </p>
+          <div className="w-32 h-2 bg-greyscale-light-300 rounded-full overflow-hidden hidden md:block">
+            <div
+              className="bg-brand-primary-700 h-full transition-all duration-300"
+              style={{ width: `${(completedCount / Math.max(1, totalCount)) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-row">
+          <SaveAsDraftButton />
+          <Button size="icon" onClick={onNext} pill>
+            <ArrowRightIcon className="size-6" />
+          </Button>
+        </div>
       </CardHeader>
 
       <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative p-5">
         {/* Sol tarafta aktif soru */}
         <div className="w-full flex flex-col flex-1 md:max-w-full gap-4" key={activeQuestion.id}>
           <div className="flex flex-col gap-6 flex-0">
-            {/* questionType */}
             <FormField
-              key={activeQuestion.id}
               control={control}
               name={`questions.${activeQuestionIndex}.questionType`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex gap-2 items-center rounded-full">
-                    Select the question type
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="box-border">
-                        <SelectValue />
+                  <FormLabel>Select question type</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a question type" />
                       </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="z-50 max-h-48 overflow-y-auto">
-                      <SelectItem value="mc">Multiple choice</SelectItem>
-                      <SelectItem value="tf">True/False</SelectItem>
-                      {/* Diğerleri devre dışı */}
-                      <SelectItem disabled value="ord">
-                        Ordering (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ma">
-                        Matching (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="sa">
-                        Likert (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ps">
-                        Poll/Survey (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="dd">
-                        Drag and Drop (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="vb">
-                        Video based (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ib">
-                        Image based (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="ess">
-                        Essay (soon)
-                      </SelectItem>
-                      <SelectItem disabled value="fill">
-                        Fill in the blank (soon)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                      <SelectContent>
+                        <SelectItem value="mc">Multiple choice</SelectItem>
+                        <SelectItem value="tf">True/False</SelectItem>
+                        <SelectItem disabled value="ord">
+                          Ordering (soon)
+                        </SelectItem>
+                        {/* Diğer disabled seçenekler... */}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
                   <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
-                    E.g. choose "Multiple choice" if you want up to 4 answer options, or
-                    "True/False" for a simple question.
+                    E.g. choose "Multiple choice" for up to 4 options, "True/False" for binary
+                    questions
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -430,12 +420,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
               name={`questions.${activeQuestionIndex}.question`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex gap-2 items-center rounded-full">
+                  <FormLabel>
                     Enter the question below. You can use the markdown editor to customize it ☺︎
                   </FormLabel>
 
                   <FormControl>
-                    <div className="border border-greyscale-light-200 rounded-2xl min-h-[240px] max-h-[960px] bg-base-white resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800">
+                    <div className="border border-greyscale-light-200 rounded-2xl min-h-[15rem] max-h-[60rem] bg-base-white resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800">
                       <MarkdownEditor
                         className="mdxeditor w-full h-full"
                         markdown={field.value}
@@ -445,14 +435,28 @@ export const Step1 = ({ onNext }: Step1Props) => {
                       />
                     </div>
                   </FormControl>
-                  <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
-                    E.g. "What is the capital of France?" – you can use *Markdown* syntax here.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* ★ YENİ: MediaUpload */}
+            <FormField
+              control={control}
+              name={`questions.${activeQuestionIndex}.media`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional: Add Media</FormLabel>
+                  <MediaUpload
+                    onMediaUpload={(file) => {
+                      field.onChange(file);
+                    }}
+                  />
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* Answers */}
             <Answers index={activeQuestionIndex} />
           </div>
@@ -460,8 +464,8 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
         {/* Sağ tarafta soru listesi */}
         <Card>
-          <CardHeader className="px-5 min-w-[300px] min-h-[68px] max-h-[68px]">
-            Questions List
+          <CardHeader className="px-5 min-w-[20rem] min-h-[4rem] max-h-[4rem]">
+            <CardTitle>Question List</CardTitle>
           </CardHeader>
           <CardContent className="p-0 flex flex-col flex-1 overflow-y-auto mb-4 max-h-[200px] lg:max-h-full">
             <div className="flex-1 flex flex-col">
@@ -487,49 +491,20 @@ export const Step1 = ({ onNext }: Step1Props) => {
                         isActive={activeQuestionIndex === index}
                         onRemove={fields.length > 1 ? remove : undefined}
                         isIncomplete={questionHasError}
-                        // ★ No content => "Question #X (untitled)"
-                        questionText={
-                          questions[index]?.question || `Question #${index + 1} (untitled)`
-                        }
+                        questionText={questions[index]?.question || `NO CONTENT`}
                         className="flex-1"
+                        isFirst={index === 0}
+                        isLast={index === fields.length - 1}
+                        canMoveUp={index > 0}
+                        canMoveDown={index < fields.length - 1}
+                        onMoveUp={() => handleMove(index, -1)}
+                        onMoveDown={() => handleMove(index, 1)}
                       />
-
-                      <div className="flex">
-                        <Button
-                          variant="ghost"
-                          size="chevron"
-                          disabled={isFirst} // ilk sorudaysa yukarı gidemez
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isFirst) {
-                              move(index, index - 1);
-                              setActiveQuestionIndex(index - 1);
-                            }
-                          }}
-                        >
-                          <ChevronUpIcon className="w-4 h-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="chevron"
-                          disabled={isLast} // son sorudaysa aşağı gidemez
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isLast) {
-                              move(index, index + 1);
-                              setActiveQuestionIndex(index + 1);
-                            }
-                          }}
-                        >
-                          <ChevronDownIcon className="w-4 h-4" />
-                        </Button>
-                      </div>
                     </div>
 
                     {recentlyAddedIndex === index && (
                       <div className="absolute -top-4 left-0 bg-green-100 text-green-800 text-xs py-1 px-2 rounded shadow">
-                        New question added!
+                        ✨ New question added!
                       </div>
                     )}
                   </div>

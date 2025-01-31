@@ -66,7 +66,7 @@ function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: 
 }
 
 /****************************************
- * SHARE MODAL
+ * 1) SHARE MODAL (YALNIZCA BURASI GÜNCELLENDİ)
  ****************************************/
 interface ShareModalProps {
   open: boolean;
@@ -74,48 +74,73 @@ interface ShareModalProps {
   quizLink: string;
 }
 
+/** Tek parametre içinde "metin + link" oluşturma */
+function getShareMessage(quizLink: string) {
+  return `Hey! I just created a #Choz quiz—want to challenge yourself?
+
+Click here to join:
+${quizLink}
+
+Let's see how you do! 🚀
+#ChozQuizzes`;
+}
+
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
+  // Tek parametreli mesaj
+  const shareText = getShareMessage(quizLink);
+
+  // Paylaşım seçenekleri
   const shareOptions = [
     {
       name: "Telegram",
       icon: <FaTelegramPlane />,
-      onClick: () =>
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(quizLink)}`, "_blank"),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://t.me/share/url?text=${text}`, "_blank");
+      },
     },
     {
       name: "Twitter",
       icon: <FaTwitter />,
-      onClick: () =>
-        window.open(
-          `https://twitter.com/intent/tweet?url=${encodeURIComponent(quizLink)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+      },
     },
     {
       name: "Facebook",
       icon: <FaFacebookF />,
-      onClick: () =>
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        // Facebook'ta link preview "u" parametresinden gelir, "quote" da ek metin olabilir
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(quizLink)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            quizLink
+          )}&quote=${text}`,
           "_blank"
-        ),
+        );
+      },
     },
     {
       name: "E-mail",
       icon: <FaEnvelope />,
-      onClick: () => window.open(`mailto:?subject=Quiz&body=${encodeURIComponent(quizLink)}`),
+      onClick: () => {
+        const subject = encodeURIComponent("Check out this quiz!");
+        const body = encodeURIComponent(shareText);
+        window.open(`mailto:?subject=${subject}&body=${body}`);
+      },
     },
     {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
-      onClick: () =>
-        window.open(
-          `https://wa.me/?text=${encodeURIComponent(`Check this quiz out! ${quizLink}`)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+      },
     },
   ];
 
+  // QR kod indirme
   const downloadQRCode = () => {
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
     if (!canvas) return;
@@ -130,7 +155,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto p-4 relative bg-base-white">
+      <DialogContent className="max-w-md mx-auto px-4 py-4 relative bg-base-white max-h-[524px]">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-600 hover:border-brand-primary-900 hover:bg-brand-secondary-200"
@@ -167,7 +192,6 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         </div>
 
         <p className="text-center text-sm text-greyscale-light-500 mb-2">Or share with link</p>
-
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />
         </div>
@@ -184,7 +208,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 }
 
 /****************************************
- * ROW Bileşeni
+ * 2) ROW Bileşeni
  ****************************************/
 interface Exam {
   _id: string;
@@ -236,7 +260,7 @@ function Row({ exam }: RowProps) {
   }/app/exams/get-started/${exam._id}`;
 
   return (
-    <div className="flex flex-col transition-colors duration-200 ease-in-out hover:bg-brand-secondary-100">
+    <div className="flex flex-col transition-colors duration-200 ease-in-out hover:bg-brand-secondary-50">
       <ShareModal
         open={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
@@ -245,7 +269,7 @@ function Row({ exam }: RowProps) {
 
       <div className="flex items-center border-t border-greyscale-light-200">
         {/* Title */}
-        <div className="flex-1 p-5 min-w-[154px] max-w-[220px] border-r border-greyscale-light-200">
+        <div className="flex-1 p-5 min-w-[10rem] max-w-[40rem] border-r border-greyscale-light-200">
           <p className="text-inherit text-base font-medium leading-6 overflow-hidden text-ellipsis whitespace-nowrap">
             {exam.title || "Untitled"}
           </p>
@@ -338,7 +362,7 @@ function Row({ exam }: RowProps) {
 }
 
 /****************************************
- * ANA SAYFA (QUIZ LİST)
+ * 3) ANA SAYFA (QUIZ LİST)
  ****************************************/
 function Application() {
   const {
@@ -371,19 +395,10 @@ function Application() {
   if (!isLoading && allExams.length === 0 && !isError) {
     return (
       <div className="relative min-h-screen h-dvh flex flex-col z-0">
-        <div className="absolute inset-0 z-[-1]">
-          <Image
-            src={BGR}
-            alt="Hero Background"
-            fill
-            className="w-full h-full object-cover"
-            priority
-          />
-        </div>
         <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
-            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-brand-primary-900 flex-1 flex flex-col">
+          <div className="w-full flex flex-col flex-1 overflow-hidden">
+            <Card className="bg-base-white rounded-full md:rounded-3xl border-greyscale-light-200 flex-1 flex flex-col">
               <CardHeader>
                 <CardHeaderContent>
                   <CardTitle>Created quizzes</CardTitle>
@@ -403,24 +418,23 @@ function Application() {
                 </Button>
               </CardHeader>
 
-              <CardContent className="px-0 pt-0 pb-5">
-                <div className="sticky top-0 z-10 flex min-w-full bg-white/80 backdrop-blur-sm border-b border-greyscale-light-200 shadow-sm">
-                  <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200 overflow-auto">
-                    {FILTER_OPTIONS.map((opt) => (
-                      <button
-                        key={opt}
-                        onClick={() => setFilter(opt)}
-                        className={cn(
-                          "px-3 py-1 text-sm rounded-full border transition-colors duration-200 ease-in-out",
-                          filter === opt
-                            ? "bg-brand-primary-50 text-brand-primary-950 border-brand-primary-600"
-                            : "bg-white text-greyscale-light-900 border-greyscale-light-300 hover:bg-greyscale-light-50"
-                        )}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
+              <CardContent className="px-0 pt-0 pb-2">
+                {/* Filtre Butonları */}
+                <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200 overflow-auto">
+                  {FILTER_OPTIONS.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => setFilter(opt)}
+                      className={cn(
+                        "px-3 py-1 text-sm rounded-full border transition-colors duration-200 ease-in-out",
+                        filter === opt
+                          ? "bg-brand-primary-50 text-brand-primary-950 border-brand-primary-600"
+                          : "bg-white text-greyscale-light-900 border-greyscale-light-300 hover:bg-greyscale-light-50"
+                      )}
+                    >
+                      {opt}
+                    </button>
+                  ))}
                 </div>
 
                 <div className="flex font-medium border-b border-greyscale-light-200">
@@ -626,19 +640,10 @@ function Application() {
 
   return (
     <div className="relative min-h-screen h-dvh flex flex-col z-0">
-      <div className="absolute inset-0 z-[-1]">
-        <Image
-          src={BGR}
-          alt="Hero Background"
-          fill
-          className="w-full h-full object-cover"
-          priority
-        />
-      </div>
       <DashboardHeader withoutTabs={false} withoutNav={true} />
-      <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-8 flex-1 overflow-hidden">
-          <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-brand-primary-900 flex-1 flex flex-col">
+      <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
+        <div className="w-full flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
+          <Card className="bg-base-white rounded-3xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
             <CardHeader>
               <CardHeaderContent>
                 <CardTitle>All quizzes</CardTitle>
@@ -682,7 +687,7 @@ function Application() {
                 <div
                   className="
                     flex-1 p-5
-                    min-w-[154px] max-w-[220px]
+                    min-w-[10rem] max-w-[40rem]
                     border-r border-greyscale-light-200
                     cursor-pointer select-none
                     transition-colors duration-200 ease-in-out
@@ -696,7 +701,7 @@ function Application() {
                     }
                   }}
                 >
-                  <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
+                  <p className="text-brand-primary-950 text-base  min-w-[15rem] max-w-[26rem] font-medium leading-4 whitespace-nowrap">
                     Title
                     {renderSortIcon("title", sortField, sortAsc)}
                   </p>

@@ -7,7 +7,9 @@ import Mert from "@/../src/images/landing_team/mert-akyazi.png";
 import Esra from "@/../src/images/landing_team/esra-akyazi.png";
 import Yavuz from "@/../src/images/landing_team/yavuz-selim-tuncer.png";
 import Ege from "@/../src/images/landing_team/ege-palaz.png";
-import BG from "@/../src/images/backgrounds/backgroundfull.svg";
+import Deniz from "@/../src/images/landing_team/secgin-karagulle.png";
+import BG from "@/../src/images/backgrounds/bg1.svg";
+import SUBCTA from "@/../src/images/backgrounds/bg2.svg";
 
 // CSS Module (örnek isim: team.module.css)
 import styles from "@/styles/Landing.module.css";
@@ -16,9 +18,20 @@ const TeamSection: FC = () => {
   return (
     <section className={styles.team_section_container}>
       <section className={styles.team_section}>
-        <h2>Our team 💜</h2>
+        <div className="absolute inset-0 z-[-1]">
+          <Image
+            src={BG}
+            alt="Hero Background"
+            fill
+            className="w-full h-full object-cover"
+            priority
+          />
+        </div>
+        <h2>Chozzers 💜</h2>
         <div className={styles.team_grid}>
           {/* Üye 1 */}
+          {/* Arka plan resmi */}
+
           <a
             href="https://github.com/scgnkrgll"
             target="_blank"
@@ -30,7 +43,7 @@ const TeamSection: FC = () => {
                 <Image className={styles.team_photo} src={Secgin} alt="Seçgin Karagülle" />
               </div>
               <h3>Seçgin Karagülle</h3>
-              <p>Frontend Developer</p>
+              <p>Advisor & Sr. Frontend Dev.</p>
             </div>
           </a>
 
@@ -46,7 +59,7 @@ const TeamSection: FC = () => {
                 <Image className={styles.team_photo} src={Mert} alt="Mert Akyazı" />
               </div>
               <h3>Mert Akyazı</h3>
-              <p>CTO & Blockchain Developer</p>
+              <p>Co-Founder & CTO</p>
             </div>
           </a>
 
@@ -62,7 +75,7 @@ const TeamSection: FC = () => {
                 <Image className={styles.team_photo} src={Esra} alt="Esra Akyazı" />
               </div>
               <h3>Esra Akyazı</h3>
-              <p>CEO & Product Designer</p>
+              <p>Co-Founder & CEO</p>
             </div>
           </a>
 
@@ -78,7 +91,7 @@ const TeamSection: FC = () => {
                 <Image className={styles.team_photo} src={Yavuz} alt="Yavuz Selim Tunçer" />
               </div>
               <h3>Yavuz Selim Tunçer</h3>
-              <p>Founding Engineer</p>
+              <p>Co-Founder & Backend Dev.</p>
             </div>
           </a>
 

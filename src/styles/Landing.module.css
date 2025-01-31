@@ -10,8 +10,9 @@
   height: 1440px;
   overflow: hidden;
   position: relative;
-  width: 1920px;
-  z-index: -1;
+  width: 100%;
+  max-width: 1920px;
+  z-index: 10;
   @media (max-width: 768px) {
     height: 100vh;
   }
@@ -62,7 +63,7 @@
   width: 96px;
 }
 
-.background-pattern .div {
+.background-pattern .special-block {
   background-color: #d6fffc;
   border-bottom-style: solid;
   border-bottom-width: 1px;
@@ -124,7 +125,7 @@
   }
 
   /* Header içerisindeki ana kapsayıcı için flex düzen */
-  > div {
+  .header_container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -165,54 +166,94 @@
   text-decoration: none;
 }
 
-/* Hero Section */
+/* ============================= */
+/* 1) HERO SECTION (dış sarmalayıcı) */
+/* ============================= */
 .hero_section {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  /* Burada yine üst padding’i azaltabilirsiniz */
-  padding: 2rem 2.5rem 16rem;
+  /* Varsayılan "padding" (üst, yandan, alt) */
+  padding: 2rem 2.5rem 18rem;
+
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 
   display: flex;
-  /* Dikeyde en üste yapıştır */
-  align-items: flex-start;
-  /* Yatayda ortala (isteğe bağlı) */
-  justify-content: center;
-  @media (max-width: 768px) {
-    padding: 0rem;
-    align-items: flex-start;
+  align-items: center; /* Dikey hizalama */
+  justify-content: center; /* Yatay hizalama */
+
+  /* Masaüstü (varsayılan) */
+}
+
+/* Mobil ekranlar (max 768px) */
+@media (max-width: 768px) {
+  .hero_section {
+    padding: 2rem 1rem 10rem; /* Yanları biraz daralt, alt boşluk biraz azaltılabilir */
+    align-items: center; /* Mobilde de en üste sabitlerseniz: center vs. istek doğrultusunda */
     background-color: var(--color-brand-secondary-200);
-    /* Mobilde isterseniz align-items: center yaparak başka görünüm elde edebilirsiniz */
   }
 }
 
+/* ============================= */
+/* 2) HERO CONTAINER (iç sarmalayıcı) */
+/* ============================= */
 .hero_container {
   position: relative;
   z-index: 1;
-  @media (max-width: 768px) {
-    height: screen;
-  }
+
+  /* Geniş ekranlarda ortada durabilir */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* Yüksekliği otomatik kalsın, isterseniz min-height ekleyebilirsiniz */
 }
 
+/* ============================= */
+/* 3) HERO CONTENT (içerik) */
+/* ============================= */
 .hero_content_container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
   text-align: center;
-  margin-top: 10rem; /* hero içindeki içeriği biraz aşağıya çeker */
-  /* veya padding-top: 2rem; */
-  z-index: 1;
 
-  @media (max-width: 768px) {
-    margin-top: 6rem;
+  /* Varsayılan: büyük ekranlarda içeriği biraz aşağıya çekmek */
+  margin: 10rem auto 0 auto;
+  gap: 1.5rem;
+  z-index: 1;
+}
+
+/* 1440px altına inince margin'i azalt */
+@media (max-width: 1440px) {
+  .hero_content_container {
+    margin-top: 5rem;
     gap: 1rem;
   }
 }
 
+/* 1280px altına inince daha da azalt */
+@media (max-width: 1280px) {
+  .hero_content_container {
+    margin-top: 2rem;
+    gap: 1rem;
+  }
+}
+
+/* 768px altına inince mobil düzen */
+@media (max-width: 768px) {
+  .hero_content_container {
+    margin-top: 2rem; /* Mobilde daha az boşluk */
+    gap: 1rem;
+    padding: 0 1rem; /* İçerik dar ekranlarda kenarlara yapışmasın */
+  }
+}
+
+/* ============================= */
+/* 4) HERO SUMMARY (kısa alt başlık) */
+/* ============================= */
 .hero_summary {
   display: inline-flex;
   align-items: center;
@@ -225,71 +266,90 @@
   border: 1px solid var(--color-brand-secondary-300);
   border-radius: 9999px;
   z-index: 1;
-  @media (max-width: 768px) {
+}
+
+/* Mobilde gizle */
+@media (max-width: 768px) {
+  .hero_summary {
     display: none;
   }
 }
-/*
-.hero_summary:hover {
-  cursor: default;
-  border: 1px solid var(--color-brand-tertiary-400);
-}*/
 
+/* ============================= */
+/* 5) HERO TITLE (ana başlık) */
+/* ============================= */
 .hero_title {
   max-width: 1044px;
   font-size: 4.675rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-brand-primary-900);
-  z-index: 1;
   text-wrap: balance;
+  display: -webkit-box;
+  line-clamp: 2;
+  box-orient: vertical;
+  overflow: hidden;
+  z-index: 1;
+}
 
-  @media (max-width: 768px) {
+/* Tablet ve mobil için daha küçük font */
+@media (max-width: 768px) {
+  .hero_title {
     font-size: 3.25rem;
     line-height: 1.2;
   }
 }
 
+/* ============================= */
+/* 6) HOVER TEXT (Choose) */
+/* ============================= */
+.hover_text {
+  position: relative;
+  transition: color 0.3s ease;
+}
 .hover_text::after {
-  content: ""; /* Varsayılan durumda içerik boş */
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
   width: 100%;
   height: 100%;
+  transition: opacity 0.5s ease-in-out;
   display: flex;
   justify-content: center;
   align-items: left;
   margin-right: 0.5rem;
 }
-
 .hover_text:hover::after {
-  content: "Choose"; /* Hover sırasında yazıyı değiştir */
-  opacity: 1; /* Görünür hale getir */
-  color: var(--color-brand-tertiary-900); /* Yazı rengi */
-  z-index: 1; /* Yazıyı üstte göster */
+  content: "Choose";
+  opacity: 1;
+  color: var(--color-brand-tertiary-900);
+  z-index: 1;
   font-weight: 700;
   margin-right: 0.5rem;
 }
-
 /* Orijinal yazıyı gizlemek için */
 .hover_text:hover {
-  color: transparent; /* Orijinal metni şeffaf yap */
+  color: transparent;
 }
 
+/* ============================= */
+/* 7) HIGHLIGHT WORD */
+/* ============================= */
 .highlight_word {
   color: var(--color-brand-primary-700);
   cursor: pointer;
   position: relative;
   transition: color 0.3s ease;
 }
-
 .highlight_word:hover {
   color: var(--color-brand-primary-950);
 }
 
+/* ============================= */
+/* 8) HERO DESC (alt metin) */
+/* ============================= */
 .hero_desc {
   width: 100%;
   font-size: 1.25rem;
@@ -298,13 +358,19 @@
   margin-bottom: 1rem;
   color: var(--color-brand-primary-950);
   z-index: 1;
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
+  .hero_desc {
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.4;
     margin-bottom: 0.5rem;
   }
 }
 
+/* ============================= */
+/* 9) HERO BUTTON */
+/* ============================= */
 .hero_button {
   padding: 0.75rem 2rem;
   font-size: 1.25rem;
@@ -315,6 +381,7 @@
   border-radius: 9999px;
   cursor: pointer;
   z-index: 1;
+  transition: background-color 0.3s, color 0.3s, outline 0.3s;
 }
 
 .hero_button:hover {
@@ -323,15 +390,21 @@
   outline: 4px solid var(--color-brand-primary-600);
 }
 
+/* ============================= */
+/* 10) HERO BACKGROUND (arka plan) */
+/* ============================= */
 .hero_bg {
   position: absolute;
-  right: 0px;
-  bottom: 0px;
-  top: 0px;
-  left: 0px;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
   z-index: 0;
   object-fit: cover;
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
+  .hero_bg {
     height: 100%;
   }
 }
@@ -374,8 +447,8 @@
   */
 }
 
-/* nth-child, block-2, block-3 gibi farklı class’lar için farklı delay/duration vererek
-   daha “karışık” bir puzzle efekti elde edebilirsiniz. */
+/* nth-child, block-2, block-3 gibi farklı class'lar için farklı delay/duration vererek
+   daha "karışık" bir puzzle efekti elde edebilirsiniz. */
 .block:nth-child(2n) {
   animation-delay: 0.5s;
 }
@@ -424,6 +497,19 @@
   text-align: center;
 }
 
+.text_cta_desc .mobile_text {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .text_cta_desc .desktop_text {
+    display: none;
+  }
+  .text_cta_desc .mobile_text {
+    display: block;
+  }
+}
+
 /* Sections */
 .section_container {
   position: relative;
@@ -445,7 +531,7 @@
 }
 
 .section_container_secondary {
-  background-color: var(--color-brand-secondary-200);
+  background-color: var(--color-brand-secondary-300);
   @media (max-width: 768px) {
     padding: 3rem 1rem;
   }
@@ -476,8 +562,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 0;
   overflow: hidden;
+  z-index: 0;
 }
 
 .section_summary {
@@ -528,44 +614,36 @@
   flex-direction: column;
   gap: 1rem;
   background-color: var(--color-brand-secondary-100);
-  border: 2px solid var(--color-brand-primary-950);
+  border: 1px solid var(--color-greyscale-light-200);
   border-radius: 24px;
   box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.15);
-  /* Hover geçişlerini yumuşatmak için eklenen transition */
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: transform 0.3s ease;
+  position: relative;
 }
 
 .usage_card:hover {
-  background-color: var(--color-brand-primary-950); /* Daha açık bir ton */
-  box-shadow: 0px 8px 24px -8px rgba(0, 0, 59, 0.2);
-  /* Kartı hafif yukarı kaldırma (dilerseniz scale de ekleyebilirsiniz) */
   transform: translateY(-4px);
   cursor: default;
-
-  .usage_card_desc {
-    color: var(--color-brand-secondary-200);
-  }
-
-  .usage_card_title_step {
-    color: var(--color-brand-tertiary-500);
-  }
-  .usage_card_title {
-    color: var(--color-brand-secondary-300);
-  }
-}
-
-.usage_card_title_container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 1;
 }
 
 .usage_card_title_step {
-  font-size: 1rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-brand-primary-700);
+  color: var(--color-brand-primary-950);
+  border: 2px solid var(--color-brand-primary-950);
   z-index: 1;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 80px;
+  height: 80px;
+  background: var(--color-brand-primary-500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
 }
 
 .usage_card_title {
@@ -625,7 +703,13 @@
     /* Açıklama metni biraz küçülsün */
     font-size: 1rem;
   }
-  /* Eğer başka görsel veya farklı elemanlar varsa onları da buraya ekleyebilirsiniz */
+  .usage_card_title_step {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    top: -15px;
+    left: -15px;
+  }
 }
 
 /* styles.css */
@@ -899,7 +983,7 @@
 .speechBubble {
   display: none; /* başlangıçta gizli */
   position: absolute;
-  bottom: 120%; /* tag’in biraz üstünde */
+  bottom: 120%; /* tag'in biraz üstünde */
   left: 50%;
   transform: translateX(-50%);
   width: 220px;
@@ -930,16 +1014,11 @@
   transform: translateX(-50%);
 }
 
-/* Landing.module.css */
-
-/* Landing.module.css (veya benzer bir css dosyanız) */
-
-/* Parent section kapsayıcısı */
 .team_section_container {
   position: relative;
   width: 100%;
   min-height: 100svh;
-  /* Yukarı-aşağı boşluğu arttırabilirsiniz, ör: 4rem 0 */
+
   padding: 4rem 40px;
   background-color: var(--color-brand-secondary-200);
   background-size: cover;
@@ -948,11 +1027,11 @@
   border-bottom: 1px solid var(--color-brand-secondary-300);
   overflow: hidden;
 
-  /* Kartları ortalamak için flex */
   display: flex;
-  flex-direction: column; /* Başlık üstte, grid altta */
+  flex-direction: column;
   align-items: center;
-  justify-content: center; /* Yukarıdan başlaması için */
+  justify-content: center;
+  z-index: 40;
 }
 
 .team_section_container h2 {
@@ -961,16 +1040,17 @@
   margin-bottom: 2rem;
   color: var(--color-brand-primary-900);
   text-align: center;
+  z-index: 100;
 }
 
 /* Asıl grid container */
 .team_grid {
-  /* Flex yapısı: kartlar yan yana, taşarsa alt satıra geçsin */
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem; /* Kartlar arası boşluk */
-  justify-content: center; /* Ortaya hizala */
-  align-items: flex-start; /* Kart içeriği üstten başlasın */
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 100;
 }
 
 /* Kartlar */
@@ -980,24 +1060,11 @@
   border-radius: 32px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 50;
-
-  /* Kart boyutu */
-  width: 300px; /* Daha dar veya geniş yapmak isterseniz ayarlayabilirsiniz */
-  /* Yukarı-aşağı boşluk */
+  transition: transform 0.6s ease, box-shadow 0.6s ease, background-color 0.3s ease;
+  z-index: 20;
+  width: 300px;
   padding: 1rem;
   text-align: center;
-}
-
-.background_image {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: url("/images/backgrounds/backgroundfull.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
 }
 
 .team_card:hover {
@@ -1006,6 +1073,11 @@
   background-color: var(--color-brand-primary-950);
   color: var(--color-brand-secondary-300);
   border-color: var(--color-brand-primary-900);
+  z-index: 100;
+}
+
+.team_card:hover .team_photo {
+  transform: translateX(-50%) scale(1.1);
 }
 
 /* Daire foto alanı */
@@ -1017,6 +1089,7 @@
   overflow: hidden;
   border-radius: 50%;
   background-color: var(--color-base-white);
+  z-index: 100;
 }
 
 .team_photo {
@@ -1073,7 +1146,6 @@
   gap: 2rem;
   /* Yukarı-aşağı boşluğu arttırabilirsiniz, ör: 4rem 0 */
   padding: 4rem 40px;
-  background-color: var(--color-brand-secondary-200);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -1103,87 +1175,106 @@
 }
 
 .tech_card_grid {
-  /* Flex yapısı: kartlar yan yana, taşarsa alt satıra geçsin */
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem; /* Kartlar arası boşluk */
-  justify-content: center; /* Ortaya hizala */
-  align-items: flex-start; /* Kart içeriği üstten başlasın */
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 /* Kart */
 .tech_card {
   position: relative;
-  /* Kart gridde sütunun genişliğine uysun, ancak çok büyümesin. */
-  width: 100%;
-  max-width: 600px; /* Mobil ve tablet için üst sınır */
-
-  min-height: 120px;
-  max-height: 180px;
-  padding: 1.5rem; /* Genel padding */
-
-  border: 2px solid var(--color-brand-primary-950);
-  border-radius: 20px;
-  background-color: var(--color-brand-secondary-100);
-  color: var(--color-greyscale-light-700);
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  /* Hover ve diğer geçişler için animasyon */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease,
-    border-color 0.3s ease;
-  overflow: hidden;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--color-brand-secondary-200);
+  border: 2px solid var(--color-brand-primary-900);
+  transition: all 0.3s ease;
 }
 
-/* Masaüstünde (1024px üzeri) kartlar daha büyük + daha fazla padding */
-@media (min-width: 1440px) {
-  .tech_card {
-    max-width: 1860px;
-    padding: 2rem;
-    border-radius: 24px;
-  }
-}
-/* Masaüstünde (1024px üzeri) kartlar daha büyük + daha fazla padding */
-@media (min-width: 1024px) {
-  .tech_card {
-    max-width: 1360px;
-    padding: 2rem;
-    border-radius: 24px;
-  }
-}
-
-/* Hover efektleri */
 .tech_card:hover {
-  cursor: default;
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
-  background-color: var(--color-brand-primary-950);
-  border: 2px solid var(--color-brand-primary-950);
-  color: var(--color-brand-secondary-400);
+  transform: scale(1.05) rotate(1deg) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-/* Hover'da link ve başlık renk değişimi */
-.tech_card:hover .tech_card_title {
-  color: var(--color-brand-secondary-300);
-}
-.tech_card:hover .tech_card_desc {
-  color: var(--color-brand-secondary-200);
-}
-.tech_card:hover .tech_card_link_container {
-  color: var(--color-brand-secondary-400);
+.tech_card_decor {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 120%;
+  height: 120%;
+  z-index: -1;
+  opacity: 0.3;
 }
 
-/* Kart içi metin kapsayıcısı */
+.decor_wave {
+  color: #4f46e5;
+  animation: waveFloat 8s ease-in-out infinite;
+}
+
+.tech_card_content {
+  padding: 1.5rem;
+  position: relative;
+}
+
+.icon_rotate {
+  animation: iconBounce 3s ease-in-out infinite;
+}
+
+.title_underline {
+  display: block;
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(90deg, #4f46e5 0%, #ec4899 100%);
+  margin-top: 0.5rem;
+  transition: width 0.3s ease;
+}
+
+.tech_card:hover .title_underline {
+  width: 80%;
+}
+
+.arrow_icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.tech_card:hover .arrow_icon {
+  transform: translate(3px, -3px);
+}
+
+@keyframes waveFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes iconBounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-10deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(10deg);
+  }
+}
+
 .tech_card_text_container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   max-width: 1280px;
+  height: 100%;
 }
-/* Başlık */
+
 .tech_card_title {
   font-size: 1.75rem; /* ~28px */
   font-weight: 600;
@@ -1192,7 +1283,6 @@
   transition: color 0.3s ease;
 }
 
-/* Açıklama metni */
 .tech_card_desc {
   font-size: 1.1875rem; /* ~18px */
   line-height: 1.5;
@@ -1202,7 +1292,6 @@
   transition: color 0.3s ease;
 }
 
-/* Link Konteyneri */
 .tech_card_link_container {
   display: flex;
   justify-content: flex-start;
@@ -1214,7 +1303,7 @@
 .clickable {
   cursor: pointer;
 }
-/* Link */
+
 .techLink {
   display: inline-flex;
   align-items: center;
@@ -1232,7 +1321,6 @@
   color: var(--color-brand-secondary-500);
 }
 
-/* Tablet altında (768px altı) yazı boyutları ve padding */
 @media (max-width: 768px) {
   .tech_card {
     padding: 1.25rem;
@@ -1246,7 +1334,6 @@
   }
 }
 
-/* Daha küçük mobil (576px altı) */
 @media (max-width: 576px) {
   .tech_card {
     padding: 1rem;
@@ -1277,24 +1364,19 @@
   text-align: center;
   z-index: 1;
 
-  /* Başlangıç gölgesi */
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 
-  /* Yumuşak geçiş için süreleri artırıyoruz */
   transition: transform 0.6s ease, filter 0.6s ease, background-color 0.6s ease, color 0.6s ease,
     box-shadow 0.6s ease;
 }
 
 .sub_section_container:hover {
-  /* Hover anında arka plan ve yazı rengi değişimi */
   background-color: var(--color-brand-primary-950);
   color: var(--color-brand-secondary-400);
   cursor: pointer;
 
-  /* Gölgeyi arttıralım */
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
 
-  /* Boyut ve parlaklık animasyonu */
   transform: scale(1.1);
   filter: brightness(1.2);
 }
@@ -1317,11 +1399,9 @@
   transform: scale(1);
   opacity: 1;
 
-  /* Daha yumuşak geçiş */
   transition: transform 0.6s ease, opacity 0.6s ease;
 }
 
-/* Hover anında biraz büyütüp saydamlaştırıyoruz */
 .sub_section_container:hover .sub_section_text_container_bg {
   transform: scale(1.08);
   opacity: 0.85;
@@ -1338,20 +1418,14 @@
 
 /* --------------------------------------------
        MEDIA QUERIES
-       (Dar ekranlarda animasyonu azaltabilir veya
-        boyutları küçültebilirsiniz)
      -------------------------------------------- */
 
-/* 1) Mobil (telefon) ekranlar (max-width: 576px) */
 @media (max-width: 576px) {
   .sub_section_container {
     margin: 2rem 1rem;
     padding: 2rem 1rem;
     font-size: 2rem;
     border-radius: 16px;
-
-    /* Mobilde hover çok yaygın olmadığı için
-         gölge/outline gibi efektleri isterseniz kaldırabilirsiniz */
     outline: none;
     box-shadow: none;
   }
@@ -1365,14 +1439,12 @@
     font-size: 1.8rem;
   }
 
-  /* Mobilde hover devre dışı kalabileceği için animasyon iptali */
   .sub_section_container:hover .sub_section_text_container_bg {
     transform: none;
     opacity: 1;
   }
 }
 
-/* 2) Tablet (max-width: 768px) */
 @media (max-width: 768px) {
   .sub_section_container {
     margin: 3rem 2rem;
@@ -1412,22 +1484,19 @@
 }
 
 .footer_social_container {
-  /* .hero-social-links'teki gibi */
-  display: flex; /* varsa mevcutsa koruyun veya inline-flex olarak değiştirebilirsiniz */
+  display: flex;
   gap: 3rem;
   margin-top: 1.5rem;
   text-align: center;
 }
 
 .footer_social_container h3 {
-  /* .hero-social-links h3'teki gibi */
-  gap: 3rem; /* Eğer h3 içerisinde flex ögeler varsa anlamlı olur, yoksa silebilirsiniz. */
+  gap: 3rem;
   margin-top: 1.5rem;
   text-align: center;
 }
 
 .footer_social_container a {
-  /* .hero-social-links a'ya benzetilmiş hali */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1439,22 +1508,15 @@
   text-decoration: none;
   transition: transform 0.3s ease, background-color 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-
-  /* İsterseniz mevcut kodunuzdan bunu ekleyebilirsiniz:
-     border: 1px solid var(--color-brand-primary-950);
-     border-radius: 9999px; (daha fazla yuvarlatılmış görünüm için)
-  */
 }
 
 .footer_social_container a:hover {
-  /* Hover durumunda benzer efektler */
   background-color: var(--color-primary-300);
   transform: scale(1.15);
 }
 
 .footer_social_container img {
-  /* .hero-social-links img'e benzetilmiş hali */
-  width: 36px; /* İkon boyutu */
+  width: 36px;
   height: 36px;
   object-fit: contain;
   border-radius: 50%;
@@ -1504,8 +1566,8 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background-color: var(--color-black); /* İsteğinize göre düzenleyin */
-  color: #000; /* İsteğinize göre düzenleyin */
+  background-color: var(--color-black);
+  color: #000;
   border-radius: 50%;
   text-decoration: none;
   transition: transform 0.3s ease, background-color 0.3s ease;
@@ -1514,14 +1576,13 @@
 
 .hero_social_links a:hover {
   transform: scale(1.15);
-  background-color: var(--color-brand-tertiary-500); /* Hover'da açık gri, isteğe göre düzenleyin */
+  background-color: var(--color-brand-tertiary-500);
 }
 
 .hero_social_links img {
-  width: 32px; /* İkon boyutu */
+  width: 32px;
   height: 32px;
   object-fit: contain;
-  /* border-radius: 50%;  <-- Genellikle ikona ihtiyaç yoksa kaldırabilirsiniz */
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
@@ -1542,9 +1603,6 @@
   width: 254px;
 }
 
-/* Responsive Design */
-
-/* Ekran genişliği 1440px'den küçük olduğunda */
 @media only screen and (min-width: 1440px) {
   .hero_section {
     background-size: 100% auto;
@@ -1694,4 +1752,83 @@
   .usage_card_title_container {
     gap: 0rem;
   }
+
+  /* Diğer kodların altına ekleyebilirsiniz */
+
+  /* Footer yazılı linkler menü */
+  .footer_nav_container {
+    display: flex;
+    justify-content: center; /* Ortaya hizala */
+    align-items: center;
+    gap: 1.5rem; /* Linkler arası boşluk */
+    padding: 2rem 1rem;
+    background-color: var(--color-brand-secondary-200); /* İsteğinize göre arka plan rengi */
+    border-top: 1px solid #e0e0e0; /* Üst çizgi */
+    border-bottom: 1px solid #e0e0e0; /* Alt çizgi */
+  }
+
+  .footer_nav_container a {
+    font-size: 0.875rem; /* ~14px */
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer_nav_container a:hover {
+    color: #000; /* Üzerine gelince koyu renk */
+  }
+
+  /* Mobil uyum */
+  @media (max-width: 768px) {
+    .footer_nav_container {
+      flex-wrap: wrap; /* Alt satıra geçebilsin */
+      gap: 1rem; /* Daha küçük boşluk */
+      padding: 1rem;
+    }
+  }
+}
+
+/* Takım Grid'i için tablet/mobil ayarı */
+@media (max-width: 1024px) {
+  .team_grid {
+    gap: 1rem;
+    justify-content: space-around;
+  }
+  .team_card {
+    width: 280px;
+  }
+}
+
+.typewriter_text {
+  transition: color 0.5s ease-in-out;
+  animation: textColors 8s infinite;
+  font-size: 6rem;
+  font-weight: 700;
+}
+
+@keyframes textColors {
+  0% {
+    color: var(--color-brand-primary-800);
+  }
+  20% {
+    color: var(--color-brand-secondary-600);
+  }
+  40% {
+    color: var(--color-brand-tertiary-800);
+  }
+  60% {
+    color: var(--color-brand-primary-800);
+  }
+  80% {
+    color: var(--color-brand-tertiary-800);
+  }
+  100% {
+    color: var(--color-brand-primary-800);
+  }
+}
+
+/* Metin değişimleriyle senkronize renk geçişi için */
+.typewriter_text[data-active="true"] {
+  animation: textColors 8s infinite;
 }

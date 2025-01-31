@@ -51,7 +51,7 @@ function ExamResult() {
         alt="Background pattern"
         className="absolute flex justify-center items-center h-dvh object-cover"
       />
-      <div className="flex flex-col items-center justify-center flex-1 z-10">
+      <div className="flex flex-col items-center px-4 py-5 justify-center flex-1 z-10">
         <Card className="max-w-[36rem] w-full px-10 py-20 gap-4 flex flex-col border-2 border-greyscale-light-200 rounded-2xl bg-base-white mx-2">
           <CardContent className="gap-9 flex flex-col">
             <Image className="mx-auto" src={DoneImage} alt="" />
@@ -69,9 +69,9 @@ function ExamResult() {
                 <Input
                   type="text"
                   aria-label="Your email"
-                  className="h-13"
+                  className="h-13 w-full"
                   placeholder="you@mail.com"
-                  onChange={(e) => setMail(e.target.value)}
+                  onChange={(e: any) => setMail(e.target.value)}
                 />
                 <Button
                   size="icon"

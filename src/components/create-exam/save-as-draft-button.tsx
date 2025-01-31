@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
 import { AxiosError } from "axios";
+import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
 export const SaveAsDraftButton = () => {
   const router = useRouter();
@@ -79,13 +80,21 @@ export const SaveAsDraftButton = () => {
 
   return (
     <Button
-      variant="ghost"
-      className="w-40"
+      variant="outline"
+      icon={true}
+      iconPosition="right"
       disabled={isPending || !form.formState.isDirty}
       pill
       onClick={handleSave}
     >
-      {isPending ? <Spinner className="size-6" /> : "Save as Draft"}
+      {isPending ? (
+        <Spinner className="size-6" />
+      ) : (
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline">Save as draft</span>
+          <DocumentPlusIcon className="size-6 sm:size-6" />
+        </div>
+      )}
     </Button>
   );
 };
