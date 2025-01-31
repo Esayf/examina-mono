@@ -34,7 +34,7 @@ interface AttendanceChartsProps {
 }
 
 function AttendanceCharts({participants, startDate, endDate}: AttendanceChartsProps) {
-  const resolution = 20;
+  const resolution = 10;
   const xLabels = linspace(Number(startDate), Number(endDate), resolution).map(date => new Date(date));
   
   const attendanceData = xLabels.map(date => {
@@ -60,25 +60,9 @@ function AttendanceCharts({participants, startDate, endDate}: AttendanceChartsPr
       ];
 
   return (
-    <>
-    <LineChart
-      width={500}
-      height={300}
-      xAxis={[{ data: xLabels, scaleType: 'time' }]}
-      series={[
-        { data: attendanceData, label: 'Attended', area: true, showMark: false },
-        { data: finishedData, label: 'Finished', area: true, showMark: false },
-      ]}
-      sx={{
-        [`& .${lineElementClasses.root}`]: {
-          display: 'none',
-        },
-      }}
-    />
-
+    <div className="flex flex-col gap-4">
     <PieChart
-      width={300}
-      height={300}
+      height={250}
       colors={totalParticipants === 0 ? ["#cccccc"] : ["#1f77b4", "#ff7f0e"]}
       series={[
         {
@@ -109,7 +93,23 @@ function AttendanceCharts({participants, startDate, endDate}: AttendanceChartsPr
       </PieCenterLabel>
     </PieChart>
 
-  </>
+    <div className="border-b border-greyscale-light-200"></div>
+
+    <LineChart
+      height={250}
+      xAxis={[{ data: xLabels, scaleType: 'time' }]}
+      series={[
+        { data: attendanceData, label: 'Attended', area: true, showMark: false },
+        { data: finishedData, label: 'Finished', area: true, showMark: false },
+      ]}
+      sx={{
+        [`& .${lineElementClasses.root}`]: {
+          display: 'none',
+        },
+      }}
+    />
+
+  </div>
 
   );
 }

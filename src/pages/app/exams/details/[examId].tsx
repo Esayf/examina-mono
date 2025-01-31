@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { getExamStatistics, ExamStatistics } from "@/lib/Client/Exam";
+import { getExamStatistics, ExamStatistics, Leaderboard, Participant } from "@/lib/Client/Exam";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router"
 import React from "react";
@@ -42,193 +42,210 @@ const ExamDetails = () => {
   const creatorWalletDisplay  = `${creatorWalletAddress.slice(0,5)}...${creatorWalletAddress.slice(-5)}`;
   const creatorWalletAddressUrl = `https://minascan.io/mainnet/account/${creatorWalletAddress}`;
   
+  const totalQuestions = data.questionCount;
+  const passingScore = data.passingScore;
+
   const now = new Date();
   let status = "Draft";
-  if (startDate > now) {
-    status = "Upcoming";
-  } else if (startDate <= now && (!endDate || endDate > now) && !data.isCompleted) {
-    status = "Active";
-  } else if ((endDate && endDate <= now) || data.isCompleted) {
+  if (data.isCompleted) {
     status = "Ended";
+  } else if (startDate > now) {
+    status = "Upcoming";
+  } else {
+    status = "Active";
   }
 
-  const totalQuestions = data.questionCount;
+  const mockLeaderboard = Array.from({ length: 10 }, (_, i) => ({
+    userId: `User ${i + 1}`,
+    nickname: `User ${i + 1}`,
+    walletAddress: `B62q${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
+    score: Number(`${100 - i * 10}`),
+    startTime: new Date("2025-11-01 03:32:10"),
+    finishTime: new Date(new Date("2025-11-01 03:32:10").getTime() + (i + 1) * 60000),
+  })) as Leaderboard ;
 
-  const totalWinners = 8;
-  const totalRewards = 1000;
+  const mockParticipants = Array.from({ length: 20 }, (_, i) => {
+    const wallet = `B62q${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+    const start = new Date(new Date("2025-11-01 03:00:00").getTime() + i * 300000);
+    const finish = i % 4 === 0 ? null : new Date(start.getTime() + 1800000 + i * 60000);
+    
+    return {
+      userId: `User ${i + 1}`,
+      nickname: `User ${i + 1}`,
+      walletAddress: wallet,
+      score: Math.floor(Math.random() * 100),
+      startTime: start,
+      finishTime: finish
+    } as Participant;
+  }) as Participant[];
 
-  const winnerList = data.winnerlist;
-  const participants = data.participants;
-  const leaderboard = data.leaderboard ?? [];
-
-  const mockLeaderboard = [
-    {
-      nickname: "John Doe",
-      score: "100",
-      finished: true,
-      startDate: new Date("2025-11-01 03:32:10"),
-      finishTime: new Date("2025-11-01 03:32:10"),
-    },
-    {
-      nickname: "Jane Doe",
-      score: "90",
-      finished: true,
-      startDate: new Date("2025-11-01 03:32:10"),
-      finishTime: new Date("2025-01-01 08:41:20"),
-    },
-    {
-      nickname: "Smith Fea",
-      score: "80",
-      finished: true,
-      startDate: new Date("2025-11-01 03:32:10"),
-      finishTime: new Date("2025-01-02 11:41:20"),
-    },
-    {
-      nickname: "Randy Rando",
-      score: "70",
-      finished: false,
-      startDate: new Date("2025-11-01 03:32:10"),
-      finishTime: new Date("2025-01-01 10:41:20"),
-    }
-  ]
-
-
+  const leaderboard = (data.leaderboard && data.leaderboard.length > 0) ? data.leaderboard : [] // mockLeaderboard;
+  const participants = data.participants ?? [] // mockParticipants;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
-      {/* Background Image */}
-      {/* <div
-        className="absolute inset-0 bg-cover bg-fixed"
-        style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-      ></div> */}
-  
-      {/* İçerik */}
-      <div className="relative flex justify-center h-screen p-4 overflow-y-auto">
-        <div className="w-full min-h-fit bg-white bg-opacity-90 rounded-lg p-4 flex flex-col gap-4">
-          {/* <h1 className="text-2xl font-bold">Details</h1> */}
-  
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           
-            <div className="flex flex-col gap-2">
-              <h2 className="text-2xl font-bold border-b border-greyscale-light-200">{data.title}</h2>
-              <div>
-                <Badge
-                  variant={
-                    status === "Draft"
-                      ? "secondary"
-                      : status === "Active"
-                      ? "active"
-                      : status === "Ended"
-                      ? "ended"
-                      : "upcoming"
-                  }
-                >
-                  {status}
-                </Badge>
-              </div>
+    <div className="relative min-h-screen w-full overflow-hidden">
+      {/* Content Container */}
+      <div className="relative flex justify-center p-2 sm:p-4 overflow-y-auto">
+        <div className="w-full max-w-7xl min-h-fit bg-white bg-opacity-90 rounded-lg p-4 flex flex-col gap-4">
+          
+          {/* Grid Container */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
+            
+            {/* Title Section */}
+            <div className="md:col-span-2">
+              <h2 className="text-2xl font-bold border-b border-greyscale-light-200 pb-2">
+                {data.title}
+              </h2>
+              <Badge
+                variant={status.toLowerCase() as any}
+                className="mt-2 text-sm"
+              >
+                {status}
+              </Badge>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Created By</h2>
-              <a href={creatorWalletAddressUrl} 
-                className="text-sm text-gray-500 hover:underline"
+            {/* Creator Section */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-2">Created By</h3>
+              <a
+                href={creatorWalletAddressUrl}
+                className="text-sm text-brand-primary-600 hover:underline break-all"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {walletRender(creatorWalletAddress)}
+                {creatorWalletDisplay}
               </a>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Description</h2>
+            {/* Exam Details Section */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-2">Exam Details</h3>
+              <div className="space-y-1 text-sm">
+                <p><span className="font-medium">Duration:</span> {data.duration} mins</p>
+                <p><span className="font-medium">Start:</span> {startDate.toLocaleTimeString() + " - " + startDate.toLocaleDateString()}</p>
+                <p><span className="font-medium">End:</span> {endDate.toLocaleTimeString() + " - " + endDate.toLocaleDateString()}</p>
+                <p><span className="font-medium">Questions:</span> {totalQuestions}</p>
+              </div>
+            </div>
+
+            {/* Description Section */}
+            <div className="md:col-span-2 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
               <ReactMarkdown
-                className="
-                  prose
-                  max-w-full
-                  text-base
-                  text-greyscale-light-900
-                  border
-                  border-greyscale-light-200
-                  rounded-2xl
-                  p-4
-                  break-words
-                  overflow-y-auto
-                  h-auto
-                  max-h-[50vh]
-                "
+                className="prose max-w-full text-sm sm:text-base"
                 remarkPlugins={[remarkGfm]}
               >
-              {data.description || "No description yet..."}
+                {data.description || "No description available"}
               </ReactMarkdown>
             </div>
+
+            {/* Charts Section */}
+            <div className="md:col-span-1 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
+            <h3 className="text-lg font-semibold mb-4">Attendance</h3>
+            {participants && (
+              <AttendanceCharts 
+                  participants={participants} 
+                  startDate={startDate} 
+                  endDate={endDate}
+                />
+              )}
+            </div>
+
+            {/* Participants Section */}
+            <div className="md:col-span-1 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-4">Participants</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left border-b border-greyscale-light-200">
+                      <th className="pb-2 text-sm font-medium min-w-[120px]">User</th>
+                      <th className="pb-2 text-sm font-medium">Score</th>
+                      <th className="pb-2 text-sm font-medium min-w-[100px]">Start</th>
+                      <th className="pb-2 text-sm font-medium min-w-[100px]">End</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {participants?.map((item) => (
+                      <tr 
+                        key={item.walletAddress}
+                        className="border-b border-greyscale-light-100 hover:bg-greyscale-light-50"
+                      >
+                        <td className="py-3 text-sm truncate max-w-[150px]">
+                          <a
+                            href={`https://minascan.io/mainnet/account/${item.walletAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-brand-primary-600 hover:underline"
+                          >
+                            {walletRender(item.walletAddress)}
+                          </a>
+                        </td>
+                        <td className="py-3 text-sm">
+                          {item.score ? item.score : <span className="text-greyscale-light-500">-</span>}
+                        </td>
+                        <td className="py-3 text-sm">
+                          {new Date(item.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </td>
+                        <td className="py-3 text-sm">
+                          {item.finishTime ? 
+                            new Date(item.finishTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 
+                            <span className="text-greyscale-light-500">-</span>
+                          }
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Leaderboard Section */}
+            <div className="md:col-span-1 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-4">Leaderboard</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left border-b border-greyscale-light-200">
+                      <th className="pb-2 text-sm font-medium">#</th>
+                      <th className="pb-2 text-sm font-medium">User</th>
+                      <th className="pb-2 text-sm font-medium">Score</th>
+                      <th className="pb-2 text-sm font-medium min-w-[100px]">Finished at</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboard.map((item: Participant & {score: number, finishTime: Date}, index) => {
+                      const startTime = new Date(item.startTime);
+                      const finishTime = new Date(item.finishTime);
+                      
+                      const timeTaken = (finishTime.getTime() - startTime.getTime()) / 1000;
+                      return(
+                      <tr 
+                        key={item.userId} 
+                        className="border-b border-greyscale-light-100 hover:bg-greyscale-light-50"
+                      >
+                        <td className="py-3 text-sm">{index + 1}</td>
+                        <td className="py-3 text-sm font-medium ">
+                          <a href={`https://minascan.io/mainnet/account/${item.walletAddress}`} target="_blank" rel="noopener noreferrer" className="text-brand-primary-600 hover:underline">
+                            {walletRender(item.walletAddress)}
+                          </a>
+                        </td>
+                        <td className={"py-3 text-sm truncate text-brand-primary-600" + (item.score >= passingScore ? " text-green-500" : "")}>{item.score}</td>
+                        <td className="py-3 text-sm">
+                          {new Date(item.finishTime).toLocaleTimeString()} - <span className="text-greyscale-light-500">{timeTaken} min</span>
+                        </td>
+                      </tr>
+                    )})}
+                  </tbody>
+                </table>
+              </div>
+            </div>
             
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Exam Status</h2>
-              <p className="text-sm text-gray-500">Duration: {data.duration} minutes</p>
-              <p className="text-sm text-gray-500">Start Date: {startDate.toLocaleString()}</p>
-              <p className="text-sm text-gray-500">End Date: {endDate.toLocaleString()}</p>
-              <p className="text-sm text-gray-500">Total Questions: {totalQuestions}</p>
-            </div>
-
-            <div className="flex min-h-[200px] col-span-2 gap-2">
-            
-              {participants && 
-              <AttendanceCharts participants={participants} 
-                startDate={startDate} 
-                endDate={endDate}/>
-              }
-
-
-            </div>
-
-
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Leaderboard</h2>
-              {leaderboard.map((item) => (
-                <div key={item.nickname} className="flex flex-col gap-2">
-                  <p className="text-sm text-gray-500">{item.nickname}</p>
-                  <p className="text-sm text-gray-500">{item.score}</p>
-                  <p className="text-sm text-gray-500">{item.finishTime.toLocaleString()}</p>
-                </div>
-              ))}
-            </div>
-  
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Winner List</h2>
-              {winnerList?.map((item) => (
-                <div key={`winner-list-${item.walletAddress}`} className="flex flex-col gap-2">
-                  <p className="text-sm text-gray-500">{item.walletAddress}</p>
-                  <p className="text-sm text-gray-500">{item.score}</p>
-                  <p className="text-sm text-gray-500">{item.finishTime.toLocaleString()}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Participants</h2>
-              {participants?.map((item) => (
-                <div key={`participant-${item.walletAddress}`} className="flex flex-col gap-2">
-                  <div className="flex flex-row gap-2">
-                    <p className="text-sm text-gray-500">{walletRender(item.walletAddress)}</p>
-                    <p className="text-sm text-gray-500">{item.score}</p>
-                    <p className="text-sm text-gray-500">{new Date(item.startTime).toLocaleString()}</p>
-                    {item.finishTime && 
-                    <p className="text-sm text-gray-500">{new Date(item.finishTime).toLocaleString()}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Exam End Date</h2>
-              <p className="text-sm text-gray-500">{endDate.toLocaleString()}</p>
-            </div>
-
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 export default ExamDetails;
