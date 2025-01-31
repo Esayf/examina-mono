@@ -8,17 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import {
-  Step2FormValues,
-  step2ValidationSchema,
-} from "@/components/create-exam/step2-schema";
-import {
-  Step1FormValues,
-  step1ValidationSchema,
-} from "@/components/create-exam/step1-schema";
+import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
+import { Step1FormValues, step1ValidationSchema } from "@/components/create-exam/step1-schema";
 import { Step2 } from "@/components/create-exam/step2";
 import { Step1 } from "@/components/create-exam/step1";
 import { BackgroundPattern } from "@/components/landing-page/background-pattern";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
 type FormValues = Step1FormValues | Step2FormValues;
 
@@ -41,51 +36,22 @@ function CreateExam() {
           question: "",
           correctAnswer: "",
           questionType: "mc",
-          answers: [
-            { answer: "" },
-            { answer: "" },
-          ],
+          answers: [{ answer: "" }, { answer: "" }],
         },
       ],
     },
   });
 
-  const { trigger, formState: { isDirty, isSubmitted } } = methods;
+  const {
+    trigger,
+    formState: { isDirty, isSubmitted },
+  } = methods;
 
-  useEffect(() => {
-    const handleRouteChange = (url: string, e: any) => {
-      if (isDirty && !isSubmitted) {
-        const confirmation = window.confirm(
-          "You have unsaved changes. Are you sure you want to leave?"
-        );
-        if (!confirmation) {
-          router.events.emit("routeChangeError",  "your error message", url, { shallow: false });
-          throw "Route change aborted.";
-        }
-      }
-    };
-
-    const handleRouteChangeError = (err: any) => {
-      if (err !== "Route change aborted.") return;
-      // URL'i geri al ve istediğiniz callback'i çalıştırın
-      window.history.pushState(null, '', router.asPath);
-    };
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty && !isSubmitted) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-    
-    router.events.on("routeChangeStart", handleRouteChange);
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      router.events.off("routeChangeStart", handleRouteChange);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isDirty, isSubmitted, router]);
+  useUnsavedChanges({
+    isDirty: isDirty,
+    isSubmitted: isSubmitted,
+    message: "Custom message if needed",
+  });
 
   const handleNext = async () => {
     const isStepValid = await trigger(undefined, {
@@ -132,10 +98,7 @@ function CreateExam() {
         />
 
         {/* Additional Meta Tags */}
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="/app/create-exam" />
       </Head>
