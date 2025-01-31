@@ -39,6 +39,7 @@ import {
   ShareIcon,
   PencilIcon,
   TrashIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 
 // QR code
@@ -314,6 +315,14 @@ function Row({ exam }: RowProps) {
 
         {/* Actions */}
         <div className="flex-1 p-5 min-w-[150px] flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="icon-sm"
+            className="max-w-8 max-h-8 min-w-8 min-h-8 border"
+            onClick={() => router.push(`/app/exams/details/${exam._id}`)}
+          >
+            <EyeIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block" />
+          </Button>
           <Button
             disabled={exam.status !== "draft"}
             variant="outline"
@@ -655,21 +664,23 @@ function Application() {
             </CardHeader>
 
             <CardContent className="px-0 pt-0 pb-5">
-              <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200 overflow-auto">
-                {FILTER_OPTIONS.map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => setFilter(opt)}
-                    className={cn(
-                      "px-3 py-1 text-sm rounded-full border transition-colors duration-200 ease-in-out",
-                      filter === opt
-                        ? "bg-brand-primary-50 text-brand-primary-950 border-brand-primary-600"
-                        : "bg-white text-greyscale-light-900 border-greyscale-light-300 hover:bg-greyscale-light-50"
-                    )}
-                  >
-                    {opt}
-                  </button>
-                ))}
+              <div className="sticky top-0 z-10 flex min-w-full bg-white/80 backdrop-blur-sm border-b border-greyscale-light-200 shadow-sm">
+                <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200 overflow-auto">
+                  {FILTER_OPTIONS.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => setFilter(opt)}
+                      className={cn(
+                        "px-3 py-1 text-sm rounded-full border transition-colors duration-200 ease-in-out",
+                        filter === opt
+                          ? "bg-brand-primary-50 text-brand-primary-950 border-brand-primary-600"
+                          : "bg-white text-greyscale-light-900 border-greyscale-light-300 hover:bg-greyscale-light-50"
+                      )}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="flex font-medium border-b border-greyscale-light-200">
