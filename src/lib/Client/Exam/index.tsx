@@ -98,19 +98,19 @@ export type Winner = {
 	finishTime: Date;
 };
 
-export type Participant = {
+export interface Participant {
 	userId: string;
 	nickname: string; // TODO: Will be nicknames after random nickname implementation. For now username it is.
 	walletAddress: string;
-	score?: string;
-	finishTime: Date;
+	score?: number;
+	startTime: Date;
+	finishTime?: Date;
 };
 
-export type Leaderboard = {
-	nickname: string;
-	score: string | any;
+export type Leaderboard = Array<Participant & {
+	score: number;
 	finishTime: Date;
-}[];
+}>;
 
 interface ExamDetails {
   exam: Exam;

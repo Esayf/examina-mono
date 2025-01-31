@@ -3,11 +3,15 @@ import { getExamStatistics, ExamStatistics } from "@/lib/Client/Exam";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router"
 import React from "react";
-import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import AttendanceAreaChart from "@/components/details/attendanceAreaChart";
 
-function isExamStatistics(obj: any): obj is ExamStatistics {console.log(obj);
+function walletRender(walletAddress: string): string {
+  return `${walletAddress.slice(0,5)}...${walletAddress.slice(-5)}`;
+}
+
+function isExamStatistics(obj: any): obj is ExamStatistics {
   return (obj && 
     typeof obj.title === "string"
   );
@@ -22,10 +26,6 @@ const ExamDetails = () => {
     queryKey: ["examStatistics", examId],
     queryFn: () => getExamStatistics(examId),
   });
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   if (!isExamStatistics(data)) {
     return isLoading? <div>Loading...</div>
@@ -52,11 +52,47 @@ const ExamDetails = () => {
     status = "Ended";
   }
 
-
   const totalQuestions = data.questionCount;
-  const totalParticipants = 10;
+
   const totalWinners = 8;
   const totalRewards = 1000;
+
+  const winnerList = data.winnerlist;
+  const participants = data.participants;
+  const leaderboard = data.leaderboard ?? [];
+
+  const mockLeaderboard = [
+    {
+      nickname: "John Doe",
+      score: "100",
+      finished: true,
+      startDate: new Date("2025-11-01 03:32:10"),
+      finishTime: new Date("2025-11-01 03:32:10"),
+    },
+    {
+      nickname: "Jane Doe",
+      score: "90",
+      finished: true,
+      startDate: new Date("2025-11-01 03:32:10"),
+      finishTime: new Date("2025-01-01 08:41:20"),
+    },
+    {
+      nickname: "Smith Fea",
+      score: "80",
+      finished: true,
+      startDate: new Date("2025-11-01 03:32:10"),
+      finishTime: new Date("2025-01-02 11:41:20"),
+    },
+    {
+      nickname: "Randy Rando",
+      score: "70",
+      finished: false,
+      startDate: new Date("2025-11-01 03:32:10"),
+      finishTime: new Date("2025-01-01 10:41:20"),
+    }
+  ]
+
+
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -72,6 +108,7 @@ const ExamDetails = () => {
           {/* <h1 className="text-2xl font-bold">Details</h1> */}
   
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           
             <div className="flex flex-col gap-2">
               <h2 className="text-2xl font-bold border-b border-greyscale-light-200">{data.title}</h2>
               <div>
@@ -98,7 +135,7 @@ const ExamDetails = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {creatorWalletDisplay}
+                {walletRender(creatorWalletAddress)}
               </a>
             </div>
 
@@ -124,26 +161,64 @@ const ExamDetails = () => {
               {data.description || "No description yet..."}
               </ReactMarkdown>
             </div>
-
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Participants</h2>
-              <p className="text-sm text-gray-500">Duration {data.duration} minutes</p>
-              <p className="text-sm text-gray-500">Start Date {startDate.toLocaleString()}</p>
-              <p className="text-sm text-gray-500">End Date {endDate.toLocaleString()}</p>
-            </div>
             
             <div className="flex flex-col gap-2">
               <h2 className="text-lg font-bold">Exam Status</h2>
-              <p className="text-sm text-gray-500">Duration {data.duration} minutes</p>
-              <p className="text-sm text-gray-500">Start Date {startDate.toLocaleString()}</p>
-              <p className="text-sm text-gray-500">End Date {endDate.toLocaleString()}</p>
+              <p className="text-sm text-gray-500">Duration: {data.duration} minutes</p>
+              <p className="text-sm text-gray-500">Start Date: {startDate.toLocaleString()}</p>
+              <p className="text-sm text-gray-500">End Date: {endDate.toLocaleString()}</p>
+              <p className="text-sm text-gray-500">Total Questions: {totalQuestions}</p>
+            </div>
+
+            <div className="flex min-h-[200px] col-span-2 gap-2">
+            
+              {participants && 
+              <AttendanceAreaChart participants={participants} 
+                startDate={startDate} 
+                endDate={endDate}/>
+              }
+
+
+            </div>
+
+
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-bold">Leaderboard</h2>
+              {leaderboard.map((item) => (
+                <div key={item.nickname} className="flex flex-col gap-2">
+                  <p className="text-sm text-gray-500">{item.nickname}</p>
+                  <p className="text-sm text-gray-500">{item.score}</p>
+                  <p className="text-sm text-gray-500">{item.finishTime.toLocaleString()}</p>
+                </div>
+              ))}
             </div>
   
             <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Exam </h2>
-              <p className="text-sm text-gray-500">{startDate.toLocaleString()}</p>
+              <h2 className="text-lg font-bold">Winner List</h2>
+              {winnerList?.map((item) => (
+                <div key={`winner-list-${item.walletAddress}`} className="flex flex-col gap-2">
+                  <p className="text-sm text-gray-500">{item.walletAddress}</p>
+                  <p className="text-sm text-gray-500">{item.score}</p>
+                  <p className="text-sm text-gray-500">{item.finishTime.toLocaleString()}</p>
+                </div>
+              ))}
             </div>
-  
+
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-bold">Participants</h2>
+              {participants?.map((item) => (
+                <div key={`participant-${item.walletAddress}`} className="flex flex-col gap-2">
+                  <div className="flex flex-row gap-2">
+                    <p className="text-sm text-gray-500">{walletRender(item.walletAddress)}</p>
+                    <p className="text-sm text-gray-500">{item.score}</p>
+                    <p className="text-sm text-gray-500">{new Date(item.startTime).toLocaleString()}</p>
+                    {item.finishTime && 
+                    <p className="text-sm text-gray-500">{new Date(item.finishTime).toLocaleString()}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <div className="flex flex-col gap-2">
               <h2 className="text-lg font-bold">Exam End Date</h2>
               <p className="text-sm text-gray-500">{endDate.toLocaleString()}</p>
