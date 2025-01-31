@@ -17,6 +17,14 @@ function isExamStatistics(obj: any): obj is ExamStatistics {
   );
 }
 
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  };
+  
+const getScoreColorClass = (score: number, passingScore: number) => {
+  return score >= passingScore ? "text-green-500" : "text-brand-primary-600";
+};
+
 const ExamDetails = () => {
   const router = useRouter();
 
@@ -55,30 +63,6 @@ const ExamDetails = () => {
   } else {
     status = "Active";
   }
-
-  const mockLeaderboard = Array.from({ length: 10 }, (_, i) => ({
-    userId: `User ${i + 1}`,
-    nickname: `User ${i + 1}`,
-    walletAddress: `B62q${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
-    score: Number(`${100 - i * 10}`),
-    startTime: new Date("2025-11-01 03:32:10"),
-    finishTime: new Date(new Date("2025-11-01 03:32:10").getTime() + (i + 1) * 60000),
-  })) as Leaderboard ;
-
-  const mockParticipants = Array.from({ length: 20 }, (_, i) => {
-    const wallet = `B62q${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
-    const start = new Date(new Date("2025-11-01 03:00:00").getTime() + i * 300000);
-    const finish = i % 4 === 0 ? null : new Date(start.getTime() + 1800000 + i * 60000);
-    
-    return {
-      userId: `User ${i + 1}`,
-      nickname: `User ${i + 1}`,
-      walletAddress: wallet,
-      score: Math.floor(Math.random() * 100),
-      startTime: start,
-      finishTime: finish
-    } as Participant;
-  }) as Participant[];
 
   const leaderboard = (data.leaderboard && data.leaderboard.length > 0) ? data.leaderboard : [] // mockLeaderboard;
   const participants = data.participants ?? [] // mockParticipants;
@@ -214,7 +198,7 @@ const ExamDetails = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {leaderboard.map((item: Participant & {score: number, finishTime: Date}, index) => {
+                  {leaderboard.map((item, index) => {
                       const startTime = new Date(item.startTime);
                       const finishTime = new Date(item.finishTime);
                       
@@ -230,9 +214,12 @@ const ExamDetails = () => {
                             {walletRender(item.walletAddress)}
                           </a>
                         </td>
-                        <td className={"py-3 text-sm truncate text-brand-primary-600" + (item.score >= passingScore ? " text-green-500" : "")}>{item.score}</td>
+                        <td className={`py-3 text-sm truncate ${getScoreColorClass(item.score, passingScore)}`}>
+                          {item.score}
+                        </td>
                         <td className="py-3 text-sm">
-                          {new Date(item.finishTime).toLocaleTimeString()} - <span className="text-greyscale-light-500">{timeTaken} min</span>
+                          {formatTime(finishTime)} - 
+                          <span className="text-greyscale-light-500">{timeTaken} min</span>
                         </td>
                       </tr>
                     )})}
