@@ -27,14 +27,14 @@ function PieCenterLabel({ children }: { children: React.ReactNode }) {
 }
 
 
-interface AttendanceAreaChartProps {
+interface AttendanceChartsProps {
   participants: Participant[];
   startDate: Date;
   endDate: Date;
 }
 
-function AttendanceAreaChart({participants, startDate, endDate}: AttendanceAreaChartProps) {
-  const resolution = 10;
+function AttendanceCharts({participants, startDate, endDate}: AttendanceChartsProps) {
+  const resolution = 20;
   const xLabels = linspace(Number(startDate), Number(endDate), resolution).map(date => new Date(date));
   
   const attendanceData = xLabels.map(date => {
@@ -50,12 +50,14 @@ function AttendanceAreaChart({participants, startDate, endDate}: AttendanceAreaC
   });
 
   const totalParticipants = participants.length;
-  const finishedParticipants = finishedData[finishedData.length - 1]
+  const finishedParticipants = finishedData[finishedData.length - 1] || 0;
   
-  const pieChartData = [
-    {label: "Finished", value: finishedParticipants},
-    {label: "Not Finished", value: totalParticipants - finishedParticipants},
-  ];
+  const pieChartData = totalParticipants === 0 
+    ? [{label: "No Participants", value: 1}] 
+    : [
+        {label: "Finished", value: finishedParticipants},
+        {label: "Not Finished", value: totalParticipants - finishedParticipants},
+      ];
 
   return (
     <>
@@ -77,17 +79,19 @@ function AttendanceAreaChart({participants, startDate, endDate}: AttendanceAreaC
     <PieChart
       width={300}
       height={300}
-      colors={["#1f77b4", "#ff7f0e"]}
+      colors={totalParticipants === 0 ? ["#cccccc"] : ["#1f77b4", "#ff7f0e"]}
       series={[
         {
-          arcLabel: (item) => item.value>0? `${item.value}`: '',
+          arcLabel: (item) => totalParticipants === 0 ? '' : (item.value>0 ? `${item.value}`: ''),
           innerRadius: 30,
           outerRadius: 70,
           paddingAngle: 1,
           cornerRadius: 4,
           ...{
             data: pieChartData,
-            valueFormatter: (item) => `${((item.value/totalParticipants)*100).toFixed(2)}%`,
+            valueFormatter: (item) => totalParticipants === 0 
+              ? 'No Data' 
+              : `${((item.value/totalParticipants)*100).toFixed(2)}%`,
           },
         },
       ]}
@@ -97,15 +101,17 @@ function AttendanceAreaChart({participants, startDate, endDate}: AttendanceAreaC
           fontSize: '10px',
         },
       }}
-  >
-  <PieCenterLabel> 
-    {`${((finishedParticipants/totalParticipants)*100).toFixed(2)}%`}
-  </PieCenterLabel>
-  </PieChart>
+    >
+      <PieCenterLabel>
+        {totalParticipants === 0 
+          ? '0%' 
+          : `${((finishedParticipants/totalParticipants)*100).toFixed(2)}%`}
+      </PieCenterLabel>
+    </PieChart>
 
   </>
 
   );
 }
 
-export default AttendanceAreaChart;
+export default AttendanceCharts;

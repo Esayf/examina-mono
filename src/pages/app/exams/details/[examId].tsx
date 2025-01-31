@@ -5,7 +5,7 @@ import { useRouter } from "next/router"
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import AttendanceAreaChart from "@/components/details/attendanceAreaChart";
+import AttendanceCharts from "@/components/details/attendanceCharts";
 
 function walletRender(walletAddress: string): string {
   return `${walletAddress.slice(0,5)}...${walletAddress.slice(-5)}`;
@@ -173,7 +173,7 @@ const ExamDetails = () => {
             <div className="flex min-h-[200px] col-span-2 gap-2">
             
               {participants && 
-              <AttendanceAreaChart participants={participants} 
+              <AttendanceCharts participants={participants} 
                 startDate={startDate} 
                 endDate={endDate}/>
               }
