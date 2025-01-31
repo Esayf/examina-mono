@@ -264,7 +264,7 @@ interface Step1Props {
 export const Step1 = ({ onNext }: Step1Props) => {
   const {
     control,
-    formState: { errors, isDirty, isSubmitted },
+    formState: { errors },
     trigger,
     watch,
   } = useStep1Form();

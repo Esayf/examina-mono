@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { DraftExam, getDraftExam } from "@/lib/Client/Exam";
 import { Spinner } from "@/components/ui/spinner";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
 type FormValues = Step1FormValues | Step2FormValues;
 
@@ -44,7 +45,6 @@ function ExamForm({ exam }: ExamFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
   const currentValidationSchema = validationSchema[currentStep];
-
   const methods = useForm<FormValues>({
     shouldUnregister: false,
     resolver: zodResolver(currentValidationSchema),
@@ -57,10 +57,9 @@ function ExamForm({ exam }: ExamFormProps) {
           rewardDistribution: exam.isRewarded,
           questions: exam.questions.map((q) => ({
             answers: q.options.map((o) => ({ answer: o.text })),
-            correctAnswer: q.correctAnswer ? q.correctAnswer.toString() : undefined,
+            correctAnswer: q.correctAnswer >= 0 ? q.correctAnswer.toString() : undefined,
             question: q.text,
-            // FIXME: this info doesn't exist in the draft exam
-            questionType: "mc" as const,
+            questionType: q.questionType || "mc",
           })),
         }
       : {
@@ -70,7 +69,12 @@ function ExamForm({ exam }: ExamFormProps) {
         },
   });
 
-  const { trigger } = methods;
+  const {
+    trigger,
+    formState: { isDirty, isSubmitted },
+  } = methods;
+
+  useUnsavedChanges({ isDirty, isSubmitted });
 
   const handleNext = async () => {
     const isStepValid = await trigger(undefined, {
@@ -118,7 +122,7 @@ const EditExam = () => {
     );
   }
 
-  return <ExamForm exam={data} />;
+  return <ExamForm exam={data as DraftExam} />;
 };
 
 export default EditExam;
