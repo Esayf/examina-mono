@@ -167,11 +167,10 @@
   list-style: none;
 }
 
-._toolbarRoot_uazmk_160 {
+.mdxeditor-toolbar {
   @apply flex w-full sticky top-0 overflow-x-scroll row-auto pt-2 pl-2 gap-4 mb-2 bg-brand-secondary-50 border-b border-greyscale-light-200 rounded-t-2xl z-10 p-2;
 }
-
-._toolbarRoot_uazmk_160 div[role="separator"] {
+.mdxeditor-toolbar div[role="separator"] {
   margin: var(--spacing-2) var(--spacing-1);
   border-left: 1px solid var(--baseBorder);
   border-right: 1px solid var(--baseBorder);
@@ -179,7 +178,7 @@
   max-width: 300px;
 }
 
-._toolbarRoot_uazmk_160 svg {
+.mdxeditor-toolbar svg {
   color: var(--baseTextContrast);
   display: block;
 }
@@ -432,7 +431,7 @@ ol {
   top: -1rem;
   left: 1rem;
   font-size: 4rem; /* Büyük boy tırnak */
-  color: rgba(0, 0, 0, 0.1); /* Hafif şeffaf renk */
+  color: rgba(180, 21, 21, 0.1); /* Hafif şeffaf renk */
   pointer-events: none; /* Metin seçerken engel olmaması için */
 }
 
@@ -522,11 +521,12 @@ ol {
 }
 
 ._toolbarToggleSingleGroup_uazmk_222 ._toolbarToggleItem_uazmk_206,
-._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206 {
+._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206 .toolbarToggleItem_uazmk_237,
+.mdxeditor-toolbar ._toolbarButton_uazmk_237 {
   border-radius: 9999px;
   width: 36px;
   height: 36px;
-  gap: 8px;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -544,11 +544,11 @@ ol {
   cursor: default;
   padding: var(--spacing-0_5);
 }
-
+/* Toolbar hover */
 @media (hover: hover) {
   ._toolbarToggleItem_uazmk_206:hover,
   ._toolbarButton_uazmk_237:hover {
-    @apply bg-brand-secondary-100 min-w-[32px] max-w-[32px] rounded-full w-8 h-8 justify-center items-center;
+    @apply bg-brand-primary-100;
   }
 }
 

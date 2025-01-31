@@ -78,23 +78,6 @@ export const Step2 = ({ onBack }: Step2Props) => {
   // 4) Preview Modal
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  // 5) beforeunload'da uyarı: eğer form dirty + not submitted
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty && !isSubmitted) {
-        // Tarayıcının default uyarısı
-        e.preventDefault();
-        e.returnValue = "";
-        // Toast ek bilgi (çoğu tarayıcı sayfa kapanırken kısa bir anlık gösterebilir veya hiç göstermeyebilir)
-        toast.error("Your quiz details may be lost if you leave or refresh the page!");
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isDirty, isSubmitted]);
-
   return (
     <>
       <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col overflow-y-auto">

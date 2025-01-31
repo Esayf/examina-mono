@@ -291,7 +291,7 @@ function ExamDetail() {
                 <>
                   Your current wallet address is:{" "}
                   <a
-                    href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}/`}
+                    href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}`}
                     target="_blank"
                     className="font-bold"
                   >

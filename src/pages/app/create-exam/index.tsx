@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import DashboardHeader from "@/components/ui/dashboard-header";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 import { Step2FormValues, step2ValidationSchema } from "@/components/create-exam/step2-schema";
 import { Step1FormValues, step1ValidationSchema } from "@/components/create-exam/step1-schema";
 import { Step2 } from "@/components/create-exam/step2";
 import { Step1 } from "@/components/create-exam/step1";
 import { BackgroundPattern } from "@/components/landing-page/background-pattern";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
 type FormValues = Step1FormValues | Step2FormValues;
 
@@ -19,8 +21,8 @@ const validationSchema = [step1ValidationSchema, step2ValidationSchema] as const
 
 function CreateExam() {
   const [currentStep, setCurrentStep] = useState(0);
-
   const currentValidationSchema = validationSchema[currentStep];
+  const router = useRouter();
 
   const methods = useForm<FormValues>({
     shouldUnregister: false,
@@ -40,7 +42,16 @@ function CreateExam() {
     },
   });
 
-  const { trigger } = methods;
+  const {
+    trigger,
+    formState: { isDirty, isSubmitted },
+  } = methods;
+
+  useUnsavedChanges({
+    isDirty: isDirty,
+    isSubmitted: isSubmitted,
+    message: "Custom message if needed",
+  });
 
   const handleNext = async () => {
     const isStepValid = await trigger(undefined, {
