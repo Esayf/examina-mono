@@ -200,22 +200,8 @@ export const PublishButton = () => {
   };
 
   return (
-    <Button
-      variant="outline"
-      size="default"
-      icon={true}
-      iconPosition="right"
-      disabled={isPublishing}
-      pill
-      onClick={handleSave}
-    >
-      {isPublishing ? (
-        <Spinner className="size-6" />
-      ) : (
-        <>
-          Save as draft <DocumentArrowDownIcon className="size-6" />
-        </>
-      )}
+    <Button variant="outline" disabled={isPublishing} pill onClick={handleSave}>
+      {isPublishing ? <Spinner className="size-6" /> : <>Save as draft</>}
     </Button>
   );
 };

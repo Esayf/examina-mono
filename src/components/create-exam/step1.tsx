@@ -27,6 +27,7 @@ import { QuestionListItem } from "./question-list-item";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import BGR from "@/images/backgrounds/bg-8-20.svg";
+import { SaveAsDraftButton } from "@/components/create-exam/save-as-draft-button";
 import {
   FormControl,
   FormField,
@@ -70,6 +71,14 @@ export function Answers({ index }: AnswersProps) {
     form.setValue(`questions.${index}.correctAnswer`, value);
   };
 
+  // Opsiyonel correctAnswer form
+  const correctAnswerForm = useForm({
+    defaultValues: {
+      correctAnswer: "",
+    },
+    resolver: zodResolver(step1ValidationSchema), // Zod resolver kullanımı
+  });
+
   const questionType = form.watch(`questions.${index}.questionType`);
   const prevQuestionType = useRef(questionType);
 
@@ -85,9 +94,8 @@ export function Answers({ index }: AnswersProps) {
     prevQuestionType.current = questionType;
   }, [questionType, replace]);
 
-  // Eskiden "flex-col" veya "grid" varsa -> şimdi yatay olsun:
-  // Yan yana dizilecek, aralarında boşluk (gap) olacak.
-  const radioGroupClassName = "flex flex-row flex-wrap gap-2 w-full";
+  // Mobilde tek sütun, desktop'ta 2'li grid
+  const radioGroupClassName = "grid grid-cols-1 md:grid-cols-2 gap-2 w-full";
 
   return (
     <div className="flex flex-col">
@@ -100,7 +108,7 @@ export function Answers({ index }: AnswersProps) {
               Answer options
             </FormLabel>
 
-            {/* RadioGroup yatay dizilim */}
+            {/* Responsive grid container */}
             <RadioGroup
               className={radioGroupClassName}
               value={selectedValue}
@@ -137,94 +145,88 @@ export function Answers({ index }: AnswersProps) {
                     control={form.control}
                     name={`questions.${index}.answers.${i}.answer`}
                     render={({ field: inputField }) => (
-                      <>
-                        <FormItem>
-                          <div className="relative">
-                            <Input
-                              as="textarea"
-                              placeholder={`Option ${i + 1}`}
-                              maxLength={76}
-                              {...inputField}
-                              // Değişiklik yapıldığında
-                              onKeyDown={(e: { key: string; preventDefault: () => void }) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault(); // Enter'ı iptal: yeni satır olmayacak
-                                }
-                              }}
-                              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                inputField.onChange(e);
-                                form.setValue(
-                                  `questions.${index}.answers.${i}.answer`,
-                                  e.target.value
-                                );
-                              }}
-                              className={cn(
-                                "pl-12 pr-32 py-6 min-h-[80px] w-full rounded-3xl border items-center transition-colors duration-200",
-                                questionType === "tf" && tfColorClass,
-                                isSelected && questionType !== "tf"
-                                  ? "border-2 border-brand-primary-900 bg-brand-secondary-50 ring-0"
-                                  : "",
-                                questionType === "tf" && "cursor-pointer",
-                                isOverLimit ? "border-ui-error-500 focus:ring-ui-error-500" : ""
-                              )}
-                              readOnly={questionType === "tf"}
-                              onClick={() => {
-                                if (questionType === "tf") {
-                                  radioField.onChange(i.toString());
-                                  handleSelection(i.toString());
-                                  form.setValue(`questions.${index}.correctAnswer`, i.toString());
-                                }
-                              }}
-                              // Input'un solunda radio item
-                              startElement={
-                                <RadioGroupItem value={i.toString()} checked={isSelected} />
+                      <FormItem className="w-full">
+                        <div className="relative">
+                          <Input
+                            as="textarea"
+                            placeholder={`Option ${i + 1}`}
+                            maxLength={76}
+                            {...inputField}
+                            // Değişiklik yapıldığında
+                            onKeyDown={(e: { key: string; preventDefault: () => void }) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault(); // Enter'ı iptal: yeni satır olmayacak
                               }
-                              // Sağ tarafta silme butonu
-                              endElement={
-                                hasTrashIcon && (
-                                  <div className="relative group inline-block">
-                                    <Button
-                                      size="icon-sm"
-                                      variant="ghost"
-                                      onClick={() => remove(i)}
-                                    >
-                                      <XMarkIcon className="size-4" />
-                                    </Button>
-                                    <div
-                                      className={`
-                                        hidden group-hover:block
-                                        absolute -top-10 left-1/2 -translate-x-1/2
-                                        px-2 py-1 rounded-md text-white bg-black
-                                        text-xs whitespace-nowrap
-                                        animate-fadeIn z-50
-                                      `}
-                                    >
-                                      Are you sure?
-                                    </div>
-                                  </div>
-                                )
-                              }
-                            />
-                            {/* Karakter sayısı (tf dışında göster) */}
-                            {questionType !== "tf" && (
-                              <div
-                                className={cn(
-                                  "absolute top-1/2 -translate-y-1/2 text-sm bg-transparent px-1 z-10",
-                                  hasTrashIcon ? "right-10" : "right-4",
-                                  isOverLimit ? "text-red-500" : "text-greyscale-light-500"
-                                )}
-                              >
-                                {`${inputField.value?.length || 0}/76`}
-                              </div>
+                            }}
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                              inputField.onChange(e);
+                              form.setValue(
+                                `questions.${index}.answers.${i}.answer`,
+                                e.target.value
+                              );
+                            }}
+                            className={cn(
+                              "pl-12 pr-32 py-6 min-h-[80px] w-full rounded-3xl border items-center transition-colors duration-200",
+                              questionType === "tf" && tfColorClass,
+                              isSelected && questionType !== "tf"
+                                ? "border-2 border-brand-primary-900 bg-brand-secondary-50 ring-0"
+                                : "",
+                              questionType === "tf" && "cursor-pointer",
+                              isOverLimit ? "border-ui-error-500 focus:ring-ui-error-500" : ""
                             )}
-                          </div>
-                          {isOverLimit && (
-                            <p className="text-red-500 text-sm mt-1">
-                              The answer option exceeds the maximum allowed 76 characters.
-                            </p>
+                            readOnly={questionType === "tf"}
+                            onClick={() => {
+                              if (questionType === "tf") {
+                                radioField.onChange(i.toString());
+                                handleSelection(i.toString());
+                                form.setValue(`questions.${index}.correctAnswer`, i.toString());
+                              }
+                            }}
+                            // Input'un solunda radio item
+                            startElement={
+                              <RadioGroupItem value={i.toString()} checked={isSelected} />
+                            }
+                            // Sağ tarafta silme butonu
+                            endElement={
+                              hasTrashIcon && (
+                                <div className="relative group inline-block">
+                                  <Button size="icon-sm" variant="ghost" onClick={() => remove(i)}>
+                                    <XMarkIcon className="size-4" />
+                                  </Button>
+                                  <div
+                                    className={`
+                                      hidden group-hover:block
+                                      absolute -top-10 left-1/2 -translate-x-1/2
+                                      px-2 py-1 rounded-md text-white bg-black
+                                      text-xs whitespace-nowrap
+                                      animate-fadeIn z-50
+                                    `}
+                                  >
+                                    Are you sure?
+                                  </div>
+                                </div>
+                              )
+                            }
+                          />
+                          {/* Karakter sayısı (tf dışında göster) */}
+                          {questionType !== "tf" && (
+                            <div
+                              className={cn(
+                                "absolute top-1/2 -translate-y-1/2 text-sm bg-transparent px-1 z-10",
+                                hasTrashIcon ? "right-10" : "right-4",
+                                isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+                              )}
+                            >
+                              {`${inputField.value?.length || 0}/76`}
+                            </div>
                           )}
-                        </FormItem>
-                      </>
+                        </div>
+                        {isOverLimit && (
+                          <p className="text-red-500 text-sm mt-1">
+                            The answer option exceeds the maximum allowed 76 characters.
+                          </p>
+                        )}
+                      </FormItem>
                     )}
                   />
                 );
@@ -300,7 +302,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
     setActiveQuestionIndex((prev) => Math.min(prev > 0 ? prev - 1 : prev, fields.length - 2));
   };
 
-  // “beforeunload” => form kaydedilmediyse uyar
+  // "beforeunload" => form kaydedilmediyse uyar
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty && !isSubmitted) {
@@ -312,17 +314,16 @@ export const Step1 = ({ onNext }: Step1Props) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty, isSubmitted]);
 
-  // Soru değişince kaydır
   useEffect(() => {
-    if (questionRefs.current[activeQuestionIndex]) {
-      questionRefs.current[activeQuestionIndex].scrollIntoView({
+    if (questions.length > 0 && questionRefs.current && questionRefs.current[activeQuestionIndex]) {
+      questionRefs.current[activeQuestionIndex]?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
-  }, [activeQuestionIndex]);
+  }, [activeQuestionIndex, questions]);
 
-  // “Next” => validasyon
+  // "Next" => validasyon
   const handleNext = async () => {
     const isValid = await trigger();
     if (!isValid) {
@@ -354,7 +355,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
           ☺︎
         </Button>
         <CardHeaderContent>
-          <CardTitle>Let’s create your questions!</CardTitle>
+          <CardTitle>Let's create your questions!</CardTitle>
         </CardHeaderContent>
 
         <div className="flex flex-col items-end gap-1 mr-4">
@@ -369,9 +370,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
           </div>
         </div>
 
-        <Button variant="outline" size="icon" onClick={handleNext} pill>
-          <ArrowRightIcon className="size-6" />
-        </Button>
+        <div className="flex items-center gap-2 flex-row">
+          <SaveAsDraftButton />
+          <Button size="icon" onClick={onNext} pill>
+            <ArrowRightIcon className="size-6" />
+          </Button>
+        </div>
       </CardHeader>
 
       <CardContent className="flex overflow-y-auto flex-1 gap-6 flex-col md:flex-row relative p-5">
@@ -403,6 +407,49 @@ export const Step1 = ({ onNext }: Step1Props) => {
                     </Button>
                   </div>
 
+                  {/*  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="box-border">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="z-50 max-h-48 overflow-y-auto">
+                      <SelectItem value="mc">Multiple choice</SelectItem>
+                      <SelectItem value="tf">True/False</SelectItem>
+                      {/* Diğerleri devre dışı
+                      <SelectItem disabled value="ord">
+                        Ordering (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="ma">
+                        Matching (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="sa">
+                        Likert (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="ps">
+                        Poll/Survey (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="dd">
+                        Drag and Drop (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="vb">
+                        Video based (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="ib">
+                        Image based (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="ess">
+                        Essay (soon)
+                      </SelectItem>
+                      <SelectItem disabled value="fill">
+                        Fill in the blank (soon)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription className="text-sm text-greyscale-light-600 hidden md:block">
+                    E.g. choose "Multiple choice" if you want up to 4 answer options, or
+                    "True/False" for a simple question.
+                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}

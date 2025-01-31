@@ -43,7 +43,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
     });
     // Redux store'a oturum bilgisini kaydediyoruz
     dispatch(setSession(res.session));
-    // Başarılı ise dashboard'a yönlendirebilirsiniz
+    onClose();
     window.location.href = "/app/dashboard/created";
   };
 
@@ -55,12 +55,15 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
       return;
     }
     toast.success("Welcome back!");
+    // Redux store'a oturum bilgisini kaydediyoruz
     dispatch(setSession(res.session));
+    onClose();
+    // Başarılı ise dashboard'a yönlendirebilirsiniz
     window.location.href = "/app/dashboard/created";
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60 p-4">
+    <div className="fixed inset-0 z-[9999] bg-brand-secondary-500/80 backdrop-blur-lg p-4">
       {/* Modal Kutusu */}
       <div
         className="
@@ -70,10 +73,11 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
           rounded-3xl
           bg-brand-secondary-100
           text-brand-primary-900
-          border-2
+          border
           border-brand-primary-950
           p-6
-          shadow-sm
+          shadow-lg
+          z-50
         "
       >
         {/* Kapat Butonu */}

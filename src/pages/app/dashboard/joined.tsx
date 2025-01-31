@@ -466,16 +466,6 @@ export default function JoinedExamsPage() {
   return (
     <>
       <div className="relative min-h-screen h-dvh flex flex-col z-0">
-        {/* Arkaplan görselini tüm sayfa alanı kaplayacak şekilde ekliyoruz */}
-        <div className="absolute inset-0 z-[-1]">
-          <Image
-            src={BGR}
-            alt="Hero Background"
-            fill
-            className="w-full h-full object-cover"
-            priority
-          />
-        </div>
         <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
           <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-4 pt-2 flex-1 overflow-hidden">

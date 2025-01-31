@@ -915,6 +915,8 @@ ol {
 ._secondaryButton_uazmk_507:disabled {
   background: var(--color-brand-secondary-50);
   border-color: var(--color-brand-secondary-100);
+  border-radius: 100px;
+  border-width: 2px;
 }
 
 ._smallButton_uazmk_522 {

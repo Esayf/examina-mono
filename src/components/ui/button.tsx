@@ -12,8 +12,9 @@ const buttonVariants = cva(
         default:
           "bg-brand-primary-900 text-brand-secondary-200 border-2 border-brand-primary-950 hover:bg-brand-primary-800 disabled:bg-greyscale-light-200 disabled:text-greyscale-light-400 disabled:border-greyscale-light-300",
         outline:
-          "bg-transparent text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-secondary-200 hover:text-brand-primary-900 disabled:bg-greyscale-light-50 disabled:text-greyscale-light-300 disabled:border-greyscale-light-300 disabled:stroke-greyscale-light-300",
-        secondary: "bg-brand-secondary-200 text-brand-primary-800 hover:bg-brand-secondary-300",
+          "bg-transparent text-brand-primary-950 border-2 border-brand-primary-950 hover:bg-brand-secondary-100 hover:text-brand-primary-900 disabled:bg-greyscale-light-50 disabled:text-greyscale-light-300 disabled:border-greyscale-light-300 disabled:stroke-greyscale-light-300",
+        secondary:
+          "border-2 border-brand-primary-950 bg-brand-secondary-100 text-brand-primary-800 hover:bg-brand-secondary-50",
         tertiary:
           "bg-brand-tertiary-500 text-brand-primary-950 hover:bg-brand-tertiary-400 border-2 border-brand-primary-950",
         destructive:

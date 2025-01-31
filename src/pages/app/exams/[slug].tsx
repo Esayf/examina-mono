@@ -165,8 +165,8 @@ function LiveQuiz() {
         alt="Background pattern"
         className="absolute flex justify-center items-center min-h-screen object-cover"
       />
-      <div className="w-full max-w-[76rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-6">
-        <Card className="mt-4 mb-4 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-[90rem] px-4 sm:px-6 lg:px-4 flex flex-col gap-6">
+        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
           <CardHeader>
             {/* CardHeader’de sadece exam title ve description (mobilde) */}
             <CardHeaderContent className="flex flex-row overflow-auto justify-between">
@@ -256,7 +256,7 @@ function LiveQuiz() {
               </Button>
             </div>
             <div className="flex-1 flex gap-6 flex-col overflow-wrap break-words">
-              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[240px] max-h-[260px] text-xl md:min-h-[240px] md:max-h-[300px]">
+              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[240px] max-h-[260px] text-xl md:min-h-[240px] md:max-h-[800px]">
                 <ReactMarkdown
                   className="prose w-full px-5 py-5 break-words overflow-wrap"
                   remarkPlugins={[remarkGfm]}

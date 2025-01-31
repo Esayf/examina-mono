@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import SUBCTA from "@/images/backgrounds/bg1.svg";
+import SUBCTA from "@/images/backgrounds/bg-4.svg";
 import styles from "@/styles/Landing.module.css";
 
 interface SubCtaSectionProps {
@@ -32,11 +32,6 @@ export default function SubCtaSection({ handleAuthentication }: SubCtaSectionPro
       {/* İçerik */}
       <div className={styles.sub_section_container}>
         <div className={styles.container}>
-          {/* 
-            TIKLANIR ALAN:
-            - onClick doğrudan text_container'da 
-            - cursor-pointer stilini de bu div'e veriyoruz 
-          */}
           <div
             className={`${styles.sub_section_text_container} ${styles.clickable}`}
             onClick={handleAuthentication}

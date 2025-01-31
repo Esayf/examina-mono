@@ -22,7 +22,6 @@ interface Step {
   stepText: string;
   stepTitle: string;
   stepDesc: string;
-  // Hem string (URL) hem de StaticImageData desteği
   stepImg?: StaticImageData | string;
   className?: string;
 }
@@ -43,20 +42,20 @@ const handleAuthentication = async () => {
 
 const stepArray: Step[] = [
   {
-    stepText: "STEP 1",
+    stepText: "1",
     stepTitle: "Seamlessly start 🥳",
     stepDesc:
       "Jump right in – no signup needed! Simply press the 'Connect wallet’ button to seamlessly link your Auro Wallet.",
     stepImg: Step1Img,
   },
   {
-    stepText: "STEP 2",
+    stepText: "2",
     stepTitle: "Add your questions 💪",
     stepDesc: "Design your quiz in minutes – choose questions, add rewards, and you’re set!",
     stepImg: Step2Img,
   },
   {
-    stepText: "STEP 3",
+    stepText: "3",
     stepTitle: "Quickly share 🚀",
     stepDesc: "With a single click, your quiz is live and ready to engage your audience!",
     stepImg: Step3Img,
@@ -76,25 +75,19 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
         <h3 className={styles.section_summary}>
           <span>Your quizzes, simplified.</span>
         </h3>
-        <p className={styles.section_desc}>
-          Whether for training, customer engagement, or pure fun, Choz brings together everything
-          you need for a seamless and impactful quiz experience.
-        </p>
 
         <div className={styles.card_container} role="list">
           {stepArr.map((step, index) => (
             <div className={styles.usage_card} key={index} role="listitem">
-              {/* Resmi burada render ediyoruz */}
               {step.stepImg && (
                 <div className={styles.usage_card_image_container}>
                   <Image
                     src={step.stepImg}
                     alt={step.stepTitle}
                     className={styles.usage_card_image}
-                    // width / height veya fill
                     width={100}
                     height={100}
-                    priority={index === 0} // ilkini öncelikli yüklemek için
+                    priority={index === 0}
                   />
                 </div>
               )}
@@ -118,15 +111,12 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
             aria-label="Start creating your first quiz on Choz"
           >
             <Button
-              variant="default"
+              variant="tertiary"
               pill={true}
               size="lg"
               icon={true}
               iconPosition="right"
-              className="    transition-transform
-    duration-300
-    hover:scale-105
-    active:scale-95"
+              className="transition-transform duration-300 hover:scale-105 active:scale-95 hover:bg-brand-tertiary-500 active:bg-brand-tertiary-900"
               onClick={async () => {
                 const res = await authenticate(session);
                 if (!res) {
@@ -138,7 +128,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
               }}
             >
               Create now
-              <ArrowUpRightIcon className="size-6" aria-hidden="true" />
+              <ArrowUpRightIcon className="size-6" color="brand-primary-950" />
             </Button>
           </Link>
         </div>

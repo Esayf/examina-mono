@@ -28,6 +28,21 @@ class RequestBase {
       data,
     });
   }
+
+  put(url: string, data?: any): Promise<AxiosResponse> {
+    return this.instance.request({
+      url,
+      method: "PUT",
+      data,
+    });
+  }
+
+  delete(url: string): Promise<AxiosResponse> {
+    return this.instance.request({
+      url,
+      method: "DELETE",
+    });
+  }
 }
 
 export default RequestBase;

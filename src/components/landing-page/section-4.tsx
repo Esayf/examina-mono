@@ -61,7 +61,7 @@ export default function TechSection({ techArr }: TechSectionProps) {
                       <p className={styles.tech_card_desc}>{tech.techDesc}</p>
                     </div>
                     <div className={styles.tech_card_link_container}>
-                      <ArrowUpRightIcon className="size-20" aria-hidden="true" />
+                      <ArrowUpRightIcon className="size-20 z-[-10]" aria-hidden="true" />
                     </div>
                   </div>
                 </Link>

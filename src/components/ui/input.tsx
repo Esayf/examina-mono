@@ -25,7 +25,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
       "disabled:cursor-not-allowed disabled:opacity-50",
       "resize-none",
       "w-full",
-      "min-w-[39rem]",
+      "w-[39rem]",
       "min-h-[3rem]",
       "max-h-[6rem]",
       "text-base",

@@ -60,9 +60,10 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
     <header
       className={`
         ${styles.header} 
+        fixed top-0 left-0 w-full
+        z-[9999]
         bg-brand-secondary-100 
-        border-b border-brand-secondary-100
-        h-20
+        border-b border-brand-secondary-100 h-22
       `}
     >
       {/* Header Container */}
@@ -73,6 +74,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
           flex 
           items-center 
           justify-between
+          z-50
         `}
       >
         {/* SOL: Logo */}
@@ -89,9 +91,9 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
         </div>
 
         {/* SAĞ: Masaüstü Connect + Mobil Menü */}
-        <div className="flex items-center gap-4 ml-4">
+        <div className="flex items-center gap-4 justify-normal">
           {/* Masaüstü: Connect Wallet (Modal açar) */}
-          <div className="hidden md:block justify-end items-center">
+          <div className="hidden md:block justify-center mb-1 items-center">
             <button
               className="group relative inline-block h-[60px] w-[200px] overflow-hidden rounded-full text-lg text-brand-primary-900 hover:text-brand-secondary-200 mt-3"
               onClick={openConnectModal}
@@ -111,8 +113,6 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
               </span>
             </button>
           </div>
-
-          {/* HAMBURGER (Sadece mobilde) */}
           <div className="md:hidden flex items-center">
             <Button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -130,12 +130,6 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
           </div>
         </div>
       </div>
-
-      {/* 
-        MOBİL MENÜ (md altında açılır)
-        Menü tam ekran overlay olarak görünür, 
-        blur arka planla beraber ortada hizalanır.
-      */}
       {menuOpen && (
         <div
           className="
@@ -237,13 +231,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
       )}
 
       {/* Modal Bileşeni (wallet-selector) */}
-      <WalletModal
-        isOpen={isConnectModalOpen}
-        onClose={closeConnectModal}
-        // Eğer wallet-selector içerisindeki
-        // "Confirm" veya "Connect Now" butonu tetikleyecekse:
-        // onConfirm={confirmConnect}
-      />
+      <WalletModal isOpen={isConnectModalOpen} onClose={closeConnectModal} />
     </header>
   );
 };
