@@ -24,6 +24,7 @@ export interface Exam {
   createdAt: string;
   updatedAt: string;
   isArchived: boolean;
+  backgroundImage: string | null;
   status: "published";
 }
 
@@ -87,26 +88,34 @@ interface ErrorResponse {
   message: string;
 }
 
+export interface ExamStatistics extends Exam {
+	winnerlist?: Winner[];
+	participants?: Participant[];
+	leaderboard?: Leaderboard;
+}
+
+export type Winner = {
+	walletAddress: string;
+	score: number;
+	finishTime: Date;
+};
+
+export interface Participant {
+	userId: string;
+	nickname: string; // TODO: Will be nicknames after random nickname implementation. For now username it is.
+	walletAddress: string;
+	score?: number;
+	startTime: Date;
+	finishTime?: Date;
+};
+
+export type Leaderboard = Array<Participant & {
+	score: number;
+	finishTime: Date;
+}>;
+
 interface ExamDetails {
-  exam: {
-    _id: string;
-    creator: string;
-    title: string;
-    description: string;
-    duration: number;
-    startDate: string;
-    rootHash: string;
-    secretKey: string;
-    isCompleted: boolean;
-    questionCount: number;
-    uniqueId: number;
-    isRewarded: boolean;
-    rewardPerWinner: number;
-    isDistributed: boolean;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
+  exam: Exam;
   participatedUser: ParticipatedUser;
 }
 
@@ -125,6 +134,20 @@ function getExamDetails(examID: string): Promise<ExamDetails | ErrorResponse> {
     const requestBase = new RequestBase();
     requestBase
       .get(`/exams/${examID}`)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function getExamStatistics(examID: string): Promise<ExamStatistics | ErrorResponse> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .get(`/exams/${examID}/details`)
       .then((response) => {
         resolve(response.data);
       })
@@ -345,4 +368,5 @@ export {
   startExam,
   submitQuiz,
   sendEmail,
+  getExamStatistics,
 };
