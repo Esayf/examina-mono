@@ -25,6 +25,7 @@ export interface Exam {
   updatedAt: string;
   isArchived: boolean;
   backgroundImage: string | null;
+  status: "published";
 }
 
 function getExamList(): Promise<Exam[]> {
@@ -33,7 +34,7 @@ function getExamList(): Promise<Exam[]> {
     requestBase
       .get("/exams/myExams")
       .then((response) => {
-        resolve(response.data);
+        resolve(response.data.map((exam: any) => ({ ...exam, status: "published" })));
       })
       .catch((error) => {
         reject(error);
@@ -47,7 +48,7 @@ function getDraftExams(): Promise<DraftExam[]> {
     requestBase
       .get("/drafts")
       .then((response) => {
-        resolve(response.data);
+        resolve(response.data.map((exam: any) => ({ ...exam, status: "draft" })));
       })
       .catch((error) => {
         reject(error);
@@ -55,7 +56,7 @@ function getDraftExams(): Promise<DraftExam[]> {
   });
 }
 
-export interface DraftExam extends Exam {
+export interface DraftExam extends Omit<Exam, "status"> {
   questions: {
     text: string;
     options: {
@@ -66,6 +67,7 @@ export interface DraftExam extends Exam {
     number: number;
     questionType: "mc" | "tf";
   }[];
+  status: "draft";
 }
 
 function getDraftExam(examID: string): Promise<DraftExam> {
@@ -219,7 +221,7 @@ function createExam(exam: ExamState) {
   });
 }
 
-type CreateDraftInput = {
+export type CreateDraftInput = {
   title: string;
   description?: string | undefined;
   startDate?: string | undefined;
@@ -251,7 +253,7 @@ export interface SaveDraftError {
   }[];
 }
 
-function saveDraftExam(draft: CreateDraftInput) {
+function saveDraftExam(draft: CreateDraftInput): Promise<DraftExam> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
@@ -265,7 +267,7 @@ function saveDraftExam(draft: CreateDraftInput) {
   });
 }
 
-function updateDraftExam(draft: CreateDraftInput & { id: string }) {
+function updateDraftExam(draft: CreateDraftInput & { id: string }): Promise<DraftExam> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     const { id, ...rest } = draft;

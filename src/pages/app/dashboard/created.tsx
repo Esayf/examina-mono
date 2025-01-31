@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getExamList, getDraftExams, deleteDraftExam } from "@/lib/Client/Exam";
+import { getExamList, getDraftExams, deleteDraftExam, DraftExam } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
 // Kopyalama bileşeni
@@ -196,7 +196,7 @@ interface Exam {
 }
 
 interface RowProps {
-  exam: Exam;
+  exam: DraftExam;
 }
 
 function Row({ exam }: RowProps) {
@@ -221,7 +221,7 @@ function Row({ exam }: RowProps) {
   const endDate = startDate ? new Date(startDate.getTime() + Number(exam.duration) * 60_000) : null;
 
   let status = "Draft";
-  if (startDate) {
+  if (startDate && exam.status != "draft") {
     if (startDate > now) {
       status = "Upcoming";
     } else if (startDate <= now && (!endDate || endDate > now) && !exam.isCompleted) {
@@ -300,9 +300,7 @@ function Row({ exam }: RowProps) {
             <EyeIcon className="size-4 w-4 h-4 stroke-current stroke-1 hidden md:block" />
           </Button>
           <Button
-            disabled={Boolean(
-              exam.startDate && new Date(exam.startDate).getTime() <= Date.now() + 60 * 60 * 1000
-            )}
+            disabled={exam.status !== "draft"}
             variant="outline"
             size="icon-sm"
             className="max-w-8 max-h-8 min-w-8 min-h-8 border"
@@ -315,7 +313,7 @@ function Row({ exam }: RowProps) {
             size="icon-sm"
             className="max-w-8 max-h-8 min-w-8 min-h-8"
             onClick={() => handleDelete(exam._id)}
-            disabled={isDeleting || Boolean(exam.startDate && new Date(exam.startDate).getTime() <= Date.now() + 60 * 60 * 1000)}
+            disabled={isDeleting || exam.status !== "draft"}
           >
             {isDeleting ? (
               <Spinner className="size-4" />
@@ -559,8 +557,8 @@ function Application() {
     );
   }
 
-  function getStatus(exam: Exam): string {
-    if (!exam.startDate) return "Draft";
+  function getStatus(exam: DraftExam): string {
+    if (exam.status === "draft") return "Draft";
 
     const now = new Date();
     const startDate = new Date(exam.startDate);
@@ -573,16 +571,16 @@ function Application() {
     return "Upcoming";
   }
 
-  function filterExams(exams: Exam[]) {
+  function filterExams(exams: DraftExam[]) {
     return exams.filter((exam) => {
       const status = getStatus(exam);
       if (filter === "All") return true;
-      if (filter === "Draft") return !exam.startDate;
+      if (filter === "Draft") return exam.status === "draft";
       return status === filter;
     });
   }
 
-  function sortExams(exams: Exam[]) {
+  function sortExams(exams: DraftExam[]) {
     return [...exams].sort((a, b) => {
       let valA: number | string = "";
       let valB: number | string = "";
@@ -623,7 +621,7 @@ function Application() {
     });
   }
 
-  const filtered = filterExams(allExams);
+  const filtered = filterExams(allExams as DraftExam[]);
   const finalExams = sortExams(filtered);
 
   return (
