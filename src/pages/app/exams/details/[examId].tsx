@@ -25,6 +25,7 @@ const ExamDetails = () => {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["examStatistics", examId],
     queryFn: () => getExamStatistics(examId),
+    enabled: !!examId
   });
 
   if (!isExamStatistics(data)) {
