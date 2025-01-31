@@ -147,7 +147,7 @@ export function PreviewModal({
         >
           {/* EKRAN 1: Start (Quiz) Preview */}
           {!showQuizPreview && (
-            <div className="w-full p-4 sm:p-6">
+            <div className="w-full p-0 sm:p-6">
               {/* Üst Kısım: Quiz Başlık + Start Date */}
               <div className="flex flex-col items-center mb-6 mt-2 gap-6">
                 <h3
@@ -245,10 +245,10 @@ export function PreviewModal({
 
           {/* EKRAN 2: LiveExamPreview (onGoBack => setShowQuizPreview(false)) */}
           {showQuizPreview && (
-            <div className="w-full p-4 sm:p-6">
+            <div className="w-full p-0 sm:p-6">
               <LiveExamPreview
-                onGoBack={() => {
-                  setShowQuizPreview(false);
+                onGoBack={function (): void {
+                  throw new Error("Function not implemented.");
                 }}
               />
             </div>

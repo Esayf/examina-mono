@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import EraseButton from "../ui/erase-button";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Button } from "../ui/button";
 
 // Ufak kırmızı ünlem (ikon veya basit text)
 const ErrorExclamation = () => <div className="text-ui-error-600 text-lg font-bold">!</div>;
@@ -17,16 +18,19 @@ interface QuestionListItemProps {
   // Yukarı / Aşağı opsiyonları
   canMoveUp?: boolean;
   canMoveDown?: boolean;
-  onMoveUp?: (index: number) => void;
-  onMoveDown?: (index: number) => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+
+  isFirst: boolean;
+  isLast: boolean;
 }
 
 /**
  * QuestionListItem
- *  - Eski “px-5 py-2 w-full” layout
- *  - Hover’da hafif scale efekti
+ *  - Eski "px-5 py-2 w-full" layout
+ *  - Hover'da hafif scale efekti
  *  - Eksikse kırmızı ünlem
- *  - Yukarı / Aşağı oklar “stopPropagation”
+ *  - Yukarı / Aşağı oklar "stopPropagation"
  *  - Silme butonu
  */
 export function QuestionListItem({
@@ -41,6 +45,8 @@ export function QuestionListItem({
   canMoveDown,
   onMoveUp,
   onMoveDown,
+  isFirst,
+  isLast,
 }: QuestionListItemProps) {
   const truncated =
     questionText?.length > 11 ? `${questionText.slice(0, 11)}...` : questionText || "Untitled";
@@ -86,34 +92,34 @@ export function QuestionListItem({
         )}
 
         {/* Yukarı buton */}
-        {canMoveUp && onMoveUp && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveUp(index);
-            }}
-            className="p-1 rounded-full transition-colors duration-200 hover:bg-brand-secondary-200"
-            disabled={!canMoveUp}
-          >
-            <ChevronUpIcon className="w-4 h-4" />
-          </button>
-        )}
+        <Button
+          variant="ghost"
+          size="chevron"
+          className="p-1 hover:bg-brand-secondary-100 rounded-md"
+          aria-label="Move question up"
+          disabled={isFirst}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveUp?.();
+          }}
+        >
+          <ChevronUpIcon className="w-5 h-5 text-greyscale-light-600" />
+        </Button>
 
         {/* Aşağı buton */}
-        {canMoveDown && onMoveDown && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveDown(index);
-            }}
-            className="p-1 rounded-full transition-colors duration-200 hover:bg-brand-secondary-200"
-            disabled={!canMoveDown}
-          >
-            <ChevronDownIcon className="w-4 h-4" />
-          </button>
-        )}
+        <Button
+          variant="ghost"
+          size="chevron"
+          className="p-1 hover:bg-brand-secondary-100 rounded-md"
+          aria-label="Move question down"
+          disabled={isLast}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveDown?.();
+          }}
+        >
+          <ChevronDownIcon className="w-5 h-5 text-greyscale-light-600" />
+        </Button>
 
         {/* Silme butonu */}
         {onRemove && (

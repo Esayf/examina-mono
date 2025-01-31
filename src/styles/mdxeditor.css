@@ -542,13 +542,15 @@ ol {
   all: unset;
   box-sizing: border-box;
   cursor: default;
-  padding: var(--spacing-0_5);
+  padding: var(--spacing-1);
+  width: 32px;
+  height: 32px;
 }
 /* Toolbar hover */
 @media (hover: hover) {
   ._toolbarToggleItem_uazmk_206:hover,
   ._toolbarButton_uazmk_237:hover {
-    @apply bg-brand-primary-100;
+    @apply bg-brand-secondary-100 min-w-[32px] min-h-[32px] rounded-full w-8 h-8 justify-center items-center;
   }
 }
 

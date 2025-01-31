@@ -57,21 +57,11 @@ export function LiveExamPreview({ onGoBack }: LiveExamPreviewProps) {
   };
 
   return (
-    <div className="w-full max-w-[76rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-6">
+    <div className="w-full max-w-[76rem] mx-auto px-0 sm:px-6 lg:px-8 flex flex-col gap-6">
       <Card className="mt-4 mb-4 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
         {/* Üst Header: Go Back + Title + Progress + Finish */}
         <CardHeader>
           <CardHeaderContent className="flex flex-row items-center justify-between gap-4">
-            {/* Go Back Butonu */}
-            <Button
-              variant="outline"
-              size={"icon"}
-              onClick={onGoBack}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeftIcon className="h-5 w-5" />
-            </Button>
-
             {/* Title & progress */}
             <div className="flex flex-col items-start gap-2 flex-1 px-6">
               <CardTitle className="hidden md:block">{titleValue}</CardTitle>

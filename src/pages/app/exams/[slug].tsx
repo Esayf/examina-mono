@@ -166,16 +166,18 @@ function LiveQuiz() {
         className="absolute flex justify-center items-center min-h-screen object-cover"
       />
       <div className="w-full max-w-[90rem] px-4 sm:px-6 lg:px-4 flex flex-col gap-6">
-        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden">
+        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-[calc(100dvh-2rem)]">
           <CardHeader>
-            {/* CardHeader’de sadece exam title ve description (mobilde) */}
-            <CardHeaderContent className="flex flex-row overflow-auto justify-between">
-              <div className="flex flex-col overflow-hidden gap-3">
-                <CardTitle className="hidden md:block">{examData.exam.title}</CardTitle>
-                <div className="flex flex-col w-full md:w-auto gap-2">
-                  <ProgressBar current={currentIndex} total={questions.length} />
-                  <span className="text-sm text-gray-700 hidden sm:block">
-                    Question {currentIndex} / {questions.length}
+            <CardHeaderContent className="flex flex-col md:flex-row gap-4 md:gap-0 justify-between items-start">
+              <div className="flex flex-col w-full md:max-w-[70%] gap-2">
+                <CardTitle className="text-2xl md:text-3xl">{examData.exam.title}</CardTitle>
+                <div className="flex flex-col w-full gap-2">
+                  <ProgressBar
+                    current={choices.filter((c) => c !== 0).length}
+                    total={questions.length}
+                  />
+                  <span className="text-sm text-gray-700">
+                    Answered {choices.filter((c) => c !== 0).length} / {questions.length}
                   </span>
                 </div>
               </div>
@@ -221,44 +223,47 @@ function LiveQuiz() {
           </CardHeader>
 
           {/* CardContent içinde, progress bar ve butonlar için ayrı bir satır... */}
-          <CardContent className="p-5 flex flex-col gap-6 bg-base-white overflow-auto md:min-h-[646px]">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full"></div>
-            <div className="flex gap-4 justify-between">
-              <Button
-                pill
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  setCurrentQuestionIndex((prev) => prev - 1);
-                }}
-                disabled={isPending || currentQuestionIndex === 0}
-              >
-                <ArrowLeftIcon className="size-6" />
-              </Button>
-              {/* Navigasyon + Sorunun kendisi */}
-              <ExamNavigation
-                setCurrentQuestionIndex={setCurrentQuestionIndex}
-                isPending={isPending}
-                currentQuestionIndex={currentQuestionIndex}
-                questions={questions}
-                currentQuestion={currentQuestion}
-              />
-              <Button
-                pill
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  setCurrentQuestionIndex((prev) => prev + 1);
-                }}
-                disabled={isPending || currentQuestionIndex === questions.length - 1}
-              >
-                <ArrowRightIcon className="size-6" />
-              </Button>
+          <CardContent className="p-3 md:p-6 flex flex-col gap-4 bg-base-white overflow-auto h-full">
+            <div className="flex gap-4 justify-between w-full">
+              {/* Navigation buttons */}
+              <div className="flex gap-4 w-full justify-between">
+                <Button
+                  pill
+                  variant="outline"
+                  className="w-full md:w-auto"
+                  onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
+                  disabled={isPending || currentQuestionIndex === 0}
+                >
+                  <ArrowLeftIcon className="size-6 mr-2" />
+                  Previous
+                </Button>
+
+                {/* Geri eklenen ExamNavigation bileşeni */}
+                <ExamNavigation
+                  setCurrentQuestionIndex={setCurrentQuestionIndex}
+                  isPending={isPending}
+                  currentQuestionIndex={currentQuestionIndex}
+                  questions={questions}
+                  currentQuestion={currentQuestion}
+                />
+
+                <Button
+                  pill
+                  variant="outline"
+                  className="w-full md:w-auto"
+                  onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
+                  disabled={isPending || currentQuestionIndex === questions.length - 1}
+                >
+                  Next
+                  <ArrowRightIcon className="size-6 ml-2" />
+                </Button>
+              </div>
             </div>
-            <div className="flex-1 flex gap-6 flex-col overflow-wrap break-words">
-              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 flex-1 overflow-y-auto overflow-wrap break-words min-h-[240px] max-h-[260px] text-xl md:min-h-[240px] md:max-h-[800px]">
+
+            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-400px)]">
+              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
                 <ReactMarkdown
-                  className="prose w-full px-5 py-5 break-words overflow-wrap"
+                  className="prose max-w-none w-full p-2 md:p-4 break-words"
                   remarkPlugins={[remarkGfm]}
                   components={{
                     img: ({ node, ...props }) => (
@@ -289,43 +294,19 @@ function LiveQuiz() {
                 </RadioGroup.Root>
               </div>
             </div>
-            <div className="flex gap-4 justify-between">
-              <Button
-                pill
-                variant="outline"
-                onClick={() => {
-                  setCurrentQuestionIndex((prev) => prev - 1);
-                }}
-                disabled={isPending || currentQuestionIndex === 0}
-              >
-                <ArrowLeftIcon className="size-6 hidden md:block mr-2" />
-                Previous
-              </Button>
-              <Button
-                pill
-                variant="outline"
-                onClick={() => {
-                  setCurrentQuestionIndex((prev) => prev + 1);
-                }}
-                disabled={isPending || currentQuestionIndex === questions.length - 1}
-              >
-                Next
-                <ArrowRightIcon className="size-6 hidden md:block ml-2" />
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Confirm Finish Dialog */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-        <DialogContent>
+        <DialogContent className="max-w-[95vw] rounded-2xl">
           <ConfirmFinishModal
             isOpen={showConfirmModal}
             onClose={() => setShowConfirmModal(false)}
             onConfirm={() => {
               setShowConfirmModal(false);
-              mutate(); // actually submit
+              mutate();
             }}
           />
         </DialogContent>

@@ -9,9 +9,19 @@ module.exports = {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
         },
+        ping: {
+          "75%, 100%": { transform: "scale(1.5)", opacity: "0" },
+        },
+        popIn: {
+          "0%": { transform: "scale(0)", opacity: "0.5" },
+          "80%": { transform: "scale(1.1)", opacity: "1" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         fadeIn: "fadeIn 0.4s ease-in-out forwards",
+        ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
+        popIn: "popIn 0.3s ease-out",
       },
     },
   },

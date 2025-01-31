@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ClockIcon } from "@heroicons/react/24/outline";
 
 interface CounterProps {
@@ -12,35 +12,67 @@ interface CounterProps {
 export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps) => {
   // Kalan süreyi milisaniye olarak tutuyoruz
   const [remainingMs, setRemainingMs] = useState<number>(0);
+  const [audioContextAllowed, setAudioContextAllowed] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Ses izni için etkileşim handler'ı
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      if (!audioContextAllowed) {
+        // Ses dosyasını önceden yükle
+        const audio = new Audio("/audio/beep.mp3");
+        audio
+          .play()
+          .then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            setAudioContextAllowed(true);
+          })
+          .catch(() => console.warn("Ses izni alınamadı"));
+        audioRef.current = audio;
+      }
+    };
+
+    document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("touchstart", handleUserInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+    };
+  }, []);
 
   useEffect(() => {
     // 1) Bitiş zamanını hesapla
     const start = new Date(startDate).getTime();
     const endTime = start + duration * 60_000;
 
-    // 2) “tick” fonksiyonu: her 1 saniyede farkı hesapla
+    // 2) "tick" fonksiyonu: her 1 saniyede farkı hesapla
     const tick = () => {
       const now = Date.now();
       const diff = endTime - now;
 
       if (diff <= 0) {
+        if (audioContextAllowed && audioRef.current) {
+          audioRef.current.play().catch(() => console.warn("Ses çalınamadı"));
+        }
+        onTimeout();
         setRemainingMs(0);
-        onTimeout(); // Sayaç bitti
         clearInterval(timerId);
       } else {
         setRemainingMs(diff);
       }
     };
 
-    // İlk “tick”i hemen çalıştır
+    // İlk "tick"i hemen çalıştır
     tick();
 
-    // 3) Her 1 sn’de bir “tick” çalıştır
+    // 3) Her 1 sn'de bir "tick" çalıştır
     const timerId = setInterval(tick, 1000);
 
     // Temizlik
     return () => clearInterval(timerId);
-  }, [startDate, duration, onTimeout]);
+  }, [startDate, duration, onTimeout, audioContextAllowed, audioRef]);
 
   // Milisaniyeyi saniyeye çevir
   const totalSeconds = Math.floor(remainingMs / 1000);
