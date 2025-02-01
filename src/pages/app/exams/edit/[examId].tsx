@@ -53,8 +53,9 @@ function ExamForm({ exam }: ExamFormProps) {
       ? {
           title: exam.title,
           description: exam.description,
+          startDate: exam.startDate ? new Date(exam.startDate) : undefined,
           duration: exam.duration ? exam.duration.toString() : undefined,
-          rewardDistribution: exam.isRewarded ?? false,
+          rewardDistribution: exam.isRewarded === undefined ? false : exam.isRewarded,
           questions: exam.questions.map((q) => ({
             answers: q.options.map((o) => ({ answer: o.text })),
             correctAnswer: q.correctAnswer >= 0 ? q.correctAnswer.toString() : undefined,
@@ -94,7 +95,7 @@ function ExamForm({ exam }: ExamFormProps) {
       </Head>
       <DashboardHeader withoutNav={false} withoutTabs={true} />
       <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-        <div className="w-full mx-auto flex flex-col pb-12 pt-2 flex-1 overflow-hidden">
+        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-2 flex-1 overflow-hidden">
           <FormProvider {...methods}>
             {currentStep === 0 && <Step1 onNext={handleNext} />}
             {currentStep === 1 && <Step2 onBack={handleBack} />}

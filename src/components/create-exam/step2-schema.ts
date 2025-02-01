@@ -26,7 +26,11 @@ export const step2ValidationSchema = z
     ),
     totalRewardPoolAmount: z.preprocess((value) => {
       if (!value) return undefined; // Null, boş string veya undefined ise geri dön
-      return Number(value);
+      // Replace comma with dot and parse as float
+      const normalizedValue = typeof value === "string"
+        ? value.replace(",", ".")
+        : value;
+      return Number(parseFloat(String(normalizedValue)));
     }, z.number().min(0, "Total reward pool must be at least 0").optional()),
 
     //rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
@@ -38,7 +42,11 @@ export const step2ValidationSchema = z
         typeof value === "undefined"
       )
         return undefined;
-      return Number(z.string().parse(value));
+      // Replace comma with dot and parse as float
+      const normalizedValue = typeof value === "string"
+        ? value.replace(",", ".")
+        : value;
+      return Number(parseFloat(String(normalizedValue)));
     }, z.number().min(0, "Reward amount must be at least 0").optional()),
   })
   .superRefine((values, context) => {

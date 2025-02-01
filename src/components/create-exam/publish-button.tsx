@@ -218,9 +218,19 @@ export const PublishButton = () => {
    * opens up our friendly confirmation modal.
    */
   const handleOpenConfirmModal = async () => {
-    const isValid = await form.trigger(undefined, { shouldFocus: true });
-    if (!isValid) return;
-    setIsConfirmModalOpen(true);
+    try {
+      const isValid = await form.trigger(undefined, { shouldFocus: true });
+      if (!isValid) {
+        const errors = form.formState.errors;
+        console.log("Form validation errors:", errors); // Debug log
+        toast.error("Please fix the form errors before publishing");
+        return;
+      }
+      setIsConfirmModalOpen(true);
+    } catch (error) {
+      console.error("Validation error:", error);
+      toast.error("Form validation failed");
+    }
   };
 
   /**

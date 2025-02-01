@@ -95,7 +95,17 @@ export const RewardDistributionForm = () => {
             <FormItem className="flex-1">
               <FormLabel>Reward amount</FormLabel>
               <FormControl>
-                <Input placeholder="Enter reward amount" type="number" {...field} />
+                <Input
+                  placeholder="Enter reward amount"
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]*[.,]?[0-9]*"
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(",", ".");
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormDescription>Enter the reward amount per winner.</FormDescription>
               <FormMessage />
