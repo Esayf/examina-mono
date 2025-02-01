@@ -75,6 +75,7 @@ export const SaveAsDraftButton = () => {
           correctAnswer: question.correctAnswer ? parseInt(question.correctAnswer) : undefined,
           questionType: question.questionType,
         })) || [],
+      isRewarded: values.rewardDistribution ?? false,
     });
   };
 

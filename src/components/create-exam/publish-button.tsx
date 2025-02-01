@@ -12,7 +12,6 @@ import { Spinner } from "../ui/spinner";
 import { Modal } from "@/components/ui/modal";
 import { useAppSelector } from "@/app/hooks";
 import { SendTransactionArgs, SignedAuroData, SignedPalladData } from "../../../types/global";
-import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
 /**
  * The PublishButton component orchestrates the final step of creating a quiz:
@@ -72,36 +71,34 @@ function parseMina(amount: string | number) {
   return Number(amount.toString()) * 1000000000;
 }
 
-export const PublishButton = () => {
+interface PublishButtonProps {
+  onPublishStart: () => void;
+}
+
+export const PublishButton = ({ onPublishStart }: PublishButtonProps) => {
   const session = useAppSelector((state) => state.session);
   const router = useRouter();
   const form = useStep2Form();
   const { getValues: getStep1Values } = useStep1Form();
   const [isPublishing, setIsPublishing] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const { mutateAsync: saveExam } = useMutation({
     mutationFn: createExam,
     onSuccess: () => {
-      setIsSubmitted(true);
+      form.reset(form.getValues(), { keepDirty: false, keepIsSubmitted: true, keepValues: true });
       router.replace("/app/dashboard/created");
       toast.success("Quiz created successfully!");
     },
     onError: (error) => {
       console.error("Error:", error);
       toast.error("Failed to create exam");
-      setIsSubmitted(false);
     },
-  });
-
-  useUnsavedChanges({
-    isDirty: form.formState.isDirty,
-    isSubmitted: isSubmitted,
   });
 
   const handlePublish = async () => {
     setIsPublishing(true);
+    onPublishStart();
     const isValid = await form.trigger();
     const step1Values = getStep1Values();
     const step2Values = form.getValues();
@@ -202,7 +199,6 @@ export const PublishButton = () => {
           deployJobId: txStatus.tx.jobId === "" ? null : txStatus.tx.jobId,
         });
       } catch (error) {
-        setIsSubmitted(false);
         toast.error("Failed to create exam");
       } finally {
         setIsPublishing(false);
@@ -218,9 +214,19 @@ export const PublishButton = () => {
    * opens up our friendly confirmation modal.
    */
   const handleOpenConfirmModal = async () => {
-    const isValid = await form.trigger(undefined, { shouldFocus: true });
-    if (!isValid) return;
-    setIsConfirmModalOpen(true);
+    try {
+      const isValid = await form.trigger(undefined, { shouldFocus: true });
+      if (!isValid) {
+        const errors = form.formState.errors;
+        console.log("Form validation errors:", errors); // Debug log
+        toast.error("Please fix the form errors before publishing");
+        return;
+      }
+      setIsConfirmModalOpen(true);
+    } catch (error) {
+      console.error("Validation error:", error);
+      toast.error("Form validation failed");
+    }
   };
 
   /**
