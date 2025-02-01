@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import { Card, CardHeader, CardHeaderContent, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import rehypeRaw from "rehype-raw";
 
 /** Basit ProgressBar */
 function ProgressBar({ current, total }: { current: number; total: number }) {
@@ -114,7 +115,7 @@ export function LiveExamPreview({ onGoBack }: LiveExamPreviewProps) {
             <div className="bg-white rounded-2xl flex flex-col gap-4">
               {/* Soru Metni */}
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 min-h-[240px] max-h-[320px] overflow-y-auto text-base">
-                <ReactMarkdown className="prose w-full" remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown className="prose w-full" remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                   {currentQuestion.question || ""}
                 </ReactMarkdown>
               </div>
