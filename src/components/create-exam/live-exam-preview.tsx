@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import { Card, CardHeader, CardHeaderContent, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import rehypeRaw from "rehype-raw";
 /** Basit ProgressBar */
 function ProgressBar({ current, total }: { current: number; total: number }) {
   const progress = total > 0 ? (current / total) * 100 : 0;
@@ -128,6 +129,7 @@ export function LiveExamPreview({ onGoBack }: LiveExamPreviewProps) {
                     [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-4 [&_img]:mx-auto [&_img]:block
                     [&_hr]:my-6 [&_hr]:border-gray-200"
                   remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
                   components={{
                     a: ({ node, ...props }) => (
                       <a className="text-blue-600 hover:underline font-medium" {...props} />
