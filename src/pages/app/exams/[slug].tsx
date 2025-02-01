@@ -39,6 +39,7 @@ import { ExamNavigation } from "@/components/live-exam/exam-navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 // Dialog (Modal) Components
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -266,7 +267,7 @@ function LiveQuiz() {
                 <ReactMarkdown
                   className="prose max-w-none w-full p-2 md:p-4 break-words"
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
+                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
                   components={{
                     img: ({ node, ...props }) => (
                       <img {...props} className="max-w-full h-auto" loading="lazy" />

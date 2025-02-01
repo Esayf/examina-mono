@@ -18,6 +18,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 // 1) Farklı cihaz boyutlarını temsil eden bir enum ya da obje
 enum Device {
@@ -219,7 +220,7 @@ export function PreviewModal({
                   min-h-[120px]
                 "
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
                 components={{
                   img: ({ node, ...props }) => (
                     <img {...props} className="max-w-full h-auto" loading="lazy" />

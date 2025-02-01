@@ -6,6 +6,8 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import AttendanceCharts from "@/components/details/attendanceCharts";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 function walletRender(walletAddress: string): string {
   return `${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}`;
@@ -129,6 +131,7 @@ const ExamDetails = () => {
               <ReactMarkdown
                 className="prose max-w-full text-sm sm:text-base"
                 remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
               >
                 {data.description || "No description available"}
               </ReactMarkdown>
