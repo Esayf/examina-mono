@@ -161,7 +161,7 @@ function LiveQuiz() {
   };
 
   return (
-    <div className="flex justify-center items-center max-h-screen">
+    <div className="flex justify-center items-center max-h-full">
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
@@ -231,13 +231,13 @@ function LiveQuiz() {
               <div className="flex gap-4 w-full justify-between">
                 <Button
                   pill
-                  variant="outline"
+                  variant="default"
+                  size="icon"
                   className="w-full md:w-auto"
                   onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
                   disabled={isPending || currentQuestionIndex === 0}
                 >
                   <ArrowLeftIcon className="size-6 mr-2" />
-                  Previous
                 </Button>
 
                 {/* Geri eklenen ExamNavigation bileşeni */}
@@ -251,12 +251,12 @@ function LiveQuiz() {
 
                 <Button
                   pill
-                  variant="outline"
+                  variant="default"
+                  size="icon"
                   className="w-full md:w-auto"
                   onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
                   disabled={isPending || currentQuestionIndex === questions.length - 1}
                 >
-                  Next
                   <ArrowRightIcon className="size-6 ml-2" />
                 </Button>
               </div>
