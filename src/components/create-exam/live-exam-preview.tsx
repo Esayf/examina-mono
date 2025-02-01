@@ -9,7 +9,6 @@ import remarkGfm from "remark-gfm";
 import { Card, CardHeader, CardHeaderContent, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-
 /** Basit ProgressBar */
 function ProgressBar({ current, total }: { current: number; total: number }) {
   const progress = total > 0 ? (current / total) * 100 : 0;

@@ -54,7 +54,7 @@ function ExamForm({ exam }: ExamFormProps) {
           title: exam.title,
           description: exam.description,
           duration: exam.duration ? exam.duration.toString() : undefined,
-          rewardDistribution: exam.isRewarded,
+          rewardDistribution: exam.isRewarded ?? false,
           questions: exam.questions.map((q) => ({
             answers: q.options.map((o) => ({ answer: o.text })),
             correctAnswer: q.correctAnswer >= 0 ? q.correctAnswer.toString() : undefined,
