@@ -160,14 +160,14 @@ function LiveQuiz() {
   };
 
   return (
-    <div className="flex justify-center items-center h-dvh">
+    <div className="flex justify-center items-center max-h-screen">
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
         className="absolute flex justify-center items-center min-h-screen object-cover"
       />
       <div className="w-full max-w-[90rem] px-4 sm:px-6 lg:px-4 flex flex-col gap-6">
-        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-[calc(100dvh-2rem)]">
+        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-[calc(100dvh]">
           <CardHeader>
             <CardHeaderContent className="flex flex-col md:flex-row gap-4 md:gap-0 justify-between items-start">
               <div className="flex flex-col w-full md:max-w-[70%] gap-2">
@@ -261,12 +261,12 @@ function LiveQuiz() {
               </div>
             </div>
 
-            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-400px)]">
+            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-600px)]">
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
                 <ReactMarkdown
                   className="prose max-w-none w-full p-2 md:p-4 break-words"
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]} 
+                  rehypePlugins={[rehypeRaw]}
                   components={{
                     img: ({ node, ...props }) => (
                       <img {...props} className="max-w-full h-auto" loading="lazy" />
