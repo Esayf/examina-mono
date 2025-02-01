@@ -17,7 +17,7 @@ import { DraftExam, getDraftExam } from "@/lib/Client/Exam";
 import { Spinner } from "@/components/ui/spinner";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
-type FormValues = Step1FormValues | Step2FormValues;
+type FormValues = Step1FormValues & Step2FormValues;
 
 const validationSchema = [step1ValidationSchema, step2ValidationSchema] as const;
 
@@ -43,6 +43,7 @@ const EMPTY_QUESTION = [
 
 function ExamForm({ exam }: ExamFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const currentValidationSchema = validationSchema[currentStep];
   const methods = useForm<FormValues>({
@@ -75,7 +76,10 @@ function ExamForm({ exam }: ExamFormProps) {
     formState: { isDirty, isSubmitted },
   } = methods;
 
-  useUnsavedChanges({ isDirty, isSubmitted });
+  useUnsavedChanges({
+    isDirty,
+    isSubmitted: isSubmitted || isPublishing,
+  });
 
   const handleNext = async () => {
     const isStepValid = await trigger(undefined, {
@@ -98,7 +102,9 @@ function ExamForm({ exam }: ExamFormProps) {
         <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-2 flex-1 overflow-hidden">
           <FormProvider {...methods}>
             {currentStep === 0 && <Step1 onNext={handleNext} />}
-            {currentStep === 1 && <Step2 onBack={handleBack} />}
+            {currentStep === 1 && (
+              <Step2 onBack={handleBack} onPublish={() => setIsPublishing(true)} />
+            )}
           </FormProvider>
         </div>
       </div>

@@ -55,9 +55,10 @@ import { toast } from "react-hot-toast"; // <-- ek
 
 interface Step2Props {
   onBack: () => void;
+  onPublish: () => void;
 }
 
-export const Step2 = ({ onBack }: Step2Props) => {
+export const Step2 = ({ onBack, onPublish }: Step2Props) => {
   // 1) Form Hook ve isDirty / isSubmitted takibi
   const form = useStep2Form();
   const {
@@ -96,7 +97,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
               <EyeIcon className="w-6 h-6 sm:ml-2" />
             </Button>
 
-            <PublishButton />
+            <PublishButton onPublishStart={onPublish} />
           </div>
         </CardHeader>
 
