@@ -161,18 +161,18 @@ function LiveQuiz() {
   };
 
   return (
-    <div className="flex justify-center items-center h-dvh">
+    <div className="flex justify-center items-center max-h-full">
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
         className="absolute flex justify-center items-center min-h-screen object-cover"
       />
-      <div className="w-full max-w-[90rem] px-4 sm:px-6 lg:px-4 flex flex-col gap-6">
-        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-[calc(100dvh-2rem)]">
+      <div className="w-full max-w-[90rem] px-4 py-4 sm:px-6 lg:px-4 flex flex-col gap-6">
+        <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-full">
           <CardHeader>
             <CardHeaderContent className="flex flex-col md:flex-row gap-4 md:gap-0 justify-between items-start">
               <div className="flex flex-col w-full md:max-w-[70%] gap-2">
-                <CardTitle className="text-2xl md:text-3xl">{examData.exam.title}</CardTitle>
+                <CardTitle className="text-xl md:text-2xl">{examData.exam.title}</CardTitle>
                 <div className="flex flex-col w-full gap-2">
                   <ProgressBar
                     current={choices.filter((c) => c !== 0).length}
@@ -231,13 +231,13 @@ function LiveQuiz() {
               <div className="flex gap-4 w-full justify-between">
                 <Button
                   pill
-                  variant="outline"
+                  variant="default"
+                  size="icon"
                   className="w-full md:w-auto"
                   onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
                   disabled={isPending || currentQuestionIndex === 0}
                 >
                   <ArrowLeftIcon className="size-6 mr-2" />
-                  Previous
                 </Button>
 
                 {/* Geri eklenen ExamNavigation bileşeni */}
@@ -251,18 +251,18 @@ function LiveQuiz() {
 
                 <Button
                   pill
-                  variant="outline"
+                  variant="default"
+                  size="icon"
                   className="w-full md:w-auto"
                   onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
                   disabled={isPending || currentQuestionIndex === questions.length - 1}
                 >
-                  Next
                   <ArrowRightIcon className="size-6 ml-2" />
                 </Button>
               </div>
             </div>
 
-            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-400px)]">
+            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-600px)]">
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
                 <ReactMarkdown
                   className="prose max-w-none w-full p-2 md:p-4 break-words"
