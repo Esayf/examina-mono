@@ -57,6 +57,7 @@ function getDraftExams(): Promise<DraftExam[]> {
 }
 
 export interface DraftExam extends Omit<Exam, "status"> {
+  id: any;
   questions: {
     text: string;
     options: {
@@ -89,30 +90,32 @@ interface ErrorResponse {
 }
 
 export interface ExamStatistics extends Exam {
-	winnerlist?: Winner[];
-	participants?: Participant[];
-	leaderboard?: Leaderboard;
+  winnerlist?: Winner[];
+  participants?: Participant[];
+  leaderboard?: Leaderboard;
 }
 
 export type Winner = {
-	walletAddress: string;
-	score: number;
-	finishTime: Date;
+  walletAddress: string;
+  score: number;
+  finishTime: Date;
 };
 
 export interface Participant {
-	userId: string;
-	nickname: string; // TODO: Will be nicknames after random nickname implementation. For now username it is.
-	walletAddress: string;
-	score?: number;
-	startTime: Date;
-	finishTime?: Date;
-};
+  userId: string;
+  nickname: string; // TODO: Will be nicknames after random nickname implementation. For now username it is.
+  walletAddress: string;
+  score?: number;
+  startTime: Date;
+  finishTime?: Date;
+}
 
-export type Leaderboard = Array<Participant & {
-	score: number;
-	finishTime: Date;
-}>;
+export type Leaderboard = Array<
+  Participant & {
+    score: number;
+    finishTime: Date;
+  }
+>;
 
 interface ExamDetails {
   exam: Exam;

@@ -468,7 +468,7 @@ export default function JoinedExamsPage() {
       <div className="relative min-h-screen h-dvh flex flex-col z-0">
         <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-          <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
+          <div className="w-full flex flex-col flex-1 overflow-hidden">
             <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-brand-primary-900 flex-1 flex flex-col">
               <CardHeader>
                 <CardHeaderContent>

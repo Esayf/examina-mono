@@ -33,9 +33,4 @@ export const step1ValidationSchema = z.object({
 
 export type Step1FormValues = z.infer<typeof step1ValidationSchema>;
 
-/**
- * useStep1Form
- * Form'u context üzerinden yönetebilmek için yardımcı bir kancadır (hook).
- * Bu, step1 form değerlerine kolaylıkla erişmemizi sağlar.
- */
 export const useStep1Form = () => useFormContext<Step1FormValues>();

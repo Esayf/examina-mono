@@ -35,6 +35,10 @@ async function buildDeployTx(
   sender: string,
   args: BuildQuizArgs
 ): Promise<{
+  startDate: string;
+  duration: string;
+  totalRewardPoolAmount: string;
+  rewardPerWinner: string;
   mina_signer_payload: SendTransactionArgs;
   serializedTransaction: string;
   contractAddress: string;
@@ -80,93 +84,32 @@ export const PublishButton = () => {
 
   const { mutateAsync: saveExam } = useMutation({
     mutationFn: createExam,
-    onSuccess: () => {
-      router.replace("/app/dashboard/created");
-      toast.success("Exam created successfully");
-    },
-    onError: (error) => {
-      console.log("Error", error);
-      toast.error("Failed to create exam");
+    onSuccess: (data: { id: string }) => {
+      router.replace(`/app/exams/edit/${data.id}`);
+      toast.success("Sınav başarıyla güncellendi");
     },
   });
 
   const handleSave = async () => {
-    setIsPublishing(true); // Set publishing state to true
-    const isValid = await form.trigger();
-    const step1Values = getStep1Values();
-    const step2Values = form.getValues();
+    setIsPublishing(true);
+    try {
+      const isValid = await form.trigger();
+      const step1Values = getStep1Values();
+      const step2Values = form.getValues();
 
-    if (isValid) {
-      try {
-        let contractAddressNullable = "";
-        let txStatus = { tx: { success: false, jobId: "" } };
-        const totalRewardPoolAmount = step2Values.totalRewardPoolAmount
-          ? parseMina(step2Values.totalRewardPoolAmount)
-          : undefined;
-        const rewardPerWinner = step2Values.rewardPerWinner
-          ? parseMina(step2Values.rewardPerWinner)
-          : undefined;
+      if (!isValid) {
+        toast.error("Lütfen tüm gerekli alanları doldurun");
+        return;
+      }
 
-        const isRewardDistributionEnabled =
-          step2Values.rewardDistribution && !!totalRewardPoolAmount && !!rewardPerWinner;
+      const examId = router.query.id as string;
 
-        if (isRewardDistributionEnabled) {
-          const randomValues = new Uint8Array(1);
-          self.crypto.getRandomValues(randomValues);
-          const secretKey = randomValues[0].toString();
+      const existingContractAddress = (step2Values as any).contractAddress;
+      let deployJobId = (step2Values as any).deployJobId;
 
-          const deployTx = await buildDeployTx(session.session.walletAddress, {
-            startDate: step2Values.startDate.getTime().toString(),
-            duration: step2Values.duration,
-            secretKey,
-            totalRewardPoolAmount: totalRewardPoolAmount.toString(),
-            rewardPerWinner: rewardPerWinner.toString(),
-          });
-
-          if (!("mina_signer_payload" in deployTx)) {
-            toast.error("Failed to create exam. Could not build deploy transaction");
-            setIsPublishing(false);
-            return;
-          }
-
-          const { mina_signer_payload, serializedTransaction, contractAddress, nonce } = deployTx;
-
-          const signedAuroData = window.mina?.isPallad
-            ? ((
-                await window?.mina?.request({
-                  method: "mina_signTransaction",
-                  params: { transaction: JSON.parse(mina_signer_payload.transaction as string) },
-                })
-              ).result as SignedPalladData)
-            : await window?.mina?.sendTransaction(mina_signer_payload);
-          if (window.mina?.isAuro) {
-            if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
-              toast.error("You need to sign the transaction to deploy the quiz");
-              setIsPublishing(false);
-              return;
-            }
-          }
-
-          let signedData = window.mina?.isAuro
-            ? (signedAuroData as SignedAuroData).signedData
-            : (signedAuroData as SignedPalladData).data;
-          txStatus = await deployQuiz({
-            contractAddress,
-            serializedTransaction,
-            signedData,
-            secretKey,
-            startDate: step2Values.startDate.getTime().toString(),
-            duration: step2Values.duration,
-            ...(isRewardDistributionEnabled && {
-              totalRewardPoolAmount: totalRewardPoolAmount.toString(),
-              rewardPerWinner: rewardPerWinner.toString(),
-            }),
-          });
-          contractAddressNullable = contractAddress;
-        }
-
+      if (existingContractAddress) {
         await saveExam({
-          id: v4(),
+          id: examId,
           title: step2Values.title,
           description: step2Values.description,
           startDate: step2Values.startDate,
@@ -183,25 +126,83 @@ export const PublishButton = () => {
             correctAnswer: parseInt(question.correctAnswer) + 1,
           })),
           questionCount: step1Values.questions.length,
-          isRewarded: isRewardDistributionEnabled,
-          rewardPerWinner: rewardPerWinner || 0,
+          isRewarded: step2Values.rewardDistribution,
+          rewardPerWinner: step2Values.rewardPerWinner || 0,
           passingScore: step2Values.minimumPassingScore || 0,
-          contractAddress: contractAddressNullable,
-          deployJobId: txStatus.tx.jobId === "" ? null : txStatus.tx.jobId,
+          contractAddress: existingContractAddress,
+          deployJobId,
         });
-      } catch (error) {
-        toast.error("Failed to create exam");
-      } finally {
-        setIsPublishing(false);
+      } else {
+        const randomValues = new Uint8Array(32);
+        self.crypto.getRandomValues(randomValues);
+        const secretKey = Array.from(randomValues, (byte) =>
+          byte.toString(16).padStart(2, "0")
+        ).join("");
+
+        const deployTx = await buildDeployTx(session.session.walletAddress, {
+          startDate: step2Values.startDate.getTime().toString(),
+          duration: step2Values.duration,
+          secretKey,
+          totalRewardPoolAmount: step2Values.totalRewardPoolAmount
+            ? parseMina(step2Values.totalRewardPoolAmount).toString()
+            : "0",
+          rewardPerWinner: step2Values.rewardPerWinner
+            ? parseMina(step2Values.rewardPerWinner).toString()
+            : "0",
+        });
+
+        const signedData = await window.mina?.sendTransaction(deployTx.mina_signer_payload);
+
+        const txStatus = await deployQuiz({
+          ...deployTx,
+          signedData: signedData.signedData,
+          secretKey,
+          startDate: deployTx.startDate,
+          duration: deployTx.duration,
+          totalRewardPoolAmount: deployTx.totalRewardPoolAmount,
+          rewardPerWinner: deployTx.rewardPerWinner,
+        });
+
+        deployJobId = txStatus.tx.jobId;
+
+        await saveExam({
+          id: examId,
+          title: step2Values.title,
+          description: step2Values.description,
+          startDate: step2Values.startDate,
+          duration: step2Values.duration,
+          questions: step1Values.questions.map((question, i) => ({
+            type: question.questionType,
+            number: i + 1,
+            text: question.question,
+            description: question.question,
+            options: question.answers.map((answer, i) => ({
+              number: i + 1,
+              text: answer.answer,
+            })),
+            correctAnswer: parseInt(question.correctAnswer) + 1,
+          })),
+          questionCount: step1Values.questions.length,
+          isRewarded: step2Values.rewardDistribution,
+          rewardPerWinner: step2Values.rewardPerWinner || 0,
+          passingScore: step2Values.minimumPassingScore || 0,
+          contractAddress: deployTx.contractAddress,
+          deployJobId,
+        });
       }
-    } else {
+
+      toast.success("Değişiklikler kaydedildi!");
+    } catch (error) {
+      console.error("Güncelleme hatası:", error);
+      toast.error(error.message || "Değişiklikler kaydedilirken hata oluştu");
+    } finally {
       setIsPublishing(false);
     }
   };
 
   return (
     <Button variant="outline" disabled={isPublishing} pill onClick={handleSave}>
-      {isPublishing ? <Spinner className="size-6" /> : <>Save as draft</>}
+      {isPublishing ? <Spinner className="size-6" /> : <>Publish</>}
     </Button>
   );
 };
