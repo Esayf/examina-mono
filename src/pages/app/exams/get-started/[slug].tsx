@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 function ExamDetail() {
   const router = useRouter();
@@ -228,7 +229,7 @@ function ExamDetail() {
                 <ReactMarkdown
                   className="mdxeditor"
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
+                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
                   components={{
                     img: ({ node, ...props }) => (
                       <img {...props} className="max-w-full h-auto" loading="lazy" />

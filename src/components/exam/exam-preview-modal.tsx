@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button"; // Sizin buton bileşeniniz
 import { XMarkIcon } from "@heroicons/react/24/outline"; // Kapatma ikonu (opsiyonel)
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 interface ExamPreviewModalProps {
   content: string;
@@ -58,13 +59,12 @@ export function ExamPreviewModal({ content, onClose }: ExamPreviewModalProps) {
           {/* Quiz Description (Markdown) */}
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
+            rehypePlugins={[rehypeRaw, rehypeSanitize]}
             components={{
               img: ({ node, ...props }) => (
                 <img {...props} className="max-w-full h-auto" loading="lazy" />
               ),
             }}
-
           >
             {content || "No content"}
           </ReactMarkdown>
