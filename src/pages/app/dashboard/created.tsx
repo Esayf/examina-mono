@@ -40,6 +40,7 @@ import {
   PencilIcon,
   TrashIcon,
   EyeIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 
 // QR code
@@ -409,12 +410,13 @@ function Application() {
                 <Button
                   variant="default"
                   icon
+                  className="transition-transform duration-300 hover:scale-105 active:scale-95 hover:bg-brand-tertiary-500 active:bg-brand-tertiary-900"
                   iconPosition="right"
                   pill
                   onClick={() => router.push("/app/create-exam/")}
                 >
                   Create new
-                  <ArrowUpRightIcon className="size-6" />
+                  <PlusIcon className="size-6" />
                 </Button>
               </CardHeader>
 
@@ -646,20 +648,21 @@ function Application() {
           <Card className="bg-base-white rounded-3xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
             <CardHeader>
               <CardHeaderContent>
-                <CardTitle>All quizzes</CardTitle>
+                <CardTitle>Created quizzes</CardTitle>
                 <CardDescription>
                   All quizzes created by you are listed here. You can share them easily.
                 </CardDescription>
               </CardHeaderContent>
               <Button
                 variant="default"
+                className="transition-transform duration-300 hover:scale-105 active:scale-95 hover:bg-brand-primary-950 active:bg-brand-tertiary-900"
                 icon
                 iconPosition="right"
                 pill
                 onClick={() => router.push("/app/create-exam/")}
               >
                 Create new
-                <ArrowUpRightIcon className="size-6" />
+                <PlusIcon className="size-6" />
               </Button>
             </CardHeader>
 

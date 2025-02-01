@@ -125,6 +125,7 @@ export const Answers = ({ index }: AnswersProps) => {
                       <FormItem>
                         <div className="relative">
                           <Input
+                            as="textarea"
                             placeholder={`Enter the ${i + 1}. option`}
                             maxLength={200}
                             {...inputField}

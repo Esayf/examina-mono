@@ -220,7 +220,7 @@
 }
 
 .mdxeditor p {
-  @apply mt-0 mb-1;
+  @apply text-base mt-0 mb-1;
 }
 
 .mdxeditor a {

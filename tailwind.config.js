@@ -25,7 +25,7 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/typography"), animatePlugin],
   darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}", "./src/**/*.css"],
   theme: {
@@ -552,5 +552,4 @@ module.exports = {
       },
     },
   },
-  plugins: [animatePlugin],
 };

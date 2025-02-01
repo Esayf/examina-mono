@@ -439,24 +439,6 @@ export const Step1 = ({ onNext }: Step1Props) => {
                 </FormItem>
               )}
             />
-
-            {/* ★ YENİ: MediaUpload */}
-            <FormField
-              control={control}
-              name={`questions.${activeQuestionIndex}.media`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Optional: Add Media</FormLabel>
-                  <MediaUpload
-                    onMediaUpload={(file) => {
-                      field.onChange(file);
-                    }}
-                  />
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             {/* Answers */}
             <Answers index={activeQuestionIndex} />
           </div>

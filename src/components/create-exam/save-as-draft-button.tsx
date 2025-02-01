@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
 import { AxiosError } from "axios";
-import { DocumentPlusIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 
 export const SaveAsDraftButton = () => {
   const router = useRouter();
@@ -91,8 +91,8 @@ export const SaveAsDraftButton = () => {
         <Spinner className="size-6" />
       ) : (
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline">Save as draft</span>
-          <DocumentPlusIcon className="size-6 sm:size-6" />
+          <span className="hidden sm:inline">{examId ? "Save changes" : "Save as draft"}</span>
+          <ArrowDownTrayIcon className="size-6 md:size-5" />
         </div>
       )}
     </Button>
