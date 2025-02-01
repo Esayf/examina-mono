@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PaperAirplaneIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
+import { RocketLaunchIcon } from "@heroicons/react/24/outline";
 import { useStep2Form } from "./step2-schema";
 import { useStep1Form } from "./step1-schema";
 import { useMutation } from "@tanstack/react-query";
@@ -9,7 +9,10 @@ import { v4 } from "uuid";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
-import { Modal } from "@/components/ui/modal"; // Our friendly, custom modal
+import { Modal } from "@/components/ui/modal";
+import { useAppSelector } from "@/app/hooks";
+import { SendTransactionArgs, SignedAuroData, SignedPalladData } from "../../../types/global";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
 /**
  * The PublishButton component orchestrates the final step of creating a quiz:
@@ -18,77 +21,194 @@ import { Modal } from "@/components/ui/modal"; // Our friendly, custom modal
  * - If the user confirms, we run `handlePublish()` to finalize everything.
  * - If the user wants to make changes, they can return to editing.
  */
+
+// Keep the BuildQuizArgs and DeployQuizArgs interfaces from save-button.tsx
+interface BuildQuizArgs {
+  secretKey: string;
+  startDate: string;
+  duration: string;
+  totalRewardPoolAmount: string;
+  rewardPerWinner: string;
+}
+
+interface DeployQuizArgs {
+  contractAddress: string;
+  serializedTransaction: string;
+  signedData: string;
+  secretKey: string;
+  startDate: string;
+  duration: string;
+  totalRewardPoolAmount: string;
+  rewardPerWinner: string;
+}
+
+// Keep the helper functions from save-button.tsx
+async function buildDeployTx(sender: string, args: BuildQuizArgs) {
+  const result = await fetch("/api/buildDeployTx", {
+    method: "POST",
+    body: JSON.stringify({
+      sender: sender,
+      args: {
+        startDate: args.startDate,
+        duration: args.duration,
+        secretKey: args.secretKey,
+        totalRewardPoolAmount: args.totalRewardPoolAmount,
+        rewardPerWinner: args.rewardPerWinner,
+      } satisfies BuildQuizArgs,
+    }),
+  });
+  return result.json();
+}
+
+async function deployQuiz(args: DeployQuizArgs) {
+  const result = await fetch("/api/deployQuiz", {
+    method: "POST",
+    body: JSON.stringify({ args }),
+  });
+  return result.json();
+}
+
+function parseMina(amount: string | number) {
+  return Number(amount.toString()) * 1000000000;
+}
+
 export const PublishButton = () => {
+  const session = useAppSelector((state) => state.session);
   const router = useRouter();
-
-  // Step2 data (title, desc, startDate, duration, etc.)
   const form = useStep2Form();
-
-  // Step1 data (questions, answers, etc.)
   const { getValues: getStep1Values } = useStep1Form();
-
-  // Keeps track of whether publishing is in progress
   const [isPublishing, setIsPublishing] = useState(false);
-
-  // Controls visibility of the confirmation modal
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Prepares to save the exam in DB/API
   const { mutateAsync: saveExam } = useMutation({
     mutationFn: createExam,
     onSuccess: () => {
-      // Once successfully saved, navigate away and show a success toast
+      setIsSubmitted(true);
       router.replace("/app/dashboard/created");
       toast.success("Quiz created successfully!");
     },
     onError: (error) => {
       console.error("Error:", error);
       toast.error("Failed to create exam");
+      setIsSubmitted(false);
     },
   });
 
-  /**
-   * Actually performs the publishing logic:
-   * 1) Optionally handle any blockchain deployment.
-   * 2) Save the quiz details via `createExam`.
-   */
+  useUnsavedChanges({
+    isDirty: form.formState.isDirty,
+    isSubmitted: isSubmitted,
+  });
+
   const handlePublish = async () => {
     setIsPublishing(true);
-    try {
-      const step1Values = getStep1Values();
-      const step2Values = form.getValues();
+    const isValid = await form.trigger();
+    const step1Values = getStep1Values();
+    const step2Values = form.getValues();
 
-      // In case you have more advanced logic (blockchain deploy, etc.), insert it here.
+    if (isValid) {
+      try {
+        let contractAddressNullable = " ";
+        let txStatus = { tx: { success: false, jobId: "" } };
+        const totalRewardPoolAmount = step2Values.totalRewardPoolAmount
+          ? parseMina(step2Values.totalRewardPoolAmount)
+          : undefined;
+        const rewardPerWinner = step2Values.rewardPerWinner
+          ? parseMina(step2Values.rewardPerWinner)
+          : undefined;
 
-      // Then persist the exam data in your database
-      await saveExam({
-        id: v4(),
-        title: step2Values.title,
-        description: step2Values.description,
-        startDate: step2Values.startDate,
-        duration: step2Values.duration,
-        questions: step1Values.questions.map((question, i) => ({
-          type: question.questionType,
-          number: i + 1,
-          text: question.question,
-          description: question.question,
-          options: question.answers.map((answer, j) => ({
-            number: j + 1,
-            text: answer.answer,
+        const isRewardDistributionEnabled =
+          step2Values.rewardDistribution && !!totalRewardPoolAmount && !!rewardPerWinner;
+
+        if (isRewardDistributionEnabled) {
+          const randomValues = new Uint8Array(1);
+          self.crypto.getRandomValues(randomValues);
+          const secretKey = randomValues[0].toString();
+
+          const deployTx = await buildDeployTx(session.session.walletAddress, {
+            startDate: step2Values.startDate.getTime().toString(),
+            duration: step2Values.duration,
+            secretKey,
+            totalRewardPoolAmount: totalRewardPoolAmount.toString(),
+            rewardPerWinner: rewardPerWinner.toString(),
+          });
+
+          if (!("mina_signer_payload" in deployTx)) {
+            toast.error("Failed to create exam. Could not build deploy transaction");
+            setIsPublishing(false);
+            return;
+          }
+
+          const { mina_signer_payload, serializedTransaction, contractAddress } = deployTx;
+
+          const signedAuroData = window.mina?.isPallad
+            ? ((
+                await window?.mina?.request({
+                  method: "mina_signTransaction",
+                  params: { transaction: JSON.parse(mina_signer_payload.transaction as string) },
+                })
+              ).result as SignedPalladData)
+            : await window?.mina?.sendTransaction(mina_signer_payload);
+
+          if (window.mina?.isAuro) {
+            if (!(typeof signedAuroData === "object" && "signedData" in signedAuroData)) {
+              toast.error("You need to sign the transaction to deploy the quiz");
+              setIsPublishing(false);
+              return;
+            }
+          }
+
+          let signedData = window.mina?.isAuro
+            ? (signedAuroData as SignedAuroData).signedData
+            : (signedAuroData as SignedPalladData).data;
+
+          txStatus = await deployQuiz({
+            contractAddress,
+            serializedTransaction,
+            signedData,
+            secretKey,
+            startDate: step2Values.startDate.getTime().toString(),
+            duration: step2Values.duration,
+            ...(isRewardDistributionEnabled && {
+              totalRewardPoolAmount: totalRewardPoolAmount.toString(),
+              rewardPerWinner: rewardPerWinner.toString(),
+            }),
+          });
+          contractAddressNullable = contractAddress;
+        }
+
+        await saveExam({
+          id: v4(),
+          title: step2Values.title,
+          description: step2Values.description,
+          startDate: step2Values.startDate,
+          duration: step2Values.duration,
+          questions: step1Values.questions.map((question, i) => ({
+            type: question.questionType,
+            number: i + 1,
+            text: question.question,
+            description: question.question,
+            options: question.answers.map((answer, j) => ({
+              number: j + 1,
+              text: answer.answer,
+            })),
+            correctAnswer: parseInt(question.correctAnswer) + 1,
           })),
-          correctAnswer: parseInt(question.correctAnswer) + 1,
-        })),
-        questionCount: step1Values.questions.length,
-        isRewarded: step2Values.rewardDistribution,
-        rewardPerWinner: step2Values.rewardPerWinner || 0,
-        passingScore: step2Values.minimumPassingScore || 0,
-        // Provide any default or real values if needed:
-        contractAddress: "exampleIfYouHaveOne",
-        deployJobId: "someJobIdIfExists",
-      });
-    } catch (error) {
-      toast.error("Failed to create exam");
-    } finally {
+          questionCount: step1Values.questions.length,
+          isRewarded: isRewardDistributionEnabled,
+          rewardPerWinner: rewardPerWinner || 0,
+          passingScore: step2Values.minimumPassingScore || 0,
+          contractAddress: contractAddressNullable,
+          deployJobId: txStatus.tx.jobId === "" ? null : txStatus.tx.jobId,
+        });
+      } catch (error) {
+        setIsSubmitted(false);
+        toast.error("Failed to create exam");
+      } finally {
+        setIsPublishing(false);
+        setIsConfirmModalOpen(false);
+      }
+    } else {
       setIsPublishing(false);
     }
   };
