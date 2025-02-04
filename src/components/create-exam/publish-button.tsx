@@ -193,10 +193,13 @@ export const PublishButton = ({ onPublishStart }: PublishButtonProps) => {
           })),
           questionCount: step1Values.questions.length,
           isRewarded: isRewardDistributionEnabled,
-          rewardPerWinner: rewardPerWinner || 0,
-          passingScore: step2Values.minimumPassingScore || 0,
-          contractAddress: contractAddressNullable,
-          deployJobId: txStatus.tx.jobId === "" ? null : txStatus.tx.jobId,
+          ...(isRewardDistributionEnabled && {
+            totalRewardPoolAmount: totalRewardPoolAmount.toString(),
+            rewardPerWinner: rewardPerWinner || 0,
+            passingScore: step2Values.minimumPassingScore || 0,
+            contractAddress: contractAddressNullable,
+            deployJobId: txStatus.tx.jobId,
+          })
         });
       } catch (error) {
         toast.error("Failed to create exam");
