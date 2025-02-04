@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/formatter";
 import { cn } from "@/lib/utils";
+import { GetExamsParams, getExamList } from "@/lib/Client/Exam";
 
 // Reusable UI Components
 import { CopyLink } from "@/components/ui/copylink";
@@ -352,9 +353,19 @@ function JoinedRow({ exam }: RowProps) {
  ****************************************/
 export default function JoinedExamsPage() {
   const router = useRouter();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["joinedExams"],
-    queryFn: getJoinedExams,
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ["joinedExams"],
+  //   queryFn: getJoinedExams,
+  // });
+
+  const getExamListParams: GetExamsParams = { role: "joined" };
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["exams", getExamListParams],
+    queryFn: () => getExamList(getExamListParams),
   });
 
   // Filtre

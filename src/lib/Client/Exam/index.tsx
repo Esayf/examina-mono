@@ -28,11 +28,18 @@ export interface Exam {
   status: "published";
 }
 
-function getExamList(): Promise<Exam[]> {
+export interface GetExamsParams {
+  role: 'created' | 'joined';
+  filter?: 'all' | 'upcoming' | 'active' | 'ended';
+  sortBy?: 'title' | 'startDate' | 'duration' | 'createdAt' | 'score' | 'endDate' | 'status';
+  sortOrder?: 'asc' | 'desc';
+}
+
+function getExamList(params: GetExamsParams): Promise<Exam[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get("/exams/myExams")
+      .get("/exams/myExams", params)
       .then((response) => {
         resolve(response.data.map((exam: any) => ({ ...exam, status: "published" })));
       })
