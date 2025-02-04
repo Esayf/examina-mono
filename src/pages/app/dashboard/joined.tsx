@@ -52,7 +52,7 @@ async function getJoinedExams() {
 }
 
 // Filtre seçenekleri
-const FILTER_OPTIONS = ["All", "Active", "Ended", "Upcoming"] as const;
+const FILTER_OPTIONS = ["All", "Active", "Ended"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
 type SortField = "title" | "startDate" | "endDate" | "duration" | "status" | "score";
 
@@ -410,7 +410,6 @@ export default function JoinedExamsPage() {
     const startDate = new Date(exam.startDate);
     const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
 
-    if (startDate > now) return "Upcoming";
     if (startDate <= now && endDate > now && !exam.isCompleted) return "Active";
     if ((endDate && endDate <= now) || exam.isCompleted) return "Ended";
     return "Upcoming";
