@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/formatter";
 import { cn } from "@/lib/utils";
-import { GetExamsParams, getExamList } from "@/lib/Client/Exam";
+import { GetExamsParams, getExamList, getScore } from "@/lib/Client/Exam";
 
 // Reusable UI Components
 import { CopyLink } from "@/components/ui/copylink";
@@ -214,6 +214,23 @@ interface RowProps {
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
+  const {
+    data: score,
+    isLoading: scoreLoading,
+    isError: scoreError,
+  } = useQuery({
+    queryKey: ["score", exam._id],
+    queryFn: () => getScore(exam._id),
+    enabled: !!exam._id,
+    select: (data) => data[0].score,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 300
+  });
+
+  useEffect(() => {
+    if (scoreLoading || scoreError) return;
+    exam.score = score;
+  }, [score, scoreLoading, scoreError]);
 
   // Status hesaplama
   const now = new Date();
@@ -298,7 +315,7 @@ function JoinedRow({ exam }: RowProps) {
           {/* Score */}
           <div className="hidden md:flex flex-1 p-5 min-w-[80px] max-w-[100px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam.score !== undefined ? `${exam.score} pts` : "N/A"}
+              {`${score ?? "N/A"} pts`}
             </p>
           </div>
 

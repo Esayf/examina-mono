@@ -349,11 +349,27 @@ async function submitAnswers(examID: string, answers: number[], questions: strin
   }
 }
 
-function getScore(examID: string) {
+export interface Score {
+  score: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  isWinner: boolean;
+  exam: {
+    title: string;
+    _id: string;
+  }
+  user: {
+    userName: string;
+    walletAddress: string;
+    _id: string;
+  };
+}
+
+function getScore(examID: string):Promise<Score[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get(`/exams/scores/get_user_score/${examID}`)
+      .get(`/scores/${examID}`)
       .then((response) => {
         resolve(response.data);
       })
