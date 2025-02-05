@@ -57,7 +57,10 @@ function ExamDetail() {
 
     // Saniyede bir yeniden hesap
     const intervalId = setInterval(calcTime, 1000);
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      setTimer(0);
+    };
   }, [data]); // data.exam?.startDate gibi de ekleyebilirsiniz
 
   /**

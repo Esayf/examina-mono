@@ -1,11 +1,12 @@
 import * as React from "react";
-import { cn } from "@/lib/utils"; 
-// cn fonksiyonu Tailwind class'larını birleştiren yardımcı bir fonksiyondur (opsiyonel). 
+import { cn } from "@/lib/utils";
+// cn fonksiyonu Tailwind class'larını birleştiren yardımcı bir fonksiyondur (opsiyonel).
 // Eğer yoksa, className string'lerini kendiniz birleştirebilirsiniz.
 
 type DropdownContextValue = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  className?: string;
 };
 
 // Menünün durumunu yönetmek için bir context
@@ -14,12 +15,18 @@ const DropdownContext = React.createContext<DropdownContextValue | null>(null);
 /**
  * Ana sarmalayıcı bileşen.
  */
-export function DropdownMenu({ children }: { children: React.ReactNode }) {
+export function DropdownMenu({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <DropdownContext.Provider value={{ open, setOpen }}>
-      <div className="relative inline-block">{children}</div>
+      <div className={cn("relative inline-block", className)}>{children}</div>
     </DropdownContext.Provider>
   );
 }
@@ -32,10 +39,11 @@ export function DropdownMenuTrigger({
   asChild = false,
 }: {
   children: React.ReactNode;
-  /** asChild=true ise, bir <button> sarmalamak yerine, 
+  /** asChild=true ise, bir <button> sarmalamak yerine,
    *  doğrudan çocuk öğenin onClick'e tepki vermesini sağlar (opsiyonel).
    */
   asChild?: boolean;
+  className?: string;
 }) {
   const context = React.useContext(DropdownContext);
 
@@ -78,7 +86,7 @@ export function DropdownMenuContent({
 }: {
   children: React.ReactNode;
   /**
-   * "start" → soldan hizalı, 
+   * "start" → soldan hizalı,
    * "end"   → sağdan hizalı
    */
   align?: "start" | "end";
@@ -127,10 +135,12 @@ export function DropdownMenuItem({
   children,
   onClick,
   className,
+  disabled,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }) {
   const context = React.useContext(DropdownContext);
 

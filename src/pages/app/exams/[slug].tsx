@@ -265,12 +265,53 @@ function LiveQuiz() {
             <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-600px)]">
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
                 <ReactMarkdown
-                  className="prose max-w-none w-full p-2 md:p-4 break-words"
+                  className="mdxeditor prose min-w-full"
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw, rehypeSanitize]}
                   components={{
-                    img: ({ node, ...props }) => (
-                      <img {...props} className="max-w-full h-auto" loading="lazy" />
+                    a: ({ node, ...props }) => (
+                      <a
+                        className="text-brand-secondary font-medium hover:text-brand-accent transition-all 
+                          underline underline-offset-4 decoration-2 hover:decoration-brand-accent
+                          hover:scale-105 inline-block"
+                        {...props}
+                      />
+                    ),
+                    table: ({ node, ...props }) => (
+                      <div className="rounded-2xl shadow-lg overflow-hidden my-6 border border-brand-primary-900">
+                        <table className="w-full divide-y divide-brand-primary-200" {...props} />
+                      </div>
+                    ),
+                    th: ({ node, ...props }) => (
+                      <th
+                        className="py-3 px-4 text-left bg-brand-primary-400 font-bold text-base-black text-base uppercase"
+                        {...props}
+                      />
+                    ),
+                    td: ({ node, ...props }) => (
+                      <td
+                        className="py-3 px-4 border-t text-base text-base-black border-greyscale-light-200 text-brand-dark even:bg-brand-light/20"
+                        {...props}
+                      />
+                    ),
+                    code: ({ node, ...props }) => (
+                      <code
+                        className="bg-brand-accent/10 px-2 py-1 rounded-md font-mono text-sm text-brand-accent border border-brand-accent/20 hover:bg-brand-accent/20 transition-colors"
+                        {...props}
+                      />
+                    ),
+                    pre: ({ node, ...props }) => (
+                      <pre
+                        className="bg-brand-dark p-6 rounded-xl overflow-x-auto text-sm my-6 text-white 
+                          shadow-2xl border-2 border-brand-primary/30 hover:border-brand-accent/50 transition-all"
+                        {...props}
+                      />
+                    ),
+                    strong: ({ node, ...props }) => (
+                      <strong className="font-black text-brand-accent drop-shadow-sm" {...props} />
+                    ),
+                    em: ({ node, ...props }) => (
+                      <em className="italic text-brand-primary/90 font-semibold" {...props} />
                     ),
                   }}
                 >
@@ -305,6 +346,10 @@ function LiveQuiz() {
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="max-w-[95vw] rounded-2xl">
           <ConfirmFinishModal
+            title="Finish quiz"
+            message="Are you sure you want to finish the quiz?"
+            confirmText="Yes, I'm done!"
+            cancelText="No."
             isOpen={showConfirmModal}
             onClose={() => setShowConfirmModal(false)}
             onConfirm={() => {

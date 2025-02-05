@@ -48,38 +48,44 @@ export const DurationPicker = <
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel>{label}</FormLabel>
-          <Select
-            onValueChange={(value) => {
-              if (value === "custom") {
-                setCustomDuration("");
-                setIsUnderOne(false);
-              } else {
-                setCustomDuration(null);
-                setIsUnderOne(false);
-                field.onChange(value);
-              }
-            }}
-            // Mevcut field değerine göre defaultValue veriyoruz
-            defaultValue={field.value}
-          >
-            <FormControl>
-              <SelectTrigger className="box-border justify-between">
-                <SelectValue
-                  placeholder={customDuration !== null ? `${customDuration} Minutes` : placeholder}
-                />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectItem value="custom" className="font-semibold">
-                Custom duration
-              </SelectItem>
-              <SelectItem value="15">15 minutes</SelectItem>
-              <SelectItem value="30">30 minutes</SelectItem>
-              <SelectItem value="45">45 minutes</SelectItem>
-              <SelectItem value="60">60 minutes</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col gap-2">
+            <FormLabel className="text-left text-sm font-bold text-brand-primary-950">
+              {label}
+            </FormLabel>
+            <Select
+              onValueChange={(value) => {
+                if (value === "custom") {
+                  setCustomDuration("");
+                  setIsUnderOne(false);
+                } else {
+                  setCustomDuration(null);
+                  setIsUnderOne(false);
+                  field.onChange(value);
+                }
+              }}
+              // Mevcut field değerine göre defaultValue veriyoruz
+              defaultValue={field.value}
+            >
+              <FormControl>
+                <SelectTrigger className="box-border justify-between">
+                  <SelectValue
+                    placeholder={
+                      customDuration !== null ? `${customDuration} Minutes` : placeholder
+                    }
+                  />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="custom" className="font-semibold">
+                  Custom duration
+                </SelectItem>
+                <SelectItem value="15">15 minutes</SelectItem>
+                <SelectItem value="30">30 minutes</SelectItem>
+                <SelectItem value="45">45 minutes</SelectItem>
+                <SelectItem value="60">60 minutes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Eğer custom seçildiyse ekstra input göster */}
           {customDuration !== null && (

@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// AM/PM tip tanımı
 type Period = "AM" | "PM";
 
 interface TimePickerSelectProps {
@@ -19,16 +18,16 @@ interface TimePickerSelectProps {
 }
 
 /**
- * Basit bir Select tabanlı 12 saat formatı TimePicker.
- * Saat, dakika, AM/PM’yi dropdown menülerle seçtirir.
+ * 12 saat formatı TimePicker (Select menüleriyle).
+ * Dakikada sadece "00", "15", "30", "45" seçenekleri sunar.
  */
 export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
-  // AM/PM belirle
   const [period, setPeriod] = React.useState<Period>(date && date.getHours() >= 12 ? "PM" : "AM");
 
-  // Saat ve dakika (string)
-  const [hours, setHours] = React.useState("12"); // "1"–"12"
-  const [minutes, setMinutes] = React.useState("00"); // "00"–"59"
+  // 1..12 saat, string halde
+  const [hours, setHours] = React.useState("12");
+  // Sınırlı dakika seçenekleri
+  const [minutes, setMinutes] = React.useState("00");
 
   // date değişince senkronize et
   React.useEffect(() => {
@@ -44,7 +43,10 @@ export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
     setPeriod(date.getHours() >= 12 ? "PM" : "AM");
   }, [date]);
 
-  // Saat/dakika/AM-PM değişince date’i güncelle
+  // Sınırlı dakika seçenekleri
+  const minuteOptions = ["00", "15", "30", "45"];
+
+  // Güncelleme fonksiyonu
   const updateDate = (newHours: string, newMinutes: string, newPeriod: Period) => {
     const base = date ? new Date(date) : new Date();
     const final = new Date(base);
@@ -76,8 +78,6 @@ export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
 
   // Saat seçenekleri (1..12)
   const hourOptions = Array.from({ length: 12 }, (_, i) => (i === 0 ? 12 : i));
-  // Dakika seçenekleri (00..59)
-  const minuteOptions = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
 
   return (
     <div className="flex flex-row gap-4">
@@ -135,4 +135,5 @@ export function TimePickerSelect({ date, setDate }: TimePickerSelectProps) {
   );
 }
 
+// Re-export
 export { SelectValue, SelectItem, SelectContent, SelectTrigger, Select };

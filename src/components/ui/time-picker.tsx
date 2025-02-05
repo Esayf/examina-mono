@@ -11,78 +11,169 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-type Period = "AM" | "PM";
-
-interface TimePickerProps {
-  /** Dışarıdan gelen Date değeri (örn. üst bileşenden state) */
-  date: Date | undefined;
-  /** Date güncellendiğinde üst bileşeni bilgilendirmek için. */
-  setDate: (date: Date | undefined) => void;
+/**
+ * Bir Date'i bir sonraki 15 dakikalık slota yuvarlayan yardımcı fonksiyon.
+ * Dakika:
+ *   0..14   => 15
+ *   15..29  => 30
+ *   30..44  => 45
+ *   45..59  => sonraki saat (dakika=00)
+ */
+function roundUpToNextSlot(date: Date) {
+  const newDate = new Date(date);
+  const minutes = newDate.getMinutes();
+  if (minutes < 15) {
+    newDate.setMinutes(15, 0, 0);
+  } else if (minutes < 30) {
+    newDate.setMinutes(30, 0, 0);
+  } else if (minutes < 45) {
+    newDate.setMinutes(45, 0, 0);
+  } else {
+    newDate.setHours(newDate.getHours() + 1, 0, 0, 0);
+  }
+  return newDate;
 }
 
-/** 1) Basit zaman dilimleri listesi (tablodaki örnek). */
+/**
+ * getRoundedTimeWithRules:
+ *  1) Eğer "base" şu andan (minBuffer) dk ötesinden az ise => (+5 dk, 15 dk slot, < minSlotThreshold => ileri slot)
+ *  2) Yok eğer base, şu andan minBuffer dk daha uzaksa => dokunma (kullanıcı tam 12:00 PM seçebilsin)
+ *
+ *  @param base             Kullanıcının seçtiği Date (veya undefined)
+ *  @param minBuffer        Min. buffer değeri (dakika) - default 5
+ *  @param minSlotThreshold Son slota kadar min beklenen süre (dakika) - default 10
+ *  @returns                Ayarlanmış (yuvarlanmış) bir Date
+ */
+function getRoundedTimeWithRules(base?: Date, minBuffer = 5, minSlotThreshold = 10): Date {
+  const now = new Date();
+
+  // base tanımsız veya geçmişse => şimdi
+  let targetDate = !base || base < now ? now : base;
+
+  // Şu an ile targetDate arasındaki dakika farkı
+  const timeDifferenceMinutes = (targetDate.getTime() - now.getTime()) / 60000;
+
+  // 1) Eğer targetDate, şu andan minBuffer dk'dan az bir uzaklıktaysa
+  if (timeDifferenceMinutes < minBuffer) {
+    // minBuffer dk ekle (örnek: 5 dk)
+    targetDate = new Date(now.getTime() + minBuffer * 60_000);
+
+    // 15 dakikalık en yakın slota yuvarla
+    let roundedDate = roundUpToNextSlot(targetDate);
+
+    // Eğer (roundedDate - now) < minSlotThreshold dk ise bir sonraki slota al
+    const diffAfterRound = (roundedDate.getTime() - now.getTime()) / 60000;
+    if (diffAfterRound < minSlotThreshold) {
+      roundedDate = new Date(roundedDate.getTime() + 15 * 60_000);
+    }
+    return roundedDate;
+  }
+
+  // 2) Eğer timeDifferenceMinutes >= minBuffer => dokunma (tam 12:00 PM kalabilir)
+  return targetDate;
+}
+
+/** AM/PM tipi */
+type Period = "AM" | "PM";
+
+/** Bileşen Props */
+interface TimePickerProps {
+  /** Dışarıdan gelen Date (parent state) */
+  date: Date | undefined;
+  /** Date güncellendiğinde parent'ı bilgilendirmek */
+  setDate: (date: Date | undefined) => void;
+
+  /** İsteğe bağlı: minBuffer (dakika) varsayılan = 5 */
+  minBuffer?: number;
+  /** İsteğe bağlı: minSlotThreshold (dakika) varsayılan = 10 */
+  minSlotThreshold?: number;
+
+  /**
+   * Otomatik ayarlama olduğunda bir callback ile kullanıcıyı bilgilendirmek isterseniz.
+   * (Örn. toast açmak, console.log yapmak vb.)
+   */
+  onTimeAdjusted?: (oldDate: Date | undefined, newDate: Date) => void;
+}
+
+/** Örnek zaman dilimi listesi (isteğe göre güncelleyebilirsiniz). */
 const allTimeZones = [
   { label: "UTC", value: "UTC" },
   { label: "UTC-8 (America/Los_Angeles)", value: "America/Los_Angeles" },
   { label: "UTC+1 (Europe/Berlin)", value: "Europe/Berlin" },
   { label: "UTC+9 (Asia/Tokyo)", value: "Asia/Tokyo" },
   { label: "UTC+10 (Australia/Sydney)", value: "Australia/Sydney" },
-  { label: "UTC+3 (example)", value: "Europe/Istanbul" },
+  { label: "UTC+3 (Europe/Istanbul)", value: "Europe/Istanbul" },
 ];
 
-/** 2) Dakikayı 30'a, sonrasını da bir sonraki saate (00'a) yuvarlayarak ileri çekme fonksiyonu */
-function roundUpToNextSlot(d: Date) {
-  const newD = new Date(d);
-  const m = newD.getMinutes();
-  if (m < 30) {
-    newD.setMinutes(30);
-  } else {
-    newD.setHours(newD.getHours() + 1, 0);
-  }
-  return newD;
-}
-
-export function TimePicker({ date, setDate }: TimePickerProps) {
+/**
+ * Ana TimePicker bileşeni (12 saat formatı, "00/15/30/45" dakikalık).
+ * - minBuffer ve minSlotThreshold parametrelerini props'tan alır.
+ * - eğer `onTimeAdjusted` varsa otomatik ileri atlamalarda callback çağırarak info verebilir.
+ */
+export function TimePicker({
+  date,
+  setDate,
+  minBuffer = 5,
+  minSlotThreshold = 10,
+  onTimeAdjusted,
+}: TimePickerProps) {
   const [period, setPeriod] = useState<Period>("AM");
   const [hours, setHours] = useState("12");
   const [minutes, setMinutes] = useState("00");
 
-  // Mobilde tam ekran tablo açmak için:
+  // Mobilde tam ekran tablo açmak için
   const [showTimeZones, setShowTimeZones] = useState(false);
-  // Diğer saat dilimlerini göstermek için kaydettiğimiz zamanlar:
+  // Diğer saat dilimlerini göstermek için sakladığımız veriler
   const [worldTimes, setWorldTimes] = useState<Record<string, string>>({});
 
   /**
-   * 3) Komponent her renderlandığında veya date güncellenince çalışır.
-   *    - Eğer date yoksa veya geçmiş bir zamansa, "şu an"ı alıp roundUpToNextSlot ile ileri yuvarlarız.
-   *    - Değilse, hours, minutes, period state'lerini senkronize ederiz.
+   * 1) Bileşen ilk yüklendiğinde veya "date" değiştiğinde senkronize et.
+   *    Eğer date geçmişteyse veya (date-now < minBuffer) ise => getRoundedTimeWithRules(date)
+   *    Yoksa dokunmuyoruz ve hours/minutes/period state'lerini güncelliyoruz.
    */
   useEffect(() => {
-    const now = new Date();
-    if (!date || date < now) {
-      // Date yoksa veya geçmişse => şu an'ı en yakın yarım/tam saate yuvarla
-      const newDate = roundUpToNextSlot(now);
+    if (!date) {
+      const newDate = getRoundedTimeWithRules(undefined, minBuffer, minSlotThreshold);
       setDate(newDate);
-      return; // Henüz date değiştiği için, hours & minutes atamasını bir sonraki render yapacak
+      return;
     }
 
-    // Buraya geldiysek date gelecekte veya "şu an" demektir.
+    const now = new Date();
+    const diff = (date.getTime() - now.getTime()) / 60000;
+
+    if (date < now || diff < minBuffer) {
+      const oldDate = date;
+      const newDate = getRoundedTimeWithRules(date, minBuffer, minSlotThreshold);
+      setDate(newDate);
+
+      // Eğer otomatik ayarlandıysa callback
+      if (onTimeAdjusted && oldDate.getTime() !== newDate.getTime()) {
+        onTimeAdjusted(oldDate, newDate);
+      }
+      return;
+    }
+
+    // Aksi halde date gelecekte +5 dk'dan daha uzak => hours, minutes, period senkronize
     const h24 = date.getHours(); // 0..23
     const h12 = h24 % 12 || 12; // 1..12
     setHours(h12.toString());
-    setMinutes(date.getMinutes() >= 30 ? "30" : "00");
+
+    const m = date.getMinutes();
+    if (m >= 0 && m < 15) setMinutes("00");
+    else if (m < 30) setMinutes("15");
+    else if (m < 45) setMinutes("30");
+    else setMinutes("45");
+
     setPeriod(h24 >= 12 ? "PM" : "AM");
-  }, [date, setDate]);
+  }, [date, setDate, minBuffer, minSlotThreshold, onTimeAdjusted]);
 
   /**
-   * 4) Date her değiştiğinde "worldTimes" tablomuza yeni değerler yazalım.
-   *    Not: Bu, date set edildikten sonra tabloyu güncel tutar.
+   * 2) 'date' her güncellendiğinde, diğer dünya saatlerini hesapla.
    */
   useEffect(() => {
     if (!date) return;
     const newTimes: Record<string, string> = {};
     allTimeZones.forEach((tz) => {
-      // "en-US" formatında, AM/PM + saat/dakika
       const offsetTime = date.toLocaleTimeString("en-US", {
         timeZone: tz.value,
         hour: "2-digit",
@@ -95,15 +186,16 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
   }, [date]);
 
   /**
-   * 5) Kullanıcı dropdown'lardan saat/dakika/AM-PM seçince buraya gelir.
-   *    Eğer seçilen zaman 'geçmiş' olursa, yine anında roundUpToNextSlot(now) yaparız.
+   * 3) Kullanıcı hours/minutes/AM-PM seçtiğinde çağrılır.
+   *    => 12 saat formatından 24 saate çevir, baseDate'i güncelle,
+   *       getRoundedTimeWithRules ile "buffer" mantığını uygula,
+   *       otomatik ayarlama varsa onTimeAdjusted() callback'i çağır.
    */
   function updateDate(hStr: string, mStr: string, p: Period) {
-    // Şu anki date var mı? Yoksa "şimdi" diyelim (çok gerek kalmaz,
-    // yukarıdaki effectte yoksa zaten setDate ile dolduruyoruz).
+    const oldDate = date;
     const baseDate = date ? new Date(date) : new Date();
 
-    // Kullanicinin seçtiği hour & minute
+    // 12 saat formatından => 24 saate
     let hh = parseInt(hStr, 10);
     if (Number.isNaN(hh) || hh < 1) hh = 1;
     if (hh > 12) hh = 12;
@@ -111,35 +203,34 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
     let mm = parseInt(mStr, 10);
     if (Number.isNaN(mm)) mm = 0;
 
-    // AM/PM dönüştür
     if (p === "PM") {
-      hh = (hh % 12) + 12; // 1 PM => 13
+      hh = (hh % 12) + 12;
     } else {
       hh = hh % 12; // 12 AM => 0
     }
 
     baseDate.setHours(hh, mm, 0, 0);
 
-    // Geçmiş olmasın => eğer bu saat "şu an"dan gerideyse yuvarla
-    const now = new Date();
-    let finalDate = baseDate < now ? roundUpToNextSlot(now) : baseDate;
+    // Kurallı yuvarlama
+    const finalDate = getRoundedTimeWithRules(baseDate, minBuffer, minSlotThreshold);
 
-    // Değeri state'e bas
     setDate(finalDate);
+
+    // Eğer otomatik ayarlandıysa callback
+    if (onTimeAdjusted && oldDate && oldDate.getTime() !== finalDate.getTime()) {
+      onTimeAdjusted(oldDate, finalDate);
+    }
   }
 
-  // Bu üç handle fonksiyonda, önce local state'i güncelliyoruz,
-  // sonra "updateDate" ile asıl Date'i hesaplıyoruz.
+  // Dropdown değişimlerinde local state + asıl Date'i güncelliyoruz.
   const handlePeriodChange = (val: string) => {
     setPeriod(val as Period);
     updateDate(hours, minutes, val as Period);
   };
-
   const handleHoursChange = (val: string) => {
     setHours(val);
     updateDate(val, minutes, period);
   };
-
   const handleMinutesChange = (val: string) => {
     setMinutes(val);
     updateDate(hours, val, period);
@@ -147,7 +238,7 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Seçim alanları: Hours, Minutes, AM/PM */}
+      {/* Saat & Dakika & AM/PM Seçimi */}
       <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
         {/* Hours */}
         <div className="flex flex-col">
@@ -175,7 +266,9 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="00">00</SelectItem>
+              <SelectItem value="15">15</SelectItem>
               <SelectItem value="30">30</SelectItem>
+              <SelectItem value="45">45</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -195,7 +288,7 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
         </div>
       </div>
 
-      {/* Masaüstü görünüm: tablo */}
+      {/* Masaüstü görünüm: Dünya saatleri tablosu */}
       <div className="hidden md:block timezones-desktop-table">
         <table className="w-full text-left">
           <thead className="bg-brand-secondary-200 sticky top-0">
@@ -229,7 +322,7 @@ export function TimePicker({ date, setDate }: TimePickerProps) {
         </span>
       </div>
 
-      {/* Mobilde tabloyu butonla açalım */}
+      {/* Mobil görünüm: Tabloyu butonla aç */}
       <div className="block md:hidden">
         <Button variant="outline" className="w-full mt-2" onClick={() => setShowTimeZones(true)}>
           Show time zones

@@ -479,7 +479,7 @@ export default function JoinedExamsPage() {
                 </CardHeaderContent>
               </CardHeader>
 
-              <CardContent className="px-0 pt-0 pb-5">
+              <CardContent className="px-0 pt-0">
                 {/* Filtre butonları */}
                 <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200">
                   {FILTER_OPTIONS.map((opt) => (

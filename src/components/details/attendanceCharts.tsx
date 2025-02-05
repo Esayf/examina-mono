@@ -38,17 +38,19 @@ function AttendanceCharts({ participants, startDate, endDate }: AttendanceCharts
     (date) => new Date(date)
   );
 
-  const attendanceData = xLabels.map((date) => {
-    return participants.filter(
-      (participant) => participant.startTime && new Date(participant.startTime) <= date
-    ).length;
-  });
+  const attendanceData = xLabels.map(
+    (date) =>
+      participants.filter(
+        (participant) => participant.startTime && new Date(participant.startTime) <= date
+      ).length
+  );
 
-  const finishedData = xLabels.map((date) => {
-    return participants.filter(
-      (participant) => participant.finishTime && new Date(participant.finishTime) <= date
-    ).length;
-  });
+  const finishedData = xLabels.map(
+    (date) =>
+      participants.filter(
+        (participant) => participant.finishTime && new Date(participant.finishTime) <= date
+      ).length
+  );
 
   const totalParticipants = participants.length;
   const finishedParticipants = finishedData[finishedData.length - 1] || 0;
@@ -61,32 +63,37 @@ function AttendanceCharts({ participants, startDate, endDate }: AttendanceCharts
           { label: "Not Finished", value: totalParticipants - finishedParticipants },
         ];
 
+  // Renklerle oynayarak farklı bir tema uyguladık:
+  // Katılanlar için yeşil, bitirenler için kırmızı; hiç katılımcı yoksa gri ton.
+  const pieColors = totalParticipants === 0 ? ["#BDBDBD"] : ["#ED52D8", "#1C2024"];
+
   return (
     <div className="flex flex-col gap-4">
       <PieChart
         height={250}
-        colors={totalParticipants === 0 ? ["#cccccc"] : ["#1f77b4", "#ff7f0e"]}
+        colors={pieColors}
         series={[
           {
             arcLabel: (item) =>
               totalParticipants === 0 ? "" : item.value > 0 ? `${item.value}` : "",
-            innerRadius: 30,
-            outerRadius: 70,
-            paddingAngle: 1,
+            innerRadius: 50,
+            outerRadius: 100,
+            paddingAngle: 0.2,
             cornerRadius: 4,
-            ...{
-              data: pieChartData,
-              valueFormatter: (item) =>
-                totalParticipants === 0
-                  ? "No Data"
-                  : `${((item.value / totalParticipants) * 100).toFixed(2)}%`,
-            },
+            data: pieChartData,
+            valueFormatter: (item) =>
+              totalParticipants === 0
+                ? "No Data"
+                : `${((item.value / totalParticipants) * 100).toFixed(2)}%`,
           },
         ]}
         sx={{
+          width: "100%",
+          // Arc label'lara beyaz renk vererek kontrastı artırdık
           [`& .${pieArcLabelClasses.root}`]: {
             fontWeight: "bold",
-            fontSize: "10px",
+            fontSize: "12px",
+            fill: "#FFFFFF",
           },
         }}
       >
@@ -97,17 +104,28 @@ function AttendanceCharts({ participants, startDate, endDate }: AttendanceCharts
         </PieCenterLabel>
       </PieChart>
 
-      <div className="border-b border-greyscale-light-200"></div>
+      <div className="border-b border-gray-300 md:hidden"></div>
 
       <LineChart
         className="w-full font-heading"
         height={250}
         xAxis={[{ data: xLabels, scaleType: "time" }]}
         series={[
-          { data: attendanceData, label: "Attended", area: true, showMark: false },
-          { data: finishedData, label: "Finished", area: true, showMark: false },
+          {
+            data: attendanceData,
+            label: "Attended",
+            area: true,
+            showMark: false,
+            color: "#ED52D8",
+          },
+          { data: finishedData, label: "Finished", area: true, showMark: false, color: "#491042" },
         ]}
         sx={{
+          // Grafik alanı için hafif bir arka plan ve kenarlık ekledik
+          backgroundColor: "var(--color-brand-secondary-50)",
+          border: "1px solid var(--color-brand-secondary-200)",
+          borderRadius: 5,
+          padding: 1,
           [`& .${lineElementClasses.root}`]: {
             display: "none",
           },

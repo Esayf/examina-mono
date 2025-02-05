@@ -98,91 +98,97 @@ export const ControlledDateTimePicker = <
 
         return (
           <FormItem className={cn("w-full", className)}>
-            <FormLabel className="mb-1 text-left">{label}</FormLabel>
+            <div className="flex flex-col gap-2">
+              <FormLabel className="text-left text-sm font-bold text-brand-primary-950">
+                {label}
+              </FormLabel>
 
-            {/* Ekranda iki buton: Select Date, Select Time */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              {/* Date Popover */}
-              <Popover open={dateOpen} onOpenChange={setDateOpen}>
-                <FormControl>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="date-picker"
-                      size="date-picker"
-                      className={cn(
-                        "w-full flex items-center justify-between gap-2",
-                        "rounded-2xl border border-input bg-background text-md font-light",
-                        "focus:outline-none focus:ring-2 focus:ring-brand-primary-800 focus:ring-offset-2",
-                        "disabled:cursor-not-allowed disabled:opacity-50",
-                        !field.value && "text-greyscale-light-900"
-                      )}
-                    >
-                      {dateString ? <span>{dateString}</span> : <span>{placeholderDate}</span>}
-                      <CalendarIcon className="h-5 w-5 shrink-0 text-greyscale-light-900" />
-                    </Button>
-                  </PopoverTrigger>
-                </FormControl>
-                <PopoverContent
-                  side="bottom"
-                  align="start"
-                  sideOffset={4}
-                  avoidCollisions={false}
-                  className={cn(
-                    "w-full max-h-[80vh] overflow-y-auto",
-                    "bg-base-white border border-greyscale-light-200 rounded-2xl shadow-md p-4",
-                    "flex flex-col gap-4"
-                  )}
-                >
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={(day) => {
-                      // day = null ise => iptal demek
-                      if (!day) return;
-                      handleDateChange(day);
-                      setDateOpen(false); // otomatik kapatmak isterseniz
-                    }}
-                    initialFocus
-                    {...calendarProps}
-                  />
-                </PopoverContent>
-              </Popover>
+              {/* Ekranda iki buton: Select Date, Select Time */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                {/* Date Popover */}
+                <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                  <FormControl>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="date-picker"
+                        size="date-picker"
+                        className={cn(
+                          "w-full flex items-center justify-between gap-2",
+                          "rounded-2xl border border-input bg-background text-md font-light",
+                          "focus:outline-none focus:ring-2 focus:ring-brand-primary-800 focus:ring-offset-2",
+                          "disabled:cursor-not-allowed disabled:opacity-50",
+                          !field.value && "text-greyscale-light-900"
+                        )}
+                      >
+                        {dateString ? <span>{dateString}</span> : <span>{placeholderDate}</span>}
+                        <CalendarIcon className="h-5 w-5 shrink-0 text-greyscale-light-900" />
+                      </Button>
+                    </PopoverTrigger>
+                  </FormControl>
+                  <PopoverContent
+                    side="bottom"
+                    align="start"
+                    sideOffset={4}
+                    avoidCollisions={false}
+                    className={cn(
+                      "w-full max-h-[80vh] overflow-y-auto",
+                      "bg-base-white border border-greyscale-light-200 rounded-2xl shadow-md p-4",
+                      "flex flex-col gap-4"
+                    )}
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={(day) => {
+                        // day = null ise => iptal demek
+                        if (!day) return;
+                        handleDateChange(day);
+                        setDateOpen(false); // otomatik kapatmak isterseniz
+                      }}
+                      initialFocus
+                      {...calendarProps}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
 
               {/* Time Popover */}
-              <Popover open={timeOpen} onOpenChange={setTimeOpen}>
-                <FormControl>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="date-picker"
-                      size="date-picker"
-                      className={cn(
-                        "flex w-full items-center justify-between gap-2",
-                        "rounded-2xl border border-input bg-background text-md font-light",
-                        "focus:outline-none focus:ring-2 focus:ring-brand-primary-800 focus:ring-offset-2",
-                        "disabled:cursor-not-allowed disabled:opacity-50",
-                        !field.value && "text-greyscale-light-900"
-                      )}
-                    >
-                      {timeString ? <span>{timeString}</span> : <span>{placeholderTime}</span>}
-                      <ClockIcon className="h-5 w-5 shrink-0 text-greyscale-light-900" />
-                    </Button>
-                  </PopoverTrigger>
-                </FormControl>
-                <PopoverContent
-                  side="bottom"
-                  align="start"
-                  sideOffset={4}
-                  avoidCollisions={false}
-                  className={cn(
-                    "w-[95vw] md:w-auto max-h-[80vh] overflow-y-auto",
-                    "bg-base-white border border-greyscale-light-200 rounded-2xl shadow-md p-4",
-                    "flex flex-col gap-4"
-                  )}
-                >
-                  {/* TimePicker doğrudan field.value üzerinden çalışacak */}
-                  <TimePicker date={field.value} setDate={handleTimeChange} />
-                </PopoverContent>
-              </Popover>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Popover open={timeOpen} onOpenChange={setTimeOpen}>
+                  <FormControl>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="date-picker"
+                        size="date-picker"
+                        className={cn(
+                          "flex w-full items-center justify-between gap-2",
+                          "rounded-2xl border border-input bg-background text-md font-light",
+                          "focus:outline-none focus:ring-2 focus:ring-brand-primary-800 focus:ring-offset-2",
+                          "disabled:cursor-not-allowed disabled:opacity-50",
+                          !field.value && "text-greyscale-light-900"
+                        )}
+                      >
+                        {timeString ? <span>{timeString}</span> : <span>{placeholderTime}</span>}
+                        <ClockIcon className="h-5 w-5 shrink-0 text-greyscale-light-900" />
+                      </Button>
+                    </PopoverTrigger>
+                  </FormControl>
+                  <PopoverContent
+                    side="bottom"
+                    align="start"
+                    sideOffset={4}
+                    avoidCollisions={false}
+                    className={cn(
+                      "w-[95vw] md:w-auto max-h-[80vh] overflow-y-auto",
+                      "bg-base-white border border-greyscale-light-200 rounded-2xl shadow-md p-4",
+                      "flex flex-col gap-4"
+                    )}
+                  >
+                    {/* TimePicker doğrudan field.value üzerinden çalışacak */}
+                    <TimePicker date={field.value} setDate={handleTimeChange} />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
 
             {description && <FormDescription className="mt-1">{description}</FormDescription>}

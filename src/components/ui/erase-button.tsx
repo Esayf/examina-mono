@@ -2,18 +2,21 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { on } from "events";
 
 interface EraseButtonProps {
-  onRemove: () => void; // Silme işlemini tetikleyen fonksiyon (zorunlu)
+  index: number;
+  onRemove: (e: React.MouseEvent<HTMLElement>) => void; // Güncellenmiş tip tanımı
   size?: "icon" | "icon-sm"; // Buton boyutu (varsayılan: icon)
   duration?: number; // Uzun tıklama süresi (milisaniye) (varsayılan: 1000ms)
   className?: string; // Ekstra CSS sınıfı (opsiyonel)
 }
 
 const EraseButton: React.FC<EraseButtonProps> = ({
+  index,
   onRemove,
   size = "icon-sm",
-  duration = 1000, // Varsayılan 1000'di, isterseniz burayı 600'e de çekebilirsiniz
+  duration = 600, // Süreyi 600ms olarak sabitledik
   className = "",
 }) => {
   const [progress, setProgress] = useState(0);
@@ -27,30 +30,32 @@ const EraseButton: React.FC<EraseButtonProps> = ({
     setProgress(0);
     setShowTooltip(false);
 
-    // ▼ YENİ Değişiklik: total 600ms
-    const totalTime = 600; // 0.6 saniye
-    const interval = 40; // 40ms aralıkla artış
-    const step = (100 / totalTime) * interval; // 600ms için adım
+    const totalTime = 600;
+    const interval = 40;
+    const step = (100 / totalTime) * interval;
 
     const intervalId = setInterval(() => {
       setProgress((prev) => {
-        const nextProgress = prev + step;
-        if (nextProgress >= 100) {
+        if (prev + step >= 100) {
           clearInterval(intervalId);
-          onRemove();
           return 100;
         }
-        return nextProgress;
+        return prev + step;
       });
     }, interval);
 
     setTimer(intervalId as unknown as NodeJS.Timeout);
   };
 
-  const handlePressEnd = () => {
+  const handlePressEnd = (e: React.PointerEvent<HTMLButtonElement>) => {
     setPressing(false);
     setProgress(0);
     if (timer) clearInterval(timer);
+
+    if (progress >= 100) {
+      // Event tipini uyumlu hale getiriyoruz
+      onRemove(e as unknown as React.MouseEvent<HTMLElement>);
+    }
   };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {

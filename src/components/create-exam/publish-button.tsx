@@ -280,34 +280,21 @@ export const PublishButton = () => {
       <Button
         onClick={handleOpenConfirmModal}
         disabled={isPublishing}
-        className={`
-    group
-    relative inline-flex items-center justify-center
-    px-5 py-3
-    font-medium text-brand-secondary-200
-    rounded-full
-    bg-brand-primary-900
-    z-50
-
-    transform-gpu
-    transition-all duration-300 ease-out
-
-    /* Hover/Active tepkileri */
-    hover:-translate-y-0.5
-    hover:scale-105
-    active:scale-95
-    active:translate-y-0
-
-    /* Gölge */
-    shadow-sm
-    hover:shadow-md
-    active:shadow-sm
-
-    focus:outline-none
-    focus-visible:ring-2
-    focus-visible:ring-offset-2
-    focus-visible:ring-brand-primary-800
-  `}
+        className={`group relative inline-flex items-center justify-center px-5 py-3 font-medium text-brand-secondary-200 rounded-full bg-brand-primary-900 z-50
+                   transform-gpu
+                   transition-all duration-300 ease-out
+                   hover:-translate-y-0.5
+                   hover:scale-105
+                   active:scale-95
+                   active:translate-y-0
+                   shadow-sm
+                   hover:shadow-md
+                   active:shadow-sm
+                   focus:outline-none
+                   focus-visible:ring-2
+                   focus-visible:ring-offset-2
+                   focus-visible:ring-brand-primary-800
+        `}
       >
         {isPublishing ? (
           <Spinner className="w-6 h-6" />

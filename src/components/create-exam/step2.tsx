@@ -1,20 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+
+// Form Hooks
+import { useStep2Form } from "./step2-schema";
+import { useStep1Form } from "./step1-schema";
+
+// Custom Components
 import { DurationPicker } from "./duration-picker";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import BGR from "@/images/backgrounds/bg-5.svg";
+import { ControlledDateTimePicker } from "./controlled-date-time-picker";
+import { PublishButton } from "./publish-button";
+import { RewardDistributionForm } from "./reward-distrubition";
+import { SaveAsDraftButton } from "./save-as-draft-button";
+import { MarkdownEditor } from "./markdown";
+import { PreviewModal } from "./preview-modal";
+
+// UI Components
 import {
   ArrowLeftIcon,
-  ClockIcon,
-  Squares2X2Icon,
-  ClipboardDocumentIcon,
   CalendarDaysIcon,
-  ArrowUpRightIcon,
-  EyeDropperIcon,
-  RocketLaunchIcon,
   EyeIcon,
+  PencilIcon,
+  Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import {
   Card,
@@ -33,135 +40,156 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useStep2Form } from "./step2-schema";
-import { ControlledDateTimePicker } from "./controlled-date-time-picker";
-import { PublishButton } from "./publish-button";
-import { RewardDistributionForm } from "./reward-distrubition";
-import { Switch } from "../ui/switch";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+
+// Utilities
+import { cn } from "@/lib/utils";
+
+// Styles
 import "../../styles/mdxeditor.css";
 import "../../styles/globals.css";
-import { cn } from "@/lib/utils";
-import { SaveAsDraftButton } from "./save-as-draft-button";
-import { MarkdownEditor } from "./markdown";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-
-// Aşağıdaki PreviewModal importu (yeni ekledik):
-import { PreviewModal } from "./preview-modal";
-import { LiveExamPreview } from "./live-exam-preview";
-import { useStep1Form } from "./step1-schema";
-import { toast } from "react-hot-toast"; // <-- ek
+// Karakter sınırlarını tek bir yerde sabitlemek için
+const TITLE_MAX_CHARS = 50;
+const DESCRIPTION_MAX_CHARS = 960;
 
 interface Step2Props {
   onBack: () => void;
 }
 
 export const Step2 = ({ onBack }: Step2Props) => {
-  // 1) Form Hook ve isDirty / isSubmitted takibi
-  const form = useStep2Form();
-  const {
-    formState: { isDirty, isSubmitted },
-  } = form;
+  /**
+   * 1) Step2 form kontrolleri
+   */
+  const { control, watch, formState } = useStep2Form();
+  const { isDirty, isSubmitted } = formState;
 
-  // 2) Step1 verileri
+  /**
+   * 2) Step1 form verileri (örneğin soru sayısı gibi bilgileri burada kullanabiliriz)
+   */
   const { getValues: getStep1Values } = useStep1Form();
   const step1Values = getStep1Values();
-  const rewardDistribution = form.watch("rewardDistribution");
 
-  // 3) Alanlar izleme
-  const titleValue = form.watch("title") || "";
-  const descriptionValue = form.watch("description") || "";
-  const startDateValue = form.watch("startDate");
-  const durationValue = form.watch("duration");
+  /**
+   * 3) Dinamik alanları izleme
+   */
+  const rewardDistribution = watch("rewardDistribution");
+  const titleValue = watch("title") || "";
+  const descriptionValue = watch("description") || "";
+  const startDateValue = watch("startDate");
+  const durationValue = watch("duration");
 
-  // 4) Preview Modal
+  /**
+   * 4) Quiz önizleme (Preview) modalı için state
+   */
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
     <>
       <Card className="bg-base-white rounded-2xl md:rounded-3xl flex-1 flex flex-col overflow-y-auto">
+        {/* Header */}
         <CardHeader>
+          {/* Geri butonu */}
           <Button variant="outline" size="icon" pill onClick={onBack}>
             <ArrowLeftIcon className="size-5 shrink-0" />
           </Button>
+
+          {/* Başlık */}
           <CardHeaderContent>
             <CardTitle className="hidden md:block">Complete your quiz details</CardTitle>
           </CardHeaderContent>
+
+          {/* Sağ üst aksiyonlar: Taslak kaydet & Yayınla */}
           <div className="flex flex-row justify-center gap-2">
             <SaveAsDraftButton />
-            {/* Preview Button (Modal'ı açar) */}
-            <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
-              <span className="hidden sm:inline">Preview quiz</span>
-              <EyeIcon className="w-6 h-6 sm:ml-2" />
-            </Button>
-
             <PublishButton />
           </div>
         </CardHeader>
 
-        <CardContent className="w-full px-5 py-5 space-y-5 flex-1 overflow-y-auto gap-8 flex-col relative mb-5">
-          {/* 1) Title */}
+        <CardContent className="w-full px-5 py-5 space-y-5 flex-1 overflow-y-auto gap-8 flex-col relative bg-brand-secondary-50">
+          {/* Quiz önizleme butonu (Modal açar) */}
+          <div className="flex justify-end">
+            <Button
+              variant="default"
+              size="icon"
+              onClick={() => setIsPreviewOpen(true)}
+              className="absolute right-6 transition-colors gap-2"
+            >
+              <EyeIcon className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* 1) Quiz Başlığı */}
           <FormField
-            control={form.control}
+            control={control}
             name="title"
             render={({ field }) => {
-              const maxChars = 50;
               const characterCount = field.value?.length || 0;
-              const isOverLimit = characterCount > maxChars;
+              const isOverLimit = characterCount > TITLE_MAX_CHARS;
 
               return (
-                <FormItem>
-                  <p className="text-lg font-bold text-brand-primary-950 mb-2">1. Quiz title </p>
-                  <FormLabel>What would you like to call this quiz?</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        placeholder="e.g. General Knowledge Challenge! 💪😎"
-                        className={cn(
-                          "rounded-2xl border max-h-[52px]",
-                          isOverLimit
-                            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                            : "border-greyscale-light-300"
-                        )}
-                        {...field}
-                      />
-                      <div
-                        className={cn(
-                          "text-sm absolute right-3 top-3",
-                          isOverLimit ? "text-red-500" : "text-greyscale-light-500"
-                        )}
-                      >
-                        {`${characterCount}/50`}
-                      </div>
+                <div className="flex-1 gap-4 bg-white p-4 rounded-3xl border border-greyscale-light-200">
+                  <h3 className="text-xl font-bold text-brand-primary-950 mb-4 flex items-center gap-2">
+                    <Squares2X2Icon className="size-6 shrink-0" />
+                    Basic Information
+                  </h3>
+                  <FormItem>
+                    <div className="flex flex-col gap-2">
+                      <FormLabel>What would you like to call this quiz?</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            placeholder="e.g. General Knowledge Challenge! 💪😎"
+                            className={cn(
+                              "rounded-2xl border max-h-[52px]",
+                              isOverLimit
+                                ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                                : "border-greyscale-light-300"
+                            )}
+                            {...field}
+                          />
+                          <div
+                            className={cn(
+                              "text-sm absolute right-3 top-3",
+                              isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+                            )}
+                          >
+                            {`${characterCount}/${TITLE_MAX_CHARS}`}
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        A descriptive title will give participants an indication of what the quiz is
+                        about.
+                      </FormDescription>
+                      {isOverLimit && (
+                        <p className="text-red-500 text-sm mt-1">
+                          The title exceeds the maximum allowed {TITLE_MAX_CHARS} characters.
+                        </p>
+                      )}
+                      <FormMessage />
                     </div>
-                  </FormControl>
-                  <FormDescription>
-                    A descriptive title will give participants an indication of what the quiz is
-                    about.
-                  </FormDescription>
-                  {isOverLimit && (
-                    <p className="text-red-500 text-sm mt-1">
-                      The description exceeds the maximum allowed {maxChars} characters.
-                    </p>
-                  )}
-                  <FormMessage />
-                </FormItem>
+                  </FormItem>
+                </div>
               );
             }}
           />
 
-          {/* 2) Schedule */}
+          {/* 2) Quiz Başlangıç Zamanı & Süresi */}
           <div className="flex flex-col sm:flex-row">
-            <div className="flex-1 gap-4">
-              <p className="text-lg font-bold text-brand-primary-950 mb-2">2. Schedule your quiz</p>
+            <div className="flex-1 gap-4 bg-white p-4 rounded-3xl border border-greyscale-light-200">
+              <p className="text-xl font-bold text-brand-primary-950 mb-4 flex items-center gap-2">
+                <CalendarDaysIcon className="size-6 shrink-0" />
+                Schedule Quiz
+              </p>
               <div className="flex gap-4 justify-between flex-col sm:flex-row">
                 <ControlledDateTimePicker
-                  control={form.control}
+                  control={control}
                   name="startDate"
                   label="When should this quiz start?"
                   description="Choose a date and time for the quiz to begin."
-                  className="flex-1"
+                  className="flex-1 gap-2"
                   calendarProps={{
                     disabled: { before: new Date(Date.now() + 10 * 60 * 1000) },
                   }}
@@ -170,7 +198,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
                   className="flex-1"
                   name="duration"
                   label="How long should this quiz take?"
-                  control={form.control}
+                  control={control}
                   description="Once the time is up, the quiz will automatically end."
                   placeholder="Select duration (in minutes)"
                 />
@@ -178,69 +206,72 @@ export const Step2 = ({ onBack }: Step2Props) => {
             </div>
           </div>
 
-          {/* 3) Description (Markdown) */}
+          {/* 3) Quiz Açıklaması (Markdown) */}
           <FormField
-            control={form.control}
+            control={control}
             name="description"
             render={({ field }) => {
-              const maxChars = 960;
               const characterCount = field.value?.length || 0;
-              const isOverLimit = characterCount > maxChars;
+              const isOverLimit = characterCount > DESCRIPTION_MAX_CHARS;
 
               return (
-                <FormItem>
-                  <p className="text-lg font-bold text-brand-primary-950 mb-2">3. About quiz</p>
-                  <FormLabel>Any guidelines or final remarks you'd like to include?</FormLabel>
-                  <FormControl>
-                    <div
-                      className={cn(
-                        "relative border rounded-2xl bg-base-white min-h-[240px] max-h-[960px] resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800",
-                        isOverLimit
-                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                          : "border-greyscale-light-200"
-                      )}
-                    >
-                      <MarkdownEditor
-                        className="mdxeditor h-full"
-                        markdown={field.value || ""}
-                        onChange={field.onChange}
-                        contentEditableClassName="contentEditable"
-                      />
-                      {/* Karakter sayısı sağ üstte */}
-                      <div
-                        className={cn(
-                          "text-sm absolute right-3 top-3 z-40",
-                          isOverLimit ? "text-red-500" : "text-greyscale-light-500"
-                        )}
-                      >
-                        {`${characterCount}/${maxChars}`}
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormDescription>
-                    An engaging and clear description ensures participants understand the purpose
-                    and format of the quiz.
-                  </FormDescription>
-                  {isOverLimit && (
-                    <p className="text-red-500 text-sm mt-1">
-                      The description exceeds the maximum allowed {maxChars} characters.
+                <div className="flex-1 gap-4 bg-white p-4 rounded-3xl border border-greyscale-light-200">
+                  <FormItem>
+                    <p className="text-lg font-bold text-brand-primary-950 mb-4 flex items-center gap-2">
+                      <PencilIcon className="size-4 shrink-0" />
+                      About Quiz
                     </p>
-                  )}
-                  <FormMessage />
-                </FormItem>
+                    <div className="flex flex-col gap-2">
+                      <FormLabel>Any guidelines or final remarks you'd like to include?</FormLabel>
+                      <FormControl>
+                        <div
+                          className={cn(
+                            "relative border rounded-2xl bg-base-white min-h-[240px] max-h-[960px] resize-y overflow-y-auto ring-0 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-primary-800",
+                            isOverLimit
+                              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                              : "border-greyscale-light-200"
+                          )}
+                        >
+                          <MarkdownEditor
+                            className="mdxeditor h-full"
+                            markdown={field.value || ""}
+                            onChange={field.onChange}
+                          />
+                          <div
+                            className={cn(
+                              "text-sm absolute right-3 top-3",
+                              isOverLimit ? "text-red-500" : "text-greyscale-light-500"
+                            )}
+                          >
+                            {`${characterCount}/${DESCRIPTION_MAX_CHARS}`}
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        An engaging and clear description ensures participants understand the
+                        purpose and format of the quiz.
+                      </FormDescription>
+                      {isOverLimit && (
+                        <p className="text-red-500 text-sm mt-1">
+                          The description exceeds the maximum allowed {DESCRIPTION_MAX_CHARS}{" "}
+                          characters.
+                        </p>
+                      )}
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                </div>
               );
             }}
           />
 
-          {/* 4) Reward Distribution */}
+          {/* 4) Ödül Dağıtım Anahtarı (Switch) */}
           <FormField
-            control={form.control}
+            control={control}
             name="rewardDistribution"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-end">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base pe-4">Reward distribution</FormLabel>
-                </div>
+                <FormLabel className="text-base pe-4 mb-0">Reward distribution</FormLabel>
                 <FormControl>
                   <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
@@ -248,12 +279,12 @@ export const Step2 = ({ onBack }: Step2Props) => {
             )}
           />
 
-          {/* 5) RewardDistributionForm */}
+          {/* 5) Ödül Dağıtım Formu (switch aktifse göster) */}
           {rewardDistribution && <RewardDistributionForm />}
         </CardContent>
       </Card>
 
-      {/* PreviewModal => TIKLANINCA AÇILMASI GEREKEN YER */}
+      {/* 6) Quiz Önizleme Modalı */}
       <PreviewModal
         open={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}

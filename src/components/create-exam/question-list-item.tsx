@@ -21,8 +21,9 @@ interface QuestionListItemProps {
   onMoveUp?: () => void;
   onMoveDown?: () => void;
 
-  isFirst: boolean;
-  isLast: boolean;
+  // isFirst?: boolean;
+  // isLast?: boolean;
+  dragHandle?: React.ReactNode;
 }
 
 /**
@@ -45,9 +46,10 @@ export function QuestionListItem({
   canMoveDown,
   onMoveUp,
   onMoveDown,
-  isFirst,
-  isLast,
-}: QuestionListItemProps) {
+  dragHandle,
+}: // isFirst?: boolean,
+// isLast?: boolean,
+QuestionListItemProps) {
   const truncated =
     questionText?.length > 11 ? `${questionText.slice(0, 11)}...` : questionText || "Untitled";
 
@@ -65,6 +67,7 @@ export function QuestionListItem({
         className
       )}
     >
+      {dragHandle && <div className="drag-handle">{dragHandle}</div>}
       {/* SOLDaki kısım: Soru no + kısaltılmış metin */}
       <div className="flex flex-col items-start gap-1 min-h-[52px]">
         <span
@@ -91,39 +94,46 @@ export function QuestionListItem({
           </div>
         )}
 
-        {/* Yukarı buton */}
+        {/* Yukarı buton 
         <Button
           variant="ghost"
           size="chevron"
           className="p-1 hover:bg-brand-secondary-100 rounded-md"
           aria-label="Move question up"
-          disabled={isFirst}
+          disabled={canMoveUp === false}
           onClick={(e) => {
             e.stopPropagation();
             onMoveUp?.();
           }}
         >
           <ChevronUpIcon className="w-5 h-5 text-greyscale-light-600" />
-        </Button>
+        </Button>*/}
 
-        {/* Aşağı buton */}
+        {/* Aşağı buton 
         <Button
           variant="ghost"
           size="chevron"
           className="p-1 hover:bg-brand-secondary-100 rounded-md"
           aria-label="Move question down"
-          disabled={isLast}
+          disabled={canMoveDown === false}
           onClick={(e) => {
             e.stopPropagation();
             onMoveDown?.();
           }}
         >
           <ChevronDownIcon className="w-5 h-5 text-greyscale-light-600" />
-        </Button>
+        </Button>*/}
 
         {/* Silme butonu */}
         {onRemove && (
-          <EraseButton onRemove={() => onRemove(index)} duration={1500} className="inline-block" />
+          <EraseButton
+            index={index}
+            onRemove={(e) => {
+              e.stopPropagation();
+              onRemove(index);
+            }}
+            className="inline-block"
+          />
         )}
       </div>
     </div>

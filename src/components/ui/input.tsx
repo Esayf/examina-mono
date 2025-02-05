@@ -20,7 +20,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
   ({ className, startElement, endElement, as = "input", rows, ...props }, ref) => {
     /** Ortak base CSS sınıfları, hem input hem de textarea için benzer görünüm */
     const baseClass = cn(
-      "w-full px-2 py-2", // iç boşluklar
+      "w-full px-4 py-2", // iç boşluklar
       "rounded-2xl border border-greyscale-light-200", // kenarlık
       "bg-base-white ring-offset-background", // arkaplan
       "placeholder:text-greyscale-light-400", // placeholder rengi
