@@ -128,7 +128,7 @@ export const PublishButton = () => {
           questionCount: step1Values.questions.length,
           isRewarded: step2Values.rewardDistribution,
           rewardPerWinner: step2Values.rewardPerWinner || 0,
-          passingScore: step2Values.minimumPassingScore || 0,
+          passingScore: step2Values.passingScore || 0,
           contractAddress: existingContractAddress,
           deployJobId,
         });
@@ -185,7 +185,7 @@ export const PublishButton = () => {
           questionCount: step1Values.questions.length,
           isRewarded: step2Values.rewardDistribution,
           rewardPerWinner: step2Values.rewardPerWinner || 0,
-          passingScore: step2Values.minimumPassingScore || 0,
+          passingScore: step2Values.passingScore || 0,
           contractAddress: deployTx.contractAddress,
           deployJobId,
         });

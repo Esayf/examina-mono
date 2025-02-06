@@ -18,7 +18,7 @@ export const step2ValidationSchema = z
     duration: z.string(),
     rewardDistribution: z.boolean(),
     // the rest of the fields are only required if the reward distribution is activated
-    minimumPassingScore: looseOptional(
+    passingScore: looseOptional(
       z
         .number()
         .min(0, "Minimum passing score must be at least 0")
@@ -51,11 +51,11 @@ export const step2ValidationSchema = z
   })
   .superRefine((values, context) => {
     if (values.rewardDistribution) {
-      if (!values.minimumPassingScore) {
+      if (!values.passingScore) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Minimum passing score is required",
-          path: ["minimumPassingScore"],
+          path: ["passingScore"],
         });
       }
       if (!values.totalRewardPoolAmount) {

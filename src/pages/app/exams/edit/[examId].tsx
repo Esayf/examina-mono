@@ -57,6 +57,9 @@ function ExamForm({ exam }: ExamFormProps) {
           startDate: exam.startDate ? new Date(exam.startDate) : undefined,
           duration: exam.duration ? exam.duration.toString() : undefined,
           rewardDistribution: exam.isRewarded === undefined ? false : exam.isRewarded,
+          passingScore: exam.passingScore,
+          rewardPerWinner: exam.rewardPerWinner,
+          totalRewardPoolAmount: exam.totalRewardPoolAmount,
           questions: exam.questions.map((q) => ({
             answers: q.options.map((o) => ({ answer: o.text })),
             correctAnswer: q.correctAnswer >= 0 ? q.correctAnswer.toString() : undefined,

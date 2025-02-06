@@ -69,6 +69,7 @@ export interface DraftExam extends Omit<Exam, "status"> {
     questionType: "mc" | "tf";
   }[];
   status: "draft";
+  totalRewardPoolAmount: number;
 }
 
 function getDraftExam(examID: string): Promise<DraftExam> {
