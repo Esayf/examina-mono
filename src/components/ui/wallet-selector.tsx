@@ -9,7 +9,6 @@ import Pallad from "@/images/logo/pallad-logo.svg";
 
 import toast from "react-hot-toast";
 import { authenticate } from "@/hooks/auth";
-import session from "@/features/client/session";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector } from "@/app/hooks"; // Önemli: Buradan dispatch'i çekiyoruz
 
@@ -27,6 +26,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
   // 1) Gerçek dispatch fonksiyonunu alıyoruz
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const session = useAppSelector((state) => state.session);
 
   if (!isOpen) return null;
 
