@@ -29,6 +29,7 @@ import {
   codeBlockPlugin,
 } from "@mdxeditor/editor";
 import imageCompression from "browser-image-compression";
+import { PinataSDK } from "pinata-web3";
 
 /*import "@mdxeditor/editor/style.css";*/
 import "@/styles/mdxeditor.css";
@@ -63,14 +64,32 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
       if (!file) return Promise.reject("No file selected");
 
       const keyRequest = await fetch("/api/key");
-      const keyData = (await keyRequest.json()) as KeyResponse | { message: string };
+      const keyData = (await keyRequest.json()) as
+        | { pinata_api_key: string; pinata_api_secret: string }
+        | { message: string };
 
       if ("message" in keyData) return Promise.reject(keyData.message);
 
-      const upload = await pinata.upload.file(file).key(keyData.JWT);
-      // const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
+      // Create form data for the file
+      const formData = new FormData();
+      formData.append("file", file);
 
-      return `/api/proxy?hash=${upload.IpfsHash}`;
+      // Upload directly to Pinata API
+      const upload = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+        method: "POST",
+        headers: {
+          pinata_api_key: keyData.pinata_api_key,
+          pinata_secret_api_key: keyData.pinata_api_secret,
+        },
+        body: formData,
+      });
+
+      if (!upload.ok) {
+        throw new Error("Failed to upload to Pinata");
+      }
+
+      const result = await upload.json();
+      return `/api/proxy?hash=${result.IpfsHash}`;
     };
 
     const plugins = [

@@ -196,7 +196,7 @@ export const PublishButton = ({ onPublishStart }: PublishButtonProps) => {
           ...(isRewardDistributionEnabled && {
             totalRewardPoolAmount: totalRewardPoolAmount.toString(),
             rewardPerWinner: rewardPerWinner || 0,
-            passingScore: step2Values.minimumPassingScore || 0,
+            passingScore: step2Values.passingScore || 0,
             contractAddress: contractAddressNullable,
             deployJobId: txStatus.tx.jobId,
           })
