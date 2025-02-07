@@ -82,6 +82,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Button
               variant="link"
               size="default"
+              disabled
               className={cn(
                 "rounded-full hidden md:block",
                 "text-brand-primary-950 font-book"
