@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getExamList, getDraftExams, deleteDraftExam, DraftExam } from "@/lib/Client/Exam";
+import { getExamList, GetExamsParams, getDraftExams, deleteDraftExam, DraftExam } from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
 // Kopyalama bileşeni
@@ -366,13 +366,14 @@ function Row({ exam }: RowProps) {
  * 3) ANA SAYFA (QUIZ LİST)
  ****************************************/
 function Application() {
+  const getExamListParams: GetExamsParams = { role: "created" };
   const {
     data: exams = [],
     isLoading: isExamsLoading,
     isError: isExamsError,
   } = useQuery({
-    queryKey: ["exams"],
-    queryFn: getExamList,
+    queryKey: ["exams", getExamListParams],
+    queryFn: () => getExamList(getExamListParams),
   });
 
   const {

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/formatter";
 import { cn } from "@/lib/utils";
+import { GetExamsParams, getExamList, getScore } from "@/lib/Client/Exam";
 
 // Reusable UI Components
 import { CopyLink } from "@/components/ui/copylink";
@@ -51,7 +52,7 @@ async function getJoinedExams() {
 }
 
 // Filtre seçenekleri
-const FILTER_OPTIONS = ["All", "Active", "Ended", "Upcoming"] as const;
+const FILTER_OPTIONS = ["All", "Active", "Ended"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
 type SortField = "title" | "startDate" | "endDate" | "duration" | "status" | "score";
 
@@ -213,6 +214,23 @@ interface RowProps {
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
+  const {
+    data: score,
+    isLoading: scoreLoading,
+    isError: scoreError,
+  } = useQuery({
+    queryKey: ["score", exam._id],
+    queryFn: () => getScore(exam._id),
+    enabled: !!exam._id,
+    select: (data) => data[0].score,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 300
+  });
+
+  useEffect(() => {
+    if (scoreLoading || scoreError) return;
+    exam.score = score;
+  }, [score, scoreLoading, scoreError]);
 
   // Status hesaplama
   const now = new Date();
@@ -297,7 +315,7 @@ function JoinedRow({ exam }: RowProps) {
           {/* Score */}
           <div className="hidden md:flex flex-1 p-5 min-w-[80px] max-w-[100px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam.score !== undefined ? `${exam.score} pts` : "N/A"}
+              {`${score ?? "N/A"} pts`}
             </p>
           </div>
 
@@ -352,9 +370,19 @@ function JoinedRow({ exam }: RowProps) {
  ****************************************/
 export default function JoinedExamsPage() {
   const router = useRouter();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["joinedExams"],
-    queryFn: getJoinedExams,
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ["joinedExams"],
+  //   queryFn: getJoinedExams,
+  // });
+
+  const getExamListParams: GetExamsParams = { role: "joined" };
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["exams", getExamListParams],
+    queryFn: () => getExamList(getExamListParams),
   });
 
   // Filtre
@@ -399,7 +427,6 @@ export default function JoinedExamsPage() {
     const startDate = new Date(exam.startDate);
     const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
 
-    if (startDate > now) return "Upcoming";
     if (startDate <= now && endDate > now && !exam.isCompleted) return "Active";
     if ((endDate && endDate <= now) || exam.isCompleted) return "Ended";
     return "Upcoming";

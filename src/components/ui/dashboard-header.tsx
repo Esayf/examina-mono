@@ -31,6 +31,7 @@ interface DashboardHeaderProps {
 function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardHeaderProps) {
   const session = useAppSelector((state) => state.session);
   const isConnected = useAppSelector(hasActiveSession);
+  const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<"created" | "joined">("created");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -79,34 +80,29 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
         {!withoutTabs && (
           <div className="flex gap-2">
             <Button
-              disabled
               variant="link"
               size="default"
+              disabled
               className={cn(
-                "rounded-full cursor-default hidden md:block",
-                activeTab === "joined"
-                  ? "text-brand-primary-950 font-book"
-                  : "text-brand-primary-950 hover:bg-brand-secondary-100 cursor-default"
+                "rounded-full hidden md:block",
+                "text-brand-primary-950 font-book"
               )}
+              onClick={() => router.push("/app/dashboard/joined")}
             >
               Joined
             </Button>
 
-            <Link href="/app/dashboard/created">
-              <Button
-                variant="link"
-                size="default"
-                className={cn(
-                  "rounded-full hidden md:block",
-                  activeTab === "created"
-                    ? "text-brand-primary-950 font-book"
-                    : "text-brand-primary-950 hover:bg-brand-secondary-100"
-                )}
-                onClick={() => setActiveTab("created")}
-              >
-                Created
-              </Button>
-            </Link>
+            <Button
+              variant="link"
+              size="default"
+              className={cn(
+                "rounded-full hidden md:block",
+                "text-brand-primary-950 font-book"
+              )}
+              onClick={() => router.push("/app/dashboard/created")}
+            >
+              Created
+            </Button>
           </div>
         )}
 
@@ -153,7 +149,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                   pill
                   size="default"
                   onClick={() => {
-                    window.location.href = "/app/dashboard/created";
+                    router.push("/app/dashboard/created");
                     setMenuOpen(false);
                   }}
                 >
@@ -163,13 +159,12 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
 
                 <Button
                   variant="outline"
-                  disabled
                   className="w-full bg-brand-secondary-50 text-left text-brand-primary-950 justify-between"
                   icon={false}
                   pill
                   size="default"
                   onClick={() => {
-                    window.open("https://choz.medium.com/", "_blank");
+                    router.push("/app/dashboard/joined");
                     setMenuOpen(false);
                   }}
                 >

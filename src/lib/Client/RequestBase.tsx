@@ -14,10 +14,11 @@ class RequestBase {
     });
   }
 
-  get(url: string): Promise<AxiosResponse> {
+  get(url: string, data?: any): Promise<AxiosResponse> {
     return this.instance.request({
       url,
       method: "GET",
+      params: data,
     });
   }
 
