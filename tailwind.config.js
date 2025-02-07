@@ -186,6 +186,7 @@ module.exports = {
         display: "var(--font-family-display)",
         heading: "var(--font-family-heading)",
         body: "var(--font-family-body)",
+        mono: "var(--font-family-mono)",
       },
       text: {
         xs: "var(--font-size-xs)",

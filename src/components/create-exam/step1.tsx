@@ -124,7 +124,7 @@ export function Answers({ index }: AnswersProps) {
   }, [questionType, replace]);
 
   // Mobilde tek sütun, masaüstünde 2 sütun
-  const radioGroupClass = "grid grid-cols-1 md:grid-cols-2 gap-2 w-full";
+  const radioGroupClass = "grid grid-cols-1 md:grid-cols-1 gap-4 w-full";
 
   return (
     <div className="flex flex-col">
@@ -440,7 +440,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
           size="icon"
           pill
         >
-          🤩
+          <span className="text-2xl">💜</span>
         </Button>
 
         <CardHeaderContent>

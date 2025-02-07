@@ -51,28 +51,30 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
           )}
 
           <div className={cn(baseClass, "flex-1 w-full max-h-[10rem] py-0 pr-0 rounded-r-2xl")}>
-            <MarkdownEditor
-              // Burada, props.value ile editördeki içeriği senkronize ediyoruz
-              markdown={(value as string) || ""}
-              onChange={(md) => {
-                /**
-                 * MarkdownEditor size doğrudan bir string döndürür.
-                 * Onu normal <textarea> onChange gibi sarmak isterseniz,
-                 * onChange({ target: { value: md } }) benzeri bir “sentetik” event oluşturabilirsiniz.
-                 */
-                if (onChange) {
-                  // Sentetik Event
-                  onChange({
-                    target: { value: md },
-                  } as React.ChangeEvent<HTMLTextAreaElement>);
-                }
-              }}
-              // Diğer ayarlar
-              className="mdxeditor w-full h-full"
-              contentEditableClassName="contentEditable"
-              placeholder={rest.placeholder as string}
-              readOnly={false}
-            />
+            <div className="sticky top-0">
+              <MarkdownEditor
+                // Burada, props.value ile editördeki içeriği senkronize ediyoruz
+                markdown={(value as string) || ""}
+                onChange={(md) => {
+                  /**
+                   * MarkdownEditor size doğrudan bir string döndürür.
+                   * Onu normal <textarea> onChange gibi sarmak isterseniz,
+                   * onChange({ target: { value: md } }) benzeri bir “sentetik” event oluşturabilirsiniz.
+                   */
+                  if (onChange) {
+                    // Sentetik Event
+                    onChange({
+                      target: { value: md },
+                    } as React.ChangeEvent<HTMLTextAreaElement>);
+                  }
+                }}
+                // Diğer ayarlar
+                className="mdxeditor w-full h-full sticky"
+                contentEditableClassName="contentEditable"
+                placeholder={rest.placeholder as string}
+                readOnly={false}
+              />
+            </div>
           </div>
 
           {endElement && (

@@ -23,7 +23,6 @@ import {
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 
-// Radix Primitives
 import * as RadioGroup from "@radix-ui/react-radio-group";
 
 // API
@@ -41,13 +40,11 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 
-// Dialog (Modal) Components
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ConfirmFinishModal } from "@/components/ui/confirm-finish-modal";
+import { Label } from "@radix-ui/react-label";
 
-/**
- * ProgressBar bileşeni
- */
+/** ProgressBar bileşeni */
 function ProgressBar({ current, total }: { current: number; total: number }) {
   const progress = total > 0 ? (current / total) * 100 : 0;
 
@@ -68,9 +65,9 @@ function LiveQuiz() {
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [choices, setChoices] = useState<number[]>([]);
-  const [showConfirmModal, setShowConfirmModal] = useState(false); // NEW: Control modal
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // 1) Exam details query
+  // 1) Exam details
   const {
     data: examData,
     isLoading: isloadingData,
@@ -81,7 +78,7 @@ function LiveQuiz() {
     enabled: !!examId,
   });
 
-  // 2) Questions query
+  // 2) Questions
   const {
     data: questions,
     isLoading: isLoadingQuestions,
@@ -92,19 +89,16 @@ function LiveQuiz() {
     enabled: !!examId,
   });
 
-  // O anki soru
   const currentQuestion =
     questions && !("message" in questions) ? questions[currentQuestionIndex] : undefined;
 
-  // Soru açıklamasını (Markdown) editor'e setlemek
   useEffect(() => {
     if (currentQuestion && mdRef.current) {
-      const description = currentQuestion.text || "";
-      mdRef.current.setMarkdown(description);
+      mdRef.current.setMarkdown(currentQuestion.text || "");
     }
   }, [currentQuestion]);
 
-  // Quiz submit
+  // Submit quiz
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       if (!examData || !questions || "message" in questions || !("exam" in examData)) {
@@ -126,14 +120,14 @@ function LiveQuiz() {
     },
   });
 
-  // Sorular yüklendikten sonra "choices" array'ini sıfırlıyoruz
+  // Initialize choices array
   useEffect(() => {
     if (questions && !("message" in questions)) {
       setChoices(new Array(questions.length).fill(0));
     }
   }, [questions]);
 
-  // Loading & Error durumları
+  // Loading & Error
   if (isLoadingQuestions || isloadingData) return <FetchingQuestions />;
   if (
     isErrorQuestions ||
@@ -146,28 +140,27 @@ function LiveQuiz() {
     return <QuestionFetchingError />;
   }
 
-  // Şu an kaçıncı sorudayız (1-index)
   const currentIndex = currentQuestionIndex + 1;
 
-  // Handle finish quiz button click
   const handleFinishClick = () => {
-    // Check if the user has selected at least one answer
+    // Check if at least one answer is selected
     if (choices.every((choice) => choice === 0)) {
       toast.error("Please answer at least one question.");
       return;
     }
-    // Open confirm modal
     setShowConfirmModal(true);
   };
 
   return (
-    <div className="flex justify-center items-center max-h-full">
+    <div className="flex justify-center items-center max-h-full relative">
+      {/* Arka plan */}
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
-        className="absolute flex justify-center items-center min-h-screen object-cover"
+        className="absolute flex justify-center items-center min-h-screen object-cover opacity-20"
       />
-      <div className="w-full max-w-[90rem] px-4 py-4 sm:px-6 lg:px-4 flex flex-col gap-6">
+
+      <div className="w-full max-w-[90rem] px-4 py-4 sm:px-6 lg:px-4 flex flex-col gap-6 relative">
         <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-full">
           <CardHeader>
             <CardHeaderContent className="flex flex-col md:flex-row gap-4 md:gap-0 justify-between items-start">
@@ -184,145 +177,108 @@ function LiveQuiz() {
                 </div>
               </div>
 
-              <div className="flex justify-end">
-                {/* Finish Quiz Butonu */}
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="default"
-                    className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center z-50 mr-1"
-                    icon={true}
-                    iconPosition={"right"}
-                    disabled={isPending}
-                    onClick={handleFinishClick}
-                  >
-                    {isPending ? (
-                      <>
-                        <Spinner className="size-6 mr-2" />
-                        Submitting...
-                      </>
-                    ) : (
-                      "Finish quiz"
-                    )}
-                    <ArrowUpRightIcon className="size-6 ml-1 hidden md:block" />
-                  </Button>
-                </div>
-                <div className="flex justify-end">
-                  <div className="flex gap-2">
-                    {/* Sayaç (Counter) */}
-                    {examData && (
-                      <Counter
-                        startDate={examData.exam.startDate}
-                        duration={examData.exam.duration}
-                        mutate={mutate}
-                        onTimeout={() => router.push("/")}
-                        classname="max-w-[120px] max-h-[52px]"
-                      />
-                    )}
-                  </div>
-                </div>
+              {/* ÜSTTEKİ Finish ve Sayaç sadece MD ve üzeri ekranlarda (masaüstü/tablet) gözüksün */}
+              <div className="hidden md:flex items-center gap-3">
+                <Button
+                  variant="default"
+                  className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center"
+                  icon={true}
+                  iconPosition={"right"}
+                  disabled={isPending}
+                  onClick={handleFinishClick}
+                >
+                  {isPending ? (
+                    <>
+                      <Spinner className="size-6 mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Finish quiz"
+                  )}
+                  <ArrowUpRightIcon className="size-6 ml-1 hidden md:block" />
+                </Button>
+
+                {examData && (
+                  <Counter
+                    startDate={examData.exam.startDate}
+                    duration={examData.exam.duration}
+                    mutate={mutate}
+                    onTimeout={() => router.push("/")}
+                    classname="max-w-[120px] max-h-[52px]"
+                  />
+                )}
               </div>
             </CardHeaderContent>
           </CardHeader>
 
-          {/* CardContent içinde, progress bar ve butonlar için ayrı bir satır... */}
           <CardContent className="p-3 md:p-6 flex flex-col gap-4 bg-base-white overflow-auto h-full">
-            <div className="flex gap-4 justify-between w-full">
-              {/* Navigation buttons */}
-              <div className="flex gap-4 w-full justify-between">
-                <Button
-                  pill
-                  variant="default"
-                  size="icon"
-                  className="w-full md:w-auto"
-                  onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
-                  disabled={isPending || currentQuestionIndex === 0}
-                >
-                  <ArrowLeftIcon className="size-6 mr-2" />
-                </Button>
+            {/* Navigation buttons (Sadece MD ve üzeri) */}
+            <div className="hidden md:flex gap-4 justify-between w-full">
+              <Button
+                pill
+                variant="default"
+                size="icon"
+                onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
+                disabled={isPending || currentQuestionIndex === 0}
+              >
+                <ArrowLeftIcon className="size-6" />
+              </Button>
 
-                {/* Geri eklenen ExamNavigation bileşeni */}
-                <ExamNavigation
-                  setCurrentQuestionIndex={setCurrentQuestionIndex}
-                  isPending={isPending}
-                  currentQuestionIndex={currentQuestionIndex}
-                  questions={questions}
-                  currentQuestion={currentQuestion}
-                />
+              <ExamNavigation
+                setCurrentQuestionIndex={setCurrentQuestionIndex}
+                isPending={isPending}
+                currentQuestionIndex={currentQuestionIndex}
+                questions={questions}
+                currentQuestion={currentQuestion}
+              />
 
-                <Button
-                  pill
-                  variant="default"
-                  size="icon"
-                  className="w-full md:w-auto"
-                  onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                  disabled={isPending || currentQuestionIndex === questions.length - 1}
-                >
-                  <ArrowRightIcon className="size-6 ml-2" />
-                </Button>
-              </div>
+              <Button
+                pill
+                variant="default"
+                size="icon"
+                onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
+                disabled={isPending || currentQuestionIndex === questions.length - 1}
+              >
+                <ArrowRightIcon className="size-6" />
+              </Button>
             </div>
 
-            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words h-[calc(100dvh-600px)]">
+            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words min-h-[calc(100dvh-600px)]">
+              {/* Soru Metni */}
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
-                <ReactMarkdown
-                  className="mdxeditor prose min-w-full"
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                  components={{
-                    a: ({ node, ...props }) => (
-                      <a
-                        className="text-brand-secondary font-medium hover:text-brand-accent transition-all 
-                          underline underline-offset-4 decoration-2 hover:decoration-brand-accent
-                          hover:scale-105 inline-block"
-                        {...props}
-                      />
-                    ),
-                    table: ({ node, ...props }) => (
-                      <div className="rounded-2xl shadow-lg overflow-hidden my-6 border border-brand-primary-900">
-                        <table className="w-full divide-y divide-brand-primary-200" {...props} />
-                      </div>
-                    ),
-                    th: ({ node, ...props }) => (
-                      <th
-                        className="py-3 px-4 text-left bg-brand-primary-400 font-bold text-base-black text-base uppercase"
-                        {...props}
-                      />
-                    ),
-                    td: ({ node, ...props }) => (
-                      <td
-                        className="py-3 px-4 border-t text-base text-base-black border-greyscale-light-200 text-brand-dark even:bg-brand-light/20"
-                        {...props}
-                      />
-                    ),
-                    code: ({ node, ...props }) => (
-                      <code
-                        className="bg-brand-accent/10 px-2 py-1 rounded-md font-mono text-sm text-brand-accent border border-brand-accent/20 hover:bg-brand-accent/20 transition-colors"
-                        {...props}
-                      />
-                    ),
-                    pre: ({ node, ...props }) => (
-                      <pre
-                        className="bg-brand-dark p-6 rounded-xl overflow-x-auto text-sm my-6 text-white 
-                          shadow-2xl border-2 border-brand-primary/30 hover:border-brand-accent/50 transition-all"
-                        {...props}
-                      />
-                    ),
-                    strong: ({ node, ...props }) => (
-                      <strong className="font-black text-brand-accent drop-shadow-sm" {...props} />
-                    ),
-                    em: ({ node, ...props }) => (
-                      <em className="italic text-brand-primary/90 font-semibold" {...props} />
-                    ),
-                  }}
-                >
-                  {currentQuestion?.text || ""}
-                </ReactMarkdown>
+                <div className="mdxeditor prose min-w-full min-h-[calc(100dvh-600px)]">
+                  <Label className="text-sm text-gray-700">Question</Label>
+                  <ReactMarkdown
+                    className="mdxeditor prose min-w-full
+                    [&_h1]:text-4xl [&_h1]:text-center [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:bg-brand-primary-900 [&_h1]:from-brand-primary-950 [&_h1]:to-brand-primary-900 [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:drop-shadow-md
+                    [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mb-4 [&_h2]:text-brand-primary-600 [&_h2]:pl-4
+                    [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:mb-3 [&_h3]:text-brand-primary-800
+                    [&_h4]:text-xl [&_h4]:font-semibold [&_h4]:mb-2 [&_h4]:text-brand-primary-950
+                    [&_h5]:text-lg [&_h5]:font-medium [&_h5]:mb-1 [&_h5]:text-brand-primary-950
+                    [&_h6]:text-base [&_h6]:font-normal [&_h6]:mb-0 [&_h6]:text-brand-primary-950
+                    [&_p]:text-xl [&_p]:font-normal [&_p]:text-brand-primary-950
+                    [&_a]:text-brand-secondary-950 [&_a]:font-medium [&_a]:hover:text-brand-secondary-900
+                    [&_code]:text-base [&_code]:font-mono [&_code]:bg-brand-primary-300 [&_code]:text-base-black [&_code]:font-bold [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-lg
+                    [&_ul]:list-disc [&_ul]:pl-8 [&_ul]:space-y-3 [&_ul]:text-lg [&_ul]:text-brand-primary-950 [&_ul]:items-center [&_ul]:justify-center
+                    [&_li::marker]:text-brand-primary-500 [&_li::marker]:text-base [&_li::marker]:text-center [&_li::marker]:font-bold [&_ul_li::marker]:content-['🔘']
+                    [&_ol]:list-decimal [&_ol]:pl-8 [&_ol]:space-y-3 [&_ol]:text-lg [&_ol]:text-brand-primary-950 [&_ol]:items-center [&_ol]:justify-center
+                    [&_ol]:marker:font-bold  [&_ol]:marker:brand-primary-800 [&_ol]:marker:text-lg [&_ol]:font-normal 
+                    [&_li]:pl-3 [&_li]:space-x-2
+                    [&_blockquote]:border-l-4 [&_blockquote]:border-brand-primary-300 [&_blockquote]:bg-brand-secondary-50 [&_blockquote]:p-2 [&_blockquote]:w-full [&_blockquote]:text-brand-primary-950 [&_blockquote]:m-2 [&_blockquote]:italic [&_blockquote]:bg-white [&_blockquote]:rounded-xl [&_blockquote]:shadow-sm [&_blockquote]:justify-center [&_blockquote]:items-center [&_blockquote]:text-center
+                    [&_img]:rounded-2xl [&_img]:max-w-full [&_img]:my-6 [&_img]:mx-auto [&_img]:block [&_img]:shadow-lg [&_img]:border-4 [&_img]:border-white
+                    [&_hr]:my-8 [&_hr]:border-t-4 [&_hr]:border-dashed [&_hr]:border-brand-primary/30"
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                  >
+                    {currentQuestion?.text || ""}
+                  </ReactMarkdown>
+                </div>
               </div>
-              {/* Quiz Description (Markdown) */}
+
+              {/* Seçenekler */}
               <div className="flex-1">
                 <RadioGroup.Root
                   className="RadioGroupRoot overflow-wrap whitespace-pre-wrap break-words"
-                  defaultValue="default"
                   aria-label="Answer options"
                 >
                   {currentQuestion?.options?.map((option, index) => (
@@ -338,8 +294,89 @@ function LiveQuiz() {
                 </RadioGroup.Root>
               </div>
             </div>
+
+            {/* Alttaki navigation (Next/Prev/ExamNavigation) da sadece MD ve üzeri */}
+            <div className="hidden md:flex gap-4 justify-between w-full">
+              <Button
+                pill
+                variant="default"
+                size="icon"
+                onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
+                disabled={isPending || currentQuestionIndex === 0}
+              >
+                <ArrowLeftIcon className="size-6" />
+              </Button>
+
+              <ExamNavigation
+                setCurrentQuestionIndex={setCurrentQuestionIndex}
+                isPending={isPending}
+                currentQuestionIndex={currentQuestionIndex}
+                questions={questions}
+                currentQuestion={currentQuestion}
+              />
+
+              <Button
+                pill
+                variant="default"
+                size="icon"
+                onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
+                disabled={isPending || currentQuestionIndex === questions.length - 1}
+              >
+                <ArrowRightIcon className="size-6" />
+              </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* --- ALTTAKİ STICKY BAR (sadece mobilde görünsün) --- */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-2 flex items-center justify-between">
+          <Button
+            pill
+            variant="default"
+            size="icon"
+            onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
+            disabled={isPending || currentQuestionIndex === 0}
+          >
+            <ArrowLeftIcon className="size-6" />
+          </Button>
+
+          <ExamNavigation
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            isPending={isPending}
+            currentQuestionIndex={currentQuestionIndex}
+            questions={questions}
+            currentQuestion={currentQuestion}
+          />
+
+          <Button
+            pill
+            variant="default"
+            size="icon"
+            onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
+            disabled={isPending || currentQuestionIndex === questions.length - 1}
+          >
+            <ArrowRightIcon className="size-6" />
+          </Button>
+
+          <Button
+            variant="default"
+            className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center ml-2"
+            icon={true}
+            iconPosition={"right"}
+            disabled={isPending}
+            onClick={handleFinishClick}
+          >
+            {isPending ? (
+              <>
+                <Spinner className="size-6 mr-2" />
+                Submitting...
+              </>
+            ) : (
+              "Finish"
+            )}
+            <ArrowUpRightIcon className="size-6 ml-1" />
+          </Button>
+        </div>
       </div>
 
       {/* Confirm Finish Dialog */}

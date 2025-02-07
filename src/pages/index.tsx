@@ -118,7 +118,7 @@ export default function Home() {
     window.location.href = "/app/dashboard/created";
   };
 
-  const pageTitle = "Choz | Blockchain-Powered Quiz Platform for Rewards and Engagement";
+  const pageTitle = "Blockchain-Powered Quiz Platform for Rewards and Engagement | Choz";
   const pageDescription =
     "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol.";
 

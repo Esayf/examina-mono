@@ -114,7 +114,7 @@ export function LiveExamPreview({ onGoBack }: LiveExamPreviewProps) {
           {currentQuestion && (
             <div className="bg-white rounded-2xl flex flex-col gap-4">
               {/* Soru Metni */}
-              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 min-h-[240px] max-h-[320px] overflow-y-auto text-base">
+              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-4 min-h-[240px] overflow-y-auto text-base">
                 <ReactMarkdown
                   className=" mdxeditor prose min-w-full
                     [&_h1]:text-4xl [&_h1]:text-center [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:bg-brand-primary-900 [&_h1]:from-brand-primary-950 [&_h1]:to-brand-primary-900 [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:drop-shadow-md
@@ -123,11 +123,11 @@ export function LiveExamPreview({ onGoBack }: LiveExamPreviewProps) {
                     [&_h4]:text-xl [&_h4]:font-semibold [&_h4]:mb-2 [&_h4]:text-brand-primary-950
                     [&_h5]:text-lg [&_h5]:font-medium [&_h5]:mb-1 [&_h5]:text-brand-primary-950
                     [&_h6]:text-base [&_h6]:font-normal [&_h6]:mb-0 [&_h6]:text-brand-primary-950
-                    [&_p]:text-base [&_p]:font-normal [&_p]:text-brand-primary-950
+                    [&_p]:text-xl [&_p]:font-normal [&_p]:text-brand-primary-950
                     [&_a]:text-brand-secondary-950 [&_a]:font-medium [&_a]:hover:text-brand-secondary-900
                     [&_code]:text-base [&_code]:bg-brand-primary-300 [&_code]:text-base-black [&_code]:font-bold [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-lg
                     [&_ul]:list-disc [&_ul]:pl-8 [&_ul]:space-y-3 [&_ul]:text-lg [&_ul]:text-brand-primary-950 [&_ul]:items-center [&_ul]:justify-center
-                    [&_li::marker]:text-brand-primary-500 [&_li::marker]:text-base [&_li::marker]:text-center [&_li::marker]:font-bold [&_ul_li::marker]:content-['🟣']
+                    [&_li::marker]:text-brand-primary-500 [&_li::marker]:text-base [&_li::marker]:text-center [&_li::marker]:font-bold [&_ul_li::marker]:content-['🔘']
                     [&_ol]:list-decimal [&_ol]:pl-8 [&_ol]:space-y-3 [&_ol]:text-lg [&_ol]:text-brand-primary-950 [&_ol]:items-center [&_ol]:justify-center
                     [&_ol]:marker:font-bold  [&_ol]:marker:brand-primary-800 [&_ol]:marker:text-lg [&_ol]:font-normal 
                     [&_li]:pl-3 [&_li]:space-x-2
@@ -146,13 +146,13 @@ export function LiveExamPreview({ onGoBack }: LiveExamPreviewProps) {
                       />
                     ),
                     table: ({ node, ...props }) => (
-                      <div className="rounded-2xl shadow-lg overflow-hidden my-6 border border-brand-primary-900">
+                      <div className="rounded-2xl shadow-lg overflow-hidden my-6 mx-4 border border-greyscale-light-200 items-center justify-center">
                         <table className="w-full divide-y divide-brand-primary-200" {...props} />
                       </div>
                     ),
                     th: ({ node, ...props }) => (
                       <th
-                        className="py-3 px-4 text-left bg-brand-primary-400 font-bold text-base-black text-base uppercase"
+                        className="py-3 px-4 text-left bg-brand-primary-900 font-bold text-brand-secondary-200 text-base uppercase"
                         {...props}
                       />
                     ),

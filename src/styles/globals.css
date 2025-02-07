@@ -209,6 +209,8 @@ body {
     --font-family-heading: "Filson Pro";
     --font-family-body: "Filson Pro";
     --font-family-handwritten: "";
+    --font-family-mono: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Source Code Pro",
+      monospace;
 
     /* Font Sizes */
     --font-size-xs: 0.75rem; /* 12px */
@@ -312,6 +314,13 @@ body {
     --border-radius-lg: 0.5rem; /* 8px */
     --border-radius-xl: 0.75rem; /* 12px */
     --border-radius-2xl: 1rem; /* 16px */
+    --border-radius-3xl: 1.5rem; /* 24px */
+    --border-radius-4xl: 2rem; /* 32px */
+    --border-radius-5xl: 2.5rem; /* 40px */
+    --border-radius-6xl: 3rem; /* 48px */
+    --border-radius-7xl: 3.5rem; /* 56px */
+    --border-radius-8xl: 4rem; /* 64px */
+    --border-radius-9xl: 4.5rem; /* 72px */
     --border-radius-full: 9999px;
 
     /* Shadows */
@@ -876,7 +885,7 @@ body {
   }
 
   /* Doodle fontları için Google Fonts import */
-  @import url("https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Indie+Flower&family=Patrick+Hand&family=Shadows+Into+Light&family=Amatic+SC:wght@700&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Inconsolata&family=Fira+Mono&family=Source+Code+Pro&display=swap");
 
   /* Temel doodle efekti */
   .doodle-text {
@@ -1161,7 +1170,7 @@ body {
 /* li::marker styles: text-brand-primary-500, text-2xl, font-bold, etc. */
 /* content: ['*'] replicates [&_ul_li::marker]:content-['*'] */
 .mdxeditor ul > li::marker {
-  content: "🟣"; /* replace default bullet with '*' */
+  content: "🔘"; /* replace default bullet with '*' */
   color: var(--color-brand-primary-500);
   font-size: 0.875rem; /* text-2xl (approx 24px) */
   font-weight: 700; /* bold */
@@ -1193,7 +1202,7 @@ body {
   margin-top: 0.75rem;
 }
 
-/* ol li::marker: font-bold, color brand-primary-800, text-lg */
+/* ol li::marker: font-bold, brand-primary-800, text-lg */
 .mdxeditor ol > li::marker {
   font-weight: 700;
   color: var(--color-brand-primary-600);
@@ -1364,7 +1373,7 @@ body {
 
 /* li::marker for UL: text-brand-primary-500, text-lg, font-bold, content: '🟣' */
 .mdxeditor ul > li::marker {
-  content: "🟣";
+  content: "🔘";
   color: var(--brand-primary-500);
   font-size: 1.125rem; /* "text-lG" if that means ~ 1.125rem */
   font-weight: 700; /* font-bold */
@@ -1478,4 +1487,37 @@ body {
   border: 0;
   border-top: 4px dashed var(--brand-primary-alpha);
   /* If you have a dedicated variable for brand-primary/30, use that. */
+}
+
+.mdxeditor ._dialogContent_uazmk_602 {
+  border-radius: 1rem;
+}
+
+.mdxeditor ._dialogContent_uazmk_602 input[type="file"] {
+  border-radius: 1rem;
+  border: 2px solid var(--color-brand-primary-800);
+  background-color: var(--color-brand-secondary-100);
+  color: var(--color-brand-primary-950);
+}
+
+.mdxeditor ._dialogContent_uazmk_602 input[type="file"]::placeholder {
+  color: var(--color-brand-primary-500);
+}
+
+.mdxeditor ._dialogContent_uazmk_602 input[type="file"]:focus {
+  border-color: var(--color-brand-primary-950);
+  background-color: var(--color-brand-secondary-100);
+}
+
+.mdxeditor ._popupContainer_uazmk_1220 {
+  border-radius: 1rem;
+  background-color: var(--color-brand-secondary-100);
+  border: 2px solid var(--color-brand-primary-800);
+  color: var(--color-brand-primary-950);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.mdxeditor ._popupContainer_uazmk_1220 ._dialogContent_uazmk_602 {
+  border-radius: 1rem;
 }

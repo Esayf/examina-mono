@@ -496,21 +496,17 @@ const ExamDetails = () => {
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-semibold text-gray-800">Leaderboard</h3>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleDownloadPNG} className="gap-2">
+                  <Button variant="outline" onClick={handleDownloadPNG} className="gap-2">
                     <ArrowDownTrayIcon className="h-4 w-4" />
-                    Download PNG
+                    PNG
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleShare} className="gap-2">
-                    <ShareIcon className="h-4 w-4" />
-                    Share
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={handleDownloadCSV} className="gap-2">
+                  <Button variant="outline" onClick={handleDownloadCSV} className="gap-2">
                     <DocumentTextIcon className="h-4 w-4" />
                     CSV
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleDownloadSVG} className="gap-2">
-                    <DocumentChartBarIcon className="h-4 w-4" />
-                    SVG
+                  <Button variant="outline" onClick={handleShare} className="gap-2">
+                    <ShareIcon className="h-4 w-4" />
+                    Share with friends
                   </Button>
                 </div>
               </div>
