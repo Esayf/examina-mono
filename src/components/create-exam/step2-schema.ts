@@ -51,7 +51,7 @@ export const step2ValidationSchema = z
   })
   .superRefine((values, context) => {
     if (values.rewardDistribution) {
-      if (!values.passingScore) {
+      if (!values.passingScore === undefined) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Minimum passing score is required",
