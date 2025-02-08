@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
 import { AxiosError } from "axios";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { ConfirmFinishModal } from "@/components/ui/confirm-finish-modal";
 
 export const SaveAsDraftButton = () => {
   const router = useRouter();
@@ -35,12 +37,15 @@ export const SaveAsDraftButton = () => {
       queryClient.invalidateQueries({ queryKey: ["draftExams"] });
       queryClient.invalidateQueries({ queryKey: ["draft", examId] });
 
-      toast.success("Draft saved successfully. You can continue editing.");
+      toast.success("Draft saved successfully. But you can continue editing. 😉");
 
       // Update URL if new draft created
       if (!examId && data?._id) {
         router.replace(`/app/exams/edit/${data._id}`, undefined, { shallow: true });
       }
+
+      // Modal'ı kapat
+      setIsConfirmModalOpen(false);
     },
     onError: (error: AxiosError<SaveDraftError>) => {
       console.error(error);
@@ -52,7 +57,9 @@ export const SaveAsDraftButton = () => {
     },
   });
 
-  const handleSave = async () => {
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const handleConfirmSave = async () => {
     // Get raw unvalidated values
     const values = form.getValues();
     const draftValues = {
@@ -79,23 +86,41 @@ export const SaveAsDraftButton = () => {
     mutate(draftValues);
   };
 
+  const handleSaveClick = () => {
+    if (form.formState.isDirty) {
+      setIsConfirmModalOpen(true);
+    }
+  };
+
   return (
-    <Button
-      variant="outline"
-      icon={true}
-      iconPosition="right"
-      disabled={isPending || !form.formState.isDirty}
-      pill
-      onClick={handleSave}
-    >
-      {isPending ? (
-        <Spinner className="size-6" />
-      ) : (
-        <div className="flex items-center gap-2">
-          <span className="hidden sm:inline">{examId ? "Save changes" : "Save as draft"}</span>
-          <ArrowDownTrayIcon className="size-6 md:size-5" />
-        </div>
-      )}
-    </Button>
+    <>
+      <Button
+        variant="outline"
+        icon={true}
+        iconPosition="right"
+        disabled={isPending || !form.formState.isDirty}
+        pill
+        onClick={handleSaveClick}
+      >
+        {isPending ? (
+          <Spinner className="size-6" />
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline">{examId ? "Save changes" : "Save as draft"}</span>
+            <ArrowDownTrayIcon className="size-6 md:size-5" />
+          </div>
+        )}
+      </Button>
+
+      <ConfirmFinishModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmSave}
+        title="Save changes"
+        message="Are you sure you want to save the changes?"
+        confirmText="Save"
+        cancelText="Cancel"
+      />
+    </>
   );
 };

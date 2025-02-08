@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 // Components
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getSession, logout } from '@/lib/Client/Auth';
-import { resetSession, setSession } from '@/features/client/session';
-import { authenticate } from '../hooks/auth';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { getAccounts } from '@/utils/window.mina';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getSession, logout } from "@/lib/Client/Auth";
+import { resetSession, setSession } from "@/features/client/session";
+import { authenticate } from "../hooks/auth";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { getAccounts } from "@/utils/window.mina";
 
 export const useSession = () => {
   const router = useRouter();
@@ -17,7 +17,7 @@ export const useSession = () => {
   const session = useAppSelector((state) => state.session);
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['session'],
+    queryKey: ["session"],
     queryFn: getSession,
     staleTime: 0,
     retry: false,
@@ -30,7 +30,7 @@ export const useSession = () => {
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: ['exams'],
+      queryKey: ["exams"],
     });
   }, [queryClient, session]);
 
@@ -57,7 +57,7 @@ export const useSession = () => {
             return;
           }
 
-          if (accs && 'message' in accs) {
+          if (accs && "message" in accs) {
             return;
           }
 
@@ -66,14 +66,14 @@ export const useSession = () => {
             dispatch(setSession(res));
           }
         });
-        console.log('disconnect'); // handled disconnect here
+        console.log("disconnect"); // handled disconnect here
       }
     };
 
-    window?.mina?.on('accountsChanged', handler);
+    window?.mina?.on("accountsChanged", handler);
 
     return () => {
-      window?.mina?.off('accountsChanged', handler);
+      window?.mina?.off("accountsChanged", handler);
     };
   }, [dispatch, session]);
 
@@ -82,7 +82,7 @@ export const useSession = () => {
   }, [refetch, router.pathname]);
 
   useEffect(() => {
-    if (router.pathname.includes('get-started')) {
+    if (router.pathname.includes("get-started")) {
       isRendered.current = true;
     }
 
@@ -96,32 +96,36 @@ export const useSession = () => {
 
     isRendered.current = true;
 
-    if (router.pathname !== '/') {
+    if (router.pathname !== "/") {
       getAccounts().then((accounts: string[]) => {
         if (accounts.length === 0) {
           if (data) {
             logout().then(() => {
               dispatch(resetSession());
-              toast.error('Please connect wallet to continue.');
+              toast.error("Please connect wallet to continue.");
             });
             return;
           }
 
           if (!data) {
             dispatch(resetSession());
-            toast.error('Please login to continue.');
+            toast.error("Please login to continue.");
             return;
           }
         } else {
-          if (data && 'session' in data && data.session?.walletAddress &&
-            accounts[0] !== data.session.walletAddress) {
+          if (
+            data &&
+            "session" in data &&
+            data.session?.walletAddress &&
+            accounts[0] !== data.session.walletAddress
+          ) {
             logout().then(() => {
               dispatch(resetSession());
             });
             return;
           }
 
-          if (data && !('error' in data)) {
+          if (data && !("error" in data)) {
             dispatch(setSession(data));
             return;
           }
@@ -129,10 +133,10 @@ export const useSession = () => {
       });
     }
 
-    if (!isLoading && router.pathname == '/') {
+    if (!isLoading && router.pathname == "/") {
       getAccounts().then((accounts: string[]) => {
         if (data && accounts.length > 0) {
-          if ('error' in data) {
+          if ("error" in data) {
             toast.error(data.error);
             return;
           }

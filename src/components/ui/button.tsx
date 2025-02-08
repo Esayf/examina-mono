@@ -27,10 +27,11 @@ const buttonVariants = cva(
       },
       size: {
         sm: "h-8 px-3 py-1.5 border-2 text-xs leading-2",
+        md: "h-10 px-4 py-2",
         default: "h-13 px-6 py-3",
         lg: "h-15 px-8 py-4 text-lg",
         date: "max-h-[34px] h-[34px] leading-[34px] w-[48px] text-sm caret-auto text-center p-0 bg-brand-secondary-200 text-brand-primary-900 border border-brand-primary-950 hover:bg-brand-primary-300 hover:border-brand-primary-950 cursor-pointer",
-        icon: "h-13 max-w-[52px] min-w-[52px]",
+        icon: "h-13 w-13",
         chevron: "h-8 max-w-[32px] min-w-[32px]",
         "icon-sm": "h-8 w-8",
         "date-picker": "w-full max-h-[48px] min-h-[48px] pl-4 pr-4 py-2",

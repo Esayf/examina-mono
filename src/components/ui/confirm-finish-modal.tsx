@@ -5,13 +5,25 @@ interface ConfirmFinishModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  title: string;
+  message: string;
+  confirmText: string;
+  cancelText: string;
 }
 
 /**
  * Ufak bir modal: “Çıkış yapmak istediğine emin misin?” diye sorar.
  * `isOpen` true ise modal görünür, `onClose` ile kapatılır, `onConfirm` ile logout yapılır.
  */
-export function ConfirmFinishModal({ isOpen, onClose, onConfirm }: ConfirmFinishModalProps) {
+export function ConfirmFinishModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText,
+  cancelText,
+}: ConfirmFinishModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -21,14 +33,14 @@ export function ConfirmFinishModal({ isOpen, onClose, onConfirm }: ConfirmFinish
       aria-modal="true"
     >
       <div className="bg-white rounded-2xl border border-brand-primary-950 p-6 max-w-sm w-full shadow-lg relative">
-        <h2 className="text-lg font-bold mb-2">Leaving so soon?</h2>
-        <p className="text-sm text-gray-600 mb-4">Are you sure you want to finish the quiz?</p>
+        <h2 className="text-lg font-bold mb-2">{title}</h2>
+        <p className="text-sm text-gray-600 mb-4">{message}</p>
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={onClose}>
-            No.
+            {cancelText}
           </Button>
           <Button variant="default" onClick={onConfirm}>
-            Yes, I'm done! 🤥
+            {confirmText}
           </Button>
         </div>
       </div>

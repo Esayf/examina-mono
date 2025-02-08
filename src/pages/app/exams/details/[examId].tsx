@@ -8,6 +8,16 @@ import remarkGfm from "remark-gfm";
 import AttendanceCharts from "@/components/details/attendanceCharts";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import { BackgroundPattern } from "@/components/landing-page/background-pattern";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, ShareIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import html2canvas from "html2canvas";
+import * as XLSX from "xlsx";
+import { useToast } from "@/components/ui/usetoast";
+import { cn } from "@/lib/utils";
+import DashboardHeader from "@/components/ui/dashboard-header";
 
 function walletRender(walletAddress: string): string {
   return `${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}`;
@@ -27,6 +37,7 @@ const getScoreColorClass = (score: number, passingScore: number) => {
 
 const ExamDetails = () => {
   const router = useRouter();
+  const leaderboardRef = React.useRef<HTMLDivElement>(null);
 
   const examId = router.query.examId as string;
 
@@ -66,70 +77,335 @@ const ExamDetails = () => {
     status = "Active";
   }
 
-  const leaderboard = data.leaderboard && data.leaderboard.length > 0 ? data.leaderboard : []; // mockLeaderboard;
-  const participants = data.participants ?? []; // mockParticipants;
+  const leaderboard = data.leaderboard && data.leaderboard.length > 0 ? data.leaderboard : [];
+  const participants = data.participants ?? [];
+
+  const { showToast } = useToast();
+
+  const handleDownloadPNG = async () => {
+    try {
+      if (!leaderboardRef.current) return;
+
+      const canvas = await html2canvas(leaderboardRef.current);
+      const imgData = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `${data.title}-leaderboard.png`;
+      link.href = imgData;
+      link.click();
+
+      showToast({
+        title: "Download started...",
+        description: "Leaderboard is being downloaded as PNG...",
+      });
+    } catch (error) {
+      showToast({
+        title: "Download error!",
+        description: "File could not be downloaded",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      if (!leaderboardRef.current) return;
+      if (!navigator.share) {
+        throw new Error("Your browser does not support sharing.");
+      }
+
+      const canvas = await html2canvas(leaderboardRef.current);
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+
+        const file = new File([blob], `${data.title}-leaderboard.png`, {
+          type: "image/png",
+        });
+
+        await navigator.share({
+          title: data.title,
+          text: "Check out this leaderboard:",
+          files: [file],
+        });
+      });
+    } catch (error) {
+      showToast({
+        title: "Share error...",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(leaderboard);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Leaderboard");
+    XLSX.writeFile(wb, `${data.title}-leaderboard.xlsx`);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    showToast({
+      title: "Link copied to clipboard",
+      description: "You can now paste it anywhere you want",
+    });
+  };
+
+  const handleDownloadCSV = () => {
+    const csvContent = [
+      "Rank,User,Score,Completion Time",
+      ...leaderboard.map((item, index) => {
+        const finishTime = new Date(item.finishTime);
+        return `${index + 1},${item.walletAddress},${item.score},"${finishTime.toLocaleString()}"`;
+      }),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${data.title}-leaderboard.csv`;
+    link.click();
+  };
+
+  const handleDownloadSVG = async () => {
+    try {
+      if (!leaderboardRef.current || !data) return;
+
+      const tableToSVG = () => {
+        const headers = ["Rank", "User", "Score", "Completion Time"];
+        const rows = leaderboard.map((item, index) => {
+          const finishTime = new Date(item.finishTime);
+          return [
+            index + 1,
+            walletRender(item.walletAddress),
+            item.score,
+            `${formatTime(finishTime)} (${(
+              (new Date(item.finishTime).getTime() - new Date(item.startTime).getTime()) /
+              1000 /
+              60
+            ).toFixed(1)} mins)`,
+          ];
+        });
+
+        // Güncellenmiş Renk Paleti
+        const styles = `
+          <style>
+            .svg-table { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+            .svg-header {
+              fill: #ffffff;
+              font-size: 20px;
+              font-weight: 600;
+              font-family: "var(--font-display), sans-serif;
+            }
+            .svg-header-bg {
+              fill: #FFDBC4; /* brand-secondary-200 */
+            }
+            .svg-row:nth-child(odd) { 
+              fill: #FFDBC4; 
+            }
+            .svg-row:nth-child(even) { 
+              fill: #ffffff;
+            }
+            .svg-cell { 
+              fill: #1e293b; 
+              font-size: 16px;
+            }
+            .svg-score {
+              font-weight: 700;
+            }
+            .svg-rank {
+              fill: #6366F1; /* brand-primary-500 */
+            }
+            .svg-divider {
+              stroke: #EDE9FE; /* brand-secondary-100 */
+            }
+            .svg-shadow {
+              filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.05));
+            }
+          </style>
+        `;
+
+        // Tablo boyutları
+        const columnWidths = [80, 200, 100, 200];
+        const rowHeight = 40;
+        const headerHeight = 50;
+        const tableWidth = columnWidths.reduce((a, b) => a + b, 0);
+        const tableHeight = headerHeight + rows.length * rowHeight;
+
+        // SVG içeriğini oluştur
+        let svgContent = `
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               width="${tableWidth}" 
+               height="${tableHeight}" 
+               viewBox="0 0 ${tableWidth} ${tableHeight}">
+            ${styles}
+            <rect width="100%" height="100%" fill="#ffffff" rx="8" ry="8" class="svg-shadow"/>
+            
+            <!-- Başlık Arka Planı -->
+            <rect width="100%" height="${headerHeight}" fill="#E0E7FF" rx="8" ry="8"/>
+            
+            <!-- Başlıklar -->
+            <g class="svg-header">
+              ${headers
+                .map(
+                  (header, i) => `
+                <text x="${columnWidths.slice(0, i).reduce((a, b) => a + b, 0) + 15}" 
+                      y="${headerHeight / 2 + 5}" 
+                      fill="#374151">
+                  ${header}
+                </text>
+              `
+                )
+                .join("")}
+            </g>
+
+            <!-- Satırlar -->
+            ${rows
+              .map(
+                (row, rowIndex) => `
+              <g transform="translate(0, ${headerHeight + rowIndex * rowHeight})">
+                <!-- Satır Arka Planı -->
+                <rect width="${tableWidth}" 
+                      height="${rowHeight}" 
+                      fill="${rowIndex % 2 === 0 ? "#F5F3FF" : "#FFFFFF"}"
+                      rx="${rowIndex === rows.length - 1 ? "8" : "0"}" 
+                      ry="${rowIndex === rows.length - 1 ? "8" : "0"}"/>
+                
+                ${row
+                  .map(
+                    (cell, cellIndex) => `
+                  <!-- Hücre İçeriği -->
+                  <text x="${columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) + 15}" 
+                        y="${rowHeight / 2 + 5}" 
+                        class="${cellIndex === 0 ? "svg-rank" : ""} ${
+                      cellIndex === 2 ? "svg-score" : "svg-cell"
+                    }"
+                        fill="${
+                          cellIndex === 2 ? getScoreColorClass(Number(cell), data.passingScore) : ""
+                        }">
+                    ${cellIndex === 0 ? `#${cell}` : cell}
+                  </text>
+                  
+                  <!-- Sütun Ayırıcılar -->
+                  ${
+                    cellIndex < 3
+                      ? `
+                    <line x1="${columnWidths.slice(0, cellIndex + 1).reduce((a, b) => a + b, 0)}" 
+                          y1="0" 
+                          x2="${columnWidths.slice(0, cellIndex + 1).reduce((a, b) => a + b, 0)}" 
+                          y2="${rowHeight}" 
+                          class="svg-divider"/>
+                  `
+                      : ""
+                  }
+                `
+                  )
+                  .join("")}
+              </g>
+            `
+              )
+              .join("")}
+          </svg>
+        `;
+
+        return svgContent;
+      };
+
+      const svgContent = tableToSVG();
+      const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${data.title}-leaderboard.svg`;
+      link.click();
+
+      showToast({
+        title: "SVG İndirildi",
+        description: "Lider tablosu başarıyla SVG formatında kaydedildi",
+      });
+    } catch (error) {
+      showToast({
+        title: "SVG Hatası",
+        description: "Lider tablosu SVG'ye dönüştürülemedi",
+        variant: "destructive",
+      });
+      console.error("SVG Conversion Error:", error);
+    }
+  };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <div className="relative min-h-screen w-full overflow-hidden bg-brand-secondary-100">
+      <DashboardHeader withoutNav={false} withoutTabs={true} />
       {/* Content Container */}
-      <div className="relative flex justify-center p-2 sm:p-4 overflow-y-auto">
-        <div className="w-full max-w-7xl min-h-fit bg-white bg-opacity-90 rounded-lg p-4 flex flex-col gap-4">
-          {/* Grid Container */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
-            {/* Title Section */}
-            <div className="md:col-span-2">
-              <h2 className="text-2xl font-bold border-b border-greyscale-light-200 pb-2">
-                {data.title}
-              </h2>
-              <Badge variant={status.toLowerCase() as any} className="mt-2 text-sm">
-                {status}
-              </Badge>
+      <div className="relative flex justify-center p-4 md:p-8 overflow-y-auto">
+        <div className="w-full max-w-[90rem]: bg-brand-secondary-50 bg-opacity-95 rounded-3xl p-8 flex flex-col gap-6 shadow-2xl backdrop-blur-sm">
+          {/* Title Section - Updated */}
+          <div className="flex flex-col gap-2 justify-between lg:col-span-3">
+            <div className="flex flex-row justify-between items-center pb-3 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => router.back()}
+                  className="rounded-full w-9 h-9 hover:bg-brand-secondary-100 border border-gray-600 text-gray-600 cubic-bezier-4 transition-all duration-300 hover:text-brand-primary-900"
+                >
+                  <ArrowLeftIcon className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 items-center">
+                <h2 className="text-4xl font-bold text-gray-800">{data.title}</h2>
+                <Badge
+                  variant={status.toLowerCase() as any}
+                  className="text-sm px-4 py-1.5 rounded-full"
+                >
+                  {status}
+                </Badge>
+              </div>
             </div>
-
-            {/* Creator Section */}
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-2">Created By</h3>
+          </div>
+          {/* Grid Container */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {/* Creator Section - Updated */}
+            <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-2 text-brand-primary-900">Created by</h3>
               <a
                 href={creatorWalletAddressUrl}
-                className="text-sm text-brand-primary-600 hover:underline break-all"
+                className="text-brand-primary-700 hover:text-brand-primary-800 transition-colors break-words"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {creatorWalletDisplay}
+                <div className="font-display text-lg font-medium mb-3">{creatorWalletDisplay}</div>
+                <span className="text-sm text-brand-primary-900 hover:text-brand-primary-500 mt-1 transition-colors">
+                  View on explorer →
+                </span>
               </a>
             </div>
 
-            {/* Exam Details Section */}
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-2">Exam Details</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex flex-row">
-                  <div className="font-medium w-[6rem]">⏳ Duration</div>
-                  <div>: {data.duration} minutes</div>
+            {/* Exam Details Section - Updated */}
+            <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200 lg:col-span-2">
+              <h3 className="text-lg font-semibold mb-4 text-brand-primary-900">Exam Details</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                  <div className="text-sm font-medium text-brand-primary-800">Duration</div>
+                  <div className="font-medium">{data.duration} mins</div>
                 </div>
-                <div className="flex flex-row">
-                  <div className="font-medium min-w-[6rem]"> 🏁 Started </div>{" "}
-                  <p>
-                    : on {startDate.toLocaleDateString()} at {startDate.toLocaleTimeString()}
-                  </p>
+                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                  <div className="text-sm font-medium text-brand-primary-800">Questions</div>
+                  <div className="font-medium">{totalQuestions}</div>
                 </div>
-                <div className="flex flex-row">
-                  <div className="font-medium min-w-[6rem]"> 🚩 Finished </div>{" "}
-                  <p>
-                    : on {endDate.toLocaleDateString()} at {endDate.toLocaleTimeString()}
-                  </p>
-                </div>
-                <div className="flex flex-row">
-                  <div className="font-medium w-[6rem]">❓ Questions</div> <p>: {totalQuestions}</p>
+                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                  <div className="text-sm font-medium text-brand-primary-800">Passing Score</div>
+                  <div className="font-medium text-brand-primary-900">{passingScore}</div>
                 </div>
               </div>
             </div>
 
-            {/* Description Section */}
-            <div className="md:col-span-2 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
+            {/* Description Section - Updated */}
+            <div className="md:col-span-2 lg:col-span-3 bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
+              <h3 className="text-lg font-semibold mb-4 text-brand-primary-900">Description</h3>
               <ReactMarkdown
-                className="prose max-w-full text-sm sm:text-base"
+                className="prose max-w-full text-base leading-relaxed text-brand-primary-950 overflow-auto break-normal whitespace-normal"
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
               >
@@ -137,9 +413,9 @@ const ExamDetails = () => {
               </ReactMarkdown>
             </div>
 
-            {/* Charts Section */}
-            <div className="md:col-span-1 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-4">Attendance</h3>
+            {/* Charts & Participants Section - Updated */}
+            <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Attendance Analytics</h3>
               {participants && (
                 <AttendanceCharts
                   participants={participants}
@@ -149,26 +425,29 @@ const ExamDetails = () => {
               )}
             </div>
 
-            {/* Participants Section */}
-            <div className="md:col-span-1 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-4">Participants</h3>
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Participants</h3>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="text-left border-b border-greyscale-light-200">
-                      <th className="pb-2 text-sm font-medium min-w-[120px]">User</th>
-                      <th className="pb-2 text-sm font-medium">Score</th>
-                      <th className="pb-2 text-sm font-medium min-w-[100px]">Start</th>
-                      <th className="pb-2 text-sm font-medium min-w-[100px]">End</th>
+                    <tr className="border-b border-gray-200">
+                      {["User", "Score", "Start", "End"].map((header) => (
+                        <th
+                          key={header}
+                          className="pb-3 px-2 text-sm font-semibold text-gray-600 text-left"
+                        >
+                          {header}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
                     {participants?.map((item) => (
                       <tr
                         key={item.walletAddress}
-                        className="border-b border-greyscale-light-100 hover:bg-greyscale-light-50"
+                        className="hover:bg-gray-50 transition-colors even:bg-gray-50"
                       >
-                        <td className="py-3 text-sm truncate max-w-[150px]">
+                        <td className="py-3 px-2 text-sm truncate max-w-[150px]">
                           <a
                             href={`https://minascan.io/mainnet/account/${item.walletAddress}`}
                             target="_blank"
@@ -178,27 +457,27 @@ const ExamDetails = () => {
                             {walletRender(item.walletAddress)}
                           </a>
                         </td>
-                        <td className="py-3 text-sm">
-                          {item.score ? (
+                        <td className="py-3 px-2">
+                          {item.score !== undefined ? (
                             item.score
                           ) : (
-                            <span className="text-greyscale-light-500">-</span>
+                            <span className="text-gray-400">-</span>
                           )}
                         </td>
-                        <td className="py-3 text-sm">
+                        <td className="py-3 px-2">
                           {new Date(item.startTime).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
                         </td>
-                        <td className="py-3 text-sm">
+                        <td className="py-3 px-2">
                           {item.finishTime ? (
                             new Date(item.finishTime).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
                             })
                           ) : (
-                            <span className="text-greyscale-light-500">-</span>
+                            <span className="text-gray-400">-</span>
                           )}
                         </td>
                       </tr>
@@ -208,58 +487,89 @@ const ExamDetails = () => {
               </div>
             </div>
 
-            {/* Leaderboard Section */}
-            <div className="md:col-span-1 bg-white rounded-xl p-4 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-4">Leaderboard</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left border-b border-greyscale-light-200">
-                      <th className="pb-2 text-sm font-medium">#</th>
-                      <th className="pb-2 text-sm font-medium">User</th>
-                      <th className="pb-2 text-sm font-medium">Score</th>
-                      <th className="pb-2 text-sm font-medium min-w-[100px]">Finished at</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leaderboard.map((item, index) => {
-                      const startTime = new Date(item.startTime);
-                      const finishTime = new Date(item.finishTime);
-
-                      const timeTaken = (finishTime.getTime() - startTime.getTime()) / 1000;
-                      return (
-                        <tr
-                          key={item.userId}
-                          className="border-b border-greyscale-light-100 hover:bg-greyscale-light-50"
-                        >
-                          <td className="py-3 text-sm">{index + 1}</td>
-                          <td className="py-3 text-sm font-medium ">
-                            <a
-                              href={`https://minascan.io/mainnet/account/${item.walletAddress}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-brand-primary-600 hover:underline"
+            {/* Leaderboard Section - Updated */}
+            <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-800">Leaderboard</h3>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleDownloadPNG} className="gap-2">
+                    <ArrowDownTrayIcon className="h-4 w-4" />
+                    PNG
+                  </Button>
+                  <Button variant="outline" onClick={handleDownloadCSV} className="gap-2">
+                    <DocumentTextIcon className="h-4 w-4" />
+                    CSV
+                  </Button>
+                  <Button variant="outline" onClick={handleShare} className="gap-2">
+                    <ShareIcon className="h-4 w-4" />
+                    Share with friends
+                  </Button>
+                </div>
+              </div>
+              <div ref={leaderboardRef}>
+                {leaderboard.length === 0 ? (
+                  <div className="text-center font-regular py-8 text-greyscale-light-400">
+                    Leaderboard has not been created yet
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          {["Rank", "User", "Score", "Completion Time"].map((header) => (
+                            <th
+                              key={header}
+                              className="pb-3 px-2 text-sm font-semibold text-gray-600 text-left"
                             >
-                              {walletRender(item.walletAddress)}
-                            </a>
-                          </td>
-                          <td
-                            className={`py-3 text-sm truncate ${getScoreColorClass(
-                              item.score,
-                              passingScore
-                            )}`}
-                          >
-                            {item.score}
-                          </td>
-                          <td className="py-3 text-sm">
-                            {formatTime(finishTime)} -
-                            <span className="text-greyscale-light-500">{timeTaken} min</span>
-                          </td>
+                              {header}
+                            </th>
+                          ))}
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      </thead>
+                      <tbody>
+                        {leaderboard.map((item, index) => {
+                          const startTime = new Date(item.startTime);
+                          const finishTime = new Date(item.finishTime);
+                          const timeTaken = (finishTime.getTime() - startTime.getTime()) / 1000;
+                          return (
+                            <tr
+                              key={item.userId}
+                              className="hover:bg-gray-50 transition-colors even:bg-gray-50"
+                            >
+                              <td className="py-3 px-2">
+                                <div className="w-8 h-8 rounded-md bg-brand-primary-100/80 flex items-center justify-center">
+                                  {index + 1}
+                                </div>
+                              </td>
+                              <td className="py-3 px-2 font-medium">
+                                <a
+                                  href={`https://minascan.io/mainnet/account/${item.walletAddress}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-brand-primary-600 hover:underline"
+                                >
+                                  {walletRender(item.walletAddress)}
+                                </a>
+                              </td>
+                              <td
+                                className={`py-3 px-2 font-semibold ${getScoreColorClass(
+                                  item.score,
+                                  passingScore
+                                )}`}
+                              >
+                                {item.score}
+                              </td>
+                              <td className="py-3 px-2 text-sm text-gray-500">
+                                {formatTime(finishTime)}
+                                <span className="block text-xs mt-1">{timeTaken} mins</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           </div>

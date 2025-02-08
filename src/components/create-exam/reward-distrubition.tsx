@@ -18,29 +18,31 @@ export const RewardDistributionForm = () => {
 
   return (
     <>
-      <div className="flex gap-4 justify-between flex-col sm:flex-row">
+      <div className="gap-4 justify-between w-full sm:grid-cols-2 bg-white p-6 rounded-3xl border border-greyscale-light-200 grid grid-cols-1">
         <FormField
           name="rewardType"
           render={({ field: { onChange, ...field } }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Reward type</FormLabel>
+            <FormItem className="flex-1 space-y-1">
+              <FormLabel className="font-bold text-sm">Reward Type</FormLabel>
               <Select>
-                <SelectTrigger>
+                <SelectTrigger className="h-12">
                   <SelectValue placeholder="Select reward type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Monetary (MINA Token)">
-                    Monetary reward (MINA Token)
+                    Monetary Reward (MINA Token)
                   </SelectItem>
                   <SelectItem disabled value="NFT (Coming soon)">
-                    NFT reward (Coming soon)
+                    NFT Reward (Coming Soon)
                   </SelectItem>
                   <SelectItem disabled value="Custom (Coming soon)">
-                    Custom reward (Coming soon)
+                    Custom Reward (Coming Soon)
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>Select the reward type.</FormDescription>
+              <FormDescription className="text-greyscale-dark-300">
+                Select the type of reward to distribute
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -49,11 +51,12 @@ export const RewardDistributionForm = () => {
           control={form.control}
           name="passingScore"
           render={({ field: { onChange, ...field } }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Minimum passing score</FormLabel>
+            <FormItem className="flex-1 space-y-1">
+              <FormLabel className="font-bold text-sm">Minimum Passing Score</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter minimum passing score (0-100)"
+                  className="h-12"
+                  placeholder="Enter passing score (0-100)"
                   type="number"
                   min={0}
                   max={100}
@@ -65,20 +68,19 @@ export const RewardDistributionForm = () => {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Enter the total reward amount for distrubition.</FormDescription>
+              <FormDescription className="text-greyscale-dark-300">
+                Minimum valid score (0-100 range)
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-      </div>
-
-      <div className="flex gap-4 justify-between flex-col sm:flex-row">
         <FormField
           control={form.control}
           name="totalRewardPoolAmount"
           render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Total reward pool</FormLabel>
+            <FormItem className="flex-1 space-y-1">
+              <FormLabel className="font-bold text-sm">Total Reward Pool</FormLabel>
               <FormControl>
                 <Input placeholder="Enter total reward pool" type="number" {...field}  
                   onChange={(e) => {
@@ -86,7 +88,9 @@ export const RewardDistributionForm = () => {
                     field.onChange(Number(value));
                   }} />
               </FormControl>
-              <FormDescription>Enter the total reward amount for distrubition.</FormDescription>
+              <FormDescription className="text-greyscale-dark-300">
+                Enter total reward amount to distribute
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -96,8 +100,8 @@ export const RewardDistributionForm = () => {
           control={form.control}
           name="rewardPerWinner"
           render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Reward amount</FormLabel>
+            <FormItem className="flex-1 space-y-1">
+              <FormLabel className="font-bold text-sm">Reward Amount</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter reward amount"
@@ -108,7 +112,9 @@ export const RewardDistributionForm = () => {
                     field.onChange(Number(value));
                   }} />
               </FormControl>
-              <FormDescription>Enter the reward amount per winner.</FormDescription>
+              <FormDescription className="text-greyscale-dark-300">
+                Enter reward amount
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

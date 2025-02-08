@@ -153,9 +153,7 @@ export function FullScreenPreview({
               </Button>
             </div>
 
-            {/* LiveExamPreview içeriği */}
             <div className="flex-1 border border-gray-200 rounded-xl p-4 bg-gray-50">
-              {/* Sizin “LiveExamPreview” bileşeniniz, tam akış */}
               <LiveExamPreview
                 onGoBack={function (): void {
                   throw new Error("Function not implemented.");

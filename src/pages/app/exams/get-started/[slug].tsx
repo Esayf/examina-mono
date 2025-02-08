@@ -57,7 +57,10 @@ function ExamDetail() {
 
     // Saniyede bir yeniden hesap
     const intervalId = setInterval(calcTime, 1000);
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      setTimer(0);
+    };
   }, [data]); // data.exam?.startDate gibi de ekleyebilirsiniz
 
   /**
@@ -177,27 +180,41 @@ function ExamDetail() {
           <div className={cn("flex flex-col gap-4", !data && "filter blur-sm")}>
             {/* Additional quiz info */}
             <div className="border rounded-2xl border-greyscale-light-200 p-4 bg-white space-y-3">
-              {/* Type */}
-              <div className="flex items-center gap-2">
-                <ClipboardDocumentIcon className="w-5 h-5 text-brand-primary-950" />
-                <span className="text-sm text-greyscale-light-700">
-                  Type: <span className="font-bold">Quiz</span>
-                </span>
-              </div>
-              {/* Total Questions */}
-              <div className="flex items-center gap-2">
-                <Squares2X2Icon className="w-5 h-5 text-brand-primary-950" />
-                <span className="text-sm text-greyscale-light-700">
-                  Total Questions:{" "}
-                  <span className="font-bold">{data?.exam?.questionCount ?? 0}</span>
-                </span>
-              </div>
-              {/* Duration */}
-              <div className="flex items-center gap-2">
-                <ClockIcon className="w-5 h-5 text-brand-primary-950" />
-                <span className="text-sm text-greyscale-light-700">
-                  Duration: <span className="font-bold">{data?.exam?.duration ?? 120} minutes</span>
-                </span>
+              <div className="flex flex-col sm:flex-row gap-8 w-full justify-between">
+                {/* Type */}
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 p-2 bg-brand-secondary-50 text-brand-secondary-950 rounded-md">
+                    <ClipboardDocumentIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-brand-primary-950">Type</p>
+                    <p className="text-base font-medium text-brand-primary-950">Quiz</p>
+                  </div>
+                </div>
+                {/* Total Questions */}
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 p-2 bg-brand-secondary-50 text-brand-secondary-950 rounded-md">
+                    <Squares2X2Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-brand-primary-950">Total Questions</p>
+                    <p className="text-base font-medium text-brand-primary-950">
+                      {data?.exam?.questionCount ?? 0}
+                    </p>
+                  </div>
+                </div>
+                {/* Duration */}
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 p-2 bg-brand-secondary-50 text-brand-secondary-950 rounded-md">
+                    <ClockIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-brand-primary-950">Duration</p>
+                    <p className="text-base font-medium text-brand-primary-950">
+                      {data?.exam?.duration ?? 120} minutes
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 

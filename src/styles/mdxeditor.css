@@ -168,7 +168,20 @@
 }
 
 .mdxeditor-toolbar {
-  @apply flex w-full sticky top-0 overflow-x-scroll row-auto pt-2 pl-2 gap-4 mb-2 bg-brand-secondary-50 border-b border-greyscale-light-200 rounded-t-2xl z-10 p-2;
+  background-color: var(--color-brand-secondary-50);
+  display: flex;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  overflow-x: scroll;
+  row-gap: 4px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--color-greyscale-light-200);
+  border-radius: 24px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  z-index: 10;
+  padding: 8px;
 }
 .mdxeditor-toolbar div[role="separator"] {
   margin: var(--spacing-2) var(--spacing-1);
@@ -195,65 +208,64 @@
    "prose" temelli bir stil de ekleyebilirsiniz.
    Veya "globals.css" gibi bir dosyada .mdxeditor kuralları yazabilirsiniz. */
 
-.mdxeditor h1 {
-  @apply text-4xl font-bold mt-0 mb-2;
-}
-
-.mdxeditor h2 {
-  @apply text-3xl font-bold mt-0 mb-2;
-}
-
-.mdxeditor h3 {
-  @apply text-2xl font-bold mt-0 mb-2;
-}
-
-.mdxeditor h4 {
-  @apply text-xl font-bold mt-0 mb-2;
-}
-
-.mdxeditor h5 {
-  @apply text-lg font-bold mt-0 mb-2;
-}
-
-.mdxeditor h6 {
-  @apply text-base font-bold mt-0 mb-1;
-}
-
-.mdxeditor p {
-  @apply text-base mt-0 mb-1;
-}
-
 .mdxeditor a {
-  @apply text-brand-primary-600 no-underline;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--brand-primary-600);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
+
 .mdxeditor a:hover {
-  @apply text-brand-primary-600 no-underline;
+  color: var(--brand-primary-600);
+  text-decoration: none;
+}
+
+.mdxeditor a:hover {
+  color: var(--brand-primary-600);
+  text-decoration: none;
 }
 
 .mdxeditor blockquote {
-  @apply border-l-4 border-gray-300 font-normal italic mt-8 mb-8 pl-6 text-gray-800 text-lg;
-}
-
-.mdxeditor code {
-  @apply bg-gray-300 px-2 py-px rounded text-sm;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--brand-primary-600);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 .mdxeditor hr {
-  @apply border-b border-gray-300 mt-4 mb-4 rounded-full;
+  border-bottom: 1px solid var(--baseBorder);
+  margin: 1rem 0;
+  border-radius: 9999px;
 }
 
 /* UL / OL */
 .mdxeditor ul,
 ol {
-  @apply list-disc list-inside mt-4 mb-4 m-0 pl-1 text-lg;
+  list-style-type: disc;
+  margin: 1rem 0;
+  padding-left: 1rem;
+  line-height: 1.5;
+  font-weight: 300;
+  color: var(--color-brand-primary-950);
+  transition: color 0.3s ease;
 }
 .mdxeditor ol {
-  @apply list-decimal list-inside mt-4 mb-4;
+  list-style-type: decimal;
+  margin: 1rem 0;
+  padding-left: 1rem;
+  line-height: 1.5;
+  font-weight: 300;
+  color: var(--color-brand-primary-950);
+  transition: color 0.3s ease;
 }
 
 /* örnek: styles/table.css */
 
-/* Değişkenlerin tanımlı olduğu :root var ise (örn. global.css’te) 
+/* Değişkenlerin tanımlı olduğu :root var ise (örn. global.css'te) 
 :root {
   --color-primary-50: #FFF3FD;
   --color-primary-500: #d51fbd;
@@ -265,101 +277,54 @@ ol {
   ...
 } */
 
-/* Table */
-.mdxeditor-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin: 2rem 0;
-  font-family: var(--font-family, sans-serif);
-  background-color: var(--color-white);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.mdxeditor-thead {
-  background-color: var(--color-primary-50);
-  color: var(--color-primary-950);
-  font-size: 18px;
-  border: none;
-  overflow: hidden;
-}
-
-/* Çift satır renklendirme örneği */
-.mdxeditor-tr:nth-child(even) {
-  background-color: var(--color-primary-50);
-}
-
-/* Hover efekti */
-.mdxeditor-tbody tr:hover {
-  background-color: var(--color-secondary-50);
-  transition: background-color 0.3s ease;
-}
-
-/* Ortak TH/TD stilleri */
-.mdxeditor-th,
-.mdxeditor-td {
-  padding: 1.5rem;
-  text-align: left;
-  vertical-align: top;
-  font-style: normal;
-  border: none;
-  color: var(--color-primary-600);
-  outline: 0.5px solid var(--color-primary-950);
-  width: 100%;
-}
-
-/* Opsiyonel - thead içindeki ilk ve son sütun */
-.mdxeditor-thead th:first-child {
-  font-size: 16px;
-  border: none;
-}
-
-.mdxeditor-thead th:last-child {
-  font-size: 16px;
-  border: none;
-}
-
 .mdxeditor h1 {
-  font-size: 2.5rem !important; /* Büyük başlık */
+  font-size: 3rem !important; /* Büyük başlık */
   font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h2 {
-  font-size: 2rem; /* Orta büyüklükte başlık */
+  font-size: 2.5rem; /* Orta büyüklükte başlık */
   font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h3 {
-  font-size: 1.75rem; /* Daha küçük başlık */
+  font-size: 2.25rem; /* Daha küçük başlık */
   font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h4 {
-  font-size: 1.5rem; /* Daha küçük başlık */
+  font-size: 2rem; /* Daha küçük başlık */
   font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h5 {
-  font-size: 1.25rem; /* Daha küçük başlık */
+  font-size: 1.75rem; /* Daha küçük başlık */
   font-weight: normal;
   line-height: 1.2;
 }
 
 .mdxeditor h6 {
-  font-size: 1.125rem; /* Daha küçük başlık */
+  font-size: 1.625rem; /* Daha küçük başlık */
   font-weight: normal;
   line-height: 1.2;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .mdxeditor p {
-  font-size: 1rem; /* Paragraf */
+  font-size: 2rem; /* Paragraf */
   line-height: 1.375;
   font-weight: 300;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .mdxeditor img {
@@ -370,6 +335,14 @@ ol {
   margin: 1rem auto; /* Ortalamak için */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
   resize: both;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  align-self: center;
+  justify-self: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .mdxeditor .toolbarRoot {
@@ -385,7 +358,7 @@ ol {
 
 .mdxeditor .toolbarRoot select {
   padding: 0.25rem 0.5rem;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   border-radius: 32px;
   border: 1px solid var(--baseBorder);
   background-color: var(--color-brand-secondary-50);
@@ -441,15 +414,21 @@ ol {
   box-shadow: 0 10px 14px rgba(0, 0, 0, 0.15);
 }
 
-.mdxeditor pre {
-  background-color: #fbfbfb; /* hafif gri */
+re {
+  background-color: var(--color-brand-secondary-50); /* hafif gri */
   padding: 1rem;
   border-radius: 8px;
   overflow-x: auto;
 }
 
 .mdxeditor pre code {
-  background-color: #fdf5ff;
+  background-color: var(--color-brand-secondary-50);
+  padding: 0;
+  margin: 0;
+}
+
+.mdxeditor code {
+  background-color: var(--color-brand-secondary-50);
   padding: 0;
   margin: 0;
 }
@@ -485,7 +464,7 @@ ol {
 }
 
 /* 
-   Toggle item’ların varsayılan durumu 
+   Toggle item'ların varsayılan durumu 
    (hover, transition, vb.) 
 */
 ._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206 {
@@ -502,14 +481,14 @@ ol {
 
 /* Hover: Hafif bir zemin rengi ve büyütebilirsiniz */
 ._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206:hover {
-  background-color: var(--color-brand-secondary-50); /* Daha açık bir renk */
+  background-color: var(--color-brand-secondary-200); /* Daha açık bir renk */
   color: var(--color-brand-primary-900); /* Metin veya ikon rengi */
 }
 
-/* Aktif veya “on” state: Biraz daha koyu zemin, minimal scale */
+/* Aktif veya "on" state: Biraz daha koyu zemin, minimal scale */
 ._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206:active,
 ._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206[data-state="on"] {
-  background-color: var(--color-brand-secondary-100);
+  background-color: var(--color-brand-secondary-400);
   color: var(--color-brand-primary-800);
   transform: scale(0.96); /* Basılı tutulduğunda hafif küçülme */
   border-radius: 9999px; /* Tam yuvarlak */
@@ -524,6 +503,8 @@ ol {
 ._toolbarModeSwitch_uazmk_196 ._toolbarToggleItem_uazmk_206 .toolbarToggleItem_uazmk_237,
 .mdxeditor-toolbar ._toolbarButton_uazmk_237 {
   border-radius: 9999px;
+  min-width: 36px;
+  min-height: 36px;
   width: 36px;
   height: 36px;
   display: flex;
@@ -543,14 +524,20 @@ ol {
   box-sizing: border-box;
   cursor: default;
   padding: var(--spacing-1);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
 }
 /* Toolbar hover */
 @media (hover: hover) {
   ._toolbarToggleItem_uazmk_206:hover,
   ._toolbarButton_uazmk_237:hover {
-    @apply bg-brand-secondary-100 min-w-[32px] min-h-[32px] rounded-full w-8 h-8 justify-center items-center;
+    background-color: var(--color-brand-secondary-100);
+    border-radius: 9999px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -564,7 +551,8 @@ ol {
 ._toolbarToggleItem_uazmk_206:active,
 ._toolbarButton_uazmk_237:active {
   color: var(--baseTextContrast);
-  @apply bg-brand-secondary-200 rounded-full;
+  background-color: var(--color-brand-secondary-200) !important;
+  border-radius: 9999px;
 }
 
 ._toolbarToggleItem_uazmk_206[data-disabled],
@@ -578,15 +566,15 @@ ol {
 }
 
 ._toolbarButton_uazmk_237 {
-  @apply rounded-md;
+  border-radius: 8px;
 }
 
 ._toolbarButton_uazmk_237 + ._toolbarButton_uazmk_237 {
-  @apply ml-1;
+  margin-left: 4px;
 }
 
 ._activeToolbarButton_uazmk_274 {
-  @apply bg-brand-primary-900;
+  background-color: var(--color-brand-primary-900);
 }
 
 /* 
@@ -600,11 +588,6 @@ ol {
   white-space: nowrap;
 }
 
-/* 
-   2) Container stili (Select / Dropdown)
-   - Ortak görsel tutarlılık: Aynı border, aynı radius
-   - Gereksiz "border-top-right-radius" vb. satırları kaldırdık 
-*/
 ._toolbarNodeKindSelectContainer_uazmk_284,
 ._toolbarButtonDropdownContainer_uazmk_285,
 ._toolbarCodeBlockLanguageSelectContent_uazmk_286,
@@ -612,17 +595,12 @@ ol {
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.2));
   z-index: 3;
   width: var(--spacing-36); /* 9rem gibi bir değer olabilir */
-  border: 1px solid var(--color-brand-primary-800); /* Daha tutarlı border */
+  border: 1px solid var(--color-greyscale-light-200); /* Daha tutarlı border */
   border-radius: 12px;
   background-color: var(--color-brand-secondary-50);
   font-size: var(--text-sm);
 }
 
-/* 
-   3) Trigger stili (Select açma butonu, vs.)
-   - Hepsi aynı radius, aynı boy, aynı renk
-   - margin, padding değerlerini basitleştirdik
-*/
 ._toolbarNodeKindSelectTrigger_uazmk_305,
 ._toolbarButtonSelectTrigger_uazmk_306,
 ._selectTrigger_uazmk_307 {
@@ -641,10 +619,6 @@ ol {
   margin: 0 var(--spacing-1);
 }
 
-/* 
-   4) Açık durumda (data-state="open") gölge efekti devam
-   - İsterseniz border rengini de değiştirebilirsiniz
-*/
 ._toolbarNodeKindSelectTrigger_uazmk_305[data-state="open"],
 ._toolbarButtonSelectTrigger_uazmk_306[data-state="open"],
 ._selectTrigger_uazmk_307[data-state="open"] {
@@ -652,18 +626,10 @@ ol {
   border-radius: 12px;
 }
 
-/* 
-   5) Placeholder rengi
-   - İsteğe göre daha uygun bir renk kullanabilirsiniz (brand-primary-300 vb.)
-*/
 ._selectTrigger_uazmk_307[data-placeholder] > span:first-child {
   color: var(--color-greyscale-light-600);
 }
 
-/* 
-   6) Sandpack’ten geliyorsa, "width: auto" gibi ek kuralları koruyun
-   - Sadece kodu sadeleştirdik
-*/
 ._toolbarButtonSelectTrigger_uazmk_306 {
   width: auto;
   padding-inline-start: var(--spacing-2);
@@ -676,22 +642,17 @@ ol {
   width: var(--spacing-48);
 }
 
-/* Toolbar item içinde tooltip göstermek için örnek: */
-
 ._toolbarItemWrapper {
-  position: relative; /* Tooltip konumlandırmaya izin */
-  display: inline-block; /* Satır içi öğe olarak tutmak veya block da kullanabilirsiniz */
+  position: absolute; /* Tooltip konumlandırmaya izin */
+  display: flex; /* Satır içi öğe olarak tutmak veya block da kullanabilirsiniz */
 }
 
-/* “hover” anında tooltipi aç */
 ._toolbarItemWrapper:hover ._toolbarItemTooltip {
-  display: block;
+  display: flex;
 }
 
 /* Tooltip metnini tanımlayalım */
 ._toolbarItemTooltip {
-  display: none;
-  position: absolute;
   bottom: 125%; /* Örnek: butonun biraz üstünde göstersin */
   left: 50%;
   transform: translateX(-50%);
@@ -708,7 +669,7 @@ ol {
   transition: opacity 0.15s ease-in-out;
 }
 
-/* Hover’da opacity:1 yap */
+/* Hover'da opacity:1 yap */
 ._toolbarItemWrapper:hover ._toolbarItemTooltip {
   opacity: 1;
 }
@@ -723,7 +684,7 @@ ol {
   border-width: 6px; /* üçgen boyutu */
   border-style: solid;
   border-color: #000 transparent transparent transparent;
-  /* Yukarı bakan üçgen için: üst kenar #000, diğer kenarlar “transparent” */
+  /* Yukarı bakan üçgen için: üst kenar #000, diğer kenarlar "transparent" */
 }
 
 ._toolbarNodeKindSelectItem_uazmk_347,
@@ -735,8 +696,8 @@ ol {
 
 ._toolbarNodeKindSelectItem_uazmk_347[data-highlighted],
 ._selectItem_uazmk_300[data-highlighted] {
-  background-color: var(--color-brand-secondary-100);
-  border-radius: 12px;
+  background-color: var(--color-base-white);
+  border-radius: 9999px;
   height: full;
 }
 
@@ -744,8 +705,12 @@ ol {
 ._selectItem_uazmk_300[data-state="checked"] {
   color: var(--baseTextContrast);
   background-color: var(--baseBg);
-  border-radius: 12px;
+  border-radius: 9999px;
   height: full;
+  width: full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 ._toolbarNodeKindSelectItem_uazmk_347[data-highlighted],
@@ -915,8 +880,9 @@ ol {
 
 ._primaryButton_uazmk_506:disabled,
 ._secondaryButton_uazmk_507:disabled {
-  background: var(--color-brand-secondary-50);
-  border-color: var(--color-brand-secondary-100);
+  background: var(--color-greyscale-light-200);
+  border-color: var(--color-greyscale-light-200);
+  color: var(--color-greyscale-light-500);
   border-radius: 100px;
   border-width: 2px;
 }
@@ -924,14 +890,15 @@ ol {
 ._smallButton_uazmk_522 {
   font-size: var(--text-sm);
   padding: var(--spacing-1) var(--spacing-2);
-  border-radius: 24px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--baseBorder);
   background-color: var(--color-brand-secondary-50);
 }
 
 ._secondaryButton_uazmk_507 {
   border: 2px solid var(--color-brand-primary-950);
-  background-color: var(--baseBg);
-  border-radius: 100px;
+  background-color: var(--color-brand-secondary-200);
+  border-radius: var(--radius-full);
 }
 
 ._dialogForm_uazmk_534 {
@@ -999,7 +966,7 @@ ol {
 
 ._linkDialogInput_uazmk_548::-moz-placeholder,
 ._dialogInput_uazmk_575::-moz-placeholder {
-  color: var(--baseBorder);
+  color: var(--color-brand-secondary-100);
 }
 
 ._linkDialogInput_uazmk_548::placeholder,
@@ -1023,12 +990,12 @@ ol {
 
 ._linkDialogPopoverContent_uazmk_600,
 ._tableColumnEditorPopoverContent_uazmk_601,
-/* Örnek: Insert Image modal’ını yakalayan sınıf veya data attribute buldunuz varsayalım. */
-/* DevTools’ta bulduğunuz class’ı gerçek class ile değiştirin. */
+/* Örnek: Insert Image modal'ını yakalayan sınıf veya data attribute buldunuz varsayalım. */
+/* DevTools'ta bulduğunuz class'ı gerçek class ile değiştirin. */
 .mdxeditor ._dialogContent_uazmk_602 {
   background-color: var(--color-brand-secondary-50) !important;
   border-radius: 2rem !important;
-  border: 2px solid var(--color-brand-primary-950) !important; /* Tailwind “gray-200” */
+  border: 2px solid var(--color-brand-primary-950) !important; /* Tailwind "gray-200" */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
   padding: 1.5rem !important;
   width: 500px !important;
@@ -1047,14 +1014,15 @@ ol {
 
 /* Örneğin input alanının çerçevesini de yumuşatın */
 .mdxeditor ._dialogContent_uazmk_602 input[type="file"] {
-  border: 2px dashed var(--color-brand-primary-800) !important;
+  border: 2px solid var(--color-brand-primary-800) !important;
   padding: 1rem !important;
   border-radius: 32px !important;
+  background-color: var(--color-brand-secondary-100) !important;
 }
 
 /* Onay ve İptal butonlarını ayrıştırmak isterseniz  (DevTools ile sınıfını bulmak gerekir) */
 .mdxeditor ._primaryActionButton_uazmk_701 {
-  background-color: var(--color-brand-secondary-100) !important; /* Tailwind “green-400” */
+  background-color: var(--color-brand-secondary-500) !important; /* Tailwind "green-400" */
   color: black !important;
 }
 
@@ -1072,6 +1040,7 @@ ol {
   font-size: var(--text-base);
   font-weight: 600;
   padding-left: var(--spacing-2);
+  color: var(--color-brand-primary-950);
 }
 
 ._dialogCloseButton_uazmk_630 {
@@ -1130,7 +1099,7 @@ ol {
 
 ._actionButton_uazmk_694 {
   border: 0;
-  background-color: transparent;
+  background-color: var(--color-brand-secondary-50);
   font-size: inherit;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -2399,4 +2368,254 @@ form._multiFieldForm_uazmk_1194 ._formField_uazmk_1200 label {
 
 .non-interactive-editor li {
   display: list-item !important;
+}
+
+/* Genel tipografi iyileştirmeleri */
+.mdxeditor {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--baseText);
+}
+
+/* Başlık boyutları ve aralıkları */
+.mdxeditor h1 {
+  font-size: 2.5rem !important;
+  font-weight: 600;
+  margin: 2rem 0 1rem;
+  line-height: 1.3;
+}
+
+.mdxeditor h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 1.8rem 0 0.8rem;
+}
+
+.mdxeditor h3 {
+  font-size: 1.75rem;
+  margin: 1.6rem 0 0.6rem;
+}
+
+/* Link stilleri */
+.mdxeditor a {
+  color: var(--color-brand-primary-600);
+  text-decoration: underline;
+  transition: all 0.2s ease;
+}
+
+.mdxeditor a:hover {
+  color: var(--color-brand-primary-800);
+  text-decoration: none;
+}
+
+/* Kod blokları */
+.mdxeditor pre {
+  background: var(--color-brand-secondary-50);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.mdxeditor code {
+  font-family: var(--font-family-mono);
+  background: var(--color-brand-secondary-100);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+
+/* Tablo iyileştirmeleri */
+.mdxeditor-table {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mdxeditor-th,
+.mdxeditor-td {
+  padding: 1rem;
+  border: 1px solid var(--color-greyscale-light-200);
+}
+
+.mdxeditor-thead {
+  background: var(--color-brand-primary-50);
+  color: var(--color-brand-primary-950);
+}
+
+.mdxeditor-table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.mdxeditor-tr {
+  background: white !important;
+  transition: all 0.3s ease;
+}
+
+.mdxeditor-tr:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mdxeditor-td {
+  border: 1px solid var(--color-greyscale-light-200);
+}
+
+.mdxeditor-th:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.mdxeditor-th:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* Blockquote tasarımı */
+.mdxeditor blockquote {
+  border-left: 4px solid var(--color-brand-primary-300);
+  background: var(--color-brand-secondary-50);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 4px;
+  font-style: italic;
+}
+
+/* Görsel düzenlemeler */
+.mdxeditor img {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+}
+
+/* Toolbar iyileştirmeleri */
+.mdxeditor-toolbar {
+  background: var(--color-brand-secondary-50);
+  border-radius: 8px;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+/* Kahoot Temalı Renk Paleti */
+:root {
+  --choz-purple: var(--color-brand-primary-900);
+  --choz-bg: var(--color-brand-secondary-300);
+  --choz-pink: var(--color-brand-primary-500);
+  --choz-cyan: var(--color-brand-primary-200);
+  --choz-yellow: var(--color-brand-primary-300);
+}
+
+/* Oyunlaştırılmış Başlıklar */
+.mdxeditor h1,
+.mdxeditor h2,
+.mdxeditor h3 {
+  color: var(--choz-purple);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.5px;
+}
+
+.mdxeditor h1 {
+  font-size: 3rem !important;
+  background: var(--choz-purple);
+  background-clip: text; /* Standart özellik */
+  -webkit-background-clip: text; /* Webkit prefix */
+  color: transparent; /* Fallback için */
+  -webkit-text-fill-color: transparent; /* Webkit prefix */
+}
+
+/* Interaktif Toolbar */
+.mdxeditor-toolbar {
+  background: var(--color-brand-secondary-50);
+  border-radius: 16px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+
+  padding: 12px;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mdxeditor .mde-toolbar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* On hover or focus within the .mdxeditor wrapper, show the toolbar */
+.mdxeditor:hover .mde-toolbar,
+.mdxeditor:focus-within .mde-toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mdxeditor-toolbar button {
+  background: var(--color-brand-secondary-50) !important;
+  border-radius: 25px !important;
+  padding: 8px 20px !important;
+  transition: all 0.3s ease;
+}
+
+.mdxeditor-toolbar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: var(--color-brand-secondary-300) !important;
+}
+
+.mdxeditor-toolbar button:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: var(--color-brand-secondary-300) !important;
+}
+
+/* Kart Benzeri Bloklar */
+.mdxeditor blockquote,
+.mdxeditor pre {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  margin: 1.5rem 0;
+}
+
+/* Oyun Puanlama Efekti */
+.mdxeditor code {
+  background: var(--color-brand-secondary-100);
+  color: black;
+  padding: 0.3em 0.6em;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* Progress Bar Benzeri HR */
+.mdxeditor hr {
+  height: 4px;
+  background: linear-gradient(90deg, var(--choz-purple), var(--choz-pink));
+  border: none;
+  border-radius: 2px;
+}
+
+/* Kahoot Benzeri Butonlar */
+.mdxeditor .toolbarRoot button {
+  background: var(--choz-purple) !important;
+  color: white !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Animasyonlu Hover Efektleri */
+.mdxeditor a:hover {
+  color: var(--choz-pink);
+  transform: scale(1.02);
+}
+
+.mdxeditor-li {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mdxeditor-li::marker {
+  color: var(--color-brand-primary-500);
+  font-size: 1.5rem;
+  font-weight: 700;
 }

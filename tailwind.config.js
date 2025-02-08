@@ -186,6 +186,7 @@ module.exports = {
         display: "var(--font-family-display)",
         heading: "var(--font-family-heading)",
         body: "var(--font-family-body)",
+        mono: "var(--font-family-mono)",
       },
       text: {
         xs: "var(--font-size-xs)",
@@ -332,6 +333,14 @@ module.exports = {
         lg: "var(--border-radius-lg)",
         xl: "var(--border-radius-xl)",
         "2xl": "var(--border-radius-2xl)",
+        "3xl": "var(--border-radius-3xl)",
+        "4xl": "var(--border-radius-4xl)",
+        "5xl": "var(--border-radius-5xl)",
+        "6xl": "var(--border-radius-6xl)",
+        "7xl": "var(--border-radius-7xl)",
+        "8xl": "var(--border-radius-8xl)",
+        "9xl": "var(--border-radius-9xl)",
+        "10xl": "var(--border-radius-10xl)",
         full: "var(--border-radius-full)",
       },
       boxShadow: {

@@ -46,6 +46,12 @@ interface MarkdownEditorProps {
   className?: string;
   contentEditableClassName?: string;
   placeholder?: string;
+  maxWidthOrHeight?: number;
+  options?: {
+    maxSizeMB?: number;
+    useWebWorker?: boolean;
+    initialQuality?: number;
+  };
 }
 
 export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
@@ -92,66 +98,58 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
       return `/api/proxy?hash=${result.IpfsHash}`;
     };
 
+    // Ortak görsel işleme fonksiyonu
+    const handleImageUpload = async (image: File) => {
+      try {
+        const compressionOptions = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        // Sıkıştırma ve yükleme işlemleri tek toast içinde
+        const url = await toast.promise(
+          imageCompression(image, compressionOptions).then((compressedFile) =>
+            uploadFile(compressedFile)
+          ),
+          {
+            loading: "Compressing image...",
+            success: "Image compressed successfully",
+            error: (error) => `Failed to compress image: ${error}`,
+          }
+        );
+
+        return url;
+      } catch (error) {
+        console.error("Image upload error:", error);
+        return Promise.reject(error);
+      }
+    };
+
     const plugins = [
       headingsPlugin({
         allowedHeadingLevels: [1, 2, 3, 4, 5, 6],
       }),
-      listsPlugin(),
+      listsPlugin({
+        disableAutoToggle: true,
+      }),
       quotePlugin({
         allowedQuoteTypes: ["block", "inline"],
       }),
       thematicBreakPlugin(),
-      markdownShortcutPlugin(),
+      markdownShortcutPlugin({
+        disableListAutoToggle: true, // Liste otomatik toggle özelliği devre dışı bırakıldı
+      }),
       imagePlugin({
-        imageUploadHandler: async (image: File) => {
-          return await uploadFile(image);
-        },
+        imageUploadHandler: handleImageUpload,
       }),
       linkPlugin(),
       codeBlockPlugin(),
       directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
-      imagePlugin({
-        imageUploadHandler: async (image: File) => {
-          const options = {
-            maxSizeMB: 1, // Maximum file size (MB)
-            useWebWorker: true, // Use Web Worker to improve performance
-          };
-          const url = await toast.promise(uploadFile(image), {
-            loading: "Uploading image...",
-            success: "Image uploaded successfully",
-            error: (error) => `Failed to upload image: ${error}`,
-          });
-
-          if (!url) {
-            return Promise.reject();
-          }
-          return Promise.resolve(url);
-        },
-      }),
       tablePlugin({
-        imageUploadHandler: async (image: File) => {
-          const options = {
-            maxSizeMB: 1, // Maximum file size (MB)
-            maxWidthOrHeight: 400, // Maximum width or height (pixels)
-            useWebWorker: true, // Use Web Worker to improve performance
-          };
-          const compressedFile = await toast.promise(imageCompression(image, options), {
-            loading: "Compressing image...",
-            success: "Image compressed successfully",
-            error: (error) => `Failed to compress image: ${error}`,
-          });
-          const url = await toast.promise(uploadFile(compressedFile), {
-            loading: "Uploading image...",
-            success: "Image uploaded successfully",
-            error: (error) => `Failed to upload image: ${error}`,
-          });
-
-          if (!url) {
-            return Promise.reject();
-          }
-          return Promise.resolve(url);
-        },
+        imageUploadHandler: handleImageUpload,
         disableImageResize: true,
+        tableCellCustomMetadataInputs: () => [{ type: "url", label: "URL", required: true }],
       }),
     ];
 
