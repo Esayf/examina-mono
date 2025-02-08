@@ -180,7 +180,7 @@ function ExamDetail() {
           <div className={cn("flex flex-col gap-4", !data && "filter blur-sm")}>
             {/* Additional quiz info */}
             <div className="border rounded-2xl border-greyscale-light-200 p-4 bg-white space-y-3">
-              <div className="flex flex-row gap-8 w-full justify-between">
+              <div className="flex flex-col sm:flex-row gap-8 w-full justify-between">
                 {/* Type */}
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 p-2 bg-brand-secondary-50 text-brand-secondary-950 rounded-md">

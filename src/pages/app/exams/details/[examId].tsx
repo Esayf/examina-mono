@@ -11,15 +11,8 @@ import rehypeSanitize from "rehype-sanitize";
 import { BackgroundPattern } from "@/components/landing-page/background-pattern";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowDownTrayIcon,
-  ArrowUpTrayIcon,
-  TableCellsIcon,
-  ShareIcon,
-  XMarkIcon,
-  DocumentChartBarIcon,
-  DocumentTextIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, ShareIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/usetoast";
@@ -347,35 +340,34 @@ const ExamDetails = () => {
       {/* Content Container */}
       <div className="relative flex justify-center p-4 md:p-8 overflow-y-auto">
         <div className="w-full max-w-[90rem]: bg-brand-secondary-50 bg-opacity-95 rounded-3xl p-8 flex flex-col gap-6 shadow-2xl backdrop-blur-sm">
-          {/* Grid Container */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {/* Title Section - Updated */}
-            <div className="flex flex-col gap-2 justify-between lg:col-span-3">
-              <div className="flex flex-row justify-between items-center pb-3 border-b border-gray-200">
-                <div className="flex flex-row gap-4 items-center">
-                  <h2 className="text-4xl font-bold text-gray-800">{data.title}</h2>
-                  <Badge
-                    variant={status.toLowerCase() as any}
-                    className="text-sm px-4 py-1.5 rounded-full"
-                  >
-                    {status}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => router.back()}
-                    className="rounded-full w-9 h-9 hover:bg-brand-secondary-100 border border-gray-600 text-gray-600 cubic-bezier-4 transition-all duration-300"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </Button>
-                </div>
+          {/* Title Section - Updated */}
+          <div className="flex flex-col gap-2 justify-between lg:col-span-3">
+            <div className="flex flex-row justify-between items-center pb-3 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => router.back()}
+                  className="rounded-full w-9 h-9 hover:bg-brand-secondary-100 border border-gray-600 text-gray-600 cubic-bezier-4 transition-all duration-300 hover:text-brand-primary-900"
+                >
+                  <ArrowLeftIcon className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 items-center">
+                <h2 className="text-4xl font-bold text-gray-800">{data.title}</h2>
+                <Badge
+                  variant={status.toLowerCase() as any}
+                  className="text-sm px-4 py-1.5 rounded-full"
+                >
+                  {status}
+                </Badge>
               </div>
             </div>
-
+          </div>
+          {/* Grid Container */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {/* Creator Section - Updated */}
-            <div className="bg-brand-secondary-100 rounded-3xl p-6 shadow-sm border border-brand-secondary-200">
+            <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
               <h3 className="text-lg font-semibold mb-2 text-brand-primary-900">Created by</h3>
               <a
                 href={creatorWalletAddressUrl}
@@ -391,18 +383,18 @@ const ExamDetails = () => {
             </div>
 
             {/* Exam Details Section - Updated */}
-            <div className="bg-brand-secondary-100 rounded-3xl p-6 shadow-sm border border-brand-secondary-200 lg:col-span-2">
+            <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200 lg:col-span-2">
               <h3 className="text-lg font-semibold mb-4 text-brand-primary-900">Exam Details</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="space-y-1 bg-brand-secondary-200 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
                   <div className="text-sm font-medium text-brand-primary-800">Duration</div>
                   <div className="font-medium">{data.duration} mins</div>
                 </div>
-                <div className="space-y-1 bg-brand-secondary-200 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
                   <div className="text-sm font-medium text-brand-primary-800">Questions</div>
                   <div className="font-medium">{totalQuestions}</div>
                 </div>
-                <div className="space-y-1 bg-brand-secondary-200 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
                   <div className="text-sm font-medium text-brand-primary-800">Passing Score</div>
                   <div className="font-medium text-brand-primary-900">{passingScore}</div>
                 </div>
@@ -410,10 +402,10 @@ const ExamDetails = () => {
             </div>
 
             {/* Description Section - Updated */}
-            <div className="md:col-span-2 lg:col-span-3 bg-brand-secondary-100 rounded-3xl p-6 shadow-sm border border-brand-secondary-200">
+            <div className="md:col-span-2 lg:col-span-3 bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
               <h3 className="text-lg font-semibold mb-4 text-brand-primary-900">Description</h3>
               <ReactMarkdown
-                className="prose max-w-full text-base leading-relaxed text-brand-primary-950"
+                className="prose max-w-full text-base leading-relaxed text-brand-primary-950 overflow-auto break-normal whitespace-normal"
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
               >
@@ -466,7 +458,11 @@ const ExamDetails = () => {
                           </a>
                         </td>
                         <td className="py-3 px-2">
-                          {item.score ? item.score : <span className="text-gray-400">-</span>}
+                          {item.score !== undefined ? (
+                            item.score
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
                         <td className="py-3 px-2">
                           {new Date(item.startTime).toLocaleTimeString([], {

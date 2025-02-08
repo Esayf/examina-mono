@@ -264,7 +264,7 @@ function Row({ exam }: RowProps) {
   return (
     <div
       className={cn(
-        "group relative bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
+        "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
         // Hover durumunda daha belirgin gölge ve arkaplan
         exam.status !== "draft"
           ? "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-greyscale-light-300"
@@ -595,7 +595,7 @@ function Application() {
   const finalExams = sortExams(filtered);
 
   // Sortable Header Fields
-  const sortableHeaders: { label: string; field: SortField }[] = [
+  const sortableHeaders: { label: string; field: SortField; className?: string }[] = [
     { label: "Title", field: "title" },
     { label: "Start Date", field: "startDate" },
     { label: "Status", field: "status" },
@@ -607,18 +607,18 @@ function Application() {
   const TableHeader = () => (
     <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-5 py-3 border-b border-greyscale-light-200 grid grid-cols-[auto_auto] gap-2 items-center justify-start">
       <DropdownMenu>
-        <DropdownMenuTrigger className="max-w-[160px] flex items-center hover:bg-brand-primary-50 px-2 py-1 rounded-md transition-colors group">
-          <span className="font-medium text-base text-greyscale-light-800 group-hover:text-brand-primary-900">
+        <DropdownMenuTrigger className="flex items-center hover:bg-brand-primary-50 px-2 py-1 z-50 rounded-md transition-colors group">
+          <span className="font-medium text-left min-w-[160px] text-base text-greyscale-light-800 group-hover:text-brand-primary-900">
             Sort by: {sortableHeaders.find((f) => f.field === sortField)?.label}
           </span>
           <ChevronUpDownIcon className="w-3.5 h-3.5 ml-1 text-gray-400" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="min-w-[140px] py-1">
+        <DropdownMenuContent align="start" className="min-w-[140px] py-1 z-50">
           {sortableHeaders.map((field) => (
             <DropdownMenuItem
               key={field.field}
               onClick={() => setSortField(field.field as SortField)}
-              className="flex justify-between items-center px-2 py-1 text-xs"
+              className="flex justify-between items-center rounded-2xl hover:bg-brand-secondary-50 px-4 py-2 text-base"
             >
               {field.label}
               {sortField === field.field && (
@@ -631,20 +631,15 @@ function Application() {
 
       <Button
         variant="ghost"
-        size="sm"
         onClick={(e) => {
           e.stopPropagation();
           setSortAsc(!sortAsc);
         }}
-        className="hover:bg-brand-primary-50 px-2 h-7 text-xs gap-1"
+        className="hover:bg-brand-secondary-50 px-2 h-7 text-base gap-1"
         title={sortAsc ? "Ascending" : "Descending"}
       >
         {sortAsc ? "Asc" : "Desc"}
-        {sortAsc ? (
-          <ArrowUpIcon className="w-3.5 h-3.5" />
-        ) : (
-          <ArrowDownIcon className="w-3.5 h-3.5" />
-        )}
+        {sortAsc ? <ArrowUpIcon className="w-4 h-4" /> : <ArrowDownIcon className="w-4 h-4" />}
       </Button>
     </div>
   );

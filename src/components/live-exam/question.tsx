@@ -62,8 +62,8 @@ export const Question = ({
             />
           </RadioGroup.Indicator>
         </RadioGroup.Item>
+
         <div className="flex flex-col gap-2">
-          <p className="text-lg font-bold text-brand-primary-950">Answer {option.number}</p>
           <ReactMarkdown
             className=" mdxeditor prose min-w-full
                     [&_h1]:text-4xl [&_h1]:text-center [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:bg-brand-primary-900 [&_h1]:from-brand-primary-950 [&_h1]:to-brand-primary-900 [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:drop-shadow-md

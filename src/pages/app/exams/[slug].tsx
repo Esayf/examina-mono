@@ -247,7 +247,9 @@ function LiveQuiz() {
               {/* Soru Metni */}
               <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
                 <div className="mdxeditor prose min-w-full min-h-[calc(100dvh-600px)]">
-                  <Label className="text-sm text-gray-700">Question</Label>
+                  <Label className="text-xl font-bold text-greyscale-light-900">
+                    Question {currentQuestionIndex + 1}
+                  </Label>
                   <ReactMarkdown
                     className="mdxeditor prose min-w-full
                     [&_h1]:text-4xl [&_h1]:text-center [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:bg-brand-primary-900 [&_h1]:from-brand-primary-950 [&_h1]:to-brand-primary-900 [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:drop-shadow-md
