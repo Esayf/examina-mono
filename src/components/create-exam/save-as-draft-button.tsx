@@ -62,8 +62,7 @@ export const SaveAsDraftButton = () => {
   const handleConfirmSave = async () => {
     // Get raw unvalidated values
     const values = form.getValues();
-
-    mutate({
+    const draftValues = {
       ...(examId ? { id: examId } : ({} as { id: string })),
       ...values,
       title: values.title || "Untitled",
@@ -82,7 +81,9 @@ export const SaveAsDraftButton = () => {
           correctAnswer: question.correctAnswer ? parseInt(question.correctAnswer) : undefined,
           questionType: question.questionType,
         })) || [],
-    });
+      isRewarded: values.rewardDistribution ?? false,
+    };
+    mutate(draftValues);
   };
 
   const handleSaveClick = () => {

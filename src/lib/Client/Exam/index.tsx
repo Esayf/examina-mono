@@ -28,11 +28,18 @@ export interface Exam {
   status: "published";
 }
 
-function getExamList(): Promise<Exam[]> {
+export interface GetExamsParams {
+  role: 'created' | 'joined';
+  filter?: 'all' | 'upcoming' | 'active' | 'ended';
+  sortBy?: 'title' | 'startDate' | 'duration' | 'createdAt' | 'score' | 'endDate' | 'status';
+  sortOrder?: 'asc' | 'desc';
+}
+
+function getExamList(params: GetExamsParams): Promise<Exam[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get("/exams/myExams")
+      .get("/exams/myExams", params)
       .then((response) => {
         resolve(response.data.map((exam: any) => ({ ...exam, status: "published" })));
       })
@@ -69,6 +76,7 @@ export interface DraftExam extends Omit<Exam, "status"> {
     questionType: "mc" | "tf";
   }[];
   status: "draft";
+  totalRewardPoolAmount: number;
 }
 
 function getDraftExam(examID: string): Promise<DraftExam> {
@@ -342,11 +350,27 @@ async function submitAnswers(examID: string, answers: number[], questions: strin
   }
 }
 
-function getScore(examID: string) {
+export interface Score {
+  score: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  isWinner: boolean;
+  exam: {
+    title: string;
+    _id: string;
+  }
+  user: {
+    userName: string;
+    walletAddress: string;
+    _id: string;
+  };
+}
+
+function getScore(examID: string):Promise<Score[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase
-      .get(`/exams/scores/get_user_score/${examID}`)
+      .get(`/scores/${examID}`)
       .then((response) => {
         resolve(response.data);
       })

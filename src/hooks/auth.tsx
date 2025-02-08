@@ -131,6 +131,9 @@ export async function authenticateWallet(address: string) {
 }
 
 export async function authenticate(session: any) {
+  if (session?.session?.walletAddress) {
+    return session.session;
+  }
   if (session?.walletAddress) {
     return session;
   }

@@ -18,7 +18,7 @@ export const step2ValidationSchema = z
     duration: z.string(),
     rewardDistribution: z.boolean(),
     // the rest of the fields are only required if the reward distribution is activated
-    minimumPassingScore: looseOptional(
+    passingScore: looseOptional(
       z
         .number()
         .min(0, "Minimum passing score must be at least 0")
@@ -26,7 +26,11 @@ export const step2ValidationSchema = z
     ),
     totalRewardPoolAmount: z.preprocess((value) => {
       if (!value) return undefined; // Null, boş string veya undefined ise geri dön
-      return Number(value);
+      // Replace comma with dot and parse as float
+      const normalizedValue = typeof value === "string"
+        ? value.replace(",", ".")
+        : value;
+      return Number(parseFloat(String(normalizedValue)));
     }, z.number().min(0, "Total reward pool must be at least 0").optional()),
 
     //rewardType: z.enum(["Monetary (MINA Token)", "NFT (Coming soon)", "Custom (Coming soon)"]),
@@ -38,16 +42,20 @@ export const step2ValidationSchema = z
         typeof value === "undefined"
       )
         return undefined;
-      return Number(z.string().parse(value));
+      // Replace comma with dot and parse as float
+      const normalizedValue = typeof value === "string"
+        ? value.replace(",", ".")
+        : value;
+      return Number(parseFloat(String(normalizedValue)));
     }, z.number().min(0, "Reward amount must be at least 0").optional()),
   })
   .superRefine((values, context) => {
     if (values.rewardDistribution) {
-      if (!values.minimumPassingScore) {
+      if (!values.passingScore === undefined) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Minimum passing score is required",
-          path: ["minimumPassingScore"],
+          path: ["passingScore"],
         });
       }
       if (!values.totalRewardPoolAmount) {

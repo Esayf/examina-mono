@@ -21,6 +21,7 @@ const validationSchema = [step1ValidationSchema, step2ValidationSchema] as const
 
 function CreateExam() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isPublishing, setIsPublishing] = useState(false);
   const currentValidationSchema = validationSchema[currentStep];
   const router = useRouter();
 
@@ -48,9 +49,8 @@ function CreateExam() {
   } = methods;
 
   useUnsavedChanges({
-    isDirty: isDirty,
-    isSubmitted: isSubmitted,
-    message: "Custom message if needed",
+    isDirty,
+    isSubmitted: isSubmitted || isPublishing,
   });
 
   const handleNext = async () => {
@@ -109,7 +109,9 @@ function CreateExam() {
         <div className="w-full mx-auto flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
           <FormProvider {...methods}>
             {currentStep === 0 && <Step1 onNext={handleNext} />}
-            {currentStep === 1 && <Step2 onBack={handleBack} />}
+            {currentStep === 1 && (
+              <Step2 onBack={handleBack} onPublish={() => setIsPublishing(true)} />
+            )}
           </FormProvider>
         </div>
       </div>

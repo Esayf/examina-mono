@@ -26,7 +26,6 @@ export const step1ValidationSchema = z.object({
       questionType: z.enum(["mc", "tf"], {
         errorMap: () => ({ message: "Invalid question type." }),
       }),
-      media: z.any().nullable(),
     })
   ),
 });

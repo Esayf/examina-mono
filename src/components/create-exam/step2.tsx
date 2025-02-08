@@ -56,14 +56,15 @@ const DESCRIPTION_MAX_CHARS = 960;
 
 interface Step2Props {
   onBack: () => void;
+  onPublish: () => void;
 }
 
-export const Step2 = ({ onBack }: Step2Props) => {
-  /**
-   * 1) Step2 form kontrolleri
-   */
-  const { control, watch, formState } = useStep2Form();
-  const { isDirty, isSubmitted } = formState;
+export const Step2 = ({ onBack, onPublish }: Step2Props) => {
+  // 1) Form Hook ve isDirty / isSubmitted takibi
+  const form = useStep2Form();
+  const {
+    formState: { isDirty, isSubmitted },
+  } = form;
 
   /**
    * 2) Step1 form verileri (örneğin soru sayısı gibi bilgileri burada kullanabiliriz)
@@ -74,11 +75,11 @@ export const Step2 = ({ onBack }: Step2Props) => {
   /**
    * 3) Dinamik alanları izleme
    */
-  const rewardDistribution = watch("rewardDistribution");
-  const titleValue = watch("title") || "";
-  const descriptionValue = watch("description") || "";
-  const startDateValue = watch("startDate");
-  const durationValue = watch("duration");
+  const rewardDistribution = form.watch("rewardDistribution");
+  const titleValue = form.watch("title") || "";
+  const descriptionValue = form.watch("description") || "";
+  const startDateValue = form.watch("startDate");
+  const durationValue = form.watch("duration");
 
   /**
    * 4) Quiz önizleme (Preview) modalı için state
@@ -103,7 +104,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
           {/* Sağ üst aksiyonlar: Taslak kaydet & Yayınla */}
           <div className="flex flex-row justify-center gap-2">
             <SaveAsDraftButton />
-            <PublishButton />
+            <PublishButton onPublishStart={onPublish} />
           </div>
         </CardHeader>
 
@@ -122,7 +123,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
 
           {/* 1) Quiz Başlığı */}
           <FormField
-            control={control}
+            control={form.control}
             name="title"
             render={({ field }) => {
               const characterCount = field.value?.length || 0;
@@ -185,7 +186,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
               </p>
               <div className="flex gap-4 justify-between flex-col sm:flex-row">
                 <ControlledDateTimePicker
-                  control={control}
+                  control={form.control}
                   name="startDate"
                   label="When should this quiz start?"
                   description="Choose a date and time for the quiz to begin."
@@ -198,7 +199,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
                   className="flex-1"
                   name="duration"
                   label="How long should this quiz take?"
-                  control={control}
+                  control={form.control}
                   description="Once the time is up, the quiz will automatically end."
                   placeholder="Select duration (in minutes)"
                 />
@@ -208,7 +209,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
 
           {/* 3) Quiz Açıklaması (Markdown) */}
           <FormField
-            control={control}
+            control={form.control}
             name="description"
             render={({ field }) => {
               const characterCount = field.value?.length || 0;
@@ -267,7 +268,7 @@ export const Step2 = ({ onBack }: Step2Props) => {
 
           {/* 4) Ödül Dağıtım Anahtarı (Switch) */}
           <FormField
-            control={control}
+            control={form.control}
             name="rewardDistribution"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-end">
