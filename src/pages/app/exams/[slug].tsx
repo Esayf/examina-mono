@@ -51,7 +51,7 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
     <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
       <div
-        className="h-2.5 transition-all duration-500 bg-gradient-to-r from-brand-secondary-300 to-brand-primary-800"
+        className="h-2.5 transition-all duration-500 bg-gradient-to-r from-brand-primary-300 to-brand-primary-500"
         style={{ width: `${progress}%` }}
       />
     </div>
@@ -218,7 +218,7 @@ function LiveQuiz() {
             <div className="hidden md:flex gap-4 justify-between w-full">
               <Button
                 pill
-                variant="tertiary"
+                variant="outline"
                 size="icon"
                 onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
                 disabled={isPending || currentQuestionIndex === 0}
@@ -233,11 +233,12 @@ function LiveQuiz() {
                 currentQuestionIndex={currentQuestionIndex}
                 questions={questions}
                 currentQuestion={currentQuestion}
+                choices={choices}
               />
 
               <Button
                 pill
-                variant="tertiary"
+                variant="outline"
                 size="icon"
                 className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95"
                 onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
@@ -323,7 +324,7 @@ function LiveQuiz() {
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-2 flex items-center justify-between gap-2 min-w-screen whitespace-nowrap px-4">
           <Button
             pill
-            variant="tertiary"
+            variant="outline"
             size="icon"
             onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
             disabled={isPending || currentQuestionIndex === 0}
@@ -339,12 +340,13 @@ function LiveQuiz() {
               currentQuestionIndex={currentQuestionIndex}
               questions={questions}
               currentQuestion={currentQuestion}
+              choices={choices}
             />
           </div>
 
           <Button
             pill
-            variant="tertiary"
+            variant="outline"
             size="icon"
             onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
             disabled={isPending || currentQuestionIndex === questions.length - 1}
