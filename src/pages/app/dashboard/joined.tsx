@@ -43,12 +43,16 @@ import {
   ChevronUpDownIcon,
   ShareIcon,
   ArrowDownTrayIcon,
+  CalendarIcon,
+  ClockIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
 // QR code
 import { QRCodeCanvas } from "qrcode.react";
 import { Input } from "@/components/ui/input";
+import DurationFormatter from "@/components/ui/time/duration-formatter";
 
 /* ---------------------------------------------------------
    1) Katıldığı quiz verisini çekecek API fonksiyonu.
@@ -224,87 +228,113 @@ interface RowProps {
 
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
 
-  // Status
-  const startDate = new Date(exam.examStartDate);
-  const endDate = new Date(exam.examEndDate);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPulse(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const quizLink = `${
+    typeof window !== "undefined" ? window.location.origin : ""
+  }/app/exams/get-started/${exam._id}`;
 
   return (
     <div
       className={cn(
-        "flex flex-col",
-        "transition-colors duration-200 ease-in-out hover:bg-brand-primary-50 hover:text-brand-primary-600"
+        "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
+        "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-greyscale-light-300"
       )}
+      onClick={() => router.push(`/app/exams/details/${exam._id}`)}
     >
-      <div className="text-greyscale-light-700">
-        <div
-          className="
-            flex font-medium border-t border-greyscale-light-200 bg-white
-            hover:bg-brand-primary-50 hover:text-brand-primary-600
-            transition-colors duration-200 ease-in-out
-          "
-        >
-          {/* Title */}
-          <div className="flex-1 p-5 min-w-[154px] max-w-[220px] border-r border-greyscale-light-100">
-            <p
-              className="
-                text-inherit text-base font-medium leading-6 
-                overflow-hidden text-ellipsis whitespace-nowrap
-                max-w-[180px]
-              "
-              title={exam.title}
-            >
+      {/* Share Modal */}
+      <ShareModal
+        open={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        quizLink={quizLink}
+      />
+
+      <div className="flex flex-col sm:flex-row items-start gap-4">
+        <div className="flex-1 space-y-2 min-w-0">
+          {/* Başlık hover efekti */}
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-brand-primary-900 truncate transition-colors group-hover:text-brand-primary-700">
               {exam.title}
-            </p>
-          </div>
-
-          {/* Start Date */}
-          <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {formatDate(startDate)}
-            </p>
-          </div>
-
-          {/* End Date */}
-          <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {endDate ? formatDate(endDate) : "N/A"}
-            </p>
-          </div>
-
-          {/* Completed at */}
-          <div className="hidden lg:flex flex-1 p-5 min-w-[120px] max-w-[160px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam.userFinishedAt ? formatDate(new Date(exam.userFinishedAt)) : "N/A"}
-            </p>
-          </div>
-
-          {/* Duration */}
-          <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam.examDuration} min.
-            </p>
-          </div>
-
-          {/* Score */}
-          <div className="hidden md:flex flex-1 p-5 min-w-[80px] max-w-[100px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {`${exam.userScore ?? "N/A"} pts`}
-            </p>
-          </div>
-
-          {/* Status */}
-          <div className="flex-1 p-5 min-w-[80px] max-w-[160px]">
+            </h3>
             <Badge
               variant={
                 exam.status === "active" ? "active" : exam.status === "ended" ? "ended" : "upcoming"
               }
-              className="text-sm px-3 py-1.5 rounded-lg shadow-sm"
+              className="shrink-0 transition-transform duration-300 group-hover:scale-105"
             >
               {exam.status}
             </Badge>
           </div>
+
+          {/* İkonlara hover efekti */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <CalendarIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Start:</span>
+              <span className="truncate">{formatDate(new Date(exam.examStartDate))}</span>
+            </div>
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <ClockIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Duration:</span>
+              <DurationFormatter duration={exam.examDuration} base="minutes" />
+            </div>
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <CheckIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Score:</span>
+              <span>{exam.userScore ?? "N/A"} pts</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Share butonuna pulse efekti */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-between sm:w-auto">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-brand-primary-50 text-brand-primary-700 relative group"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsShareModalOpen(true);
+              }}
+              title="Share"
+            >
+              <ShareIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+              {showPulse && (
+                <span className="absolute inset-0 rounded-full animate-ping bg-brand-primary-100 opacity-75 group-hover:opacity-100" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Quiz listesi içindeki boş durum bileşeni
+function EmptyStateComponent() {
+  return (
+    <div className="col-span-full flex justify-center items-center p-8 text-center">
+      <div className="flex flex-col items-center gap-4">
+        <Image
+          src={EmptyState}
+          height={200}
+          width={200}
+          alt="No results found"
+          className="h-auto max-w-full opacity-75"
+        />
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold text-brand-primary-900">No quizzes found</h3>
+          <p className="text-greyscale-light-600">Try adjusting your search or filter settings</p>
         </div>
       </div>
     </div>
@@ -316,6 +346,7 @@ function JoinedRow({ exam }: RowProps) {
  ****************************************/
 export default function JoinedExamsPage() {
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
 
   // API query
   const {
@@ -333,6 +364,28 @@ export default function JoinedExamsPage() {
 
   // ---- YENİ: Join quiz state ----
   const [joinCode, setJoinCode] = useState("");
+
+  // Filtre ve arama fonksiyonu
+  function filterExams(exams: JoinedExamResponse[]) {
+    // 1) Status filtresi
+    const filteredByStatus = exams.filter((exam) => {
+      if (filter === "All") return true;
+      return exam.status.toLowerCase() === filter.toLowerCase();
+    });
+
+    // 2) Arama filtresi
+    if (searchTerm.trim().length > 0) {
+      return filteredByStatus.filter((exam) => {
+        const title = exam.title?.toLowerCase() || "";
+        return title.includes(searchTerm.toLowerCase());
+      });
+    }
+
+    return filteredByStatus;
+  }
+
+  // Filtrele ve sırala
+  const filteredExams = filterExams(data);
 
   // Sınav yoksa (Empty state)
   if (!isLoading && data?.length === 0 && !isError) {
@@ -386,271 +439,113 @@ export default function JoinedExamsPage() {
   }
 
   return (
-    <>
-      <div className="relative min-h-screen h-dvh flex flex-col z-0">
-        <DashboardHeader withoutTabs={false} withoutNav={true} />
-        <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col rounded-b-3xl">
-          <div className="w-full flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
-            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
-              <CardHeader>
-                <CardHeaderContent>
-                  <CardTitle className="text-2xl font-bold text-brand-primary-900">
-                    Joined quizzes
-                  </CardTitle>
-                  <CardDescription>
-                    All quizzes you participated in. Check your score or share them easily!
-                  </CardDescription>
-                </CardHeaderContent>
-              </CardHeader>
+    <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
+      <DashboardHeader withoutTabs={false} withoutNav={true} />
+      <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col rounded-b-3xl">
+        <Card className="bg-base-white rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
+          <CardHeader>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
+              <div className="space-y-1.5">
+                <CardTitle className="text-2xl font-bold text-brand-primary-900">
+                  Joined quizzes
+                </CardTitle>
+                <CardDescription className="text-greyscale-light-600">
+                  All quizzes you participated in. Check your score or share them easily!
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
 
-              <CardContent className="px-0 pt-0">
-                {/* ---- Join Quiz Input & Button ---- */}
-                <div className="flex gap-2 px-5 py-3 border-b border-greyscale-light-200 items-center">
-                  {/* Filtre butonları */}
-                  <div className="flex overflow-x-auto gap-2 hide-scrollbar">
-                    {FILTER_OPTIONS.map((option) => {
-                      const colors = {
-                        Active:
-                          "bg-ui-success-50 text-ui-success-600 border border-ui-success-600 hover:bg-ui-success-100 hover:text-ui-success-700",
-                        Ended:
-                          "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
-                        Draft:
-                          "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
-                        Upcoming:
-                          "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
-                        All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
-                      };
+          <CardContent className="px-0 pt-0">
+            {/* Filtre ve arama bölümü sticky yapılıyor */}
+            <div className="sticky top-0 z-10 backdrop-blur-sm bg-white/90 border-b border-greyscale-light-200">
+              <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:justify-between px-4 py-3">
+                {/* Filtre butonları */}
+                <div className="flex overflow-x-auto gap-2 hide-scrollbar">
+                  {FILTER_OPTIONS.map((option) => {
+                    const colors = {
+                      Active:
+                        "bg-ui-success-50 text-ui-success-600 border border-ui-success-600 hover:bg-ui-success-100 hover:text-ui-success-700",
+                      Ended:
+                        "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
+                      Draft:
+                        "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
+                      Upcoming:
+                        "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
+                      All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
+                    };
 
-                      const activeColors = {
-                        Active:
-                          "bg-ui-success-200 text-ui-success-600 border border-ui-success-600 hover:bg-transparent border-2",
-                        Ended:
-                          "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
-                        Draft:
-                          "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
-                        Upcoming:
-                          "bg-yellow-200 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
-                        All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
-                      };
+                    const activeColors = {
+                      Active:
+                        "bg-ui-success-200 text-ui-success-600 border border-ui-success-600 hover:bg-transparent border-2",
+                      Ended:
+                        "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
+                      Draft:
+                        "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
+                      Upcoming:
+                        "bg-yellow-200 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
+                      All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
+                    };
 
-                      const activeColor = activeColors[option];
-                      const color = colors[option];
-                      return (
-                        <Button
-                          key={option}
-                          variant={filter === option ? "default" : "outline"}
-                          className={cn(
-                            "text-sm shadow-sm w-auto h-[2rem] px-3 py-2 border border-brand-primary-900",
-                            filter === option ? `${activeColor}` : `${color}`
-                          )}
-                          onClick={() => setFilter(option)}
-                        >
-                          {option}
-                        </Button>
-                      );
-                    })}
-                  </div>
+                    const activeColor = activeColors[option];
+                    const color = colors[option];
+                    return (
+                      <Button
+                        key={option}
+                        variant={filter === option ? "default" : "outline"}
+                        className={cn(
+                          "text-sm shadow-sm w-auto h-[2rem] px-3 py-2 border border-brand-primary-900",
+                          filter === option ? `${activeColor}` : `${color}`
+                        )}
+                        onClick={() => setFilter(option)}
+                      >
+                        {option}
+                      </Button>
+                    );
+                  })}
                 </div>
 
-                {/* Tablo başlıkları (sticky) */}
-                <div
-                  className="
-                    sticky top-0 z-10
-                    flex min-w-full
-                    bg-white/80
-                    backdrop-blur-sm
-                    border-b border-greyscale-light-200
-                    shadow-sm
-                  "
-                >
-                  {/* Title */}
-                  <div
-                    className="
-                      flex-1 p-5
-                      min-w-[154px] max-w-[220px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {
-                      if (sortField === "title") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("title");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Title
-                      {renderSortIcon("title", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Start Date */}
-                  <div
-                    className="
-                      hidden sm:flex flex-1 p-5
-                      min-w-[180px] max-w-[240px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {
-                      if (sortField === "startDate") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("startDate");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Start Date
-                      {renderSortIcon("startDate", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* End Date */}
-                  <div
-                    className="
-                      hidden lg:flex flex-1 p-5
-                      min-w-[180px] max-w-[240px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {
-                      if (sortField === "endDate") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("endDate");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      End Date
-                      {renderSortIcon("endDate", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Completed at */}
-                  <div
-                    className="
-                      hidden lg:flex flex-1 p-5
-                      min-w-[120px] max-w-[160px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {}}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Completed at
-                      {renderSortIcon("completedAt", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Duration */}
-                  <div
-                    className="
-                      hidden sm:flex flex-1 p-5
-                      min-w-[120px] max-w-[160px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {
-                      if (sortField === "duration") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("duration");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Duration
-                      {renderSortIcon("duration", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Score */}
-                  <div
-                    className="
-                      hidden md:flex flex-1 p-5
-                      min-w-[80px] max-w-[100px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {
-                      if (sortField === "score") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("score");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Score
-                      {renderSortIcon("score", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Status */}
-                  <div
-                    className="
-                      flex-1 p-5
-                      min-w-[80px] max-w-[160px]
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-brand-primary-50/50
-                    "
-                    onClick={() => {
-                      if (sortField === "status") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("status");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Quiz Status
-                      {renderSortIcon("status", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Actions sütunu (paylaş / leaderboard) */}
-                  <div className="flex-1 p-5 min-w-[100px] flex justify-end" />
+                {/* Arama input'una focus efekti */}
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Search by title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-40 sm:w-64 transition-all duration-300 focus:w-72 focus:ring-2 focus:ring-brand-primary-200"
+                  />
                 </div>
+              </div>
+            </div>
 
-                {/* Listedeki sınavlar */}
-                <div className="overflow-y-auto max-h-[560px]">
-                  {data.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-8">
-                      <Image
-                        src={EmptyState}
-                        height={220}
-                        width={280}
-                        alt="No joined quizzes for this filter"
-                      />
-                      <p className="text-md text-brand-primary-950 max-h-[581px] mt-1">
-                        No quizzes found for <strong>{filter}</strong> filter 😕
-                      </p>
-                    </div>
-                  ) : (
-                    data.map((exam: JoinedExamResponse) => <JoinedRow key={exam._id} exam={exam} />)
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+            {/* Liste yükleme animasyonu */}
+            <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
+              {isLoading ? (
+                // Loading skeleton
+                Array(6)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="animate-pulse bg-greyscale-light-100 rounded-2xl h-40"
+                    />
+                  ))
+              ) : filteredExams.length === 0 ? (
+                <EmptyStateComponent />
+              ) : (
+                filteredExams.map((exam, index) => (
+                  <div
+                    key={exam._id}
+                    className="motion-safe:animate-fadeIn"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <JoinedRow exam={exam} />
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

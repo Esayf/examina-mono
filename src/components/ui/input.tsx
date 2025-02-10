@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
       "disabled:cursor-not-allowed disabled:opacity-50",
       "resize-none",
       "max-h-[4rem]",
-      "text-base font-medium items-center justify-center",
+      "text-base items-center justify-center",
       className
     );
 
@@ -87,7 +87,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
     // as="textarea" => klasik çok satırlı Input
     if (as === "textarea") {
       return (
-        <div className="relative flex w-full">
+        <div className="relative flex w-full text-base font-medium">
           {startElement && (
             <span className="absolute left-3 top-5 flex items-center">{startElement}</span>
           )}
@@ -106,7 +106,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
 
     // Varsayılan => Tek satırlı <input>
     return (
-      <div className="relative flex w-full">
+      <div className="relative flex w-full text-base font-light h-[3rem]">
         {startElement && (
           <span className="absolute left-3 top-9 flex items-center">{startElement}</span>
         )}

@@ -13,6 +13,8 @@ import { HowItWorksSection } from "@/components/landing-page/section-2";
 import { TextMessageSection } from "@/components/landing-page/text-message-section";
 import TechSection from "@/components/landing-page/section-4";
 import SubCtaSection from "@/components/landing-page/sub-cta-section";
+import SocialLinks from "@/components/landing-page/social-links";
+import TeamSection from "@/components/landing-page/team-section";
 
 // Images
 import Choz from "@/images/landing-header/logo-type.svg";
@@ -25,9 +27,8 @@ import Favicon from "public/favicon.ico";
 import { authenticate } from "@/hooks/auth";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
-import SocialLinks from "@/components/landing-page/social-links";
-import TeamSection from "@/components/landing-page/team-section";
 
+// Feature & Tech Arrays
 const featureArr = [
   {
     featureTitle: "Secure 🔒",
@@ -79,6 +80,7 @@ const techArr = [
   },
 ];
 
+// --- Structured Data (Güncellenmiş: "itemListElement" formatında) ---
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -92,12 +94,33 @@ const structuredData = {
     price: "0",
     priceCurrency: "USD",
   },
-  featureList: [
-    "Secure blockchain-based quizzes",
-    "Zero-knowledge proof verification",
-    "Reward distribution system",
-    "Private and decentralized",
-    "Web3 integration",
+  // Örnek: "itemListElement" ile bir listeyi Google'a tanıtabilirsiniz.
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Secure blockchain-based quizzes",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Zero-knowledge proof verification",
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "Reward distribution system",
+    },
+    {
+      "@type": "ListItem",
+      position: 4,
+      name: "Private and decentralized",
+    },
+    {
+      "@type": "ListItem",
+      position: 5,
+      name: "Web3 integration",
+    },
   ],
 };
 
@@ -115,7 +138,9 @@ export default function Home() {
     }
     toast.success("Welcome back!");
     dispatch(setSession(res.session));
-    window.location.href = "/app/dashboard/choose-role";
+
+    // Öneri: window.location.href yerine router.push kullanımı
+    router.push("/app/dashboard/choose-role");
   };
 
   const pageTitle = "Blockchain-Powered Quiz Platform for Rewards and Engagement | Choz";
@@ -188,18 +213,24 @@ export default function Home() {
             <HeroSection />
           </div>
         </div>
+
         {/* How It Works Section */}
         <HowItWorksSection />
+
         {/* Text Message Section */}
         <TextMessageSection />
+
         {/* Team Section */}
         <TeamSection />
+
         {/* Technologies Section */}
         <TechSection
           techArr={techArr.map((tech) => ({ ...tech, techExplanation: tech.techDesc }))}
         />
+
         {/* Sub CTA Section */}
         <SubCtaSection handleAuthentication={handleAuthentication} />
+
         {/* Supporters Section */}
         <section className={`${styles.supporters_container}`} aria-label="Supporters">
           <h2>proudly built on.</h2>
@@ -215,26 +246,34 @@ export default function Home() {
               src={Mina}
               alt="Mina Protocol - Blockchain Technology Partner"
               className="w-full h-full object-cover items-center"
-              priority={true}
+              // priority={true} -> Sadece above-the-fold görsel ise priority
             />
           </Link>
         </section>
 
         {/* Footer */}
-        <footer className={styles.footer_container} role="contentinfo">
-          <div className={styles.footer_logo_container}>
-            <Link href="/" aria-label="Return to Choz Homepage">
-              <Image src={Choz} alt="Choz - Next Generation Quiz Platform" priority={true} />
-            </Link>
-          </div>
-
-          {/* Social Links */}
-          <SocialLinks />
-          <p className={styles.copyright + " whitespace-nowrap"}>
-            © {new Date().getFullYear()} Choz - All rights reserved
-          </p>
-        </footer>
+        <LandingFooter />
       </main>
     </>
+  );
+}
+
+/** Basit Footer Bileşeni Örneği */
+function LandingFooter() {
+  return (
+    <footer className={styles.footer_container} role="contentinfo">
+      <div className={styles.footer_logo_container}>
+        <Link href="/" aria-label="Return to Choz Homepage">
+          <Image src={Choz} alt="Choz - Next Generation Quiz Platform" priority={false} />
+        </Link>
+      </div>
+
+      {/* Sosyal Medya Linkleri */}
+      <SocialLinks />
+
+      <p className={styles.copyright + " whitespace-nowrap"}>
+        © {new Date().getFullYear()} Choz - All rights reserved
+      </p>
+    </footer>
   );
 }

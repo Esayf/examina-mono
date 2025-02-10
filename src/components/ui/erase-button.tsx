@@ -10,6 +10,10 @@ interface EraseButtonProps {
   size?: "icon" | "icon-sm"; // Buton boyutu (varsayılan: icon)
   duration?: number; // Uzun tıklama süresi (milisaniye) (varsayılan: 1000ms)
   className?: string; // Ekstra CSS sınıfı (opsiyonel)
+  isDisabled?: boolean;
+  isLoading?: boolean;
+  onConfirm: () => void;
+  confirmMessage: string;
 }
 
 const EraseButton: React.FC<EraseButtonProps> = ({
@@ -18,6 +22,10 @@ const EraseButton: React.FC<EraseButtonProps> = ({
   size = "icon-sm",
   duration = 600, // Süreyi 600ms olarak sabitledik
   className = "",
+  isDisabled = false,
+  isLoading = false,
+  onConfirm = () => {},
+  confirmMessage = "Are you sure you want to delete this item?",
 }) => {
   const [progress, setProgress] = useState(0);
   const [pressing, setPressing] = useState(false);

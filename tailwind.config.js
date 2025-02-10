@@ -17,11 +17,22 @@ module.exports = {
           "80%": { transform: "scale(1.1)", opacity: "1" },
           "100%": { transform: "scale(1)" },
         },
+        fadeInUp: {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         fadeIn: "fadeIn 0.4s ease-in-out forwards",
         ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
         popIn: "popIn 0.3s ease-out",
+        fadeInUp: "fadeInUp 0.5s ease-in-out",
       },
     },
   },

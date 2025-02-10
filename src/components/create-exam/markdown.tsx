@@ -4,6 +4,7 @@ import {
   BlockTypeSelect,
   CodeToggle,
   CreateLink,
+  DirectiveDescriptor,
   InsertAdmonition,
   InsertCodeBlock,
   InsertTable,
@@ -52,6 +53,22 @@ interface MarkdownEditorProps {
     useWebWorker?: boolean;
     initialQuality?: number;
   };
+  spellCheck?: boolean;
+  spellCheckOptions?: {
+    language: string;
+  };
+  spellCheckLanguage?: string;
+  spellCheckIgnoreWords?: string[];
+  spellCheckIgnoreUrls?: string[];
+  directiveDescriptors?: DirectiveDescriptor[];
+  minLength?: number;
+  maxLength?: number;
+  onImageUpload?: (file: File) => Promise<string>;
+  parserOptions?: {
+    remarkPlugins?: any[];
+    rehypePlugins?: any[];
+  };
+  [key: string]: any;
 }
 
 export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
@@ -63,6 +80,14 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
       className,
       contentEditableClassName,
       placeholder = "contentEditable",
+      spellCheck = false,
+      spellCheckOptions,
+      directiveDescriptors,
+      minLength,
+      maxLength,
+      onImageUpload,
+      parserOptions,
+      ...props
     },
     ref
   ) => {
@@ -102,7 +127,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
     const handleImageUpload = async (image: File) => {
       try {
         const compressionOptions = {
-          maxSizeMB: 1,
+          maxSizeMB: 5,
           maxWidthOrHeight: 800,
           useWebWorker: true,
         };

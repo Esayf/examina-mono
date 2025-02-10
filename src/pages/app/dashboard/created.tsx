@@ -38,6 +38,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import EraseButton from "@/components/ui/erase-button";
 
 // Icons
 import {
@@ -233,8 +234,17 @@ interface RowProps {
 
 function Row({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPulse(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const { mutate: handleDelete, isPending: isDeleting } = useMutation({
     mutationFn: deleteDraftExam,
@@ -347,29 +357,22 @@ function Row({ exam }: RowProps) {
           >
             <div className="flex gap-1">
               {/* Sil (yalnızca draft) */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 hover:bg-red-50 text-red-600"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(exam._id);
-                }}
-                disabled={isDeleting || exam.status === "draft" ? false : true}
-                title={isDeleting ? "Deleting..." : "Delete"}
-              >
-                {isDeleting ? (
-                  <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <TrashIcon className="w-5 h-5" />
-                )}
-              </Button>
+              {exam.status === "draft" && (
+                <EraseButton
+                  index={0}
+                  onRemove={() => handleDelete(exam._id)}
+                  isLoading={isDeleting}
+                  onConfirm={() => handleDelete(exam._id)}
+                  confirmMessage="Are you sure you want to delete this item?"
+                  className="h-8 w-8"
+                />
+              )}
 
               {/* Paylaş (draft değilse) */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 hover:bg-brand-primary-50 text-brand-primary-700"
+                className="h-8 w-8 hover:bg-brand-primary-50 text-brand-primary-700 relative group"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsShareModalOpen(true);
@@ -377,7 +380,10 @@ function Row({ exam }: RowProps) {
                 disabled={exam.status === "draft"}
                 title="Share"
               >
-                <ShareIcon className="w-4 h-4" />
+                <ShareIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+                {showPulse && exam.status !== "draft" && (
+                  <span className="absolute inset-0 rounded-full animate-ping bg-brand-primary-100 opacity-75 group-hover:opacity-100" />
+                )}
               </Button>
             </div>
           </div>
@@ -560,46 +566,6 @@ export default function Application() {
     { label: "Status", field: "status" },
   ];
 
-  const TableHeader = () => (
-    <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 flex items-center gap-2">
-      {/* Sort By Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center hover:bg-brand-primary-50 px-3 py-2 rounded-md transition-colors group">
-          <span className="font-medium text-left min-w-[100px] text-base text-greyscale-light-800 group-hover:text-brand-primary-900">
-            Sort by: {sortableHeaders.find((f) => f.field === sortField)?.label}
-          </span>
-          <ChevronUpDownIcon className="w-4 h-4 ml-1 text-gray-400" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="min-w-[140px] py-1 z-50">
-          {sortableHeaders.map((sh) => (
-            <DropdownMenuItem
-              key={sh.field}
-              onClick={() => setSortField(sh.field)}
-              className="flex justify-between items-center rounded-md hover:bg-brand-secondary-50 px-4 py-2 text-base"
-            >
-              {sh.label}
-              {sortField === sh.field && <CheckIcon className="w-4 h-4 text-brand-primary-600" />}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Asc / Desc */}
-      <Button
-        variant="ghost"
-        onClick={(e) => {
-          e.stopPropagation();
-          setSortAsc(!sortAsc);
-        }}
-        className="hover:bg-brand-secondary-50 px-2 h-7 text-base gap-1"
-        title={sortAsc ? "Ascending" : "Descending"}
-      >
-        {sortAsc ? "Asc" : "Desc"}
-        {sortAsc ? <ArrowUpIcon className="w-4 h-4" /> : <ArrowDownIcon className="w-4 h-4" />}
-      </Button>
-    </div>
-  );
-
   const EmptyStateComponent = () => (
     <div className="flex flex-col items-center justify-center py-10 gap-4 mt-4">
       <Image
@@ -677,7 +643,7 @@ export default function Application() {
           placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-40 sm:w-64"
+          className="w-40 sm:w-64 transition-all duration-300 focus:w-72 focus:ring-2 focus:ring-brand-primary-200"
         />
       </div>
     </div>
@@ -687,48 +653,61 @@ export default function Application() {
     <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
       <DashboardHeader withoutTabs={false} withoutNav={true} />
       <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col rounded-b-3xl">
-        <div className="w-full flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
-          <Card className="bg-base-white rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
-            <CardHeader>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
-                <div className="space-y-1.5">
-                  <CardTitle className="text-2xl font-bold text-brand-primary-900">
-                    Created quizzes
-                  </CardTitle>
-                  <CardDescription className="text-greyscale-light-600">
-                    Manage and share all your created quizzes in one place
-                  </CardDescription>
-                </div>
-                <Button
-                  variant="default"
-                  icon
-                  iconPosition="left"
-                  className="w-full sm:w-auto justify-center sm:justify-start gap-2 py-4"
-                  onClick={() => router.push("/app/create-exam/")}
-                >
-                  <PlusIcon className="w-5 h-5" />
-                  <span>Create new</span>
-                </Button>
+        <Card className="bg-base-white rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
+          <CardHeader>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
+              <div className="space-y-1.5">
+                <CardTitle className="text-2xl font-bold text-brand-primary-900">
+                  Created quizzes
+                </CardTitle>
+                <CardDescription className="text-greyscale-light-600">
+                  Manage and share all your created quizzes in one place
+                </CardDescription>
               </div>
-            </CardHeader>
+              <Button
+                variant="default"
+                icon
+                iconPosition="left"
+                className="w-full sm:w-auto justify-center sm:justify-start gap-2 py-4"
+                onClick={() => router.push("/app/create-exam/")}
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span>Create new</span>
+              </Button>
+            </div>
+          </CardHeader>
 
-            <CardContent className="px-0 pt-0">
-              {renderFilterAndSearch()}
+          <CardContent className="px-0 pt-0">
+            {renderFilterAndSearch()}
 
-              {/* Sıralama */}
-              <TableHeader />
-
-              {/* Quiz Rows */}
-              <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
-                {finalExams.length === 0 ? (
-                  <EmptyStateComponent />
-                ) : (
-                  finalExams.map((exam) => <Row key={exam._id} exam={exam} />)
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            {/* Quiz Rows */}
+            <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
+              {isLoading ? (
+                // Loading skeleton
+                Array(6)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="animate-pulse bg-greyscale-light-100 rounded-2xl h-40"
+                    />
+                  ))
+              ) : finalExams.length === 0 ? (
+                <EmptyStateComponent />
+              ) : (
+                finalExams.map((exam, index) => (
+                  <div
+                    key={exam._id}
+                    className="motion-safe:animate-fadeIn"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <Row exam={exam} />
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

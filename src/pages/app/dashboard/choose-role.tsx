@@ -1,14 +1,43 @@
 // app/choose-role/page.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { RocketLaunchIcon } from "@heroicons/react/24/outline";
+
+// --- EKLENDI: Basit bir emoji listesi
+const EMOJI_OPTIONS = ["😎", "😜", "🤓", "👩‍💻", "🤩", "🤔"];
+
+// --- EKLENDI: EmojiSelector Bileşeni
+function EmojiSelector({ onSelect }: { onSelect: (emoji: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-3 justify-center items-center my-4">
+      {EMOJI_OPTIONS.map((emoji) => (
+        <button
+          key={emoji}
+          type="button"
+          onClick={() => onSelect(emoji)}
+          className="text-2xl hover:scale-110 transition-transform 
+            border border-greyscale-light-300 rounded-full 
+            px-3 py-2 bg-white 
+            hover:shadow-md hover:border-brand-primary-500 
+            active:scale-105"
+        >
+          {emoji}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function ChooseRole() {
   const router = useRouter();
+
+  // EKLENDI: Seçilen emojiyi local state ile tutalım
+  const [chosenEmoji, setChosenEmoji] = useState<string>("😎");
 
   const handleCreateQuiz = () => {
     router.push("/app/create-exam");
@@ -22,6 +51,11 @@ export default function ChooseRole() {
     router.push("/app/dashboard/created");
   };
 
+  // EKLENDI: Emoji seçimini buradan yönetiyoruz
+  const handleEmojiSelect = (emoji: string) => {
+    setChosenEmoji(emoji);
+  };
+
   return (
     <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
       <Image
@@ -30,7 +64,7 @@ export default function ChooseRole() {
         className="absolute inset-0 w-full h-full object-cover z-[-1]"
       />
       <main className="flex flex-col items-center justify-center min-h-screen bg-transparent p-8">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-4xl w-full bg-base-white rounded-3xl px-16 py-24 border border-greyscale-light-200">
           <h1 className="text-5xl font-bold text-center mb-4">
             Choose your{" "}
             <span className="text-brand-primary-800 bg-clip-text font-extrabold bg-gradient-to-r from-brand-primary-700 to-brand-primary-800">
@@ -38,16 +72,35 @@ export default function ChooseRole() {
             </span>{" "}
             😉
           </h1>
-          <p className="text-gray-600 text-center mb-12 text-lg">
+          <h5 className="text-center mb-6">
             What will you do with Choz? We will guide you accordingly.
-          </p>
+          </h5>
 
-          <div className="flex flex-col md:flex-row gap-8 justify-center">
+          {/* EKLENDI: Emoji Seçici */}
+          <div className="mt-6 mb-2">
+            <p className="text-center font-semibold text-lg mb-3">
+              #Choz an emoji to represent you:
+            </p>
+            <EmojiSelector onSelect={handleEmojiSelect} />
+            <p className="text-center mt-3 text-brand-primary-800 text-xl font-semibold">
+              Selected Emoji: <span className="text-3xl">{chosenEmoji}</span>
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-8 justify-center mt-10">
             <div
               onClick={handleCreateQuiz}
-              className="w-[320px] h-[280px] bg-white rounded-3xl p-8 cursor-pointer group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-center items-center text-center border border-greyscale-light-200 hover:border-brand-tertiary-500"
+              className="w-[320px] h-[280px] bg-brand-secondary-50 rounded-3xl p-8 cursor-pointer group 
+              hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] 
+              active:shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] 
+              transition-all duration-300 hover:-translate-y-2 
+              flex flex-col justify-center items-center text-center 
+              border-2 border-greyscale-light-400 
+              hover:border-brand-tertiary-500
+              hover:bg-brand-tertiary-50
+              active:translate-y-0"
             >
-              <div className="mb-6 p-4 bg-brand-tertiary-200 rounded-full transition-colors">
+              <div className="mb-6 p-4 bg-brand-tertiary-200 rounded-full transition-all duration-300 group-hover:scale-110">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-8 w-8 text-brand-tertiary-500"
@@ -64,7 +117,7 @@ export default function ChooseRole() {
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold mb-3 text-gray-800">
-                I want to create a quiz! 😜
+                I&apos;m quiz creator! {chosenEmoji}
               </h2>
               <p className="text-gray-500 leading-relaxed">
                 Design your perfect quiz with our intuitive creation tools.
@@ -73,12 +126,20 @@ export default function ChooseRole() {
 
             <div
               onClick={handleJoinExam}
-              className="w-[320px] h-[280px] bg-white rounded-3xl p-8 cursor-pointer group pointer-events-none hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-center items-center text-center border border-purple-100"
+              className="w-[320px] h-[280px] bg-brand-secondary-50 rounded-3xl p-8 cursor-pointer group 
+              hover:shadow-[0_20px_40px_-15px_rgba(147,51,234,0.1)] 
+              active:shadow-[0_10px_20px_-10px_rgba(147,51,234,0.1)] 
+              transition-all duration-300 hover:-translate-y-2 
+              flex flex-col justify-center items-center text-center 
+              border-2 border-greyscale-light-400 
+              hover:border-brand-primary-500
+              hover:bg-brand-primary-50
+              active:translate-y-0"
             >
-              <div className="mb-6 p-4 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
+              <div className="mb-6 p-4 bg-brand-primary-200 rounded-full transition-all duration-300 group-hover:scale-110">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-purple-600"
+                  className="h-8 w-8 text-brand-primary-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -91,18 +152,31 @@ export default function ChooseRole() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-semibold mb-3 text-gray-800">I want to join quiz! 😎</h2>
+              <h2 className="text-2xl font-semibold mb-3 text-gray-800">
+                I am joiner! {chosenEmoji}
+              </h2>
               <p className="text-gray-500 leading-relaxed">
                 Start your exam journey in just a minute, completely free!
               </p>
             </div>
           </div>
 
+          <div className="flex justify-center items-center gap-4 m-5 font-bold">
+            <p>OR</p>
+          </div>
+
           <div className="mt-8 flex justify-center">
             <Button
               variant="outline"
               onClick={handleGoToDashboard}
-              className="gap-2 bg-brand-secondary-100 hover:bg-brand-secondary-200 hover:text-brand-primary-950 group transition-transform duration-300 hover:scale-110"
+              className="gap-2 bg-brand-secondary-100 
+              hover:bg-brand-secondary-200 
+              hover:text-brand-primary-950 
+              group transition-all duration-300 
+              hover:scale-105 active:scale-100
+              hover:shadow-lg active:shadow-md
+              px-6 py-3 text-lg font-medium
+              rounded-2xl"
             >
               Jump to dashboard
               <RocketLaunchIcon className="size-6 transition-transform duration-300 group-hover:-translate-y-1" />

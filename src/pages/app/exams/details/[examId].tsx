@@ -338,8 +338,8 @@ const ExamDetails = () => {
     <div className="relative min-h-screen w-full overflow-hidden bg-brand-secondary-100">
       <DashboardHeader withoutNav={false} withoutTabs={true} />
       {/* Content Container */}
-      <div className="relative flex justify-center p-4 md:p-8 overflow-y-auto">
-        <div className="w-full max-w-[90rem]: bg-brand-secondary-50 bg-opacity-95 rounded-3xl p-8 flex flex-col gap-6 shadow-2xl backdrop-blur-sm">
+      <div className="relative flex justify-center p-4 md:p-4 overflow-y-auto">
+        <div className="w-full max-w-[90rem]: bg-base-white bg-opacity-95 rounded-3xl p-8 flex flex-col gap-6 shadow-2xl backdrop-blur-sm">
           {/* Title Section - Updated */}
           <div className="flex flex-col gap-2 justify-between lg:col-span-3">
             <div className="flex flex-row justify-between items-center pb-3 border-b border-gray-200">
@@ -365,7 +365,7 @@ const ExamDetails = () => {
             </div>
           </div>
           {/* Grid Container */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
             {/* Creator Section - Updated */}
             <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
               <h3 className="text-lg font-semibold mb-2 text-brand-primary-900">Created by</h3>
