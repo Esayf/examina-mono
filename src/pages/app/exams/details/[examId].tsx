@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { getExamStatistics, ExamStatistics, Leaderboard, Participant } from "@/lib/Client/Exam";
+import { getExamStatistics, ExamStatistics, Participant } from "@/lib/Client/Exam";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
@@ -8,17 +8,20 @@ import remarkGfm from "remark-gfm";
 import AttendanceCharts from "@/components/details/attendanceCharts";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-import { BackgroundPattern } from "@/components/landing-page/background-pattern";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { ArrowDownTrayIcon, ShareIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  ArrowDownTrayIcon,
+  ShareIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/24/outline";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/usetoast";
 import { cn } from "@/lib/utils";
 import DashboardHeader from "@/components/ui/dashboard-header";
 import DurationFormatter from "@/components/ui/time/duration-formatter";
+
 function walletRender(walletAddress: string): string {
   return `${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}`;
 }
@@ -40,8 +43,7 @@ const ExamDetails = () => {
   const leaderboardRef = React.useRef<HTMLDivElement>(null);
 
   const examId = router.query.examId as string;
-
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["examStatistics", examId],
     queryFn: () => getExamStatistics(examId),
     enabled: !!examId,
@@ -51,22 +53,21 @@ const ExamDetails = () => {
     return isLoading ? <div>Loading...</div> : <div>Error</div>;
   }
 
+  // Exam time
   const startDate = new Date(data.startDate);
   const endDate = new Date(data.startDate);
   endDate.setMinutes(endDate.getMinutes() + data.duration);
 
-  const backgroundImageUrl = data.backgroundImage
-    ? `/api/proxy?hash=${data.backgroundImage}`
-    : "/_next/static/media/bg-8-20.32d1d22b.svg";
+  // Basic exam info
   const creatorWalletAddress = data.creator;
   const creatorWalletDisplay = `${creatorWalletAddress.slice(0, 5)}...${creatorWalletAddress.slice(
     -5
   )}`;
   const creatorWalletAddressUrl = `https://minascan.io/mainnet/account/${creatorWalletAddress}`;
-
   const totalQuestions = data.questionCount;
   const passingScore = data.passingScore;
 
+  // Status
   const now = new Date();
   let status = "Draft";
   if (data.isCompleted) {
@@ -77,15 +78,16 @@ const ExamDetails = () => {
     status = "Active";
   }
 
+  // Leaderboard & participants
   const leaderboard = data.leaderboard && data.leaderboard.length > 0 ? data.leaderboard : [];
   const participants = data.participants ?? [];
 
   const { showToast } = useToast();
 
+  // Download / Share handlers
   const handleDownloadPNG = async () => {
     try {
       if (!leaderboardRef.current) return;
-
       const canvas = await html2canvas(leaderboardRef.current);
       const imgData = canvas.toDataURL("image/png");
       const link = document.createElement("a");
@@ -143,14 +145,6 @@ const ExamDetails = () => {
     XLSX.writeFile(wb, `${data.title}-leaderboard.xlsx`);
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    showToast({
-      title: "Link copied to clipboard",
-      description: "You can now paste it anywhere you want",
-    });
-  };
-
   const handleDownloadCSV = () => {
     const csvContent = [
       "Rank,User,Score,Completion Time",
@@ -167,331 +161,172 @@ const ExamDetails = () => {
     link.click();
   };
 
-  const handleDownloadSVG = async () => {
-    try {
-      if (!leaderboardRef.current || !data) return;
-
-      const tableToSVG = () => {
-        const headers = ["Rank", "User", "Score", "Completion Time"];
-        const rows = leaderboard.map((item, index) => {
-          const finishTime = new Date(item.finishTime);
-          return [
-            index + 1,
-            walletRender(item.walletAddress),
-            item.score,
-            `${formatTime(finishTime)} (${(
-              (new Date(item.finishTime).getTime() - new Date(item.startTime).getTime()) /
-              1000 /
-              60
-            ).toFixed(1)} mins)`,
-          ];
-        });
-
-        // Güncellenmiş Renk Paleti
-        const styles = `
-          <style>
-            .svg-table { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            }
-            .svg-header {
-              fill: #ffffff;
-              font-size: 20px;
-              font-weight: 600;
-              font-family: "var(--font-display), sans-serif;
-            }
-            .svg-header-bg {
-              fill: #FFDBC4; /* brand-secondary-200 */
-            }
-            .svg-row:nth-child(odd) { 
-              fill: #FFDBC4; 
-            }
-            .svg-row:nth-child(even) { 
-              fill: #ffffff;
-            }
-            .svg-cell { 
-              fill: #1e293b; 
-              font-size: 16px;
-            }
-            .svg-score {
-              font-weight: 700;
-            }
-            .svg-rank {
-              fill: #6366F1; /* brand-primary-500 */
-            }
-            .svg-divider {
-              stroke: #EDE9FE; /* brand-secondary-100 */
-            }
-            .svg-shadow {
-              filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.05));
-            }
-          </style>
-        `;
-
-        // Tablo boyutları
-        const columnWidths = [80, 200, 100, 200];
-        const rowHeight = 40;
-        const headerHeight = 50;
-        const tableWidth = columnWidths.reduce((a, b) => a + b, 0);
-        const tableHeight = headerHeight + rows.length * rowHeight;
-
-        // SVG içeriğini oluştur
-        let svgContent = `
-          <svg xmlns="http://www.w3.org/2000/svg" 
-               width="${tableWidth}" 
-               height="${tableHeight}" 
-               viewBox="0 0 ${tableWidth} ${tableHeight}">
-            ${styles}
-            <rect width="100%" height="100%" fill="#ffffff" rx="8" ry="8" class="svg-shadow"/>
-            
-            <!-- Başlık Arka Planı -->
-            <rect width="100%" height="${headerHeight}" fill="#E0E7FF" rx="8" ry="8"/>
-            
-            <!-- Başlıklar -->
-            <g class="svg-header">
-              ${headers
-                .map(
-                  (header, i) => `
-                <text x="${columnWidths.slice(0, i).reduce((a, b) => a + b, 0) + 15}" 
-                      y="${headerHeight / 2 + 5}" 
-                      fill="#374151">
-                  ${header}
-                </text>
-              `
-                )
-                .join("")}
-            </g>
-
-            <!-- Satırlar -->
-            ${rows
-              .map(
-                (row, rowIndex) => `
-              <g transform="translate(0, ${headerHeight + rowIndex * rowHeight})">
-                <!-- Satır Arka Planı -->
-                <rect width="${tableWidth}" 
-                      height="${rowHeight}" 
-                      fill="${rowIndex % 2 === 0 ? "#F5F3FF" : "#FFFFFF"}"
-                      rx="${rowIndex === rows.length - 1 ? "8" : "0"}" 
-                      ry="${rowIndex === rows.length - 1 ? "8" : "0"}"/>
-                
-                ${row
-                  .map(
-                    (cell, cellIndex) => `
-                  <!-- Hücre İçeriği -->
-                  <text x="${columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) + 15}" 
-                        y="${rowHeight / 2 + 5}" 
-                        class="${cellIndex === 0 ? "svg-rank" : ""} ${
-                      cellIndex === 2 ? "svg-score" : "svg-cell"
-                    }"
-                        fill="${
-                          cellIndex === 2 ? getScoreColorClass(Number(cell), data.passingScore) : ""
-                        }">
-                    ${cellIndex === 0 ? `#${cell}` : cell}
-                  </text>
-                  
-                  <!-- Sütun Ayırıcılar -->
-                  ${
-                    cellIndex < 3
-                      ? `
-                    <line x1="${columnWidths.slice(0, cellIndex + 1).reduce((a, b) => a + b, 0)}" 
-                          y1="0" 
-                          x2="${columnWidths.slice(0, cellIndex + 1).reduce((a, b) => a + b, 0)}" 
-                          y2="${rowHeight}" 
-                          class="svg-divider"/>
-                  `
-                      : ""
-                  }
-                `
-                  )
-                  .join("")}
-              </g>
-            `
-              )
-              .join("")}
-          </svg>
-        `;
-
-        return svgContent;
-      };
-
-      const svgContent = tableToSVG();
-      const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${data.title}-leaderboard.svg`;
-      link.click();
-
-      showToast({
-        title: "SVG successfully downloaded.",
-        description: "Leaderboard successfully saved as SVG",
-      });
-    } catch (error) {
-      showToast({
-        title: "SVG download error",
-        description: "Leaderboard could not be converted to SVG",
-        variant: "destructive",
-      });
-      console.error("SVG Conversion Error:", error);
-    }
-  };
+  // For demonstration, we keep the handleDownloadSVG out (from your code),
+  // unless you specifically want it. You can re-add if needed.
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-brand-secondary-100">
+    <div className="relative min-h-screen w-full bg-brand-secondary-100">
       <DashboardHeader withoutNav={false} withoutTabs={true} />
       {/* Content Container */}
-      <div className="relative flex justify-center p-4 md:p-4 overflow-y-auto">
-        <div className="w-full max-w-[90rem]: bg-base-white bg-opacity-95 rounded-3xl p-8 flex flex-col gap-6 shadow-2xl backdrop-blur-sm">
-          {/* Title Section - Updated */}
-          <div className="flex flex-col gap-2 justify-between lg:col-span-3">
-            <div className="flex flex-row justify-between items-center pb-3 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => router.back()}
-                  className="border-2 border-x-brand-primary-950 text-gray-600 cubic-bezier-4 transition-all duration-300 hover:text-brand-primary-900"
-                >
-                  <ArrowLeftIcon className="h-5 w-5" />
-                </Button>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 items-center">
-                <h2 className="text-4xl font-bold text-gray-800">{data.title}</h2>
-                <Badge
-                  variant={status.toLowerCase() as any}
-                  className="text-sm px-4 py-1.5 rounded-full"
-                >
-                  {status}
-                </Badge>
-              </div>
+      <div className="flex justify-center p-4 md:p-6">
+        {/* Main Content */}
+        <div className="w-full max-w-7xl bg-white bg-opacity-95 rounded-2xl p-6 md:p-8 shadow-md space-y-6">
+          {/* Title Section */}
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between pb-3 border-b border-gray-200">
+            {/* Back Button */}
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => router.back()}
+                className="border-2 border-x-brand-primary-950 text-gray-600 hover:text-brand-primary-900"
+              >
+                <ArrowLeftIcon className="h-5 w-5" />
+              </Button>
+            </div>
+            {/* Title & Status */}
+            <div className="flex flex-col gap-1 text-center md:text-right md:gap-2">
+              <h2 className="text-3xl font-bold text-gray-800">{data.title}</h2>
+              <Badge
+                variant={status.toLowerCase() as any}
+                className="text-sm px-3 py-1 rounded-full self-end"
+              >
+                {status}
+              </Badge>
             </div>
           </div>
-          {/* Grid Container */}
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
-            {/* Creator Section - Updated */}
-            <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
-              <h3 className="text-lg font-semibold mb-2 text-brand-primary-900">Created by</h3>
+
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Exam Creator */}
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-200 lg:col-span-1">
+              <h3 className="text-lg font-semibold mb-3 text-brand-primary-900">Created by</h3>
               <a
                 href={creatorWalletAddressUrl}
-                className="text-brand-primary-700 hover:text-brand-primary-800 transition-colors break-words"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="text-brand-primary-700 hover:text-brand-primary-800 break-words"
               >
-                <div className="font-display text-lg font-medium mb-3">{creatorWalletDisplay}</div>
-                <span className="text-sm text-brand-primary-900 hover:text-brand-primary-500 mt-1 transition-colors">
-                  View on explorer →
+                <div className="font-semibold text-base mb-1">{creatorWalletDisplay}</div>
+                <span className="text-xs text-brand-primary-900 hover:text-brand-primary-500">
+                  View on explorer &rarr;
                 </span>
               </a>
             </div>
 
-            {/* Exam Details Section - Updated */}
-            <div className="bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200 lg:col-span-2">
+            {/* Exam Details */}
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-200 lg:col-span-3">
               <h3 className="text-lg font-semibold mb-4 text-brand-primary-900">Exam Details</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="p-4 bg-brand-secondary-50 border border-brand-secondary-300 rounded-xl text-center">
                   <div className="text-sm font-medium text-brand-primary-800">Duration</div>
-                  <div className="font-medium">
+                  <div className="font-semibold text-gray-700">
                     <DurationFormatter duration={data.duration} base="minutes" />
                   </div>
                 </div>
-                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                <div className="p-4 bg-brand-secondary-50 border border-brand-secondary-300 rounded-xl text-center">
                   <div className="text-sm font-medium text-brand-primary-800">Questions</div>
-                  <div className="font-medium">{totalQuestions}</div>
+                  <div className="font-semibold text-gray-700">{totalQuestions}</div>
                 </div>
-                <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
+                <div className="p-4 bg-brand-secondary-50 border border-brand-secondary-300 rounded-xl text-center">
                   <div className="text-sm font-medium text-brand-primary-800">Passing Score</div>
-                  <div className="font-medium text-brand-primary-900">{passingScore}</div>
+                  <div className="font-semibold text-gray-700">{passingScore}</div>
                 </div>
               </div>
             </div>
 
-            {/* Description Section - Updated */}
-            <div className="md:col-span-2 lg:col-span-3 bg-base-white rounded-3xl p-6 shadow-sm border border-greyscale-light-200">
+            {/* Description */}
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-200 lg:col-span-1">
               <h3 className="text-lg font-semibold mb-4 text-brand-primary-900">Description</h3>
               <ReactMarkdown
-                className="prose max-w-full text-base leading-relaxed text-brand-primary-950 overflow-auto break-normal whitespace-normal"
+                className="prose text-base leading-relaxed text-gray-700"
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
               >
-                {data.description || "No description available"}
+                {data.description || "No description available."}
               </ReactMarkdown>
             </div>
 
-            {/* Charts & Participants Section - Updated */}
-            <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">Attendance Analytics</h3>
-              {participants && (
-                <AttendanceCharts
-                  participants={participants}
-                  startDate={startDate}
-                  endDate={endDate}
-                />
+            {/* Exam Analytics */}
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-200 lg:col-span-3">
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Exam Analytics</h3>
+
+              {participants.length === 0 ? (
+                <div className="text-center text-gray-500 py-8">No participants data yet</div>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-8 justify-center">
+                  {/* “Completion” Donut + “Attendance” Line Chart */}
+                  <AttendanceCharts
+                    participants={participants}
+                    startDate={startDate}
+                    endDate={endDate}
+                  />
+                </div>
               )}
             </div>
 
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+            {/* Participants */}
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-200 lg:col-span-2">
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Participants</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      {["User", "Score", "Start", "End"].map((header) => (
-                        <th
-                          key={header}
-                          className="pb-3 px-2 text-sm font-semibold text-gray-600 text-left"
-                        >
-                          {header}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {participants?.map((item) => (
-                      <tr
-                        key={item.walletAddress}
-                        className="hover:bg-gray-50 transition-colors even:bg-gray-50"
-                      >
-                        <td className="py-3 px-2 text-sm truncate max-w-[150px]">
-                          <a
-                            href={`https://minascan.io/mainnet/account/${item.walletAddress}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-brand-primary-600 hover:underline"
+              {participants.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">No participants yet</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-200 bg-gray-50">
+                        {["User", "Score", "Start", "End"].map((header) => (
+                          <th
+                            key={header}
+                            className="py-2 px-2 font-semibold text-gray-600 text-left"
                           >
-                            {walletRender(item.walletAddress)}
-                          </a>
-                        </td>
-                        <td className="py-3 px-2">
-                          {item.score !== undefined ? (
-                            item.score
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-2">
-                          {new Date(item.startTime).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </td>
-                        <td className="py-3 px-2">
-                          {item.finishTime ? (
-                            new Date(item.finishTime).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </td>
+                            {header}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {participants.map((p) => (
+                        <tr
+                          key={p.walletAddress}
+                          className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                          <td className="py-2 px-2">
+                            <a
+                              href={`https://minascan.io/mainnet/account/${p.walletAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-brand-primary-600 hover:underline"
+                            >
+                              {walletRender(p.walletAddress)}
+                            </a>
+                          </td>
+                          <td className="py-2 px-2">
+                            {p.score !== undefined ? (
+                              p.score
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </td>
+                          <td className="py-2 px-2">{formatTime(new Date(p.startTime))}</td>
+                          <td className="py-2 px-2">
+                            {p.finishTime ? (
+                              formatTime(new Date(p.finishTime))
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
-            {/* Leaderboard Section - Updated */}
-            <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-              <div className="flex justify-between items-center mb-6">
+            {/* Leaderboard */}
+            <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-200 lg:col-span-2">
+              <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-800">Leaderboard</h3>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={handleDownloadPNG} className="gap-2">
@@ -504,24 +339,25 @@ const ExamDetails = () => {
                   </Button>
                   <Button variant="outline" onClick={handleShare} className="gap-2">
                     <ShareIcon className="h-4 w-4" />
-                    Share with friends
+                    Share
                   </Button>
                 </div>
               </div>
+
               <div ref={leaderboardRef}>
                 {leaderboard.length === 0 ? (
-                  <div className="text-center font-regular py-8 text-greyscale-light-400">
+                  <div className="text-center py-8 text-gray-400">
                     Leaderboard has not been created yet
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-gray-200">
+                        <tr className="border-b border-gray-200 bg-gray-50">
                           {["Rank", "User", "Score", "Completion Time"].map((header) => (
                             <th
                               key={header}
-                              className="pb-3 px-2 text-sm font-semibold text-gray-600 text-left"
+                              className="py-2 px-2 font-semibold text-gray-600 text-left"
                             >
                               {header}
                             </th>
@@ -532,18 +368,20 @@ const ExamDetails = () => {
                         {leaderboard.map((item, index) => {
                           const startTime = new Date(item.startTime);
                           const finishTime = new Date(item.finishTime);
-                          const timeTaken = (finishTime.getTime() - startTime.getTime()) / 1000;
+                          const timeTaken =
+                            (finishTime.getTime() - startTime.getTime()) / 1000 / 60; // in minutes
+
                           return (
                             <tr
                               key={item.userId}
-                              className="hover:bg-gray-50 transition-colors even:bg-gray-50"
+                              className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
                             >
-                              <td className="py-3 px-2">
-                                <div className="w-8 h-8 rounded-md bg-brand-primary-100/80 flex items-center justify-center">
+                              <td className="py-2 px-2">
+                                <div className="w-8 h-8 flex items-center justify-center bg-brand-primary-100/50 rounded-md">
                                   {index + 1}
                                 </div>
                               </td>
-                              <td className="py-3 px-2 font-medium">
+                              <td className="py-2 px-2 font-medium">
                                 <a
                                   href={`https://minascan.io/mainnet/account/${item.walletAddress}`}
                                   target="_blank"
@@ -554,16 +392,18 @@ const ExamDetails = () => {
                                 </a>
                               </td>
                               <td
-                                className={`py-3 px-2 font-semibold ${getScoreColorClass(
+                                className={`py-2 px-2 font-semibold ${getScoreColorClass(
                                   item.score,
                                   passingScore
                                 )}`}
                               >
                                 {item.score}
                               </td>
-                              <td className="py-3 px-2 text-sm text-gray-500">
+                              <td className="py-2 px-2 text-gray-500">
                                 {formatTime(finishTime)}
-                                <span className="block text-xs mt-1">{timeTaken} mins</span>
+                                <span className="block text-xs mt-1">
+                                  {timeTaken.toFixed(1)} mins
+                                </span>
                               </td>
                             </tr>
                           );
