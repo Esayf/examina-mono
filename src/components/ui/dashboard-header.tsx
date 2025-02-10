@@ -82,11 +82,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Button
               variant="link"
               size="default"
-              disabled
-              className={cn(
-                "rounded-full hidden md:block",
-                "text-brand-primary-950 font-book"
-              )}
+              className={cn("rounded-full hidden md:block", "text-brand-primary-950 font-book")}
               onClick={() => router.push("/app/dashboard/joined")}
             >
               Joined
@@ -95,10 +91,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Button
               variant="link"
               size="default"
-              className={cn(
-                "rounded-full hidden md:block",
-                "text-brand-primary-950 font-book"
-              )}
+              className={cn("rounded-full hidden md:block", "text-brand-primary-950 font-book")}
               onClick={() => router.push("/app/dashboard/created")}
             >
               Created

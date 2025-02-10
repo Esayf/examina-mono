@@ -1256,7 +1256,6 @@ body {
   text-align: center;
   font-weight: 700; /* font-bold */
   margin-bottom: 1.5rem; /* mb-6 */
-
   /* Create a text gradient using background + clip */
   background: linear-gradient(to right, var(--brand-primary-950), var(--brand-primary-900));
   -webkit-background-clip: text;

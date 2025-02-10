@@ -51,7 +51,7 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
     <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
       <div
-        className="bg-brand-primary-950 h-2.5 transition-all duration-500"
+        className="h-2.5 transition-all duration-500 bg-gradient-to-r from-brand-secondary-300 to-brand-primary-800"
         style={{ width: `${progress}%` }}
       />
     </div>
@@ -152,15 +152,17 @@ function LiveQuiz() {
   };
 
   return (
-    <div className="flex justify-center items-center max-h-full relative">
+    <div className="flex justify-center items-center max-h-full">
       {/* Arka plan */}
       <Image
         src={BackgroundPattern}
         alt="Background pattern"
-        className="absolute flex justify-center items-center min-h-screen object-cover opacity-20"
+        layout="fill"
+        objectFit="cover"
+        className="absolute top-0 left-0"
       />
 
-      <div className="w-full max-w-[90rem] px-4 py-4 sm:px-6 lg:px-4 flex flex-col gap-6 relative">
+      <div className="w-full max-w-[90rem] min-h-full px-4 py-4 sm:px-6 lg:px-4 flex flex-col gap-6 relative">
         <Card className="mt-1 mb-1 rounded-2xl md:rounded-3xl flex flex-col overflow-hidden h-full">
           <CardHeader>
             <CardHeaderContent className="flex flex-col md:flex-row gap-4 md:gap-0 justify-between items-start">
@@ -211,12 +213,12 @@ function LiveQuiz() {
             </CardHeaderContent>
           </CardHeader>
 
-          <CardContent className="p-3 md:p-6 flex flex-col gap-4 bg-base-white overflow-auto h-full">
+          <CardContent className="p-3 md:p-6 flex flex-col gap-10 bg-base-white overflow-auto h-full">
             {/* Navigation buttons (Sadece MD ve üzeri) */}
             <div className="hidden md:flex gap-4 justify-between w-full">
               <Button
                 pill
-                variant="default"
+                variant="tertiary"
                 size="icon"
                 onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
                 disabled={isPending || currentQuestionIndex === 0}
@@ -225,6 +227,7 @@ function LiveQuiz() {
               </Button>
 
               <ExamNavigation
+                className="text-2xl transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95"
                 setCurrentQuestionIndex={setCurrentQuestionIndex}
                 isPending={isPending}
                 currentQuestionIndex={currentQuestionIndex}
@@ -234,8 +237,9 @@ function LiveQuiz() {
 
               <Button
                 pill
-                variant="default"
+                variant="tertiary"
                 size="icon"
+                className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95"
                 onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
                 disabled={isPending || currentQuestionIndex === questions.length - 1}
               >
@@ -243,15 +247,13 @@ function LiveQuiz() {
               </Button>
             </div>
 
-            <div className="flex-1 flex gap-4 flex-col overflow-wrap break-words min-h-[calc(100dvh-600px)]">
-              {/* Soru Metni */}
-              <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-2 md:p-4 flex-1 overflow-y-auto">
-                <div className="mdxeditor prose min-w-full min-h-[calc(100dvh-600px)]">
-                  <Label className="text-xl font-bold text-greyscale-light-900">
-                    Question {currentQuestionIndex + 1}
-                  </Label>
-                  <ReactMarkdown
-                    className="mdxeditor prose min-w-full
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 flex gap-2 flex-col overflow-wrap break-words h-[calc(100dvh-30rem)] md:h-[calc(100dvh-19rem)]">
+                {/* Soru Metni */}
+                <div className="border border-greyscale-light-200 bg-base-white rounded-3xl p-8 md:p-16 flex-1 overflow-y-auto items-center justify-center">
+                  <div className="mdxeditor prose min-w-full min-h-[calc(100dvh-600px)]">
+                    <ReactMarkdown
+                      className="mdxeditor prose min-w-full
                     [&_h1]:text-4xl [&_h1]:text-center [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:bg-brand-primary-900 [&_h1]:from-brand-primary-950 [&_h1]:to-brand-primary-900 [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:drop-shadow-md
                     [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mb-4 [&_h2]:text-brand-primary-600 [&_h2]:pl-4
                     [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:mb-3 [&_h3]:text-brand-primary-800
@@ -269,100 +271,91 @@ function LiveQuiz() {
                     [&_blockquote]:border-l-4 [&_blockquote]:border-brand-primary-300 [&_blockquote]:bg-brand-secondary-50 [&_blockquote]:p-2 [&_blockquote]:w-full [&_blockquote]:text-brand-primary-950 [&_blockquote]:m-2 [&_blockquote]:italic [&_blockquote]:bg-white [&_blockquote]:rounded-xl [&_blockquote]:shadow-sm [&_blockquote]:justify-center [&_blockquote]:items-center [&_blockquote]:text-center
                     [&_img]:rounded-2xl [&_img]:max-w-full [&_img]:my-6 [&_img]:mx-auto [&_img]:block [&_img]:shadow-lg [&_img]:border-4 [&_img]:border-white
                     [&_hr]:my-8 [&_hr]:border-t-4 [&_hr]:border-dashed [&_hr]:border-brand-primary/30"
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                  >
-                    {currentQuestion?.text || ""}
-                  </ReactMarkdown>
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                    >
+                      {currentQuestion?.text || ""}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
 
-              {/* Seçenekler */}
               <div className="flex-1">
-                <RadioGroup.Root
-                  className="RadioGroupRoot overflow-wrap whitespace-pre-wrap break-words"
-                  aria-label="Answer options"
-                >
-                  {currentQuestion?.options?.map((option, index) => (
-                    <Question
-                      key={index}
-                      index={index}
-                      option={option}
-                      choices={choices}
-                      currentQuestion={currentQuestion}
-                      setChoices={setChoices}
-                    />
-                  ))}
-                </RadioGroup.Root>
+                {/* Seçenekler */}
+                <div className="flex-1 min-h-[calc(100dvh-480px)]">
+                  <div className="flex items-center justify-between mb-4">
+                    <Label className="text-lg font-medium">Your answer</Label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newChoices = [...choices];
+                        newChoices[currentQuestionIndex] = 0;
+                        setChoices(newChoices);
+                      }}
+                      className="text-sm text-brand-primary-950 hover:text-brand-primary-600"
+                    >
+                      Clear answer
+                    </Button>
+                  </div>
+                  <RadioGroup.Root
+                    className="RadioGroupRoot overflow-wrap whitespace-pre-wrap break-words"
+                    aria-label="Answer options"
+                  >
+                    {currentQuestion?.options?.map((option, index) => (
+                      <Question
+                        key={index}
+                        index={index}
+                        option={option}
+                        choices={choices}
+                        currentQuestion={currentQuestion}
+                        setChoices={setChoices}
+                      />
+                    ))}
+                  </RadioGroup.Root>
+                </div>
               </div>
-            </div>
-
-            {/* Alttaki navigation (Next/Prev/ExamNavigation) da sadece MD ve üzeri */}
-            <div className="hidden md:flex gap-4 justify-between w-full">
-              <Button
-                pill
-                variant="default"
-                size="icon"
-                onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
-                disabled={isPending || currentQuestionIndex === 0}
-              >
-                <ArrowLeftIcon className="size-6" />
-              </Button>
-
-              <ExamNavigation
-                setCurrentQuestionIndex={setCurrentQuestionIndex}
-                isPending={isPending}
-                currentQuestionIndex={currentQuestionIndex}
-                questions={questions}
-                currentQuestion={currentQuestion}
-              />
-
-              <Button
-                pill
-                variant="default"
-                size="icon"
-                onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                disabled={isPending || currentQuestionIndex === questions.length - 1}
-              >
-                <ArrowRightIcon className="size-6" />
-              </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* --- ALTTAKİ STICKY BAR (sadece mobilde görünsün) --- */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-2 flex items-center justify-between">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-2 flex items-center justify-between gap-2 min-w-screen whitespace-nowrap px-4">
           <Button
             pill
-            variant="default"
+            variant="tertiary"
             size="icon"
             onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
             disabled={isPending || currentQuestionIndex === 0}
+            className="flex-shrink-0"
           >
             <ArrowLeftIcon className="size-6" />
           </Button>
 
-          <ExamNavigation
-            setCurrentQuestionIndex={setCurrentQuestionIndex}
-            isPending={isPending}
-            currentQuestionIndex={currentQuestionIndex}
-            questions={questions}
-            currentQuestion={currentQuestion}
-          />
+          <div className="flex flex-grow overflow-x-auto whitespace-nowrap">
+            <ExamNavigation
+              setCurrentQuestionIndex={setCurrentQuestionIndex}
+              isPending={isPending}
+              currentQuestionIndex={currentQuestionIndex}
+              questions={questions}
+              currentQuestion={currentQuestion}
+            />
+          </div>
 
           <Button
             pill
-            variant="default"
+            variant="tertiary"
             size="icon"
             onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
             disabled={isPending || currentQuestionIndex === questions.length - 1}
+            className="flex-shrink-0"
           >
             <ArrowRightIcon className="size-6" />
           </Button>
 
           <Button
             variant="default"
-            className="transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center ml-2"
+            className="flex-shrink-0 ml-2 transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center"
             icon={true}
             iconPosition={"right"}
             disabled={isPending}

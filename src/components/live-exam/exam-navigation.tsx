@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { QuestionDocument } from "@/lib/Client/Exam";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 
 interface ExamNavigationProps {
@@ -9,6 +9,8 @@ interface ExamNavigationProps {
   currentQuestionIndex: number;
   questions: QuestionDocument[];
   currentQuestion: QuestionDocument | undefined;
+  className?: string;
+  ButtonProps?: ButtonProps;
 }
 
 export const ExamNavigation = ({
@@ -17,6 +19,8 @@ export const ExamNavigation = ({
   currentQuestionIndex,
   questions,
   currentQuestion,
+  className,
+  ButtonProps,
 }: ExamNavigationProps) => {
   return (
     <div className="flex gap-4 justify-center flex-row">
@@ -27,6 +31,8 @@ export const ExamNavigation = ({
             <Button
               key={index}
               pill
+              {...ButtonProps}
+              className="text-xl transition-all duration-200 ease-in hover:scale-[0.95] active:scale-95"
               variant={isActive ? "default" : "outline"}
               size="icon"
               onClick={() => {

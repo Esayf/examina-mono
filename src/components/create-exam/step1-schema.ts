@@ -17,8 +17,8 @@ export const step1ValidationSchema = z.object({
               .min(1, {
                 message: "Answer option cannot be empty. Please enter some text.",
               })
-              .max(200, {
-                message: "Answer cannot exceed 200 characters.",
+              .max(100, {
+                message: "Answer cannot exceed 100 characters.",
               }),
           })
         )

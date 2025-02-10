@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
 import { AxiosError } from "axios";
-import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, DocumentCheckIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { ConfirmFinishModal } from "@/components/ui/confirm-finish-modal";
 
@@ -107,7 +107,7 @@ export const SaveAsDraftButton = () => {
         ) : (
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline">{examId ? "Save changes" : "Save as draft"}</span>
-            <ArrowDownTrayIcon className="size-6 md:size-5" />
+            <DocumentCheckIcon className="size-6 md:size-5" />
           </div>
         )}
       </Button>

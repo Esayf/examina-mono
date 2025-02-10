@@ -43,7 +43,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
       className: "chozToastSuccess",
     });
     dispatch(setSession(res.session));
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   // Modal Aç / Kapat

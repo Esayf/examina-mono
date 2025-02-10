@@ -28,8 +28,8 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
       "focus-visible:ring-brand-primary-700 focus-visible:ring-offset-2",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "resize-none",
-      "min-h-[3rem] max-h-[6rem]",
-      "text-base font-light items-center justify-center",
+      "max-h-[4rem]",
+      "text-base font-medium items-center justify-center",
       className
     );
 
@@ -89,7 +89,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
       return (
         <div className="relative flex w-full">
           {startElement && (
-            <span className="absolute left-3 top-9 flex items-center">{startElement}</span>
+            <span className="absolute left-3 top-5 flex items-center">{startElement}</span>
           )}
           <textarea
             ref={ref as React.Ref<HTMLTextAreaElement>}

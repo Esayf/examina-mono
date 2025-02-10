@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/formatter";
 import { cn } from "@/lib/utils";
-import { GetExamsParams, getExamList, getScore } from "@/lib/Client/Exam";
+import {
+  GetExamsParams,
+  JoinedExamResponse,
+  getAllJoinedExams,
+  getExamList,
+  getScore,
+} from "@/lib/Client/Exam";
 
 // Reusable UI Components
 import { CopyLink } from "@/components/ui/copylink";
@@ -23,6 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+const FILTER_OPTIONS = ["All", "Active", "Ended"] as const;
 
 // Shadcn UI dialog
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -35,15 +42,18 @@ import {
   ArrowDownIcon,
   ChevronUpDownIcon,
   ShareIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
 // QR code
 import { QRCodeCanvas } from "qrcode.react";
+import { Input } from "@/components/ui/input";
 
-/* 
+/* ---------------------------------------------------------
    1) Katıldığı quiz verisini çekecek API fonksiyonu.
-   - score & showLeaderboard gibi alanlar backend'den döndüğünü varsayıyoruz.
+   (Örnek: /api/exams/joined)
+   ----------------------------------------------------------
 */
 async function getJoinedExams() {
   const res = await fetch("/api/exams/joined");
@@ -52,12 +62,18 @@ async function getJoinedExams() {
 }
 
 // Filtre seçenekleri
-const FILTER_OPTIONS = ["All", "Active", "Ended"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
-type SortField = "title" | "startDate" | "endDate" | "duration" | "status" | "score";
+type SortField =
+  | "title"
+  | "startDate"
+  | "endDate"
+  | "duration"
+  | "status"
+  | "score"
+  | "completedAt";
 
 /****************************************
- * Sıralama ikonu
+ * Sıralama ikonu (küçük helper)
  ****************************************/
 function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: boolean) {
   if (currentField === sortField) {
@@ -142,7 +158,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         {/* Kapatma butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-greyscale-light-600 hover:bg-brand-primary-900 w-4 h-4 border-2 border-brand-primary-900 rounded-full p-4"
+          className="absolute top-4 right-4 text-greyscale-light-600 hover:bg-brand-primary-50 rounded-full p-1 transition-colors"
         >
           <XMarkIcon className="w-6 h-6" />
         </button>
@@ -159,24 +175,24 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
             <button
               key={name}
               onClick={onClick}
-              className="
-                flex flex-col items-center
-                text-brand-primary-950
-                hover:text-brand-primary-900
-                focus:outline-none
-                transition-transform duration-150
-                hover:scale-105 active:scale-95
-              "
+              className={cn(
+                "flex flex-col items-center",
+                "text-brand-primary-950",
+                "hover:text-brand-primary-900",
+                "focus:outline-none",
+                "transition-transform duration-150",
+                "hover:scale-105 active:scale-95"
+              )}
             >
-              <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-1">
-                <span className="text-xl">{icon}</span>
+              <div className="w-12 h-12 flex items-center justify-center bg-brand-primary-50/80 hover:bg-brand-primary-100 rounded-full mb-1 transition-colors">
+                <span className="text-xl text-brand-primary-900">{icon}</span>
               </div>
               <span className="text-xs font-medium">{name}</span>
             </button>
           ))}
         </div>
 
-        {/* veya linki paylaş */}
+        {/* Link kopyala */}
         <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />
@@ -185,8 +201,13 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
         {/* QR kod + download butonu */}
         <div className="flex flex-col items-center gap-3">
           <QRCodeCanvas id="quizQrCode" value={quizLink} size={150} bgColor="#FFFFFF" level="M" />
-          <Button variant="outline" onClick={downloadQRCode}>
-            Download QR
+          <Button
+            variant="outline"
+            onClick={downloadQRCode}
+            className="gap-2 hover:bg-brand-primary-50 hover:text-brand-primary-900"
+          >
+            <ArrowDownTrayIcon className="w-5 h-5" />
+            QR Kodunu İndir
           </Button>
         </div>
       </DialogContent>
@@ -197,64 +218,17 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 /****************************************
  * JoinedExam satırı (Row) bileşeni
  ****************************************/
-interface JoinedExam {
-  _id: string;
-  title: string;
-  startDate: string;
-  duration: number;
-  isCompleted?: boolean;
-  score?: number; // Kullanıcının bu sınavdaki puanı
-  showLeaderboard?: boolean; // Bu sınav için bir leaderboard varsa
-}
-
 interface RowProps {
-  exam: JoinedExam;
+  exam: JoinedExamResponse;
 }
 
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
-  const {
-    data: score,
-    isLoading: scoreLoading,
-    isError: scoreError,
-  } = useQuery({
-    queryKey: ["score", exam._id],
-    queryFn: () => getScore(exam._id),
-    enabled: !!exam._id,
-    select: (data) => data[0].score,
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 300
-  });
 
-  useEffect(() => {
-    if (scoreLoading || scoreError) return;
-    exam.score = score;
-  }, [score, scoreLoading, scoreError]);
-
-  // Status hesaplama
-  const now = new Date();
-  const startDate = new Date(exam.startDate);
-  const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
-
-  let status = "Upcoming";
-  if (startDate > now) {
-    status = "Upcoming";
-  } else if (startDate <= now && endDate > now && !exam.isCompleted) {
-    status = "Active";
-  } else if ((endDate && endDate <= now) || exam.isCompleted) {
-    status = "Ended";
-  }
-
-  // Quiz link
-  const quizLink = `${typeof window !== "undefined" ? window.location.origin : ""}/app/exams/${
-    exam._id
-  }`;
-
-  // Leaderboard'a gitme fonksiyonu (örnek)
-  const handleLeaderboard = () => {
-    router.push(`/app/exams/${exam._id}/leaderboard`);
-  };
+  // Status
+  const startDate = new Date(exam.examStartDate);
+  const endDate = new Date(exam.examEndDate);
 
   return (
     <div
@@ -263,13 +237,6 @@ function JoinedRow({ exam }: RowProps) {
         "transition-colors duration-200 ease-in-out hover:bg-brand-primary-50 hover:text-brand-primary-600"
       )}
     >
-      {/* Share Modal */}
-      <ShareModal
-        open={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        quizLink={quizLink}
-      />
-
       <div className="text-greyscale-light-700">
         <div
           className="
@@ -279,15 +246,16 @@ function JoinedRow({ exam }: RowProps) {
           "
         >
           {/* Title */}
-          <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px] border-r border-greyscale-light-100">
+          <div className="flex-1 p-5 min-w-[154px] max-w-[220px] border-r border-greyscale-light-100">
             <p
               className="
                 text-inherit text-base font-medium leading-6 
                 overflow-hidden text-ellipsis whitespace-nowrap
+                max-w-[180px]
               "
               title={exam.title}
             >
-              {exam.title.length > 15 ? `${exam.title.substring(0, 15)}...` : exam.title}
+              {exam.title}
             </p>
           </div>
 
@@ -305,59 +273,37 @@ function JoinedRow({ exam }: RowProps) {
             </p>
           </div>
 
+          {/* Completed at */}
+          <div className="hidden lg:flex flex-1 p-5 min-w-[120px] max-w-[160px] border-r border-greyscale-light-100">
+            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
+              {exam.userFinishedAt ? formatDate(new Date(exam.userFinishedAt)) : "N/A"}
+            </p>
+          </div>
+
           {/* Duration */}
           <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam.duration} min.
+              {exam.examDuration} min.
             </p>
           </div>
 
           {/* Score */}
           <div className="hidden md:flex flex-1 p-5 min-w-[80px] max-w-[100px] border-r border-greyscale-light-100">
             <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {`${score ?? "N/A"} pts`}
+              {`${exam.userScore ?? "N/A"} pts`}
             </p>
           </div>
 
           {/* Status */}
           <div className="flex-1 p-5 min-w-[80px] max-w-[160px]">
             <Badge
-              variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
+              variant={
+                exam.status === "active" ? "active" : exam.status === "ended" ? "ended" : "upcoming"
+              }
+              className="text-sm px-3 py-1.5 rounded-lg shadow-sm"
             >
-              {status}
+              {exam.status}
             </Badge>
-          </div>
-
-          {/* Actions: Share / Leaderboard */}
-          <div
-            className="
-              flex-1 p-5 min-w-[150px] min-h-[72px]
-              flex items-center justify-end gap-2
-            "
-          >
-            {/* Share quiz */}
-            <Button
-              variant="outline"
-              iconPosition="right"
-              icon
-              className="max-h-10 text-sm font-normal p-3"
-              onClick={() => setIsShareModalOpen(true)}
-            >
-              Share quiz
-              <ShareIcon className="w-4 h-4 mr-1" />
-            </Button>
-
-            {/* Sınav Ended ise ve leaderboard varsa */}
-            {status === "Ended" && exam.showLeaderboard && (
-              <Button
-                variant="outline"
-                className="max-h-10 text-sm font-normal p-3"
-                onClick={handleLeaderboard}
-              >
-                View Leaderboard
-                <ArrowUpRightIcon className="w-4 h-4 ml-1" />
-              </Button>
-            )}
           </div>
         </div>
       </div>
@@ -370,48 +316,59 @@ function JoinedRow({ exam }: RowProps) {
  ****************************************/
 export default function JoinedExamsPage() {
   const router = useRouter();
-  // const { data, isLoading, isError } = useQuery({
-  //   queryKey: ["joinedExams"],
-  //   queryFn: getJoinedExams,
-  // });
 
-  const getExamListParams: GetExamsParams = { role: "joined" };
+  // API query
   const {
-    data,
+    data = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["exams", getExamListParams],
-    queryFn: () => getExamList(getExamListParams),
+    queryKey: ["joinedExams"],
+    queryFn: () => getAllJoinedExams(),
   });
-
-  // Filtre
+  // Filtre / Sıralama
   const [filter, setFilter] = useState<FilterOption>("All");
-  // Sıralama
   const [sortField, setSortField] = useState<SortField>("startDate");
   const [sortAsc, setSortAsc] = useState(false);
 
-  // Boş durum senaryosu
+  // ---- YENİ: Join quiz state ----
+  const [joinCode, setJoinCode] = useState("");
+
+  // Sınav yoksa (Empty state)
   if (!isLoading && data?.length === 0 && !isError) {
     return (
       <>
         <DashboardHeader />
         <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Joined Quizzes</h3>
+            <h3 className="text-2xl font-bold text-brand-primary-900">Joined Quizzes</h3>
           </div>
           <div className="flex justify-center items-center min-h-[600px] h-[80vh]">
-            <div className="flex flex-col gap-[2.625rem]">
-              <Image src={EmptyState} height={220} width={280} alt="No joined quizzes" />
-              <div className="text-center">
-                <p className="text-brand-primary-950 text-2xl font-regular leading-9">
-                  You have not joined any quizzes yet.
+            <div className="flex flex-col gap-8 items-center text-center">
+              <Image
+                src={EmptyState}
+                height={280}
+                width={360}
+                alt="You haven't joined any quizzes yet"
+                className="h-auto max-w-full drop-shadow-lg"
+              />
+              <div className="space-y-2">
+                <h2 className="text-3xl font-semibold text-brand-primary-950">
+                  You haven't joined any quizzes yet
+                </h2>
+                <p className="text-greyscale-light-600 text-lg">
+                  Explore a quiz or create your own!
                 </p>
               </div>
-              <div className="flex justify-center">
-                <Button variant="default" onClick={() => router.push("/app")}>
-                  Go back
-                  <ArrowUpRightIcon className="size-6 ml-1" />
+              <div className="flex gap-4">
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={() => router.push("/app")}
+                  className="gap-2 px-6 py-4 text-lg"
+                >
+                  Go to Homepage
+                  <ArrowUpRightIcon className="w-5 h-5" />
                 </Button>
               </div>
             </div>
@@ -421,85 +378,25 @@ export default function JoinedExamsPage() {
     );
   }
 
-  // Status hesaplama fonksiyonu
-  function getStatus(exam: JoinedExam): string {
-    const now = new Date();
-    const startDate = new Date(exam.startDate);
-    const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
-
-    if (startDate <= now && endDate > now && !exam.isCompleted) return "Active";
-    if ((endDate && endDate <= now) || exam.isCompleted) return "Ended";
-    return "Upcoming";
+  if (isLoading) {
+    return <p>Loading joined quizzes...</p>;
   }
-
-  // Filtreleme
-  function filterExams(exams: JoinedExam[]) {
-    return exams.filter((exam) => {
-      const status = getStatus(exam);
-      if (filter === "All") return true;
-      return status === filter;
-    });
+  if (isError) {
+    return <p>Error fetching joined quizzes.</p>;
   }
-
-  // Sıralama
-  function sortExams(exams: JoinedExam[]) {
-    return [...exams].sort((a, b) => {
-      let valA: number | string;
-      let valB: number | string;
-
-      const statusA = getStatus(a);
-      const statusB = getStatus(b);
-
-      switch (sortField) {
-        case "title":
-          valA = a.title?.toLowerCase() || "";
-          valB = b.title?.toLowerCase() || "";
-          break;
-        case "startDate":
-          valA = new Date(a.startDate).getTime();
-          valB = new Date(b.startDate).getTime();
-          break;
-        case "endDate":
-          valA = new Date(a.startDate).getTime() + a.duration * 60_000;
-          valB = new Date(b.startDate).getTime() + b.duration * 60_000;
-          break;
-        case "duration":
-          valA = a.duration;
-          valB = b.duration;
-          break;
-        case "status":
-          valA = statusA;
-          valB = statusB;
-          break;
-        case "score":
-          valA = a.score || 0;
-          valB = b.score || 0;
-          break;
-        default:
-          valA = 0;
-          valB = 0;
-      }
-      if (valA < valB) return sortAsc ? -1 : 1;
-      if (valA > valB) return sortAsc ? 1 : -1;
-      return 0;
-    });
-  }
-
-  // Filtrelenmiş ve sıralanmış dizi
-  const filtered = filterExams(data || []);
-  const finalExams = sortExams(filtered);
-  const isFilteredEmpty = finalExams.length === 0;
 
   return (
     <>
       <div className="relative min-h-screen h-dvh flex flex-col z-0">
         <DashboardHeader withoutTabs={false} withoutNav={true} />
-        <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-          <div className="w-full flex flex-col flex-1 overflow-hidden">
-            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-brand-primary-900 flex-1 flex flex-col">
+        <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col rounded-b-3xl">
+          <div className="w-full flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
+            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
               <CardHeader>
                 <CardHeaderContent>
-                  <CardTitle>Joined quizzes</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-brand-primary-900">
+                    Joined quizzes
+                  </CardTitle>
                   <CardDescription>
                     All quizzes you participated in. Check your score or share them easily!
                   </CardDescription>
@@ -507,22 +404,52 @@ export default function JoinedExamsPage() {
               </CardHeader>
 
               <CardContent className="px-0 pt-0">
-                {/* Filtre butonları */}
-                <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200">
-                  {FILTER_OPTIONS.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => setFilter(opt)}
-                      className={cn(
-                        "px-3 py-1 text-sm rounded-full border transition-colors duration-200 ease-in-out",
-                        filter === opt
-                          ? "bg-brand-primary-50 text-brand-primary-950 border-brand-primary-600"
-                          : "bg-white text-greyscale-light-900 border-greyscale-light-300 hover:bg-greyscale-light-50"
-                      )}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+                {/* ---- Join Quiz Input & Button ---- */}
+                <div className="flex gap-2 px-5 py-3 border-b border-greyscale-light-200 items-center">
+                  {/* Filtre butonları */}
+                  <div className="flex overflow-x-auto gap-2 hide-scrollbar">
+                    {FILTER_OPTIONS.map((option) => {
+                      const colors = {
+                        Active:
+                          "bg-ui-success-50 text-ui-success-600 border border-ui-success-600 hover:bg-ui-success-100 hover:text-ui-success-700",
+                        Ended:
+                          "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
+                        Draft:
+                          "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
+                        Upcoming:
+                          "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
+                        All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
+                      };
+
+                      const activeColors = {
+                        Active:
+                          "bg-ui-success-200 text-ui-success-600 border border-ui-success-600 hover:bg-transparent border-2",
+                        Ended:
+                          "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
+                        Draft:
+                          "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
+                        Upcoming:
+                          "bg-yellow-200 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
+                        All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
+                      };
+
+                      const activeColor = activeColors[option];
+                      const color = colors[option];
+                      return (
+                        <Button
+                          key={option}
+                          variant={filter === option ? "default" : "outline"}
+                          className={cn(
+                            "text-sm shadow-sm w-auto h-[2rem] px-3 py-2 border border-brand-primary-900",
+                            filter === option ? `${activeColor}` : `${color}`
+                          )}
+                          onClick={() => setFilter(option)}
+                        >
+                          {option}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Tablo başlıkları (sticky) */}
@@ -544,7 +471,7 @@ export default function JoinedExamsPage() {
                       border-r border-greyscale-light-200
                       cursor-pointer select-none
                       transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
+                      hover:bg-brand-primary-50/50
                     "
                     onClick={() => {
                       if (sortField === "title") setSortAsc(!sortAsc);
@@ -568,7 +495,7 @@ export default function JoinedExamsPage() {
                       border-r border-greyscale-light-200
                       cursor-pointer select-none
                       transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
+                      hover:bg-brand-primary-50/50
                     "
                     onClick={() => {
                       if (sortField === "startDate") setSortAsc(!sortAsc);
@@ -592,7 +519,7 @@ export default function JoinedExamsPage() {
                       border-r border-greyscale-light-200
                       cursor-pointer select-none
                       transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
+                      hover:bg-brand-primary-50/50
                     "
                     onClick={() => {
                       if (sortField === "endDate") setSortAsc(!sortAsc);
@@ -608,6 +535,24 @@ export default function JoinedExamsPage() {
                     </p>
                   </div>
 
+                  {/* Completed at */}
+                  <div
+                    className="
+                      hidden lg:flex flex-1 p-5
+                      min-w-[120px] max-w-[160px]
+                      border-r border-greyscale-light-200
+                      cursor-pointer select-none
+                      transition-colors duration-200 ease-in-out
+                      hover:bg-brand-primary-50/50
+                    "
+                    onClick={() => {}}
+                  >
+                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
+                      Completed at
+                      {renderSortIcon("completedAt", sortField, sortAsc)}
+                    </p>
+                  </div>
+
                   {/* Duration */}
                   <div
                     className="
@@ -616,7 +561,7 @@ export default function JoinedExamsPage() {
                       border-r border-greyscale-light-200
                       cursor-pointer select-none
                       transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
+                      hover:bg-brand-primary-50/50
                     "
                     onClick={() => {
                       if (sortField === "duration") setSortAsc(!sortAsc);
@@ -640,7 +585,7 @@ export default function JoinedExamsPage() {
                       border-r border-greyscale-light-200
                       cursor-pointer select-none
                       transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
+                      hover:bg-brand-primary-50/50
                     "
                     onClick={() => {
                       if (sortField === "score") setSortAsc(!sortAsc);
@@ -663,7 +608,7 @@ export default function JoinedExamsPage() {
                       min-w-[80px] max-w-[160px]
                       cursor-pointer select-none
                       transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
+                      hover:bg-brand-primary-50/50
                     "
                     onClick={() => {
                       if (sortField === "status") setSortAsc(!sortAsc);
@@ -674,18 +619,18 @@ export default function JoinedExamsPage() {
                     }}
                   >
                     <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Status
+                      Quiz Status
                       {renderSortIcon("status", sortField, sortAsc)}
                     </p>
                   </div>
 
-                  {/* Share sütunu boş başlık */}
+                  {/* Actions sütunu (paylaş / leaderboard) */}
                   <div className="flex-1 p-5 min-w-[100px] flex justify-end" />
                 </div>
 
                 {/* Listedeki sınavlar */}
                 <div className="overflow-y-auto max-h-[560px]">
-                  {isFilteredEmpty ? (
+                  {data.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 gap-4 mt-8">
                       <Image
                         src={EmptyState}
@@ -698,7 +643,7 @@ export default function JoinedExamsPage() {
                       </p>
                     </div>
                   ) : (
-                    finalExams.map((exam: JoinedExam) => <JoinedRow key={exam._id} exam={exam} />)
+                    data.map((exam: JoinedExamResponse) => <JoinedRow key={exam._id} exam={exam} />)
                   )}
                 </div>
               </CardContent>

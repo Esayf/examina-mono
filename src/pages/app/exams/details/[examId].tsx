@@ -18,7 +18,7 @@ import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/usetoast";
 import { cn } from "@/lib/utils";
 import DashboardHeader from "@/components/ui/dashboard-header";
-
+import DurationFormatter from "@/components/ui/time/duration-formatter";
 function walletRender(walletAddress: string): string {
   return `${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}`;
 }
@@ -321,13 +321,13 @@ const ExamDetails = () => {
       link.click();
 
       showToast({
-        title: "SVG İndirildi",
-        description: "Lider tablosu başarıyla SVG formatında kaydedildi",
+        title: "SVG successfully downloaded.",
+        description: "Leaderboard successfully saved as SVG",
       });
     } catch (error) {
       showToast({
-        title: "SVG Hatası",
-        description: "Lider tablosu SVG'ye dönüştürülemedi",
+        title: "SVG download error",
+        description: "Leaderboard could not be converted to SVG",
         variant: "destructive",
       });
       console.error("SVG Conversion Error:", error);
@@ -348,7 +348,7 @@ const ExamDetails = () => {
                   variant="outline"
                   size="icon"
                   onClick={() => router.back()}
-                  className="rounded-full w-9 h-9 hover:bg-brand-secondary-100 border border-gray-600 text-gray-600 cubic-bezier-4 transition-all duration-300 hover:text-brand-primary-900"
+                  className="border-2 border-x-brand-primary-950 text-gray-600 cubic-bezier-4 transition-all duration-300 hover:text-brand-primary-900"
                 >
                   <ArrowLeftIcon className="h-5 w-5" />
                 </Button>
@@ -388,7 +388,9 @@ const ExamDetails = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
                   <div className="text-sm font-medium text-brand-primary-800">Duration</div>
-                  <div className="font-medium">{data.duration} mins</div>
+                  <div className="font-medium">
+                    <DurationFormatter duration={data.duration} base="minutes" />
+                  </div>
                 </div>
                 <div className="space-y-1 bg-brand-secondary-50 border border-brand-secondary-300 rounded-2xl px-4 py-3">
                   <div className="text-sm font-medium text-brand-primary-800">Questions</div>

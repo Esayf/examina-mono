@@ -95,7 +95,7 @@ function ExamResult() {
                 </Button>
               </div>
               <Link
-                href="/app/dashboard/created"
+                href="/app/dashboard/joined"
                 className="text-sm text-brand-primary-900 mx-auto font-bold hover:text-brand-primary-700 rounded-full px-2 py-1 underline"
               >
                 skip this step

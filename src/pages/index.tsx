@@ -115,7 +115,7 @@ export default function Home() {
     }
     toast.success("Welcome back!");
     dispatch(setSession(res.session));
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   const pageTitle = "Blockchain-Powered Quiz Platform for Rewards and Engagement | Choz";

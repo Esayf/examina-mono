@@ -393,7 +393,7 @@ export function HeroSection({
     toast.success("Welcome back!", { duration: 5000 });
     dispatch(setSession(res.session));
     // Yönlendirme
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   return (

@@ -37,7 +37,7 @@ const handleAuthentication = async () => {
     className: "chozToastSuccess",
   });
   dispatch(setSession(res.session));
-  window.location.href = "/app/dashboard/created";
+  window.location.href = "/app/dashboard/choose-role";
 };
 
 const stepArray: Step[] = [

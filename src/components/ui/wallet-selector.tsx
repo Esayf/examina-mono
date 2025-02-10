@@ -44,7 +44,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
     // Redux store'a oturum bilgisini kaydediyoruz
     dispatch(setSession(res.session));
     onClose();
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   // 3) Auro cüzdan örneği
@@ -59,7 +59,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
     dispatch(setSession(res.session));
     onClose();
     // Başarılı ise dashboard'a yönlendirebilirsiniz
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   return (

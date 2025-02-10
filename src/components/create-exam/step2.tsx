@@ -143,7 +143,7 @@ export const Step2 = ({ onBack, onPublish }: Step2Props) => {
                           <Input
                             placeholder="e.g. General Knowledge Challenge! 💪😎"
                             className={cn(
-                              "rounded-2xl border max-h-[52px]",
+                              "rounded-2xl border h-[3rem] font-light",
                               isOverLimit
                                 ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                                 : "border-greyscale-light-300"

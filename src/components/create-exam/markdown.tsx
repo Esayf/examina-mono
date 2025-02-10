@@ -162,9 +162,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
               <BlockTypeSelect />
               <BoldItalicUnderlineToggles />
               <CodeToggle />
-              <InsertTable />
               <InsertThematicBreak />
-              <ListsToggle />
               <InsertImage />
             </>
           ),

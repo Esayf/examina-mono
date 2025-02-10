@@ -1,12 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getExamList, GetExamsParams, getDraftExams, deleteDraftExam, DraftExam } from "@/lib/Client/Exam";
+
+import {
+  getExamList,
+  GetExamsParams,
+  getDraftExams,
+  deleteDraftExam,
+  DraftExam,
+  getAllCreatedExams,
+} from "@/lib/Client/Exam";
 import { formatDate } from "@/utils/formatter";
 
+// UI & Components
 import { CopyLink } from "@/components/ui/copylink";
 import DashboardHeader from "@/components/ui/dashboard-header";
 import EmptyState from "@/images/emptystates.svg";
@@ -22,7 +31,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
+// Icons
 import {
   ArrowUpRightIcon,
   XMarkIcon,
@@ -40,26 +57,18 @@ import {
   UsersIcon,
   CheckIcon,
 } from "@heroicons/react/24/outline";
-import { QRCodeCanvas } from "qrcode.react";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
+import { QRCodeCanvas } from "qrcode.react";
 import { toast } from "react-hot-toast";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { Input } from "@/components/ui/input";
+import DurationFormatter from "@/components/ui/time/duration-formatter";
 const FILTER_OPTIONS = ["All", "Active", "Ended", "Upcoming", "Draft"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
-
-// Sıralama alanları
 type SortField = "title" | "startDate" | "endDate" | "duration" | "status";
 
-/**********************************************************************
- * SHARE MODAL
- **********************************************************************/
+/******************************************************************************
+ * ShareModal
+ ******************************************************************************/
 interface ShareModalProps {
   open: boolean;
   onClose: () => void;
@@ -79,7 +88,6 @@ Let's see how you do! 🚀
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
   const shareText = getShareMessage(quizLink);
 
-  // Paylaşım seçenekleri
   const shareOptions = [
     {
       name: "Telegram",
@@ -129,7 +137,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
     },
   ];
 
-  // QR kodu indirme
+  // QR code download
   const downloadQRCode = () => {
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
     if (!canvas) {
@@ -166,7 +174,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
           </DialogTitle>
         </DialogHeader>
 
-        {/* Paylaşım Butonları */}
+        {/* Sosyal medya butonları */}
         <div className="flex justify-center items-center gap-5 mt-4 mb-6">
           {shareOptions.map(({ name, icon, onClick }) => (
             <button
@@ -178,7 +186,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
                 hover:text-brand-primary-600
                 focus:outline-none
                 transition-all duration-150
-                hover:scale-110 active:scale-95
+                hover:scale-105 active:scale-95
                 group
               "
             >
@@ -197,6 +205,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
           <CopyLink link={quizLink} label="Quiz link" />
         </div>
 
+        {/* QR code + download */}
         <div className="flex flex-col items-center gap-3">
           <QRCodeCanvas
             id="quizQrCode"
@@ -215,16 +224,15 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
   );
 }
 
-/**********************************************************************
- * ROW Bileşeni (tek quiz/draft kartı)
- **********************************************************************/
+/******************************************************************************
+ * Row (tek quiz/draft)
+ ******************************************************************************/
 interface RowProps {
   exam: DraftExam;
 }
 
 function Row({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [qrModalOpen, setQrModalOpen] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -241,7 +249,6 @@ function Row({ exam }: RowProps) {
     },
   });
 
-  // Status hesaplama
   const now = new Date();
   const startDate = exam.startDate ? new Date(exam.startDate) : null;
   const endDate = startDate ? new Date(startDate.getTime() + Number(exam.duration) * 60_000) : null;
@@ -265,13 +272,11 @@ function Row({ exam }: RowProps) {
     <div
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
-        // Hover durumunda daha belirgin gölge ve arkaplan
         exam.status !== "draft"
           ? "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-greyscale-light-300"
           : "cursor-pointer hover:shadow-md hover:bg-brand-secondary-50 hover:border-greyscale-light-200"
       )}
       onClick={() => {
-        // Tıklanınca draft ise edit sayfası, değilse details
         if (exam.status === "draft") {
           router.push(`/app/exams/edit/${exam._id}`);
         } else {
@@ -279,52 +284,6 @@ function Row({ exam }: RowProps) {
         }
       }}
     >
-      {/* Hover tooltip */}
-      <div className="absolute -top-8 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-        <div className="bg-brand-primary-800 text-white text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-md">
-          <span>{exam.status === "draft" ? "Edit draft" : "See quiz details"}</span>
-          <div className="w-2 h-2 bg-brand-primary-800 absolute -bottom-1 right-3 rotate-45" />
-        </div>
-      </div>
-
-      {/* QR Kod Dialog */}
-      <Dialog open={qrModalOpen} onOpenChange={setQrModalOpen}>
-        <DialogContent className="max-w-xs max-h-[400px] mx-auto p-6 bg-base-white rounded-2xl">
-          <div className="flex flex-col items-center gap-4">
-            <QRCodeCanvas
-              id={`quizQrCode-${exam._id}`}
-              value={quizLink}
-              size={256}
-              bgColor="#FFFFFF"
-              fgColor="#1F2937"
-              level="H"
-              className="rounded-lg"
-            />
-            <Button
-              variant="outline"
-              onClick={() => {
-                const canvas = document.getElementById(
-                  `quizQrCode-${exam._id}`
-                ) as HTMLCanvasElement;
-                if (!canvas) {
-                  toast.error("QR code could not be found");
-                  return;
-                }
-                const url = canvas.toDataURL();
-                const a = document.createElement("a");
-                a.download = `quiz-qrcode-${exam._id}.png`;
-                a.href = url;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            >
-              Download QR
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Share Modal */}
       <ShareModal
         open={isShareModalOpen}
@@ -332,11 +291,10 @@ function Row({ exam }: RowProps) {
         quizLink={quizLink}
       />
 
-      {/* İçerik */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="flex-1 space-y-2 min-w-0">
           {/* Başlık + Status */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-3">
             <h3
               className={cn(
                 "text-lg font-semibold text-brand-primary-900 truncate transition-colors",
@@ -362,7 +320,7 @@ function Row({ exam }: RowProps) {
           </div>
 
           {/* Ek Bilgiler */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
             <div className="flex items-center gap-1">
               <CalendarIcon className="w-4 h-4 text-brand-primary-600" />
               <span className="font-medium">Start:</span>
@@ -371,17 +329,17 @@ function Row({ exam }: RowProps) {
             <div className="flex items-center gap-1">
               <ClockIcon className="w-4 h-4 text-brand-primary-600" />
               <span className="font-medium">Duration:</span>
-              <span>{exam.duration || 0} min</span>
+              <DurationFormatter duration={exam.duration || 0} base="minutes" />
             </div>
             <div className="flex items-center gap-1">
               <UsersIcon className="w-4 h-4 text-brand-primary-600" />
               <span className="font-medium">Participants:</span>
-              <span>{(exam as any).participants?.length || 0}</span>
+              <span>{(exam as any).totalParticipants ?? "N/A"}</span>
             </div>
           </div>
         </div>
 
-        {/* Sağdaki butonlar */}
+        {/* Sağ butonlar */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div
             className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-between sm:w-auto"
@@ -407,7 +365,7 @@ function Row({ exam }: RowProps) {
                 )}
               </Button>
 
-              {/* Share (draft değilse) */}
+              {/* Paylaş (draft değilse) */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -425,46 +383,27 @@ function Row({ exam }: RowProps) {
           </div>
         </div>
       </div>
-
-      {/* Alt Kısım */}
-      <div className="mt-4 pt-3 border-t border-greyscale-light-100 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-sm sm:text-base">
-          <span className="text-greyscale-light-500 hidden sm:block">|</span>
-          <span className="text-xs sm:text-sm text-greyscale-light-600">
-            Last updated: {formatDate(new Date(exam.updatedAt))}
-          </span>
-        </div>
-        {/* QR code (desktop) */}
-        <div className="hidden sm:block">
-          <QRCodeCanvas
-            id={`smallQrCode-${exam._id}`}
-            value={quizLink}
-            size={72}
-            bgColor="#FFFFFF"
-            fgColor="#1F2937"
-            level="M"
-            className="rounded-lg border p-1 transition-all duration-200 hover:scale-105 active:scale-95 hidden md:block"
-          />
-        </div>
-      </div>
     </div>
   );
 }
 
-/**********************************************************************
- * ANA SAYFA (QUIZ LİST)
- **********************************************************************/
-function Application() {
-  const getExamListParams: GetExamsParams = { role: "created" };
+/******************************************************************************
+ * ANA SAYFA
+ ******************************************************************************/
+export default function Application() {
+  const router = useRouter();
+
+  // Sınavlar
   const {
     data: exams = [],
     isLoading: isExamsLoading,
     isError: isExamsError,
   } = useQuery({
-    queryKey: ["exams", getExamListParams],
-    queryFn: () => getExamList(getExamListParams),
+    queryKey: ["createdExams"],
+    queryFn: () => getAllCreatedExams(),
   });
 
+  // Draftlar
   const {
     data: draftExams = [],
     isLoading: isDraftsLoading,
@@ -474,15 +413,19 @@ function Application() {
     queryFn: getDraftExams,
   });
 
-  const router = useRouter();
-
-  const [filter, setFilter] = useState<FilterOption>("All");
-  const [sortField, setSortField] = useState<SortField>("startDate");
-  const [sortAsc, setSortAsc] = useState(true);
-
   const isLoading = isExamsLoading || isDraftsLoading;
   const isError = isExamsError || isDraftsError;
 
+  // Filtre
+  const [filter, setFilter] = useState<FilterOption>("All");
+  // Sıralama
+  const [sortField, setSortField] = useState<SortField>("startDate");
+  const [sortAsc, setSortAsc] = useState(true);
+
+  // ----- YENİ: Search -----
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Tüm quizler
   const allExams = [...exams, ...draftExams];
 
   if (isLoading) {
@@ -490,10 +433,8 @@ function Application() {
       <div className="relative min-h-screen h-dvh flex flex-col z-0">
         <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="flex items-center justify-center h-full">
-          <div className="flex flex-col items-center gap-4">
-            <Spinner className="w-12 h-12 text-brand-primary-600" />
-            <p className="text-brand-primary-900">Quizzes loading...</p>
-          </div>
+          <Spinner className="w-12 h-12 text-brand-primary-600" />
+          <p className="mt-2 text-brand-primary-900">Quizzes loading...</p>
         </div>
       </div>
     );
@@ -517,14 +458,14 @@ function Application() {
     );
   }
 
-  // Quiz status bulma
+  // Status bulma
   function getStatus(exam: DraftExam): string {
     if (exam.status === "draft") return "Draft";
 
     const now = new Date();
     const startDate = exam.startDate ? new Date(exam.startDate) : null;
     const endDate = startDate
-      ? new Date(startDate.getTime() + Number(exam.duration) * 60_000)
+      ? new Date(startDate.getTime() + (exam.duration || 0) * 60_000)
       : null;
 
     if (startDate && startDate > now) return "Upcoming";
@@ -534,18 +475,33 @@ function Application() {
     if ((endDate && endDate <= now) || exam.isCompleted) {
       return "Ended";
     }
-    if (exam.isArchived) return "Archived";
     return "Upcoming";
   }
 
   // Filtre
   function filterExams(exams: DraftExam[]) {
-    return exams.filter((exam) => {
+    // 1) Status filtresi
+    const filteredByStatus = exams.filter((exam) => {
       const status = getStatus(exam);
-      if (filter === "All") return true;
-      if (filter === "Draft") return exam.status === "draft";
-      return status === filter;
+
+      if (filter === "All") {
+        return true;
+      } else if (filter === "Draft") {
+        return exam.status === "draft";
+      } else {
+        return status === filter;
+      }
     });
+
+    // 2) Arama (title içinde searchTerm)
+    if (searchTerm.trim().length > 0) {
+      return filteredByStatus.filter((exam) => {
+        const title = exam.title?.toLowerCase() || "";
+        return title.includes(searchTerm.toLowerCase());
+      });
+    }
+
+    return filteredByStatus;
   }
 
   // Sıralama
@@ -595,41 +551,40 @@ function Application() {
   const filtered = filterExams(allExams as DraftExam[]);
   const finalExams = sortExams(filtered);
 
-  // Sortable Header Fields
-  const sortableHeaders: { label: string; field: SortField; className?: string }[] = [
+  // Dropdown "Sort by" & Asc/Desc
+  const sortableHeaders: { label: string; field: SortField }[] = [
     { label: "Title", field: "title" },
     { label: "Start Date", field: "startDate" },
-    { label: "Status", field: "status" },
     { label: "End Date", field: "endDate" },
     { label: "Duration", field: "duration" },
+    { label: "Status", field: "status" },
   ];
 
-  // Dropdown "Sort by" & Asc/Desc
   const TableHeader = () => (
-    <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-5 py-3 border-b border-greyscale-light-200 grid grid-cols-[auto_auto] gap-2 items-center justify-start">
+    <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 flex items-center gap-2">
+      {/* Sort By Dropdown */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center hover:bg-brand-primary-50 px-2 py-1 z-50 rounded-md transition-colors group">
-          <span className="font-medium text-left min-w-[160px] text-base text-greyscale-light-800 group-hover:text-brand-primary-900">
+        <DropdownMenuTrigger className="flex items-center hover:bg-brand-primary-50 px-3 py-2 rounded-md transition-colors group">
+          <span className="font-medium text-left min-w-[100px] text-base text-greyscale-light-800 group-hover:text-brand-primary-900">
             Sort by: {sortableHeaders.find((f) => f.field === sortField)?.label}
           </span>
-          <ChevronUpDownIcon className="w-3.5 h-3.5 ml-1 text-gray-400" />
+          <ChevronUpDownIcon className="w-4 h-4 ml-1 text-gray-400" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-[140px] py-1 z-50">
-          {sortableHeaders.map((field) => (
+          {sortableHeaders.map((sh) => (
             <DropdownMenuItem
-              key={field.field}
-              onClick={() => setSortField(field.field as SortField)}
-              className="flex justify-between items-center rounded-2xl hover:bg-brand-secondary-50 px-4 py-2 text-base"
+              key={sh.field}
+              onClick={() => setSortField(sh.field)}
+              className="flex justify-between items-center rounded-md hover:bg-brand-secondary-50 px-4 py-2 text-base"
             >
-              {field.label}
-              {sortField === field.field && (
-                <CheckIcon className="w-3.5 h-3.5 text-brand-primary-600" />
-              )}
+              {sh.label}
+              {sortField === sh.field && <CheckIcon className="w-4 h-4 text-brand-primary-600" />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Asc / Desc */}
       <Button
         variant="ghost"
         onClick={(e) => {
@@ -645,9 +600,8 @@ function Application() {
     </div>
   );
 
-  // Boş Ekran
   const EmptyStateComponent = () => (
-    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-8">
+    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-4">
       <Image
         src={EmptyState}
         height={180}
@@ -656,47 +610,75 @@ function Application() {
         className="hover:scale-105 transition-transform duration-300"
       />
       <p className="text-md text-brand-primary-950 mt-1 text-center">
-        No quizzes matching the criteria found.
-        <br />
+        No quizzes found.
         <Button
           variant="default"
-          className="mt-4 hover:bg-brand-primary-800"
+          className="mt-4 hover:bg-brand-primary-800 flex gap-2"
           onClick={() => router.push("/app/create-exam/")}
         >
-          <PlusIcon className="w-5 h-5 mr-2" />
+          <PlusIcon className="w-5 h-5" />
           Create new quiz
         </Button>
       </p>
     </div>
   );
 
-  // Filtre Butonları
-  const renderFilterButtons = () => (
-    <div className="flex flex-col w-full gap-3">
-      <div className="flex items-center justify-between w-full gap-4">
-        <div className="flex items-center gap-4 flex-1">
-          <span className="text-sm shrink-0 text-greyscale-light-600">Filter by:</span>
+  // Filtre Butonları & Search
+  const renderFilterAndSearch = () => (
+    <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:justify-between px-4 py-3 border-b border-greyscale-light-200">
+      {/* Filtre butonları */}
+      <div className="flex overflow-x-auto gap-2 hide-scrollbar">
+        {FILTER_OPTIONS.map((option) => {
+          const colors = {
+            Active:
+              "bg-ui-success-50 text-ui-success-600 border border-ui-success-600 hover:bg-ui-success-100 hover:text-ui-success-700",
+            Ended:
+              "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
+            Draft:
+              "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
+            Upcoming:
+              "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
+            All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
+          };
 
-          <div className="flex overflow-x-auto gap-2 flex-1 hide-scrollbar">
-            <div className="flex items-center gap-2 flex-nowrap">
-              {FILTER_OPTIONS.map((option) => (
-                <Badge
-                  key={option}
-                  variant={filter === option ? "default" : "outline"}
-                  className={cn(
-                    "cursor-pointer whitespace-nowrap transition-colors",
-                    filter === option
-                      ? "bg-brand-tertiary-100 border border-brand-tertiary-300 text-brand-primary-900 hover:bg-brand-tertiary-200"
-                      : "hover:bg-brand-tertiary-50"
-                  )}
-                  onClick={() => setFilter(option)}
-                >
-                  {option}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
+          const activeColors = {
+            Active:
+              "bg-ui-success-200 text-ui-success-600 border border-ui-success-600 hover:bg-transparent border-2",
+            Ended:
+              "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
+            Draft:
+              "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
+            Upcoming:
+              "bg-yellow-100 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
+            All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
+          };
+
+          const activeColor = activeColors[option];
+          const color = colors[option];
+          return (
+            <Button
+              key={option}
+              variant={filter === option ? "default" : "outline"}
+              className={cn(
+                "text-sm shadow-sm w-auto h-[2rem] px-3 py-2 border border-brand-primary-900",
+                filter === option ? `${activeColor}` : `${color}`
+              )}
+              onClick={() => setFilter(option)}
+            >
+              {option}
+            </Button>
+          );
+        })}
+      </div>
+
+      {/* Search input */}
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder="Search by title..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-40 sm:w-64"
+        />
       </div>
     </div>
   );
@@ -704,13 +686,11 @@ function Application() {
   return (
     <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
       <DashboardHeader withoutTabs={false} withoutNav={true} />
-
-      <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col overflow-hidden rounded-b-3xl">
+      <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col rounded-b-3xl">
         <div className="w-full flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
-          <Card className="bg-base-white rounded-3xl md:rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
+          <Card className="bg-base-white rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
             <CardHeader>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between gap-auto w-full">
-                {/* Başlık ve Açıklama */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
                 <div className="space-y-1.5">
                   <CardTitle className="text-2xl font-bold text-brand-primary-900">
                     Created quizzes
@@ -719,29 +699,27 @@ function Application() {
                     Manage and share all your created quizzes in one place
                   </CardDescription>
                 </div>
-
-                {/* Filtre ve "New Quiz" Butonu */}
-                <div className="flex flex-col-reverse sm:flex-row gap-3 sm:items-center">
-                  {renderFilterButtons()}
-
-                  <Button
-                    variant="default"
-                    className="w-full sm:w-auto justify-center sm:justify-start gap-2 py-4"
-                    onClick={() => router.push("/app/create-exam/")}
-                  >
-                    <PlusIcon className="w-5 h-5" />
-                    <span>New Quiz</span>
-                  </Button>
-                </div>
+                <Button
+                  variant="default"
+                  icon
+                  iconPosition="left"
+                  className="w-full sm:w-auto justify-center sm:justify-start gap-2 py-4"
+                  onClick={() => router.push("/app/create-exam/")}
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  <span>Create new</span>
+                </Button>
               </div>
             </CardHeader>
 
             <CardContent className="px-0 pt-0">
+              {renderFilterAndSearch()}
+
               {/* Sıralama */}
               <TableHeader />
 
-              {/* Liste */}
-              <div className="overflow-y-auto max-h-[72vh] p-6 rounded-b-3xl">
+              {/* Quiz Rows */}
+              <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
                 {finalExams.length === 0 ? (
                   <EmptyStateComponent />
                 ) : (
@@ -755,5 +733,3 @@ function Application() {
     </div>
   );
 }
-
-export default Application;

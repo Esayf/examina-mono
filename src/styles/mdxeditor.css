@@ -278,7 +278,7 @@ ol {
 } */
 
 .mdxeditor h1 {
-  font-size: 3rem !important; /* Büyük başlık */
+  font-size: 3rem;
   font-weight: normal;
   line-height: 1.2;
 }
@@ -2379,9 +2379,9 @@ form._multiFieldForm_uazmk_1194 ._formField_uazmk_1200 label {
 
 /* Başlık boyutları ve aralıkları */
 .mdxeditor h1 {
-  font-size: 2.5rem !important;
+  font-size: 2.5rem;
   font-weight: 600;
-  margin: 2rem 0 1rem;
+  margin: 1rem 0 1rem;
   line-height: 1.3;
 }
 
@@ -2394,6 +2394,26 @@ form._multiFieldForm_uazmk_1194 ._formField_uazmk_1200 label {
 .mdxeditor h3 {
   font-size: 1.75rem;
   margin: 1.6rem 0 0.6rem;
+}
+
+.mdxeditor h4 {
+  font-size: 1.5rem;
+  margin: 1.4rem 0 0.4rem;
+}
+
+.mdxeditor h5 {
+  font-size: 1.25rem;
+  margin: 1.2rem 0 0.2rem;
+}
+
+.mdxeditor h6 {
+  font-size: 1rem;
+  margin: 1rem 0 0.1rem;
+}
+
+.mdxeditor p {
+  font-size: 1.5rem;
+  margin: 1rem 0;
 }
 
 /* Link stilleri */
@@ -2421,6 +2441,36 @@ form._multiFieldForm_uazmk_1194 ._formField_uazmk_1200 label {
   background: var(--color-brand-secondary-100);
   padding: 0.2em 0.4em;
   border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .mdxeditor code {
+    font-size: 1rem; /* Tailwind text-xs */
+  }
+  .mdxeditor pre {
+    font-size: 1rem; /* Tailwind text-xs */
+  }
+  .mdxeditor h1 {
+    font-size: 1.75rem; /* Tailwind text-2xl */
+  }
+  .mdxeditor h2 {
+    font-size: 1.5rem; /* Tailwind text-xl */
+  }
+  .mdxeditor h3 {
+    font-size: 1.25rem; /* Tailwind text-lg */
+  }
+  .mdxeditor h4 {
+    font-size: 1.125rem; /* Tailwind text-base */
+  }
+  .mdxeditor h5 {
+    font-size: 1rem; /* Tailwind text-sm */
+  }
+  .mdxeditor h6 {
+    font-size: 0.875rem; /* Tailwind text-xs */
+  }
+  .mdxeditor p {
+    font-size: 1.25rem; /* Tailwind text-sm */
+  }
 }
 
 /* Tablo iyileştirmeleri */
@@ -2513,16 +2563,6 @@ form._multiFieldForm_uazmk_1194 ._formField_uazmk_1200 label {
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
   letter-spacing: -0.5px;
 }
-
-.mdxeditor h1 {
-  font-size: 3rem !important;
-  background: var(--choz-purple);
-  background-clip: text; /* Standart özellik */
-  -webkit-background-clip: text; /* Webkit prefix */
-  color: transparent; /* Fallback için */
-  -webkit-text-fill-color: transparent; /* Webkit prefix */
-}
-
 /* Interaktif Toolbar */
 .mdxeditor-toolbar {
   background: var(--color-brand-secondary-50);
