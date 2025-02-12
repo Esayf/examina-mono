@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Head from "next/head";
+import { useState, useEffect } from "react";
+import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 
 // Components
 import { Header } from "@/components/landing-page/header";
@@ -129,6 +131,75 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const store = useAppStore();
   const session = useAppSelector((state) => state.session);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+  const toggleMusic = () => {
+    if (audio) {
+      if (isMusicPlaying) {
+        audio.pause();
+        console.log("Music paused");
+      } else {
+        // Müzik çalma hatalarını yakalamak için
+        audio.play().catch((error) => {
+          console.error("Music playback error:", error);
+        });
+        console.log("Music playback attempt");
+      }
+      setIsMusicPlaying(!isMusicPlaying);
+    } else {
+      console.log("Audio object not yet loaded");
+    }
+  };
+
+  useEffect(() => {
+    try {
+      const backgroundMusic = new Audio("/music/background-music.mp3");
+      backgroundMusic.loop = true;
+      backgroundMusic.volume = 0.5;
+      setAudio(backgroundMusic);
+
+      const startMusic = () => {
+        if (backgroundMusic && !isMusicPlaying) {
+          backgroundMusic.play().catch((error) => {
+            console.error("Müzik başlatma hatası:", error);
+          });
+          setIsMusicPlaying(true);
+
+          // Başarılı başlatmadan sonra event listener'ları kaldır
+          window.removeEventListener("click", startMusic);
+          window.removeEventListener("touchstart", startMusic);
+          window.removeEventListener("keydown", startMusic);
+          window.removeEventListener("scroll", startMusic);
+          document.removeEventListener("wheel", startMusic);
+          document.removeEventListener("touchmove", startMusic);
+        }
+      };
+
+      // Kullanıcı etkileşimlerini dinle
+      window.addEventListener("click", startMusic);
+      window.addEventListener("touchstart", startMusic);
+      window.addEventListener("keydown", startMusic);
+      window.addEventListener("scroll", startMusic);
+      document.addEventListener("wheel", startMusic, { passive: true });
+      document.addEventListener("touchmove", startMusic, { passive: true });
+
+      return () => {
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        window.removeEventListener("click", startMusic);
+        window.removeEventListener("touchstart", startMusic);
+        window.removeEventListener("keydown", startMusic);
+        window.removeEventListener("scroll", startMusic);
+        document.removeEventListener("wheel", startMusic);
+        document.removeEventListener("touchmove", startMusic);
+      };
+    } catch (error) {
+      console.error("Audio oluşturma hatası:", error);
+    }
+  }, []);
 
   const handleAuthentication = async () => {
     const res = await authenticate(session);
@@ -209,6 +280,20 @@ export default function Home() {
           <div className={styles.background_pattern}>
             {/* Header */}
             <Header size="xl" state="not-connected" />
+
+            {/* Müzik kontrol butonu */}
+            <button
+              onClick={toggleMusic}
+              className="fixed top-24 right-4 z-50 p-4 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl transform hover:scale-105"
+              aria-label={isMusicPlaying ? "Müziği Kapat" : "Müziği Aç"}
+            >
+              {isMusicPlaying ? (
+                <FaVolumeUp className="w-7 h-7 text-brand-primary-800" />
+              ) : (
+                <FaVolumeMute className="w-7 h-7 text-brand-primary-800" />
+              )}
+            </button>
+
             {/* Hero Section */}
             <HeroSection />
           </div>

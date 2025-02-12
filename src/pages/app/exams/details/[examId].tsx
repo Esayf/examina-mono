@@ -172,7 +172,7 @@ const ExamDetails = () => {
         {/* Main Content */}
         <div className="w-full max-w-7xl bg-white bg-opacity-95 rounded-2xl p-6 md:p-8 shadow-md space-y-6">
           {/* Title Section */}
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between pb-3 border-b border-gray-200">
+          <div className="flex flex-row gap-2 justify-between md:flex-row md:items-center md:justify-between pb-3 border-b border-gray-200">
             {/* Back Button */}
             <div className="flex items-center gap-3">
               <Button
@@ -185,7 +185,7 @@ const ExamDetails = () => {
               </Button>
             </div>
             {/* Title & Status */}
-            <div className="flex flex-col gap-1 text-center md:text-right md:gap-2">
+            <div className="flex flex-col md:flex-row gap-1 text-center md:text-right md:gap-2">
               <h2 className="text-3xl font-bold text-gray-800">{data.title}</h2>
               <Badge
                 variant={status.toLowerCase() as any}
