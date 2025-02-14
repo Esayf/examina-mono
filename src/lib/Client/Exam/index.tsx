@@ -434,6 +434,21 @@ function getScore(examID: string): Promise<Score[]> {
   });
 }
 
+export interface PinCode {
+  examId: string;
+}
+
+function getExamByPinCode(pinCode: string): Promise<PinCode> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase.get(`/pincode/${pinCode}`).then((response) => {
+      resolve(response.data);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
 export {
   getExamList,
   createExam,
@@ -450,4 +465,5 @@ export {
   submitQuiz,
   sendEmail,
   getExamStatistics,
+  getExamByPinCode,
 };
