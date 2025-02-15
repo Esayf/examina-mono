@@ -44,7 +44,7 @@ export default function ChooseRole() {
   };
 
   const handleJoinExam = () => {
-    router.push("/app/join");
+    router.push("/join");
   };
 
   const handleGoToDashboard = () => {

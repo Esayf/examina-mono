@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 import Image from "next/image";
 import BackgroundPattern from "@/images/backgrounds/bg-7.svg";
@@ -10,18 +10,25 @@ import { getExamByPinCode } from "@/lib/Client/Exam";
 import { toast } from "react-hot-toast";
 
 export default function Join() {
-  const [pinCode, setPinCode] = useState<string>("");
   const router = useRouter();
+  const [pincode, setPincode] = useState<string>("");
 
-  const handleJoinQuiz = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pinCode.length !== 6) return;
-    
-    const response = await getExamByPinCode(pinCode)
-    .catch((error) => { toast.error(error.response.data.message); return null; });
+  const redirectToExam = async (pincode: string) => {
+    const response = await getExamByPinCode(pincode)
+    .catch((error) => { 
+      toast.error(error.response.data.message); 
+      return null; 
+    });
     
     if (!response) return;
     router.push(`/app/exams/get-started/${response.examId}`);
+  }
+
+  const handleJoinQuiz = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pincode.length !== 6) return;
+    
+    redirectToExam(pincode);
   };
 
   return (
@@ -44,8 +51,8 @@ export default function Join() {
           
           <div className="flex flex-col gap-4">
             <form onSubmit={handleJoinQuiz}>
-              <PincodeInput value={pinCode} onChange={setPinCode} />
-              <input type="hidden" value={pinCode} />
+              <PincodeInput value={pincode} onChange={setPincode} />
+              <input type="hidden" value={pincode} />
               <div className="text-sm text-gray-500 text-center mt-2">
                 Only uppercase letters (A-Z) and numbers (0-9) allowed
               </div>
