@@ -57,6 +57,7 @@ export interface CreatedExamResponse {
   endDate: Date;
   totalParticipants: number;
   status: "upcoming" | "active" | "ended";
+  pincode?: string;
 }
 
 export function getAllCreatedExams(params?: GetExamsParams): Promise<CreatedExamResponse[]> {
@@ -87,6 +88,7 @@ export interface JoinedExamResponse {
   userDurationAsSeconds: number | null;
   userScore: number | null;
   userNickName: string;
+  pincode?: string;
 }
 
 export function getAllJoinedExams(params?: GetExamsParams): Promise<JoinedExamResponse[]> {
@@ -131,6 +133,7 @@ export interface DraftExam extends Omit<Exam, "status"> {
   }[];
   status: "draft";
   totalRewardPoolAmount: number;
+  pincode?: string;
 }
 
 function getDraftExam(examID: string): Promise<DraftExam> {
