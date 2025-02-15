@@ -87,6 +87,8 @@ function LiveQuiz() {
     queryKey: ["questions", examId],
     queryFn: () => getExamQuestions(examId!),
     enabled: !!examId,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 
   const currentQuestion =
