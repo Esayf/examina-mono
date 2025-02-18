@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { QuestionDocument } from "@/lib/Client/Exam";
 import { Button, ButtonProps } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ExamNavigationProps {
   setCurrentQuestionIndex: Dispatch<SetStateAction<number>>;
@@ -25,40 +26,54 @@ export const ExamNavigation = ({
 }: ExamNavigationProps) => {
   return (
     <div className={`flex gap-4 justify-center flex-row ${className || ""}`}>
-      <div className="flex items-center gap-2 max-w-[160px] md:max-w-full overflow-x-auto">
+      <div className="flex items-center gap-2 max-w-full md:max-w-full">
         {questions.map((el, index) => {
           // Bu soru aktif mi?
           const isActive = el.number === currentQuestion?.number;
           // Bu soru cevaplanmış mı?
           const isAnswered = choices ? choices[index] !== 0 : false;
 
-          /**
-           * Renkleri tanımladığımız bir değişken:
-           * Aktif soru: "bg-brand-primary-600 text-white"
-           * Cevaplanmış soru: "bg-brand-primary-400 text-white"
-           * Cevaplanmamış soru: "bg-gray-100 text-gray-600 hover:bg-gray-200"
-           */
-          let customStyles = "bg-base-white text-brand-primary-950 hover:bg-brand-secondary-50"; // default (cevaplanmamış)
+          const baseStyles = "text-xl !h-12 !w-12";
+
+          const styleVariants = {
+            default:
+              "bg-base-white text-brand-primary-950 border-2 border-ui-error-500 hover:bg-brand-secondary-100",
+            active: "bg-brand-primary-900 text-brand-secondary-200 hover:bg-brand-primary-800",
+            answered: "bg-brand-primary-300 text-brand-primary-950 hover:bg-brand-primary-300",
+          };
+
+          let customStyles = styleVariants.default;
           if (isActive) {
-            customStyles =
-              "bg-brand-primary-900 text-brand-secondary-200 hover:bg-brand-primary-800";
+            customStyles = styleVariants.active;
           } else if (isAnswered) {
-            customStyles = "bg-brand-primary-300 text-brand-primary-950 hover:bg-brand-primary-300";
+            customStyles = styleVariants.answered;
           }
 
+          const getQuestionStatus = () => {
+            if (isActive) return "Current question 🟣";
+            if (isAnswered) return "Answered ✅";
+            return "Not answered ☑️";
+          };
+
           return (
-            <Button
-              key={index}
-              pill
-              {...ButtonProps}
-              // Button'ın variant yerine kendi Tailwind class'ımızı ekliyoruz
-              className={`text-xl transition-all duration-200 ease-in hover:scale-[0.95] active:scale-95 ${customStyles}`}
-              size="icon"
-              disabled={isPending} // isterseniz devre dışı bırakabilirsiniz
-              onClick={() => setCurrentQuestionIndex(index)}
-            >
-              {index + 1}
-            </Button>
+            <TooltipProvider key={index}>
+              <Tooltip delayDuration={100}>
+                <TooltipTrigger asChild>
+                  <Button
+                    {...ButtonProps}
+                    className={`${baseStyles} ${customStyles}`}
+                    size="icon"
+                    disabled={isPending}
+                    onClick={() => setCurrentQuestionIndex(index)}
+                  >
+                    {index + 1}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>{getQuestionStatus()}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           );
         })}
       </div>

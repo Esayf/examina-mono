@@ -58,14 +58,14 @@ export const Question = ({
             : "hover:scale-[1.02] hover:shadow-lg transition-all duration-300"
         }
         RadioGroupContainerPreview
-        relative overflow-hidden
+        relative overflow-hidden w-full
         before:absolute before:inset-0 before:bg-gradient-to-r before:from-brand-primary-50/20 before:to-transparent
         before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
       `}
       onClick={handleSelection}
       style={{ cursor: "pointer" }}
     >
-      <div className="flex items-start gap-3 p-4 whitespace-normal break-words ">
+      <div className="flex items-start gap-3 p-4 whitespace-normal break-words w-full">
         <RadioGroup.Item
           className={`
             RadioGroupItem rounded-full bg-base-white min-w-[24px] w-6 h-6 mt-1 
@@ -86,9 +86,9 @@ export const Question = ({
           </RadioGroup.Indicator>
         </RadioGroup.Item>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full">
           <ReactMarkdown
-            className="mdxeditor prose min-w-full
+            className="mdxeditor prose max-w-full w-full sm:w-[524px]
               [&_blockquote]:animate-[fadeIn_0.5s_ease-in-out]
               [&_p]:hover:translate-x-1 [&_p]:transition-transform
               [&_li]:hover:pl-4 [&_li]:transition-all
@@ -101,7 +101,7 @@ export const Question = ({
               [&_h4]:text-xl [&_h4]:font-semibold [&_h4]:mb-2 [&_h4]:text-brand-primary-950
               [&_h5]:text-lg [&_h5]:font-medium [&_h5]:mb-1 [&_h5]:text-brand-primary-950
               [&_h6]:text-base [&_h6]:font-normal [&_h6]:mb-0 [&_h6]:text-brand-primary-950
-              [&_p]:text-xl [&_p]:font-normal [&_p]:text-brand-primary-950
+              [&_p]:text-base [&_p]:font-normal [&_p]:text-brand-primary-950
               [&_a]:text-brand-secondary-950 [&_a]:font-medium [&_a]:hover:text-brand-secondary-900
               [&_code]:text-base [&_code]:bg-brand-primary-300 [&_code]:text-base-black [&_code]:font-bold [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-lg
               [&_ul]:list-disc [&_ul]:pl-8 [&_ul]:space-y-3 [&_ul]:text-lg [&_ul]:text-brand-primary-950 [&_ul]:items-center [&_ul]:justify-center

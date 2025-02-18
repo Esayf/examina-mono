@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Head from "next/head";
-import { useState, useEffect } from "react";
-import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import { FaVolumeUp, FaVolumeMute, FaStepBackward, FaStepForward } from "react-icons/fa";
 
 // Components
 import { Header } from "@/components/landing-page/header";
@@ -17,6 +17,7 @@ import TechSection from "@/components/landing-page/section-4";
 import SubCtaSection from "@/components/landing-page/sub-cta-section";
 import SocialLinks from "@/components/landing-page/social-links";
 import TeamSection from "@/components/landing-page/team-section";
+import { MusicControls } from "@/components/create-exam/step1";
 
 // Images
 import Choz from "@/images/landing-header/logo-type.svg";
@@ -29,6 +30,10 @@ import Favicon from "public/favicon.ico";
 import { authenticate } from "@/hooks/auth";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
+import { SpeakerXMarkIcon } from "@heroicons/react/24/outline";
+import { SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { Button } from "@/components/ui/button";
+import { ForwardIcon } from "@heroicons/react/24/outline";
 
 // Feature & Tech Arrays
 const featureArr = [
@@ -82,7 +87,51 @@ const techArr = [
   },
 ];
 
-// --- Structured Data (Güncellenmiş: "itemListElement" formatında) ---
+// Müzik parçaları array'i
+const musicTracks = [
+  {
+    id: 1,
+    name: "ZKPurity - Zero-Knowledge proofs protect every note",
+  },
+  {
+    id: 2,
+    name: "SnarkFlow - Cryptographic harmony in every beat",
+  },
+  {
+    id: 3,
+    name: "O1Labs - Orchestrating decentralized rhythms",
+  },
+  {
+    id: 4,
+    name: "Pickles - Recursive proofs in melodic layers",
+  },
+  {
+    id: 5,
+    name: "Kimchi - Spicy zk-SNARK seasoning",
+  },
+  {
+    id: 6,
+    name: "MinaVox - 22kb blockchain symphony",
+  },
+  {
+    id: 7,
+    name: "Snarketplace - Decentralized rhythm exchange",
+  },
+  {
+    id: 8,
+    name: "zkAppCoda - Smart contract finale",
+  },
+  {
+    id: 9,
+    name: "Coda - Original protocol rhythm",
+  },
+  {
+    id: 10,
+    name: "Berkeley - Academic blockchain sonata",
+  },
+];
+
+// --- Structured Data ---
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -96,7 +145,6 @@ const structuredData = {
     price: "0",
     priceCurrency: "USD",
   },
-  // Örnek: "itemListElement" ile bir listeyi Google'a tanıtabilirsiniz.
   itemListElement: [
     {
       "@type": "ListItem",
@@ -131,76 +179,8 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const store = useAppStore();
   const session = useAppSelector((state) => state.session);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
-  const toggleMusic = () => {
-    if (audio) {
-      if (isMusicPlaying) {
-        audio.pause();
-        console.log("Music paused");
-      } else {
-        // Müzik çalma hatalarını yakalamak için
-        audio.play().catch((error) => {
-          console.error("Music playback error:", error);
-        });
-        console.log("Music playback attempt");
-      }
-      setIsMusicPlaying(!isMusicPlaying);
-    } else {
-      console.log("Audio object not yet loaded");
-    }
-  };
-
-  useEffect(() => {
-    try {
-      const backgroundMusic = new Audio("/music/background-music.mp3");
-      backgroundMusic.loop = true;
-      backgroundMusic.volume = 0.5;
-      setAudio(backgroundMusic);
-
-      const startMusic = () => {
-        if (backgroundMusic && !isMusicPlaying) {
-          backgroundMusic.play().catch((error) => {
-            console.error("Müzik başlatma hatası:", error);
-          });
-          setIsMusicPlaying(true);
-
-          // Başarılı başlatmadan sonra event listener'ları kaldır
-          window.removeEventListener("click", startMusic);
-          window.removeEventListener("touchstart", startMusic);
-          window.removeEventListener("keydown", startMusic);
-          window.removeEventListener("scroll", startMusic);
-          document.removeEventListener("wheel", startMusic);
-          document.removeEventListener("touchmove", startMusic);
-        }
-      };
-
-      // Kullanıcı etkileşimlerini dinle
-      window.addEventListener("click", startMusic);
-      window.addEventListener("touchstart", startMusic);
-      window.addEventListener("keydown", startMusic);
-      window.addEventListener("scroll", startMusic);
-      document.addEventListener("wheel", startMusic, { passive: true });
-      document.addEventListener("touchmove", startMusic, { passive: true });
-
-      return () => {
-        if (audio) {
-          audio.pause();
-          audio.currentTime = 0;
-        }
-        window.removeEventListener("click", startMusic);
-        window.removeEventListener("touchstart", startMusic);
-        window.removeEventListener("keydown", startMusic);
-        window.removeEventListener("scroll", startMusic);
-        document.removeEventListener("wheel", startMusic);
-        document.removeEventListener("touchmove", startMusic);
-      };
-    } catch (error) {
-      console.error("Audio oluşturma hatası:", error);
-    }
-  }, []);
-
+  // Kimlik Doğrulama
   const handleAuthentication = async () => {
     const res = await authenticate(session);
     if (!res) {
@@ -209,14 +189,29 @@ export default function Home() {
     }
     toast.success("Welcome back!");
     dispatch(setSession(res.session));
-
-    // Öneri: window.location.href yerine router.push kullanımı
     router.push("/app/dashboard/choose-role");
   };
 
   const pageTitle = "Blockchain-Powered Quiz Platform for Rewards and Engagement | Choz";
   const pageDescription =
     "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol.";
+
+  // MusicControls bileşeninde:
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Parça bittiğinde bir sonrakine geç
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTrackEnd = () => {
+      setCurrentTrack((prev) => (prev + 1) % musicTracks.length);
+    };
+
+    audio.addEventListener("ended", handleTrackEnd);
+    return () => audio.removeEventListener("ended", handleTrackEnd);
+  }, []);
 
   return (
     <>
@@ -225,10 +220,8 @@ export default function Home() {
         <meta name="description" content={pageDescription} />
         <meta
           name="keywords"
-          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform, secure testing, blockchain quiz platform, zero-knowledge proof quizzes, decentralized quiz platform, secure quizzes blockchain, quiz rewards system, Web3 quiz platform, private quiz platform, Mina Protocol quizzes, blockchain-powered assessment, zero-knowledge exam system, decentralized learning tools, secure online quizzes, gamified blockchain quizzes, anonymous quiz platform, Web3 education tools, zkProof quiz platform, online quiz rewards, privacy-first quiz system, next-generation quiz platform, Choz blockchain quiz, gamification education platform, interactive learning tools, competitive quiz platform, blockchain rewards education, secure exam hosting, Web3 gamified education, decentralized competitive quizzes, exam privacy protection, smart contract education, blockchain-powered teaching tools"
+          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform..."
         />
-
-        {/* Temel SEO Meta Tagleri */}
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="robots" content="index, follow" />
@@ -236,7 +229,7 @@ export default function Home() {
         <meta name="copyright" content="Choz" />
         <meta name="application-name" content="Choz" />
 
-        {/* Open Graph / Facebook */}
+        {/* Open Graph */}
         <meta property="og:site_name" content="Choz" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://choz.io" />
@@ -257,7 +250,7 @@ export default function Home() {
         <meta name="twitter:image" content={OGImage.src} />
         <meta name="twitter:image:alt" content="Choz Platform Overview" />
 
-        {/* PWA ve Mobil Optimizasyon */}
+        {/* PWA ve Mobil */}
         <meta name="theme-color" content="#FFFFFF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Choz" />
@@ -266,7 +259,7 @@ export default function Home() {
         <link rel="icon" href={Favicon.src} type="image/x-icon" />
         <link rel="apple-touch-icon" href={AppleTouchIcon.src} />
 
-        {/* Canonical ve Dil Etiketleri */}
+        {/* Canonical */}
         <link rel="canonical" href="https://choz.io" />
         <link rel="alternate" href="https://choz.io" hrefLang="x-default" />
         <link rel="alternate" href="https://choz.io" hrefLang="en" />
@@ -276,23 +269,14 @@ export default function Home() {
       </Head>
 
       <main className="min-h-screen overflow-hidden">
+        {/* Ana Container */}
         <div className={styles.container}>
           <div className={styles.background_pattern}>
             {/* Header */}
             <Header size="xl" state="not-connected" />
 
-            {/* Müzik kontrol butonu */}
-            <button
-              onClick={toggleMusic}
-              className="fixed top-24 right-4 z-50 p-4 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl transform hover:scale-105"
-              aria-label={isMusicPlaying ? "Müziği Kapat" : "Müziği Aç"}
-            >
-              {isMusicPlaying ? (
-                <FaVolumeUp className="w-7 h-7 text-brand-primary-800" />
-              ) : (
-                <FaVolumeMute className="w-7 h-7 text-brand-primary-800" />
-              )}
-            </button>
+            {/* Music Controls */}
+            <MusicControls />
 
             {/* Hero Section */}
             <HeroSection />
@@ -317,7 +301,7 @@ export default function Home() {
         <SubCtaSection handleAuthentication={handleAuthentication} />
 
         {/* Supporters Section */}
-        <section className={`${styles.supporters_container}`} aria-label="Supporters">
+        <section className={styles.supporters_container} aria-label="Supporters">
           <h2>proudly built on.</h2>
           <Link
             href="https://minaprotocol.com/"
@@ -331,7 +315,6 @@ export default function Home() {
               src={Mina}
               alt="Mina Protocol - Blockchain Technology Partner"
               className="w-full h-full object-cover items-center"
-              // priority={true} -> Sadece above-the-fold görsel ise priority
             />
           </Link>
         </section>
@@ -343,7 +326,7 @@ export default function Home() {
   );
 }
 
-/** Basit Footer Bileşeni Örneği */
+/** Basit Footer Bileşeni */
 function LandingFooter() {
   return (
     <footer className={styles.footer_container} role="contentinfo">

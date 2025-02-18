@@ -52,7 +52,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
   }
 
   return (
-    <div className="bg-brand-secondary-100 border-b border-b-brand-secondary-100">
+    <div className="bg-white border-b border-b-gray-200">
       <div className="w-full flex justify-between items-center py-3 px-4 lg:px-8">
         {/* SOL: Logo */}
         <div
@@ -68,7 +68,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Link href="/app/dashboard/created">
               <Button
                 variant="link"
-                className="text-brand-primary-950 text-base no-underline font-book"
+                className="text-gray-700 text-base no-underline font-book hover:text-blue-600"
               >
                 Go to dashboard
               </Button>
@@ -82,7 +82,10 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Button
               variant="link"
               size="default"
-              className={cn("rounded-full hidden md:block", "text-brand-primary-950 font-book")}
+              className={cn(
+                "rounded-full hidden md:block",
+                "text-gray-700 font-book hover:text-blue-600"
+              )}
               onClick={() => router.push("/app/dashboard/joined")}
             >
               Joined
@@ -91,7 +94,10 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Button
               variant="link"
               size="default"
-              className={cn("rounded-full hidden md:block", "text-brand-primary-950 font-book")}
+              className={cn(
+                "rounded-full hidden md:block",
+                "text-gray-700 font-book hover:text-blue-600"
+              )}
               onClick={() => router.push("/app/dashboard/created")}
             >
               Created
@@ -103,17 +109,35 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
         <div className="flex items-center gap-4">
           {/* Wallet address (Desktop) */}
           {isConnected && session.session?.walletAddress && (
-            <Button variant="outline" size="default" icon={false} className="hidden md:block">
-              <a
-                href={`https://minascan.io/mainnet/account/${session.session.walletAddress}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-md font-book text-brand-primary-950 no-underline"
+            <>
+              <Button
+                variant="outline"
+                size="default"
+                icon={false}
+                className="hidden md:block hover:bg-blue-50"
               >
-                {session.session.walletAddress.slice(0, 5)}...
-                {session.session.walletAddress.slice(-5)}
-              </a>
-            </Button>
+                <a
+                  href={`https://minascan.io/mainnet/account/${session.session.walletAddress}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-md font-book text-gray-700 no-underline hover:text-blue-600"
+                >
+                  {session.session.walletAddress.slice(0, 5)}...
+                  {session.session.walletAddress.slice(-5)}
+                </a>
+              </Button>
+
+              {/* Profil Butonu */}
+              <Button
+                variant="outline"
+                size="default"
+                icon={false}
+                className="hidden md:block hover:bg-blue-50"
+                onClick={() => router.push("/app/user/profile")}
+              >
+                Profil
+              </Button>
+            </>
           )}
 
           {/* Logout button (Desktop) */}
@@ -133,11 +157,11 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
           </Button>
 
           {menuOpen && (
-            <div className="absolute top-20 right-4 w-48 z-50 shadow-lg bg-brand-secondary-50 rounded-3xl border border-greyscale-light-200">
+            <div className="absolute top-20 right-4 w-48 z-50 shadow-lg bg-white rounded-3xl border border-gray-200">
               <div className="flex flex-col items-start p-4 gap-4">
                 <Button
                   variant="outline"
-                  className="w-full bg-brand-secondary-50 text-left text-brand-primary-950 justify-between"
+                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-blue-50"
                   icon={false}
                   pill
                   size="default"
@@ -152,7 +176,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
 
                 <Button
                   variant="outline"
-                  className="w-full bg-brand-secondary-50 text-left text-brand-primary-950 justify-between"
+                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-blue-50"
                   icon={false}
                   pill
                   size="default"

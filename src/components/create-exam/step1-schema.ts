@@ -17,8 +17,8 @@ export const step1ValidationSchema = z.object({
               .min(1, {
                 message: "Answer option cannot be empty. Please enter some text.",
               })
-              .max(100, {
-                message: "Answer cannot exceed 100 characters.",
+              .max(200, {
+                message: "Answer cannot exceed 200 characters.",
               }),
           })
         )
@@ -26,6 +26,7 @@ export const step1ValidationSchema = z.object({
       questionType: z.enum(["mc", "tf"], {
         errorMap: () => ({ message: "Invalid question type." }),
       }),
+      points: z.enum(["very_hard", "hard", "medium", "easy", "no_points"]).optional(),
     })
   ),
 });

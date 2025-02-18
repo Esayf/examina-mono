@@ -127,7 +127,7 @@ export const MarkdownEditor = forwardRef<MDXEditorMethods, MarkdownEditorProps>(
     const handleImageUpload = async (image: File) => {
       try {
         const compressionOptions = {
-          maxSizeMB: 5,
+          maxSizeMB: 1,
           maxWidthOrHeight: 800,
           useWebWorker: true,
         };

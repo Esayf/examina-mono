@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 import EraseButton from "../ui/erase-button";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronUpIcon, ChevronDownIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/button";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 // Ufak kırmızı ünlem (ikon veya basit text)
 const ErrorExclamation = () => <div className="text-ui-error-600 text-lg font-bold">!</div>;
@@ -24,6 +25,7 @@ interface QuestionListItemProps {
   // isFirst?: boolean;
   // isLast?: boolean;
   dragHandle?: React.ReactNode;
+  onDuplicate?: () => void;
 }
 
 /**
@@ -47,6 +49,7 @@ export function QuestionListItem({
   onMoveUp,
   onMoveDown,
   dragHandle,
+  onDuplicate,
 }: // isFirst?: boolean,
 // isLast?: boolean,
 QuestionListItemProps) {
@@ -124,15 +127,31 @@ QuestionListItemProps) {
           <ChevronDownIcon className="w-5 h-5 text-greyscale-light-600" />
         </Button>*/}
 
-        {/* Silme butonu */}
+        {/* Duplicate butonu */}
+        {onDuplicate && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate();
+            }}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <DocumentDuplicateIcon className="h-4 w-4" />
+          </Button>
+        )}
+
+        {/* Mevcut remove butonu */}
         {onRemove && (
           <EraseButton
             index={index}
+            onConfirm={() => onRemove(index)}
+            confirmMessage="Bu soruyu silmek istediğinize emin misiniz?"
             onRemove={(e) => {
               e.stopPropagation();
-              onRemove(index);
             }}
-            className="inline-block"
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
           />
         )}
       </div>

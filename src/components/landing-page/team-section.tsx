@@ -77,22 +77,6 @@ const TeamSection: FC = () => {
             </div>
           </a>
 
-          {/* Üye 4 */}
-          <a
-            href="https://github.com/scgnkrgll"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.team_card_link}
-          >
-            <div className={styles.team_card}>
-              <div className={styles.team_photo_container}>
-                <Image className={styles.team_photo} src={Secgin} alt="Seçgin Karagülle" />
-              </div>
-              <h3>Seçgin Karagülle</h3>
-              <p>Advisor & Sr. Frontend Dev.</p>
-            </div>
-          </a>
-
           {/* Üye 5 */}
           <a
             href="https://www.linkedin.com/in/deniz-altun-5842b6175/"
@@ -106,6 +90,21 @@ const TeamSection: FC = () => {
               </div>
               <h3>Deniz Altun</h3>
               <p>Fullstack Dev. & AI Engineer</p>
+            </div>
+          </a>
+          {/* Üye 4 */}
+          <a
+            href="https://github.com/scgnkrgll"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.team_card_link}
+          >
+            <div className={styles.team_card}>
+              <div className={styles.team_photo_container}>
+                <Image className={styles.team_photo} src={Secgin} alt="Seçgin Karagülle" />
+              </div>
+              <h3>Seçgin Karagülle</h3>
+              <p>Advisor & Sr. Frontend Dev.</p>
             </div>
           </a>
 

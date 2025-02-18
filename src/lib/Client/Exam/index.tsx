@@ -164,6 +164,7 @@ export type Winner = {
 };
 
 export interface Participant {
+  isCompleted: boolean;
   userId: string;
   nickname: string; // TODO: Will be nicknames after random nickname implementation. For now username it is.
   walletAddress: string;

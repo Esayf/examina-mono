@@ -8,27 +8,54 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { RocketLaunchIcon } from "@heroicons/react/24/outline";
 
-// --- EKLENDI: Basit bir emoji listesi
-const EMOJI_OPTIONS = ["😎", "😜", "🤓", "👩‍💻", "🤩", "🤔"];
+// Daha zengin bir emoji listesi
+const EMOJI_OPTIONS = ["😎", "😜", "🤓", "👩‍💻", "🤩", "🤔", "🦸‍♂️", "🧙‍♂️", "👨‍🏫", "👩‍🎓"];
 
-// --- EKLENDI: EmojiSelector Bileşeni
-function EmojiSelector({ onSelect }: { onSelect: (emoji: string) => void }) {
+// Role kartları için ayrı bir bileşen oluşturalım
+type RoleCardProps = {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+  variant: "primary" | "tertiary";
+  emoji: string;
+};
+
+function RoleCard({ title, description, icon, onClick, variant, emoji }: RoleCardProps) {
+  const colorClasses = {
+    primary: {
+      hover: "hover:border-brand-primary-500 hover:bg-brand-primary-50",
+      icon: "bg-brand-primary-200 text-brand-primary-500",
+      shadow: "hover:shadow-[0_20px_40px_-15px_rgba(147,51,234,0.1)]",
+    },
+    tertiary: {
+      hover: "hover:border-brand-tertiary-500 hover:bg-brand-tertiary-50",
+      icon: "bg-brand-tertiary-200 text-brand-tertiary-500",
+      shadow: "hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)]",
+    },
+  };
+
   return (
-    <div className="flex flex-wrap gap-3 justify-center items-center my-4">
-      {EMOJI_OPTIONS.map((emoji) => (
-        <button
-          key={emoji}
-          type="button"
-          onClick={() => onSelect(emoji)}
-          className="text-2xl hover:scale-110 transition-transform 
-            border border-greyscale-light-300 rounded-full 
-            px-3 py-2 bg-white 
-            hover:shadow-md hover:border-brand-primary-500 
-            active:scale-105"
-        >
-          {emoji}
-        </button>
-      ))}
+    <div
+      onClick={onClick}
+      className={`w-[320px] h-[280px] bg-brand-secondary-50 rounded-3xl p-8 cursor-pointer group 
+      ${colorClasses[variant].shadow}
+      active:shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] 
+      transition-all duration-300 hover:-translate-y-2 
+      flex flex-col justify-center items-center text-center 
+      border-2 border-greyscale-light-400 
+      ${colorClasses[variant].hover}
+      active:translate-y-0`}
+    >
+      <div
+        className={`mb-6 p-4 ${colorClasses[variant].icon} rounded-full transition-all duration-300 group-hover:scale-110`}
+      >
+        {icon}
+      </div>
+      <h2 className="text-2xl font-semibold mb-3 text-gray-800">
+        {title} {emoji}
+      </h2>
+      <p className="text-gray-500 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -81,29 +108,38 @@ export default function ChooseRole() {
             <p className="text-center font-semibold text-lg mb-3">
               #Choz an emoji to represent you:
             </p>
-            <EmojiSelector onSelect={handleEmojiSelect} />
+            <div className="flex flex-wrap gap-3 justify-center items-center my-4">
+              {EMOJI_OPTIONS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => handleEmojiSelect(emoji)}
+                  className="text-2xl hover:scale-110 transition-transform 
+                    border border-greyscale-light-300 rounded-full 
+                    px-3 py-2 bg-white 
+                    hover:shadow-md hover:border-brand-primary-500 
+                    active:scale-105"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
             <p className="text-center mt-3 text-brand-primary-800 text-xl font-semibold">
               Selected Emoji: <span className="text-3xl">{chosenEmoji}</span>
             </p>
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 justify-center mt-10">
-            <div
+            <RoleCard
+              title="I'm quiz creator!"
+              description="Design your perfect quiz with our intuitive creation tools."
               onClick={handleCreateQuiz}
-              className="w-[320px] h-[280px] bg-brand-secondary-50 rounded-3xl p-8 cursor-pointer group 
-              hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] 
-              active:shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] 
-              transition-all duration-300 hover:-translate-y-2 
-              flex flex-col justify-center items-center text-center 
-              border-2 border-greyscale-light-400 
-              hover:border-brand-tertiary-500
-              hover:bg-brand-tertiary-50
-              active:translate-y-0"
-            >
-              <div className="mb-6 p-4 bg-brand-tertiary-200 rounded-full transition-all duration-300 group-hover:scale-110">
+              variant="tertiary"
+              emoji={chosenEmoji}
+              icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-brand-tertiary-500"
+                  className="h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -115,31 +151,19 @@ export default function ChooseRole() {
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-              </div>
-              <h2 className="text-2xl font-semibold mb-3 text-gray-800">
-                I&apos;m quiz creator! {chosenEmoji}
-              </h2>
-              <p className="text-gray-500 leading-relaxed">
-                Design your perfect quiz with our intuitive creation tools.
-              </p>
-            </div>
+              }
+            />
 
-            <div
+            <RoleCard
+              title="I am joiner!"
+              description="Start your exam journey in just a minute, completely free!"
               onClick={handleJoinExam}
-              className="w-[320px] h-[280px] bg-brand-secondary-50 rounded-3xl p-8 cursor-pointer group 
-              hover:shadow-[0_20px_40px_-15px_rgba(147,51,234,0.1)] 
-              active:shadow-[0_10px_20px_-10px_rgba(147,51,234,0.1)] 
-              transition-all duration-300 hover:-translate-y-2 
-              flex flex-col justify-center items-center text-center 
-              border-2 border-greyscale-light-400 
-              hover:border-brand-primary-500
-              hover:bg-brand-primary-50
-              active:translate-y-0"
-            >
-              <div className="mb-6 p-4 bg-brand-primary-200 rounded-full transition-all duration-300 group-hover:scale-110">
+              variant="primary"
+              emoji={chosenEmoji}
+              icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-brand-primary-500"
+                  className="h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -151,14 +175,8 @@ export default function ChooseRole() {
                     d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
                   />
                 </svg>
-              </div>
-              <h2 className="text-2xl font-semibold mb-3 text-gray-800">
-                I am joiner! {chosenEmoji}
-              </h2>
-              <p className="text-gray-500 leading-relaxed">
-                Start your exam journey in just a minute, completely free!
-              </p>
-            </div>
+              }
+            />
           </div>
 
           <div className="flex justify-center items-center gap-4 m-5 font-bold">

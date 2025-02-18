@@ -124,7 +124,7 @@ export default function AttendanceCharts({
         text-brand-primary-900
         flex
         flex-col
-        md:flex-row
+        lg:flex-row
         gap-10
       "
       style={{
