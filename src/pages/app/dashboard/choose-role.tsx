@@ -18,10 +18,9 @@ type RoleCardProps = {
   icon: React.ReactNode;
   onClick: () => void;
   variant: "primary" | "tertiary";
-  emoji: string;
 };
 
-function RoleCard({ title, description, icon, onClick, variant, emoji }: RoleCardProps) {
+function RoleCard({ title, description, icon, onClick, variant }: RoleCardProps) {
   const colorClasses = {
     primary: {
       hover: "hover:border-brand-primary-500 hover:bg-brand-primary-50",
@@ -52,9 +51,7 @@ function RoleCard({ title, description, icon, onClick, variant, emoji }: RoleCar
       >
         {icon}
       </div>
-      <h2 className="text-2xl font-semibold mb-3 text-gray-800">
-        {title} {emoji}
-      </h2>
+      <h2 className="text-2xl font-semibold mb-3 text-gray-800">{title}</h2>
       <p className="text-gray-500 leading-relaxed">{description}</p>
     </div>
   );
@@ -62,9 +59,6 @@ function RoleCard({ title, description, icon, onClick, variant, emoji }: RoleCar
 
 export default function ChooseRole() {
   const router = useRouter();
-
-  // EKLENDI: Seçilen emojiyi local state ile tutalım
-  const [chosenEmoji, setChosenEmoji] = useState<string>("😎");
 
   const handleCreateQuiz = () => {
     router.push("/app/create-exam");
@@ -78,11 +72,6 @@ export default function ChooseRole() {
     router.push("/app/dashboard/created");
   };
 
-  // EKLENDI: Emoji seçimini buradan yönetiyoruz
-  const handleEmojiSelect = (emoji: string) => {
-    setChosenEmoji(emoji);
-  };
-
   return (
     <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
       <Image
@@ -91,7 +80,7 @@ export default function ChooseRole() {
         className="absolute inset-0 w-full h-full object-cover z-[-1]"
       />
       <main className="flex flex-col items-center justify-center min-h-screen bg-transparent p-8">
-        <div className="max-w-4xl w-full bg-base-white rounded-3xl px-16 py-24 border border-greyscale-light-200">
+        <div className="max-w-4xl w-full bg-brand-secondary-200 rounded-3xl px-16 py-24 border border-greyscale-light-200">
           <h1 className="text-5xl font-bold text-center mb-4">
             Choose your{" "}
             <span className="text-brand-primary-800 bg-clip-text font-extrabold bg-gradient-to-r from-brand-primary-700 to-brand-primary-800">
@@ -103,39 +92,12 @@ export default function ChooseRole() {
             What will you do with Choz? We will guide you accordingly.
           </h5>
 
-          {/* EKLENDI: Emoji Seçici */}
-          <div className="mt-6 mb-2">
-            <p className="text-center font-semibold text-lg mb-3">
-              #Choz an emoji to represent you:
-            </p>
-            <div className="flex flex-wrap gap-3 justify-center items-center my-4">
-              {EMOJI_OPTIONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  onClick={() => handleEmojiSelect(emoji)}
-                  className="text-2xl hover:scale-110 transition-transform 
-                    border border-greyscale-light-300 rounded-full 
-                    px-3 py-2 bg-white 
-                    hover:shadow-md hover:border-brand-primary-500 
-                    active:scale-105"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-            <p className="text-center mt-3 text-brand-primary-800 text-xl font-semibold">
-              Selected Emoji: <span className="text-3xl">{chosenEmoji}</span>
-            </p>
-          </div>
-
           <div className="flex flex-col md:flex-row gap-8 justify-center mt-10">
             <RoleCard
               title="I'm quiz creator!"
               description="Design your perfect quiz with our intuitive creation tools."
               onClick={handleCreateQuiz}
               variant="tertiary"
-              emoji={chosenEmoji}
               icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +121,6 @@ export default function ChooseRole() {
               description="Start your exam journey in just a minute, completely free!"
               onClick={handleJoinExam}
               variant="primary"
-              emoji={chosenEmoji}
               icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -42,11 +42,11 @@ function ExamDetail() {
     enabled: !!examID && isConnected,
   });
 
-  // “kalan süre”’yi her saniye hesaplayan effect
+  // "kalan süre"yi her saniye hesaplayan effect
   useEffect(() => {
     if (!data || "message" in data || !data.exam?.startDate) return;
 
-    // Her seferinde “şimdi - examStartDate” farkını yeniden hesaplamak için bir fonksiyon
+    // Her seferinde "şimdi - examStartDate" farkını yeniden hesaplamak için bir fonksiyon
     const calcTime = () => {
       const distance = new Date(data.exam.startDate).getTime() - new Date().getTime();
       setTimer(distance);
@@ -263,30 +263,36 @@ function ExamDetail() {
           {/* Action buttons */}
           <div className="flex flex-col gap-4">
             {session.session?.walletAddress ? (
-              <Button
-                variant="default"
-                size="default"
-                icon
-                iconPosition="right"
-                className="self-center"
-                disabled={!canStartExam && isConnected}
-                onClick={() => {
-                  toast.loading("Starting exam...");
-                  startExam(examID)
-                    .then(() => {
-                      toast.remove();
-                      toast.success("You are ready to start the exam. Good luck!");
-                      router.push(`/app/exams/${data?.exam._id}`);
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                      toast.remove();
-                      toast.error("Failed to start exam!");
-                    });
-                }}
-              >
-                Join quiz <ArrowUpRightIcon className="size-4" />
-              </Button>
+              <>
+                <div className="text-center text-md">
+                  Your nickname:{" "}
+                  <span className="font-bold">{data?.participatedUser?.createdAt}</span>
+                </div>
+                <Button
+                  variant="default"
+                  size="default"
+                  icon
+                  iconPosition="right"
+                  className="self-center"
+                  disabled={!canStartExam && isConnected}
+                  onClick={() => {
+                    toast.loading("Starting exam...");
+                    startExam(examID)
+                      .then(() => {
+                        toast.remove();
+                        toast.success("You are ready to start the exam. Good luck!");
+                        router.push(`/app/exams/${data?.exam._id}`);
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                        toast.remove();
+                        toast.error("Failed to start exam!");
+                      });
+                  }}
+                >
+                  Join quiz <ArrowUpRightIcon className="size-4" />
+                </Button>
+              </>
             ) : (
               <Button
                 icon

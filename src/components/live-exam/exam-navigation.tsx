@@ -38,8 +38,8 @@ export const ExamNavigation = ({
           const styleVariants = {
             default:
               "bg-base-white text-brand-primary-950 border-2 border-ui-error-500 hover:bg-brand-secondary-100",
-            active: "bg-brand-primary-900 text-brand-secondary-200 hover:bg-brand-primary-800",
-            answered: "bg-brand-primary-300 text-brand-primary-950 hover:bg-brand-primary-300",
+            active: "bg-brand-primary-400 text-brand-primary-950 hover:bg-brand-primary-300",
+            answered: "bg-brand-primary-900 text-brand-secondary-200 hover:bg-brand-primary-300",
           };
 
           let customStyles = styleVariants.default;

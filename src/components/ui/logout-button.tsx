@@ -36,7 +36,13 @@ export const LogoutButton: React.FC = () => {
 
       {/* Desktop (md ve üzeri) => Sadece ikon, size="icon" */}
       <div className="hidden md:block">
-        <Button variant="outline" size="icon" pill onClick={() => setShowConfirm(true)}>
+        <Button
+          variant="outline"
+          size="icon"
+          className="hover:bg-brand-secondary-200"
+          pill
+          onClick={() => setShowConfirm(true)}
+        >
           <ArrowRightEndOnRectangleIcon className="w-6 h-6" />
         </Button>
       </div>

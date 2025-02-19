@@ -52,7 +52,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
   }
 
   return (
-    <div className="bg-white border-b border-b-gray-200">
+    <div className="bg-brand-secondary-100 border-b border-b-brand-secondary-100">
       <div className="w-full flex justify-between items-center py-3 px-4 lg:px-8">
         {/* SOL: Logo */}
         <div
@@ -68,7 +68,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
             <Link href="/app/dashboard/created">
               <Button
                 variant="link"
-                className="text-gray-700 text-base no-underline font-book hover:text-blue-600"
+                className="text-gray-700 text-base no-underline font-book hover:text-brand-primary-950"
               >
                 Go to dashboard
               </Button>
@@ -84,7 +84,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
               size="default"
               className={cn(
                 "rounded-full hidden md:block",
-                "text-gray-700 font-book hover:text-blue-600"
+                "text-gray-700 font-book hover:text-brand-primary-950"
               )}
               onClick={() => router.push("/app/dashboard/joined")}
             >
@@ -96,7 +96,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
               size="default"
               className={cn(
                 "rounded-full hidden md:block",
-                "text-gray-700 font-book hover:text-blue-600"
+                "text-gray-700 font-book hover:text-brand-primary-950"
               )}
               onClick={() => router.push("/app/dashboard/created")}
             >
@@ -114,13 +114,13 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                 variant="outline"
                 size="default"
                 icon={false}
-                className="hidden md:block hover:bg-blue-50"
+                className="hidden md:block hover:bg-brand-secondary-200"
               >
                 <a
                   href={`https://minascan.io/mainnet/account/${session.session.walletAddress}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-md font-book text-gray-700 no-underline hover:text-blue-600"
+                  className="text-md font-book text-gray-700 no-underline hover:text-brand-primary-950"
                 >
                   {session.session.walletAddress.slice(0, 5)}...
                   {session.session.walletAddress.slice(-5)}
@@ -132,8 +132,9 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                 variant="outline"
                 size="default"
                 icon={false}
-                className="hidden md:block hover:bg-blue-50"
+                className="hidden md:block hover:bg-brand-secondary-200"
                 onClick={() => router.push("/app/user/profile")}
+                disabled
               >
                 Profil
               </Button>
@@ -161,7 +162,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
               <div className="flex flex-col items-start p-4 gap-4">
                 <Button
                   variant="outline"
-                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-blue-50"
+                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-brand-secondary-200"
                   icon={false}
                   pill
                   size="default"
@@ -176,7 +177,7 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
 
                 <Button
                   variant="outline"
-                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-blue-50"
+                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-brand-secondary-200"
                   icon={false}
                   pill
                   size="default"

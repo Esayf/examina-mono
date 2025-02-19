@@ -85,8 +85,8 @@ const ExamDetails = () => {
 
       const matchesStatus =
         statusFilter === "all" ||
-        (statusFilter === "completed" && participant.isCompleted) ||
-        (statusFilter === "in_progress" && !participant.isCompleted);
+        (statusFilter === "completed" && participant.isCompleted === true) ||
+        (statusFilter === "in_progress" && participant.isCompleted === false);
 
       return matchesSearch && matchesStatus;
     });
@@ -347,6 +347,94 @@ const ExamDetails = () => {
             )}
           </div>
 
+          {/* Leaderboard Section */}
+          <div className="lg:col-span-3">
+            <div
+              className="bg-white rounded-xl shadow-sm border border-gray-100"
+              ref={leaderboardRef}
+            >
+              <div className="p-4 sm:p-6 border-b border-gray-100">
+                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center gap-2">
+                    <TrophyIcon className="h-5 w-5 text-brand-primary-600" />
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                      Leaderboard
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={handleDownloadPNG}>
+                      <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                      PNG
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleDownloadExcel}>
+                      <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                      Excel
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleDownloadCSV}>
+                      <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                      CSV
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleShare}>
+                      <ShareIcon className="h-4 w-4 mr-2" />
+                      Share
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 sm:p-6">
+                {leaderboard.length === 0 ? (
+                  <div className="text-center py-12 bg-gray-50 rounded-lg">
+                    <TrophyIcon className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                    <p className="text-gray-500">No leaderboard data available yet</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                            Rank
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                            User
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                            Score
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                            Time
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {leaderboard.map((entry, index) => (
+                          <tr key={entry.userId} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 font-medium">#{index + 1}</td>
+                            <td className="px-6 py-4 font-medium text-gray-900">
+                              {walletRender(entry.walletAddress)}
+                            </td>
+                            <td
+                              className={cn(
+                                "px-6 py-4",
+                                getScoreColorClass(entry.score, passingScore)
+                              )}
+                            >
+                              {entry.score}
+                            </td>
+                            <td className="px-6 py-4 text-gray-500">
+                              {formatTime(new Date(entry.finishTime))}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Participants Section */}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -402,7 +490,7 @@ const ExamDetails = () => {
                               setSearchTerm("");
                               setStatusFilter("all");
                             }}
-                            className="mt-2 text-sm text-brand-primary-600 hover:text-brand-primary-700"
+                            className="mt-2 text-sm text-brand-primary-800 hover:text-brand-primary-500"
                           >
                             Clear filters
                           </button>

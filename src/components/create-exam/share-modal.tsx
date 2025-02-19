@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { QRCodeCanvas } from "qrcode.react";
@@ -25,7 +25,7 @@ interface ShareModalProps {
   className?: string;
 }
 
-/** Paylaşılacak metin hazırlayıcı. Linki de mesaja eklemek için en kolayı, tek bir “text”te birleştirmektir. */
+/** Paylaşılacak metin hazırlayıcı. Linki de mesaja eklemek için en kolayı, tek bir "text"te birleştirmektir. */
 function getShareMessage(quizLink: string) {
   return `Hey! I just created a fun quiz—want to challenge yourself?
 
@@ -97,12 +97,12 @@ export default function ShareModal({ open, onClose, quizLink, className }: Share
     },
     // E-MAIL
     {
-      name: "E-mail",
+      name: "E-posta Listesi",
       icon: <FaEnvelope />,
       onClick: () => {
-        const subject = encodeURIComponent("Fun Quiz Invitation");
+        const subject = encodeURIComponent("Eğlenceli Quiz Daveti");
         const body = encodeURIComponent(shareText);
-        const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
+        const mailtoUrl = `mailto:?bcc=PUT_EMAILS_HERE&subject=${subject}&body=${body}`;
         window.open(mailtoUrl);
       },
     },
@@ -117,6 +117,22 @@ export default function ShareModal({ open, onClose, quizLink, className }: Share
       },
     },
   ];
+
+  /**
+   * ----------- Yeni Eklenen Bölüm -----------
+   * Burada kullanıcı, gireceği bir mail listesi ile linki paylaşabilir.
+   */
+  const [emailList, setEmailList] = useState<string>("");
+
+  const handleEmailListShare = () => {
+    if (!emailList) return alert("Lütfen en az bir e-posta adresi girin");
+
+    const emails = emailList.split(/[,;\s]+/).filter(Boolean);
+    const subject = encodeURIComponent("Eğlenceli Quiz Daveti");
+    const body = encodeURIComponent(shareText);
+    const mailtoUrl = `mailto:?bcc=${emails.join(",")}&subject=${subject}&body=${body}`;
+    window.open(mailtoUrl);
+  };
 
   // QR Kodu indirme fonksiyonu
   const downloadQRCode = () => {
@@ -182,6 +198,24 @@ export default function ShareModal({ open, onClose, quizLink, className }: Share
         <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
         <div className="mb-6">
           <CopyLink link={quizLink} label="Quiz link" />
+        </div>
+
+        {/* Email Listesi ile paylaşma bölümü */}
+        <div className="mt-6 border-t pt-6">
+          <p className="text-center text-sm text-gray-500 mb-4">E-posta Listesi ile Paylaş</p>
+          <div className="flex gap-2 mb-4">
+            <input
+              type="text"
+              placeholder="E-postalar (virgül, noktalı virgül veya boşlukla ayırın)"
+              className="flex-1 p-2 border rounded text-sm"
+              value={emailList}
+              onChange={(e) => setEmailList(e.target.value)}
+            />
+            <Button onClick={handleEmailListShare}>Listeye Gönder</Button>
+          </div>
+          <p className="text-xs text-gray-400 text-center">
+            E-postalar direkt olarak kaydedilmez, sadece mail istemcinizde açılır
+          </p>
         </div>
 
         {/* QR code + Download */}
