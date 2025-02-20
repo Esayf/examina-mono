@@ -1,8 +1,10 @@
+"use client";
+
+import React from "react";
 import { cn } from "@/lib/utils";
 import EraseButton from "../ui/erase-button";
-import { ChevronUpIcon, ChevronDownIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import { DocumentDuplicateIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/button";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 
 // Ufak kırmızı ünlem (ikon veya basit text)
 const ErrorExclamation = () => <div className="text-ui-error-600 text-lg font-bold">!</div>;
@@ -16,25 +18,19 @@ interface QuestionListItemProps {
   className?: string;
   questionText: string;
 
-  // Yukarı / Aşağı opsiyonları
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-
-  // isFirst?: boolean;
-  // isLast?: boolean;
+  // Drag & Drop handle
   dragHandle?: React.ReactNode;
+
+  // Kopyalama
   onDuplicate?: () => void;
 }
 
 /**
  * QuestionListItem
- *  - Eski "px-5 py-2 w-full" layout
- *  - Hover'da hafif scale efekti
- *  - Eksikse kırmızı ünlem
- *  - Yukarı / Aşağı oklar "stopPropagation"
- *  - Silme butonu
+ *  - Sadece `dragHandle` alanında "cursor-move" / "cursor-grab".
+ *  - Tüm item tıklanabilir => `onClick`.
+ *  - Silme butonu ve "Duplicate" butonu: e.stopPropagation() ile
+ *    item onClick'ini engeller.
  */
 export function QuestionListItem({
   index,
@@ -42,17 +38,12 @@ export function QuestionListItem({
   isActive,
   onRemove,
   isIncomplete,
-  questionText,
   className,
-  canMoveUp,
-  canMoveDown,
-  onMoveUp,
-  onMoveDown,
+  questionText,
   dragHandle,
   onDuplicate,
-}: // isFirst?: boolean,
-// isLast?: boolean,
-QuestionListItemProps) {
+}: QuestionListItemProps) {
+  // "Untitled" fallback ve kısaltma
   const truncated =
     questionText?.length > 11 ? `${questionText.slice(0, 11)}...` : questionText || "Untitled";
 
@@ -62,99 +53,78 @@ QuestionListItemProps) {
       tabIndex={0}
       onClick={onClick}
       className={cn(
-        "group relative flex justify-between items-center px-5 py-2 w-full min-h-[56px]",
-        "transition-all duration-200 hover:scale-[1.01] rounded-sm text-left cursor-pointer",
+        "group relative flex items-center px-5 py-2 w-full min-h-[56px]",
+        "transition-all duration-200 hover:scale-[1.01] rounded-sm text-left",
+        // Tüm satır tıklanabilir => pointer
+        "cursor-pointer",
         isActive ? "bg-brand-secondary-50 text-brand-primary-800" : "text-greyscale-light-500",
-        "border-b border-brand-secondary-100",
-        "hover:bg-brand-secondary-50",
+        "border-b border-brand-secondary-100 hover:bg-brand-secondary-50",
         className
       )}
     >
-      {dragHandle && <div className="drag-handle">{dragHandle}</div>}
-      {/* SOLDaki kısım: Soru no + kısaltılmış metin */}
-      <div className="flex flex-col items-start gap-1 min-h-[52px]">
-        <span
-          className={cn(
-            "font-medium text-sm",
-            isIncomplete ? "text-ui-error-600" : "text-greyscale-dark"
-          )}
-        >
-          Q{index + 1}
-        </span>
+      {/** Sadece drag handle alanı => sürükleme */}
+      {dragHandle && <div className="mr-2 flex-shrink-0 drag-handle cursor-move">{dragHandle}</div>}
 
-        {/* text */}
-        <span className="text-sm text-greyscale-light-600 w-24 overflow-hidden whitespace-nowrap text-ellipsis">
-          {truncated}
-        </span>
+      {/** İçerik */}
+      <div className="flex items-center flex-grow gap-4">
+        <div className="flex flex-col items-start gap-1 min-h-[52px]">
+          {/* Soru numarası */}
+          <span
+            className={cn(
+              "font-medium text-sm",
+              isIncomplete ? "text-ui-error-600" : "text-greyscale-dark"
+            )}
+          >
+            Q{index + 1}
+          </span>
+
+          {/* Kısa metin */}
+          <span className="text-sm text-greyscale-light-600 w-24 overflow-hidden whitespace-nowrap text-ellipsis">
+            {truncated}
+          </span>
+        </div>
+
+        {/* Ünlem + Duplicate */}
+        <div className="flex items-center gap-2">
+          {isIncomplete && (
+            <div className="w-4 h-4 flex items-center justify-center">
+              <ErrorExclamation />
+            </div>
+          )}
+          {onDuplicate && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDuplicate();
+              }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <DocumentDuplicateIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* SAĞ kısım: ünlem, yukarı/aşağı, silme */}
-      <div className="ml-auto flex items-center gap-2">
-        {/* Kırmızı ünlem (eksik) */}
-        {isIncomplete && (
-          <div className="w-4 h-4 flex items-center justify-center">
-            <ErrorExclamation />
-          </div>
-        )}
-
-        {/* Yukarı buton 
-        <Button
-          variant="ghost"
-          size="chevron"
-          className="p-1 hover:bg-brand-secondary-100 rounded-md"
-          aria-label="Move question up"
-          disabled={canMoveUp === false}
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveUp?.();
-          }}
-        >
-          <ChevronUpIcon className="w-5 h-5 text-greyscale-light-600" />
-        </Button>*/}
-
-        {/* Aşağı buton 
-        <Button
-          variant="ghost"
-          size="chevron"
-          className="p-1 hover:bg-brand-secondary-100 rounded-md"
-          aria-label="Move question down"
-          disabled={canMoveDown === false}
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveDown?.();
-          }}
-        >
-          <ChevronDownIcon className="w-5 h-5 text-greyscale-light-600" />
-        </Button>*/}
-
-        {/* Duplicate butonu */}
-        {onDuplicate && (
+      {/* Silme butonu */}
+      {onRemove && (
+        <div className="relative group inline-block">
           <Button
-            variant="ghost"
             size="icon-sm"
+            variant="ghost"
+            className="group-hover:text-ui-error-600 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
-              onDuplicate();
+              if (window.confirm("Are you sure you want to delete this question?")) {
+                onRemove(index);
+              }
             }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <DocumentDuplicateIcon className="h-4 w-4" />
+            <XMarkIcon className="size-4" />
           </Button>
-        )}
-
-        {/* Mevcut remove butonu */}
-        {onRemove && (
-          <EraseButton
-            index={index}
-            onConfirm={() => onRemove(index)}
-            confirmMessage="Bu soruyu silmek istediğinize emin misiniz?"
-            onRemove={(e) => {
-              e.stopPropagation();
-            }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

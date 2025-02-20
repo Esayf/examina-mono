@@ -63,7 +63,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-brand-secondary-500/80 backdrop-blur-lg p-4">
+    <div className="fixed inset-0 z-[9999] bg-orange-200/50 backdrop-blur-md p-4">
       {/* Modal Kutusu */}
       <div
         className="

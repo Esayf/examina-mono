@@ -264,10 +264,6 @@ function ExamDetail() {
           <div className="flex flex-col gap-4">
             {session.session?.walletAddress ? (
               <>
-                <div className="text-center text-md">
-                  Your nickname:{" "}
-                  <span className="font-bold">{data?.participatedUser?.createdAt}</span>
-                </div>
                 <Button
                   variant="default"
                   size="default"

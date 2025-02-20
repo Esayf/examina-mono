@@ -654,7 +654,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
               onDragEnd={handleDragEnd}
             >
               <SortableContext items={fields} strategy={verticalListSortingStrategy}>
-                <div className="flex-1 flex flex-row lg:flex-col gap-2 mt-4 overflow-y-auto">
+                <div className="flex-1 flex flex-row lg:flex-col gap-1 mt-4 overflow-y-auto">
                   {fields.map((field, index) => (
                     // Her soru için unique key kullan
                     <div
@@ -758,7 +758,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
             <CardTitle className="text-lg">Question settings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {/* questionType seçimi */}
               <FormField
                 control={control}
@@ -766,8 +766,8 @@ export const Step1 = ({ onNext }: Step1Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex flex-col">
-                      <FormLabel className="min-w-[10rem] items-center text-base font-medium text-brand-primary-950">
-                        Question type:
+                      <FormLabel className="min-w-[10rem] flex items-center gap-2 text-base font-semibold text-brand-primary-900">
+                        Question type
                       </FormLabel>
                       <FormControl>
                         <Select onValueChange={field.onChange} value={field.value}>
@@ -777,7 +777,9 @@ export const Step1 = ({ onNext }: Step1Props) => {
                           <SelectContent>
                             <SelectItem value="mc">Multiple choice</SelectItem>
                             <SelectItem value="tf">True/False</SelectItem>
-                            <SelectItem value="ord">Ordering (soon)</SelectItem>
+                            <SelectItem value="ord" disabled>
+                              Ordering (soon)
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -789,17 +791,21 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
               {/* Points seçimi için FormField'ı şu şekilde güncelleyin */}
               <FormField
+                disabled={true}
                 control={control}
                 name={`questions.${activeQuestionIndex}.points`}
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex flex-col">
-                      <FormLabel className="min-w-[10rem] items-center text-base font-medium text-brand-primary-950">
-                        Difficulty:
+                      <FormLabel className="min-w-[10rem] items-center text-base font-medium text-greyscale-light-500 flex gap-2">
+                        Difficulty
+                        <span className="text-xs bg-greyscale-light-100 text-greyscale-light-500 px-2 py-0.5 rounded-full">
+                          Coming soon
+                        </span>
                       </FormLabel>
                       <FormControl>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <SelectTrigger className="w-full sm:min-w-[12rem]">
+                        <Select onValueChange={field.onChange} value={field.value} disabled>
+                          <SelectTrigger className="w-full sm:min-w-[12rem] cursor-not-allowed opacity-50">
                             <SelectValue placeholder="Select a point" />
                           </SelectTrigger>
                           <SelectContent>

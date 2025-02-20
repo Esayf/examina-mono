@@ -10,6 +10,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   ArrowUpRightIcon,
   Bars3Icon,
+  UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Choz from "@/images/landing-header/choz.svg";
@@ -22,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 // Logout bileşenini içe aktarıyoruz:
 import { LogoutButton } from "./logout-button";
+import Profile from "@/pages/app/user/profile";
 
 interface DashboardHeaderProps {
   withoutNav?: boolean;
@@ -130,13 +132,14 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
               {/* Profil Butonu */}
               <Button
                 variant="outline"
-                size="default"
-                icon={false}
-                className="hidden md:block hover:bg-brand-secondary-200"
+                size="icon"
+                iconPosition="only"
+                pill
+                className="hidden md:block hover:bg-brand-secondary-200 items-center justify-center"
                 onClick={() => router.push("/app/user/profile")}
                 disabled
               >
-                Profil
+                <UserIcon className="w-5 h-5 ml-3" />
               </Button>
             </>
           )}
@@ -188,6 +191,22 @@ function DashboardHeader({ withoutNav = false, withoutTabs = false }: DashboardH
                 >
                   Joined
                   <ArrowUpRightIcon className="w-5 h-5"></ArrowUpRightIcon>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full bg-white text-left text-gray-700 justify-between hover:bg-brand-secondary-200"
+                  icon={false}
+                  pill
+                  size="default"
+                  onClick={() => {
+                    router.push("/app/user/profile");
+                    setMenuOpen(false);
+                  }}
+                  disabled
+                >
+                  Profile
+                  <UserIcon className="w-5 h-5 ml-3" />
                 </Button>
 
                 {/* Logout button (Mobile) */}

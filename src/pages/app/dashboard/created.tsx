@@ -79,13 +79,18 @@ interface ShareModalProps {
 }
 
 function getShareMessage(quizLink: string) {
-  return `Hey! I just created a #Choz quiz—want to challenge yourself?
+  return {
+    title: "Choz Quiz'e Davet",
+    message: `🎯 Hey! I just created a #Choz quiz. Want to challenge yourself?
 
-Click here to join:
+📝 Click here to join:
 ${quizLink}
 
-Let's see how you do! 🚀
-#ChozQuizzes`;
+🚀 Let's see how you do!
+
+#ChozQuizzes`,
+    shortMessage: `🎯 Hey! I just created a #Choz quiz. Want to challenge yourself?: ${quizLink} #ChozQuiz`,
+  };
 }
 
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
@@ -130,8 +135,8 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
   const handleEmailSend = () => {
     if (emails.length === 0) return;
 
-    const subject = encodeURIComponent("Check out this quiz!");
-    const body = encodeURIComponent(shareText);
+    const subject = encodeURIComponent(shareText.title);
+    const body = encodeURIComponent(shareText.message);
     window.open(`mailto:?bcc=${emails.join(",")}&subject=${subject}&body=${body}`);
     toast.success("Email client opened with recipient list");
   };
@@ -141,7 +146,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "Telegram",
       icon: <FaTelegramPlane />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.shortMessage);
         window.open(`https://t.me/share/url?text=${text}`, "_blank");
       },
     },
@@ -149,7 +154,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "Twitter",
       icon: <FaTwitter />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.shortMessage);
         window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
       },
     },
@@ -157,7 +162,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "Facebook",
       icon: <FaFacebookF />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.message);
         window.open(
           `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
             quizLink
@@ -170,8 +175,8 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "E-mail",
       icon: <FaEnvelope />,
       onClick: () => {
-        const subject = encodeURIComponent("Check out this quiz!");
-        const body = encodeURIComponent(shareText);
+        const subject = encodeURIComponent(shareText.title);
+        const body = encodeURIComponent(shareText.message);
         window.open(`mailto:?subject=${subject}&body=${body}`);
       },
     },
@@ -179,7 +184,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.shortMessage);
         window.open(`https://wa.me/?text=${text}`, "_blank");
       },
     },
@@ -314,7 +319,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-brand-primary-900">QR Kod</h3>
+              <h3 className="text-lg font-semibold text-brand-primary-900">QR Code</h3>
               <div className="flex flex-col items-center gap-4 p-4 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
                 <QRCodeCanvas
                   id="quizQrCode"
@@ -409,8 +414,8 @@ function Row({ exam }: RowProps) {
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
         exam.status !== "draft"
-          ? "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-greyscale-light-300"
-          : "cursor-pointer hover:shadow-md hover:bg-brand-secondary-50 hover:border-greyscale-light-200"
+          ? "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
+          : "cursor-pointer hover:shadow-md hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
       onClick={() => {
         if (exam.status === "draft") {
@@ -442,7 +447,7 @@ function Row({ exam }: RowProps) {
             <Badge
               variant={
                 status === "Draft"
-                  ? "secondary"
+                  ? "draft"
                   : status === "Active"
                   ? "active"
                   : status === "Ended"
@@ -739,7 +744,7 @@ export default function Application() {
             Draft:
               "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
             Upcoming:
-              "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
+              "bg-blue-50 text-blue-900 border border-blue-600 hover:bg-blue-100 hover:text-blue-700",
             All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
           };
 
@@ -751,7 +756,7 @@ export default function Application() {
             Draft:
               "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
             Upcoming:
-              "bg-yellow-100 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
+              "bg-blue-100 text-blue-900 border border-blue-600 hover:bg-transparent border-2",
             All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
           };
 

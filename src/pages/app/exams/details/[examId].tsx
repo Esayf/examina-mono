@@ -227,17 +227,12 @@ const ExamDetails = () => {
 
   const shareUrl = `${window.location.origin}/exam/${examId}`;
 
-  const averageScore = examSummaryData.averageScore;
-  const passRate = ((averageScore / passingScore) * 100).toFixed(1);
-  const avgCompletionTime = (data.duration / 60).toFixed(1);
-  const activeParticipants = filteredParticipants.length;
-
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-br from-brand-secondary-50 to-brand-secondary-100">
       <DashboardHeader withoutNav={false} withoutTabs={true} />
 
       {/* Hero Section */}
-      <div className="w-full bg-brand-primary-900 text-white py-4 sm:py-8 px-4 sm:px-6 md:px-8">
+      <div className="w-full bg-brand-primary-900 text-white py-2 sm:py-4 md:py-8 px-2 sm:px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col gap-2 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 sm:gap-4">
@@ -269,10 +264,10 @@ const ExamDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 md:px-8 py-4 sm:py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-8 py-2 sm:py-4 md:py-8">
+        <div className="grid grid-cols-1 gap-2 sm:gap-4 md:gap-6">
           {/* Quick Stats */}
-          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
             {[
               {
                 title: "Start Date",
@@ -314,7 +309,7 @@ const ExamDetails = () => {
           </div>
 
           {/* Description Card */}
-          <div className="lg:col-span-3 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-sm border border-gray-100">
             <h3 className="text-lg font-semibold mb-4 text-gray-900 flex items-center gap-2">
               <DocumentTextIcon className="h-5 w-5 text-brand-primary-600" />
               Description
@@ -329,7 +324,7 @@ const ExamDetails = () => {
           </div>
 
           {/* Analytics Section */}
-          <div className="lg:col-span-3 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-sm border border-gray-100">
             <h3 className="text-lg font-semibold mb-6 text-gray-900">Exam Analytics</h3>
             {participants.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -337,225 +332,212 @@ const ExamDetails = () => {
                 <p className="text-gray-500">No participants data available yet</p>
               </div>
             ) : (
-              <div className="flex flex-col md:flex-row gap-8 justify-center">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center">
                 <AttendanceCharts
                   participants={participants}
                   startDate={startDate}
                   endDate={endDate}
+                  passingScore={passingScore}
                 />
               </div>
             )}
           </div>
 
           {/* Leaderboard Section */}
-          <div className="lg:col-span-3">
-            <div
-              className="bg-white rounded-xl shadow-sm border border-gray-100"
-              ref={leaderboardRef}
-            >
-              <div className="p-4 sm:p-6 border-b border-gray-100">
-                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-                  <div className="flex items-center gap-2">
-                    <TrophyIcon className="h-5 w-5 text-brand-primary-600" />
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-                      Leaderboard
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={handleDownloadPNG}>
-                      <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
-                      PNG
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleDownloadExcel}>
-                      <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
-                      Excel
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleDownloadCSV}>
-                      <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
-                      CSV
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleShare}>
-                      <ShareIcon className="h-4 w-4 mr-2" />
-                      Share
-                    </Button>
-                  </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="p-3 sm:p-4 md:p-6 border-b border-gray-100">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <TrophyIcon className="h-5 w-5 text-brand-primary-600" />
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Leaderboard</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                    onClick={handleDownloadPNG}
+                  >
+                    <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                    PNG
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleDownloadExcel}>
+                    <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleDownloadCSV}>
+                    <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                    CSV
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleShare}>
+                    <ShareIcon className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-6">
+              {leaderboard.length === 0 ? (
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <TrophyIcon className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                  <p className="text-gray-500">No leaderboard data available yet</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                          Rank
+                        </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                          User
+                        </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                          Score
+                        </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                          Time
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {leaderboard.map((entry, index) => (
+                        <tr key={entry.userId} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 font-medium">#{index + 1}</td>
+                          <td className="px-6 py-4 font-medium text-gray-900">
+                            {walletRender(entry.walletAddress)}
+                          </td>
+                          <td
+                            className={cn(
+                              "px-6 py-4",
+                              getScoreColorClass(entry.score, passingScore)
+                            )}
+                          >
+                            {entry.score}
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">
+                            {formatTime(new Date(entry.finishTime))}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Participants Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="p-3 sm:p-4 md:p-6">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4">
+                <div className="w-full sm:flex-1">
+                  <Input
+                    type="search"
+                    placeholder="Search by wallet address..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="w-full sm:w-48">
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6">
-                {leaderboard.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg">
-                    <TrophyIcon className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-                    <p className="text-gray-500">No leaderboard data available yet</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="min-w-full inline-block align-middle">
+                  {filteredParticipants.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <DocumentTextIcon className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                      <p className="text-gray-500">No participants found</p>
+                      {(searchTerm || statusFilter !== "all") && (
+                        <button
+                          onClick={() => {
+                            setSearchTerm("");
+                            setStatusFilter("all");
+                          }}
+                          className="mt-2 text-sm text-brand-primary-800 hover:text-brand-primary-500"
+                        >
+                          Clear filters
+                        </button>
+                      )}
+                    </div>
+                  ) : (
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                            Rank
-                          </th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
                             User
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                            Score
+                            Start Time
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                            Time
+                            Status
                           </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
-                        {leaderboard.map((entry, index) => (
-                          <tr key={entry.userId} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4 font-medium">#{index + 1}</td>
+                        {filteredParticipants.map((participant) => (
+                          <tr
+                            key={participant.userId}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
                             <td className="px-6 py-4 font-medium text-gray-900">
-                              {walletRender(entry.walletAddress)}
-                            </td>
-                            <td
-                              className={cn(
-                                "px-6 py-4",
-                                getScoreColorClass(entry.score, passingScore)
-                              )}
-                            >
-                              {entry.score}
+                              {walletRender(participant.walletAddress)}
                             </td>
                             <td className="px-6 py-4 text-gray-500">
-                              {formatTime(new Date(entry.finishTime))}
+                              {formatTime(new Date(participant.startTime))}
+                            </td>
+                            <td className="px-6 py-4">
+                              <Badge
+                                variant={participant.isCompleted ? "default" : "secondary"}
+                                className={cn(
+                                  "text-sm px-4 py-1.5 rounded-full",
+                                  participant.isCompleted ? "bg-green-100 text-green-800" : ""
+                                )}
+                              >
+                                {participant.isCompleted ? "Completed" : "Not completed"}
+                              </Badge>
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Participants Section */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="p-4 sm:p-6 border-b border-gray-100">
-                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Participants</h3>
-                  <div className="text-xs sm:text-sm text-gray-500">
-                    Total: {filteredParticipants.length} participants
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Input
-                        type="search"
-                        placeholder="Search by wallet address..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full sm:w-48">
-                    <Select
-                      value={statusFilter}
-                      onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statusOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto -mx-4 sm:mx-0">
-                  <div className="min-w-full inline-block align-middle">
-                    {filteredParticipants.length === 0 ? (
-                      <div className="text-center py-12 bg-gray-50 rounded-lg">
-                        <DocumentTextIcon className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-                        <p className="text-gray-500">No participants found</p>
-                        {(searchTerm || statusFilter !== "all") && (
-                          <button
-                            onClick={() => {
-                              setSearchTerm("");
-                              setStatusFilter("all");
-                            }}
-                            className="mt-2 text-sm text-brand-primary-800 hover:text-brand-primary-500"
-                          >
-                            Clear filters
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <table className="w-full">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                              User
-                            </th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                              Start Time
-                            </th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                              Status
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {filteredParticipants.map((participant) => (
-                            <tr
-                              key={participant.userId}
-                              className="hover:bg-gray-50 transition-colors"
-                            >
-                              <td className="px-6 py-4 font-medium text-gray-900">
-                                {walletRender(participant.walletAddress)}
-                              </td>
-                              <td className="px-6 py-4 text-gray-500">
-                                {formatTime(new Date(participant.startTime))}
-                              </td>
-                              <td className="px-6 py-4">
-                                <Badge
-                                  variant={participant.isCompleted ? "default" : "secondary"}
-                                  className={cn(
-                                    "text-sm px-4 py-1.5 rounded-full",
-                                    participant.isCompleted ? "bg-green-100 text-green-800" : ""
-                                  )}
-                                >
-                                  {participant.isCompleted ? "Completed" : "Not completed"}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Yeni: Sınav Özet Kartı */}
-          <div className="lg:col-span-3 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          {/* Quiz Summary Card */}
+          <div className="bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-sm border border-gray-100">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Quiz Summary</h3>
-                <p className="text-sm text-gray-500">
+              <div className="flex-1 space-y-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Quiz Summary</h3>
+                <p className="text-xs sm:text-sm text-gray-500">
                   You can download the exam details as a PDF or share it with the QR code.
                 </p>
               </div>
 
-              <div className="flex flex-col lg:flex-row gap-4 items-center">
+              <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-center w-full md:w-auto">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <QRCodeSVG value={shareUrl} size={100} level="L" includeMargin={true} />
                 </div>
