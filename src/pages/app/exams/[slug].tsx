@@ -65,6 +65,8 @@ function useExamQuestions(examId?: string) {
     queryKey: ["questions", examId],
     queryFn: () => getExamQuestions(examId!),
     enabled: !!examId,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -349,7 +351,6 @@ export default function LiveQuiz() {
     isLoading: isLoadingQuestions,
     isError: isErrorQuestions,
   } = useExamQuestions(examId);
-
   // Sınavı gönderme (submit) işlemi
   const { mutate: submit, isPending } = useSubmitQuiz({
     onSuccess: () => {
