@@ -73,6 +73,7 @@ export const PincodeInput = ({ value, onChange }: PincodeInputProps) => {
             type="text"
             maxLength={1}
             defaultValue={value[index] || ""}
+            autoComplete="off"
             onPaste={(e) => handlePaste(e)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             className={cn(
