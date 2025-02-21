@@ -320,13 +320,13 @@ const musicTracks = [
   },
   {
     id: 2,
-    path: "/music/background-music-8.mp3",
-    name: "Where Dreams Take Flight",
+    path: "/music/background-music-9.mp3",
+    name: "The Spark of Creation",
   },
   {
     id: 3,
-    path: "/music/background-music-9.mp3",
-    name: "The Spark of Creation",
+    path: "/music/background-music-8.mp3",
+    name: "Where Dreams Take Flight",
   },
   {
     id: 4,

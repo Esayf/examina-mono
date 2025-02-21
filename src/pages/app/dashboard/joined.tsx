@@ -48,6 +48,7 @@ import {
   CheckIcon,
   UsersIcon,
   ArrowDownCircleIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
@@ -76,7 +77,6 @@ type SortField =
   | "endDate"
   | "duration"
   | "status"
-  | "score"
   | "completedAt"
   | "user_nickname";
 
@@ -465,11 +465,6 @@ function JoinedRow({ exam }: RowProps) {
               <DurationFormatter duration={exam.examDuration} base="minutes" />
             </div>
             <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
-              <CheckIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
-              <span className="font-medium">Score:</span>
-              <span>{exam.userScore ?? "N/A"} pts</span>
-            </div>
-            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
               <span className="font-medium">Your nickname:</span>
               <Badge
                 variant="outline"
@@ -597,35 +592,47 @@ export default function JoinedExamsPage() {
   if (!isLoading && data?.length === 0 && !isError) {
     return (
       <>
-        <DashboardHeader />
+        <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-2xl font-bold text-brand-primary-900">Joined Quizzes</h3>
           </div>
           <div className="flex justify-center items-center min-h-[600px] h-[80vh]">
-            <div className="flex flex-col gap-8 items-center text-center">
+            <div className="flex flex-col gap-8 items-center text-center max-w-lg">
               <Image
                 src={EmptyState}
                 height={280}
                 width={360}
                 alt="You haven't joined any quizzes yet"
-                className="h-auto max-w-full drop-shadow-lg"
+                className="h-auto max-w-full drop-shadow-lg transition-transform duration-300 hover:scale-105"
+                priority
               />
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <h2 className="text-3xl font-semibold text-brand-primary-950">
                   You haven't joined any quizzes yet
                 </h2>
-                <p className="text-greyscale-light-600 text-lg">Join a quiz or create your own!</p>
+                <p className="text-greyscale-light-600 text-lg">
+                  Ready to test your knowledge? Join an exciting quiz or create your own challenge!
+                </p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                 <Button
                   variant="default"
                   size="lg"
-                  onClick={() => router.push("/app")}
-                  className="gap-2 px-6 py-4 text-lg"
+                  onClick={() => router.push("/app/join-exam")}
+                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg hover:bg-brand-primary-800 transition-all duration-200"
                 >
                   Join a quiz
                   <ArrowUpRightIcon className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push("/app/create-exam")}
+                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg border-brand-primary-200 hover:bg-brand-primary-50 transition-all duration-200"
+                >
+                  Create your own
+                  <PlusIcon className="w-5 h-5" />
                 </Button>
               </div>
             </div>

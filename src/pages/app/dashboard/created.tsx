@@ -381,30 +381,7 @@ function Row({ exam }: RowProps) {
       toast.error("Failed to delete draft");
     },
   });
-
-  const now = new Date();
   const startDate = exam.startDate ? new Date(exam.startDate) : null;
-
-  // Maksimum süre kontrolü eklendi
-  const MAX_DURATION_MINUTES = 52_560_000;
-  const duration = Math.min(exam.duration || 0, MAX_DURATION_MINUTES);
-
-  const endDate =
-    startDate && duration ? new Date(startDate.getTime() + duration * 60 * 1000) : null;
-
-  let status = "Draft";
-  if (startDate) {
-    if (exam.isCompleted) {
-      status = "Ended";
-    } else if (startDate > now) {
-      status = "Upcoming";
-    } else if (endDate && endDate <= now) {
-      status = "Ended";
-    } else if (startDate <= now && (!endDate || endDate > now)) {
-      status = "Active";
-    }
-  }
-
   const quizLink = `${
     typeof window !== "undefined" ? window.location.origin : ""
   }/app/exams/get-started/${exam._id}`;
@@ -446,17 +423,17 @@ function Row({ exam }: RowProps) {
             </h3>
             <Badge
               variant={
-                status === "Draft"
+                exam.status === "draft"
                   ? "draft"
-                  : status === "Active"
+                  : exam.status === "active"
                   ? "active"
-                  : status === "Ended"
+                  : exam.status === "ended"
                   ? "ended"
                   : "upcoming"
               }
               className="shrink-0"
             >
-              {status}
+              {exam.status.charAt(0).toUpperCase() + exam.status.slice(1)}
             </Badge>
           </div>
 
