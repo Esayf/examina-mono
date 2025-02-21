@@ -9,7 +9,7 @@ import { Button } from "../ui/button";
 // Ufak kırmızı ünlem (ikon veya basit text)
 const ErrorExclamation = () => <div className="text-ui-error-600 text-lg font-bold">!</div>;
 
-interface QuestionListItemProps {
+export interface QuestionListItemProps {
   index: number;
   onClick: () => void;
   isActive: boolean;
