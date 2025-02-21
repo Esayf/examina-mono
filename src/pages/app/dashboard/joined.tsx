@@ -381,27 +381,6 @@ function JoinedRow({ exam }: RowProps) {
   const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
 
-  // Status belirleme
-  const now = new Date();
-  const startDate = exam.examStartDate ? new Date(exam.examStartDate) : null;
-  const MAX_DURATION_MINUTES = 52_560_000;
-  const duration = Math.min(exam.examDuration || 0, MAX_DURATION_MINUTES);
-  const endDate =
-    startDate && duration ? new Date(startDate.getTime() + duration * 60 * 1000) : null;
-
-  let status = "Draft";
-  if (startDate) {
-    if (exam.completedAt) {
-      status = "Ended";
-    } else if (startDate > now) {
-      status = "Upcoming";
-    } else if (endDate && endDate <= now) {
-      status = "Ended";
-    } else if (startDate <= now && (!endDate || endDate > now)) {
-      status = "Active";
-    }
-  }
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPulse(false);
@@ -437,17 +416,11 @@ function JoinedRow({ exam }: RowProps) {
             </h3>
             <Badge
               variant={
-                status === "Draft"
-                  ? "draft"
-                  : status === "Active"
-                  ? "active"
-                  : status === "Ended"
-                  ? "ended"
-                  : "upcoming"
+                exam.status
               }
               className="shrink-0"
             >
-              {status}
+              {exam.status.charAt(0).toUpperCase() + exam.status.slice(1)}
             </Badge>
           </div>
 
