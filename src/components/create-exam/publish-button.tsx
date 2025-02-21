@@ -199,7 +199,7 @@ export const PublishButton = ({ onPublishStart }: PublishButtonProps) => {
             passingScore: step2Values.passingScore || 0,
             contractAddress: contractAddressNullable,
             deployJobId: txStatus.tx.jobId,
-          })
+          }),
         });
       } catch (error) {
         toast.error("Failed to create exam");

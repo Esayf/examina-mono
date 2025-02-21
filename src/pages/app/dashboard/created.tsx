@@ -57,6 +57,8 @@ import {
   ClockIcon,
   UsersIcon,
   CheckIcon,
+  ArrowDownOnSquareIcon,
+  ArrowDownCircleIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 import { QRCodeCanvas } from "qrcode.react";
@@ -77,24 +79,74 @@ interface ShareModalProps {
 }
 
 function getShareMessage(quizLink: string) {
-  return `Hey! I just created a #Choz quiz—want to challenge yourself?
+  return {
+    title: "Choz Quiz'e Davet",
+    message: `🎯 Hey! I just created a #Choz quiz. Want to challenge yourself?
 
-Click here to join:
+📝 Click here to join:
 ${quizLink}
 
-Let's see how you do! 🚀
-#ChozQuizzes`;
+🚀 Let's see how you do!
+
+#ChozQuizzes`,
+    shortMessage: `🎯 Hey! I just created a #Choz quiz. Want to challenge yourself?: ${quizLink} #ChozQuiz`,
+  };
 }
 
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
   const shareText = getShareMessage(quizLink);
+  const [emails, setEmails] = useState<string[]>([]);
+  const [currentInput, setCurrentInput] = useState("");
+  const [isEmailListCopied, setIsEmailListCopied] = useState(false);
+
+  const handleAddEmail = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const emailsToAdd = currentInput
+        .split(/[,;\s]+/)
+        .map((email) => email.trim())
+        .filter((email) => email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        .filter((email) => !emails.includes(email));
+
+      if (emailsToAdd.length) {
+        setEmails((prev) => [...prev, ...emailsToAdd]);
+        setCurrentInput("");
+      }
+    }
+  };
+
+  const handleRemoveEmail = (emailToRemove: string) => {
+    setEmails(emails.filter((email) => email !== emailToRemove));
+  };
+
+  const handleEmailListCopy = () => {
+    if (emails.length === 0) return;
+
+    navigator.clipboard
+      .writeText(emails.join(", "))
+      .then(() => {
+        toast.success("Email list copied to clipboard");
+        setIsEmailListCopied(true);
+        setTimeout(() => setIsEmailListCopied(false), 2000);
+      })
+      .catch(() => toast.error("Failed to copy email list"));
+  };
+
+  const handleEmailSend = () => {
+    if (emails.length === 0) return;
+
+    const subject = encodeURIComponent(shareText.title);
+    const body = encodeURIComponent(shareText.message);
+    window.open(`mailto:?bcc=${emails.join(",")}&subject=${subject}&body=${body}`);
+    toast.success("Email client opened with recipient list");
+  };
 
   const shareOptions = [
     {
       name: "Telegram",
       icon: <FaTelegramPlane />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.shortMessage);
         window.open(`https://t.me/share/url?text=${text}`, "_blank");
       },
     },
@@ -102,7 +154,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "Twitter",
       icon: <FaTwitter />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.shortMessage);
         window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
       },
     },
@@ -110,7 +162,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "Facebook",
       icon: <FaFacebookF />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.message);
         window.open(
           `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
             quizLink
@@ -123,8 +175,8 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "E-mail",
       icon: <FaEnvelope />,
       onClick: () => {
-        const subject = encodeURIComponent("Check out this quiz!");
-        const body = encodeURIComponent(shareText);
+        const subject = encodeURIComponent(shareText.title);
+        const body = encodeURIComponent(shareText.message);
         window.open(`mailto:?subject=${subject}&body=${body}`);
       },
     },
@@ -132,7 +184,7 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
       onClick: () => {
-        const text = encodeURIComponent(shareText);
+        const text = encodeURIComponent(shareText.shortMessage);
         window.open(`https://wa.me/?text=${text}`, "_blank");
       },
     },
@@ -161,64 +213,135 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto px-4 py-4 relative bg-base-white max-h-[524px] shadow-xl rounded-2xl">
+      <DialogContent className="max-w-2xl mx-auto p-6 relative bg-base-white max-h-[90vh] overflow-y-auto shadow-xl rounded-2xl w-[95%] sm:w-full">
+        {/* Kapatma butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-200 hover:border-brand-primary-900 hover:bg-brand-secondary-200 transition-colors duration-200"
+          className="absolute top-6 right-6 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-200 hover:border-brand-primary-900 hover:bg-brand-secondary-200 transition-colors duration-200"
         >
           <XMarkIcon className="w-5 h-5" />
         </button>
 
-        <DialogHeader>
-          <DialogTitle className="text-md font-bold text-brand-primary-900">
-            Share with:
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-2xl font-bold text-brand-primary-900">
+            Choose your share options
           </DialogTitle>
         </DialogHeader>
 
-        {/* Sosyal medya butonları */}
-        <div className="flex justify-center items-center gap-5 mt-4 mb-6">
-          {shareOptions.map(({ name, icon, onClick }) => (
-            <button
-              key={name}
-              onClick={onClick}
-              className="
-                flex flex-col items-center
-                text-brand-primary-950
-                hover:text-brand-primary-600
-                focus:outline-none
-                transition-all duration-150
-                hover:scale-105 active:scale-95
-                group
-              "
-            >
-              <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-1 group-hover:bg-brand-primary-50 transition-colors">
-                <span className="text-xl text-brand-primary-800 group-hover:text-brand-primary-600">
-                  {icon}
-                </span>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+          {/* Sol taraf - Sosyal medya ve link paylaşımı */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">Quick Share</h3>
+              <div className="flex flex-wrap gap-6 items-center justify-center">
+                {shareOptions.map(({ name, icon, onClick }) => (
+                  <button
+                    key={name}
+                    onClick={onClick}
+                    className="flex flex-col items-center text-brand-primary-950 hover:text-brand-primary-600 focus:outline-none transition-all duration-150 hover:scale-105 active:scale-95 group"
+                  >
+                    <div className="w-14 h-14 flex items-center justify-center bg-gray-100 rounded-xl mb-2 group-hover:bg-brand-primary-50 transition-colors">
+                      <span className="text-2xl text-brand-primary-800 group-hover:text-brand-primary-600">
+                        {icon}
+                      </span>
+                    </div>
+                    <span className="text-xs font-medium text-center">{name}</span>
+                  </button>
+                ))}
               </div>
-              <span className="text-xs font-medium">{name}</span>
-            </button>
-          ))}
-        </div>
+            </div>
 
-        <p className="text-center text-sm text-greyscale-light-500 mb-2">Or share with link</p>
-        <div className="mb-6">
-          <CopyLink link={quizLink} label="Quiz link" />
-        </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">Share with link</h3>
+              <CopyLink link={quizLink} label="Quiz link" />
+            </div>
+          </div>
 
-        {/* QR code + download */}
-        <div className="flex flex-col items-center gap-3">
-          <QRCodeCanvas
-            id="quizQrCode"
-            value={quizLink}
-            size={150}
-            bgColor="#FFFFFF"
-            className="rounded-lg"
-            level="M"
-          />
-          <Button variant="outline" onClick={downloadQRCode}>
-            Download QR
-          </Button>
+          {/* Sağ taraf - Email ve QR */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">
+                Share with email list
+              </h3>
+              <div className="space-y-3">
+                {emails.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
+                    {emails.map((email) => (
+                      <Badge
+                        key={email}
+                        variant="secondary"
+                        className="pl-3 pr-2 py-1.5 flex items-center gap-2 group hover:bg-greyscale-light-200"
+                      >
+                        {email}
+                        <button
+                          onClick={() => handleRemoveEmail(email)}
+                          className="hover:bg-greyscale-light-300 rounded-full p-1 transition-colors"
+                        >
+                          <XMarkIcon className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-3">
+                  <Input
+                    id="emailGroupTrigger"
+                    placeholder="Enter email addresses (auto-complete with comma, space or semicolon)"
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    onKeyDown={handleAddEmail}
+                    className="flex-1"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleEmailListCopy}
+                      disabled={emails.length === 0}
+                      className="flex-1"
+                    >
+                      {isEmailListCopied ? <CheckIcon className="w-4 h-4" /> : "Copy"}
+                    </Button>
+                    <Button
+                      variant="default"
+                      onClick={handleEmailSend}
+                      disabled={emails.length === 0}
+                      className="flex-1"
+                    >
+                      Send
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-greyscale-light-500">
+                  Emails will be sent as BCC to protect privacy
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">QR Code</h3>
+              <div className="flex flex-col items-center gap-4 p-4 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
+                <QRCodeCanvas
+                  id="quizQrCode"
+                  value={quizLink}
+                  size={180}
+                  bgColor="#FFFFFF"
+                  className="rounded-lg bg-white p-2"
+                  level="M"
+                />
+                <Button
+                  variant="outline"
+                  icon={true}
+                  iconPosition="left"
+                  onClick={downloadQRCode}
+                  className="w-full"
+                >
+                  <ArrowDownCircleIcon className="w-6 h-6" />
+                  Download QR
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -258,21 +381,7 @@ function Row({ exam }: RowProps) {
       toast.error("Failed to delete draft");
     },
   });
-
-  const now = new Date();
   const startDate = exam.startDate ? new Date(exam.startDate) : null;
-  const endDate = startDate ? new Date(startDate.getTime() + Number(exam.duration) * 60_000) : null;
-
-  let status = "Draft";
-  if (startDate && exam.status !== "draft") {
-    if (startDate > now) {
-      status = "Upcoming";
-    } else if (startDate <= now && (!endDate || endDate > now) && !exam.isCompleted) {
-      status = "Active";
-    } else if ((endDate && endDate <= now) || exam.isCompleted) {
-      status = "Ended";
-    }
-  }
 
   const quizLink = (typeof window !== "undefined" ? window.location.origin : "")
   + (exam.pincode ? `/join/${exam.pincode}` : `/app/exams/get-started/${exam._id}`);
@@ -282,8 +391,8 @@ function Row({ exam }: RowProps) {
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
         exam.status !== "draft"
-          ? "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-greyscale-light-300"
-          : "cursor-pointer hover:shadow-md hover:bg-brand-secondary-50 hover:border-greyscale-light-200"
+          ? "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
+          : "cursor-pointer hover:shadow-md hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
       onClick={() => {
         if (exam.status === "draft") {
@@ -314,17 +423,17 @@ function Row({ exam }: RowProps) {
             </h3>
             <Badge
               variant={
-                status === "Draft"
-                  ? "secondary"
-                  : status === "Active"
+                exam.status === "draft"
+                  ? "draft"
+                  : exam.status === "active"
                   ? "active"
-                  : status === "Ended"
+                  : exam.status === "ended"
                   ? "ended"
                   : "upcoming"
               }
               className="shrink-0"
             >
-              {status}
+              {exam.status.charAt(0).toUpperCase() + exam.status.slice(1)}
             </Badge>
           </div>
 
@@ -343,7 +452,7 @@ function Row({ exam }: RowProps) {
             <div className="flex items-center gap-1">
               <UsersIcon className="w-4 h-4 text-brand-primary-600" />
               <span className="font-medium">Participants:</span>
-              <span>{(exam as any).totalParticipants ?? "N/A"}</span>
+              <span>{(exam as any).totalParticipants ?? "0"}</span>
             </div>
           </div>
         </div>
@@ -465,48 +574,58 @@ export default function Application() {
 
   // Status bulma
   function getStatus(exam: DraftExam): string {
-    if (exam.status === "draft") return "Draft";
+    // Draft durumu kontrolü:
+    // 1. Status draft ise
+    // 2. Başlık yoksa
+    // 3. Başlangıç tarihi yoksa
+    // 4. Süre yoksa veya 0 ise
+    if (
+      exam.status === "draft" ||
+      !exam.title ||
+      !exam.startDate ||
+      !exam.duration ||
+      exam.duration <= 0
+    ) {
+      return "Draft";
+    }
 
+    // Diğer status kontrolleri
     const now = new Date();
     const startDate = exam.startDate ? new Date(exam.startDate) : null;
-    const endDate = startDate
-      ? new Date(startDate.getTime() + (exam.duration || 0) * 60_000)
-      : null;
 
+    const MAX_DURATION_MINUTES = 52_560_000;
+    const duration = Math.min(exam.duration || 0, MAX_DURATION_MINUTES);
+
+    const endDate =
+      startDate && duration ? new Date(startDate.getTime() + duration * 60 * 1000) : null;
+
+    if (exam.isCompleted) return "Ended";
     if (startDate && startDate > now) return "Upcoming";
-    if (startDate && startDate <= now && (!endDate || endDate > now) && !exam.isCompleted) {
-      return "Active";
-    }
-    if ((endDate && endDate <= now) || exam.isCompleted) {
-      return "Ended";
-    }
-    return "Upcoming";
+    if (endDate && endDate <= now) return "Ended";
+    if (startDate && startDate <= now && (!endDate || endDate > now)) return "Active";
+
+    return "Draft";
   }
 
   // Filtre
   function filterExams(exams: DraftExam[]) {
-    // 1) Status filtresi
-    const filteredByStatus = exams.filter((exam) => {
+    return exams.filter((exam) => {
+      // Önce başlık araması
+      const titleMatch =
+        !searchTerm.trim() || (exam.title?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+
+      if (!titleMatch) return false;
+
+      // Status kontrolü
       const status = getStatus(exam);
 
+      // Filtre kontrolü
       if (filter === "All") {
         return true;
-      } else if (filter === "Draft") {
-        return exam.status === "draft";
-      } else {
-        return status === filter;
       }
+
+      return status === filter;
     });
-
-    // 2) Arama (title içinde searchTerm)
-    if (searchTerm.trim().length > 0) {
-      return filteredByStatus.filter((exam) => {
-        const title = exam.title?.toLowerCase() || "";
-        return title.includes(searchTerm.toLowerCase());
-      });
-    }
-
-    return filteredByStatus;
   }
 
   // Sıralama
@@ -602,7 +721,7 @@ export default function Application() {
             Draft:
               "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
             Upcoming:
-              "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
+              "bg-blue-50 text-blue-900 border border-blue-600 hover:bg-blue-100 hover:text-blue-700",
             All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
           };
 
@@ -614,7 +733,7 @@ export default function Application() {
             Draft:
               "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
             Upcoming:
-              "bg-yellow-100 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
+              "bg-blue-100 text-blue-900 border border-blue-600 hover:bg-transparent border-2",
             All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
           };
 

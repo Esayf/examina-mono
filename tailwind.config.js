@@ -270,6 +270,17 @@ module.exports = {
         64: "var(--spacing-64)",
       },
 
+      maxWidth: {
+        "max-w-500": "var(--max-width-500)",
+        "max-w-520": "var(--max-width-520)",
+        "max-w-540": "var(--max-width-540)",
+        "max-w-560": "var(--max-width-560)",
+        "max-w-580": "var(--max-width-580)",
+        "max-w-600": "var(--max-width-600)",
+        "max-w-620": "var(--max-width-620)",
+        "max-w-640": "var(--max-width-640)",
+      },
+
       margin: {
         "m-0": "var(--spacing-0)",
         "m-2": "var(--spacing-2)",

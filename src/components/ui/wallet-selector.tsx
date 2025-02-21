@@ -30,7 +30,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
 
   if (!isOpen) return null;
 
-  // 2) Örnek fonksiyon: Masaüstü “Connect wallet” butonu
+  // 2) Örnek fonksiyon: Masaüstü "Connect wallet" butonu
   const handleAuthentication = async () => {
     const res = await authenticate(session);
     if (!res) {
@@ -63,7 +63,7 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-brand-secondary-500/80 backdrop-blur-lg p-4">
+    <div className="fixed inset-0 z-[9999] bg-orange-200/50 backdrop-blur-md p-4">
       {/* Modal Kutusu */}
       <div
         className="
@@ -117,6 +117,27 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
           >
             <Image src={Auro} height={20} alt="Auro Logo" />
             <p>(Recommended)</p>
+          </button>
+
+          <button
+            disabled
+            className="
+              w-full
+              flex items-center gap-3
+              bg-brand-secondary-50
+              hover:bg-brand-secondary-200
+              px-4 py-3
+              border
+              border-brand-primary-900
+              rounded-full
+              transition
+              disabled:bg-greyscale-light-100
+              disabled:border-greyscale-light-200
+              disabled:text-greyscale-light-300
+            "
+            onClick={() => alert("Pallad wallet flow...")}
+          >
+            <Image src={Pallad} height={20} alt="Pallad Logo" className="opacity-50" />
           </button>
 
           {/* Bölücü (OR) */}

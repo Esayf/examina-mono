@@ -15,7 +15,7 @@ import styles from "@/styles/Landing.module.css";
 
 import session, { SessionSlice, setSession } from "@/features/client/session";
 import { authenticate } from "@/hooks/auth";
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { toast } from "react-hot-toast";
 
 interface Step {
@@ -25,20 +25,6 @@ interface Step {
   stepImg?: StaticImageData | string;
   className?: string;
 }
-
-const handleAuthentication = async () => {
-  const res = await authenticate(session);
-  if (!res) {
-    toast.error("Failed to authenticate wallet!");
-    return;
-  }
-  toast.success("Welcome back!", {
-    duration: 15000,
-    className: "chozToastSuccess",
-  });
-  dispatch(setSession(res.session));
-  window.location.href = "/app/dashboard/choose-role";
-};
 
 const stepArray: Step[] = [
   {
@@ -68,6 +54,21 @@ interface HowItWorksSectionProps {
 }
 
 export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = stepArray }) => {
+  const dispatch = useAppDispatch();
+  const session = useAppSelector((state) => state.session);
+  const handleAuthentication = async () => {
+    const res = await authenticate(session);
+    if (!res) {
+      toast.error("Failed to authenticate wallet!");
+      return;
+    }
+    toast.success("Welcome back!", {
+      duration: 15000,
+      className: "chozToastSuccess",
+    });
+    dispatch(setSession(res.session));
+    window.location.href = "/app/dashboard/choose-role";
+  };
   return (
     <section className={styles.section_container} aria-label="How it Works">
       <div className={styles.container}>
@@ -117,15 +118,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
               icon={true}
               iconPosition="right"
               className="transition-transform duration-300 hover:scale-105 active:scale-95 hover:bg-brand-tertiary-500 active:bg-brand-tertiary-900"
-              onClick={async () => {
-                const res = await authenticate(session);
-                if (!res) {
-                  toast.error("Failed to authenticate wallet!");
-                  return;
-                }
-                toast.success("Successfully authenticated wallet!");
-                dispatch(setSession(res));
-              }}
+              onClick={handleAuthentication}
             >
               Create now
               <ArrowUpRightIcon className="size-6" color="brand-primary-950" />
@@ -136,6 +129,3 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ stepArr = 
     </section>
   );
 };
-function dispatch(arg0: { payload: SessionSlice; type: "session/setSession" }) {
-  throw new Error("Function not implemented.");
-}

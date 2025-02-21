@@ -46,6 +46,9 @@ import {
   CalendarIcon,
   ClockIcon,
   CheckIcon,
+  UsersIcon,
+  ArrowDownCircleIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
@@ -53,6 +56,7 @@ import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from 
 import { QRCodeCanvas } from "qrcode.react";
 import { Input } from "@/components/ui/input";
 import DurationFormatter from "@/components/ui/time/duration-formatter";
+import { toast } from "react-hot-toast";
 
 /* ---------------------------------------------------------
    1) Katıldığı quiz verisini çekecek API fonksiyonu.
@@ -73,9 +77,10 @@ type SortField =
   | "endDate"
   | "duration"
   | "status"
-  | "score"
-  | "completedAt";
+  | "completedAt"
+  | "user_nickname";
 
+/****************************************
 /****************************************
  * Sıralama ikonu (küçük helper)
  ****************************************/
@@ -99,120 +104,265 @@ interface ShareModalProps {
   quizLink: string;
 }
 
+function getShareMessage(quizLink: string) {
+  return `Hey! I just created a #Choz quiz—want to challenge yourself?
+
+Click here to join:
+${quizLink}
+
+Let's see how you do! 🚀
+#ChozQuizzes`;
+}
+
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
-  // Paylaşım seçenekleri
+  const shareText = getShareMessage(quizLink);
+  const [emails, setEmails] = useState<string[]>([]);
+  const [currentInput, setCurrentInput] = useState("");
+  const [isEmailListCopied, setIsEmailListCopied] = useState(false);
+
+  const handleAddEmail = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const emailsToAdd = currentInput
+        .split(/[,;\s]+/)
+        .map((email) => email.trim())
+        .filter((email) => email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        .filter((email) => !emails.includes(email));
+
+      if (emailsToAdd.length) {
+        setEmails((prev) => [...prev, ...emailsToAdd]);
+        setCurrentInput("");
+      }
+    }
+  };
+
+  const handleRemoveEmail = (emailToRemove: string) => {
+    setEmails(emails.filter((email) => email !== emailToRemove));
+  };
+
+  const handleEmailListCopy = () => {
+    if (emails.length === 0) return;
+
+    navigator.clipboard
+      .writeText(emails.join(", "))
+      .then(() => {
+        toast.success("Email list copied to clipboard");
+        setIsEmailListCopied(true);
+        setTimeout(() => setIsEmailListCopied(false), 2000);
+      })
+      .catch(() => toast.error("Failed to copy email list"));
+  };
+
+  const handleEmailSend = () => {
+    if (emails.length === 0) return;
+
+    const subject = encodeURIComponent("Check out this quiz!");
+    const body = encodeURIComponent(shareText);
+    window.open(`mailto:?bcc=${emails.join(",")}&subject=${subject}&body=${body}`);
+    toast.success("Email client opened with recipient list");
+  };
+
   const shareOptions = [
     {
       name: "Telegram",
       icon: <FaTelegramPlane />,
-      onClick: () =>
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(quizLink)}`, "_blank"),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://t.me/share/url?text=${text}`, "_blank");
+      },
     },
     {
       name: "Twitter",
       icon: <FaTwitter />,
-      onClick: () =>
-        window.open(
-          `https://twitter.com/intent/tweet?url=${encodeURIComponent(quizLink)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+      },
     },
     {
       name: "Facebook",
       icon: <FaFacebookF />,
-      onClick: () =>
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(quizLink)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            quizLink
+          )}&quote=${text}`,
           "_blank"
-        ),
+        );
+      },
     },
     {
       name: "E-mail",
       icon: <FaEnvelope />,
-      onClick: () =>
-        window.open(`mailto:?subject=Quiz&body=${encodeURIComponent(quizLink)}`, "_blank"),
+      onClick: () => {
+        const subject = encodeURIComponent("Check out this quiz!");
+        const body = encodeURIComponent(shareText);
+        window.open(`mailto:?subject=${subject}&body=${body}`);
+      },
     },
     {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
-      onClick: () =>
-        window.open(
-          `https://wa.me/?text=${encodeURIComponent(`Check this quiz out! ${quizLink}`)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+      },
     },
   ];
 
-  // QR kodu indirme
+  // QR code download
   const downloadQRCode = () => {
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
-    if (!canvas) return;
-    const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    const link = document.createElement("a");
-    link.href = pngUrl;
-    link.download = "quiz-qrcode.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!canvas) {
+      toast.error("QR code could not be generated");
+      return;
+    }
+    try {
+      const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      const link = document.createElement("a");
+      link.href = pngUrl;
+      link.download = "quiz-qrcode.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("QR code downloaded successfully");
+    } catch (error) {
+      toast.error("Failed to download QR code");
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto p-4 relative bg-base-white">
+      <DialogContent className="max-w-2xl mx-auto p-6 relative bg-base-white max-h-[90vh] overflow-y-auto shadow-xl rounded-2xl w-[95%] sm:w-full">
         {/* Kapatma butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-greyscale-light-600 hover:bg-brand-primary-50 rounded-full p-1 transition-colors"
+          className="absolute top-6 right-6 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-200 hover:border-brand-primary-900 hover:bg-brand-secondary-200 transition-colors duration-200"
         >
-          <XMarkIcon className="w-6 h-6" />
+          <XMarkIcon className="w-5 h-5" />
         </button>
 
-        <DialogHeader>
-          <DialogTitle className="text-md font-bold text-brand-primary-900">
-            Share with:
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-2xl font-bold text-brand-primary-900">
+            Choose your share options
           </DialogTitle>
         </DialogHeader>
 
-        {/* Sosyal medya ikonları */}
-        <div className="flex justify-center items-center gap-5 mt-4 mb-6">
-          {shareOptions.map(({ name, icon, onClick }) => (
-            <button
-              key={name}
-              onClick={onClick}
-              className={cn(
-                "flex flex-col items-center",
-                "text-brand-primary-950",
-                "hover:text-brand-primary-900",
-                "focus:outline-none",
-                "transition-transform duration-150",
-                "hover:scale-105 active:scale-95"
-              )}
-            >
-              <div className="w-12 h-12 flex items-center justify-center bg-brand-primary-50/80 hover:bg-brand-primary-100 rounded-full mb-1 transition-colors">
-                <span className="text-xl text-brand-primary-900">{icon}</span>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+          {/* Sol taraf - Sosyal medya ve link paylaşımı */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">Quick Share</h3>
+              <div className="flex flex-wrap gap-6 items-center justify-center">
+                {shareOptions.map(({ name, icon, onClick }) => (
+                  <button
+                    key={name}
+                    onClick={onClick}
+                    className="flex flex-col items-center text-brand-primary-950 hover:text-brand-primary-600 focus:outline-none transition-all duration-150 hover:scale-105 active:scale-95 group"
+                  >
+                    <div className="w-14 h-14 flex items-center justify-center bg-gray-100 rounded-xl mb-2 group-hover:bg-brand-primary-50 transition-colors">
+                      <span className="text-2xl text-brand-primary-800 group-hover:text-brand-primary-600">
+                        {icon}
+                      </span>
+                    </div>
+                    <span className="text-xs font-medium text-center">{name}</span>
+                  </button>
+                ))}
               </div>
-              <span className="text-xs font-medium">{name}</span>
-            </button>
-          ))}
-        </div>
+            </div>
 
-        {/* Link kopyala */}
-        <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
-        <div className="mb-6">
-          <CopyLink link={quizLink} label="Quiz link" />
-        </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">Share with link</h3>
+              <CopyLink link={quizLink} label="Quiz link" />
+            </div>
+          </div>
 
-        {/* QR kod + download butonu */}
-        <div className="flex flex-col items-center gap-3">
-          <QRCodeCanvas id="quizQrCode" value={quizLink} size={150} bgColor="#FFFFFF" level="M" />
-          <Button
-            variant="outline"
-            onClick={downloadQRCode}
-            className="gap-2 hover:bg-brand-primary-50 hover:text-brand-primary-900"
-          >
-            <ArrowDownTrayIcon className="w-5 h-5" />
-            QR Kodunu İndir
-          </Button>
+          {/* Sağ taraf - Email ve QR */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">
+                Share with email list
+              </h3>
+              <div className="space-y-3">
+                {emails.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
+                    {emails.map((email) => (
+                      <Badge
+                        key={email}
+                        variant="secondary"
+                        className="pl-3 pr-2 py-1.5 flex items-center gap-2 group hover:bg-greyscale-light-200"
+                      >
+                        {email}
+                        <button
+                          onClick={() => handleRemoveEmail(email)}
+                          className="hover:bg-greyscale-light-300 rounded-full p-1 transition-colors"
+                        >
+                          <XMarkIcon className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-3">
+                  <Input
+                    id="emailGroupTrigger"
+                    placeholder="Enter email addresses (auto-complete with comma, space or semicolon)"
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    onKeyDown={handleAddEmail}
+                    className="flex-1"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleEmailListCopy}
+                      disabled={emails.length === 0}
+                      className="flex-1"
+                    >
+                      {isEmailListCopied ? <CheckIcon className="w-4 h-4" /> : "Copy"}
+                    </Button>
+                    <Button
+                      variant="default"
+                      onClick={handleEmailSend}
+                      disabled={emails.length === 0}
+                      className="flex-1"
+                    >
+                      Send
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-greyscale-light-500">
+                  Emails will be sent as BCC to protect privacy
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">QR Code</h3>
+              <div className="flex flex-col items-center gap-4 p-4 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
+                <QRCodeCanvas
+                  id="quizQrCode"
+                  value={quizLink}
+                  size={180}
+                  bgColor="#FFFFFF"
+                  className="rounded-lg bg-white p-2"
+                  level="M"
+                />
+                <Button
+                  variant="outline"
+                  icon={true}
+                  iconPosition="left"
+                  onClick={downloadQRCode}
+                  className="w-full"
+                >
+                  <ArrowDownCircleIcon className="w-6 h-6" />
+                  Download QR
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -231,6 +381,27 @@ function JoinedRow({ exam }: RowProps) {
   const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
 
+  // Status belirleme
+  const now = new Date();
+  const startDate = exam.examStartDate ? new Date(exam.examStartDate) : null;
+  const MAX_DURATION_MINUTES = 52_560_000;
+  const duration = Math.min(exam.examDuration || 0, MAX_DURATION_MINUTES);
+  const endDate =
+    startDate && duration ? new Date(startDate.getTime() + duration * 60 * 1000) : null;
+
+  let status = "Draft";
+  if (startDate) {
+    if (exam.completedAt) {
+      status = "Ended";
+    } else if (startDate > now) {
+      status = "Upcoming";
+    } else if (endDate && endDate <= now) {
+      status = "Ended";
+    } else if (startDate <= now && (!endDate || endDate > now)) {
+      status = "Active";
+    }
+  }
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPulse(false);
@@ -246,7 +417,7 @@ function JoinedRow({ exam }: RowProps) {
     <div
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
-        "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-greyscale-light-300"
+        "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
       onClick={() => router.push(`/app/exams/details/${exam._id}`)}
     >
@@ -259,18 +430,24 @@ function JoinedRow({ exam }: RowProps) {
 
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="flex-1 space-y-2 min-w-0">
-          {/* Başlık hover efekti */}
+          {/* Başlık + Status */}
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-lg font-semibold text-brand-primary-900 truncate transition-colors group-hover:text-brand-primary-700">
               {exam.title}
             </h3>
             <Badge
               variant={
-                exam.status === "active" ? "active" : exam.status === "ended" ? "ended" : "upcoming"
+                status === "Draft"
+                  ? "draft"
+                  : status === "Active"
+                  ? "active"
+                  : status === "Ended"
+                  ? "ended"
+                  : "upcoming"
               }
-              className="shrink-0 transition-transform duration-300 group-hover:scale-105"
+              className="shrink-0"
             >
-              {exam.status}
+              {status}
             </Badge>
           </div>
 
@@ -287,9 +464,25 @@ function JoinedRow({ exam }: RowProps) {
               <DurationFormatter duration={exam.examDuration} base="minutes" />
             </div>
             <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
-              <CheckIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
-              <span className="font-medium">Score:</span>
-              <span>{exam.userScore ?? "N/A"} pts</span>
+              <span className="font-medium">Your nickname:</span>
+              <Badge
+                variant="outline"
+                className="
+                  bg-gradient-to-br from-brand-primary-50 to-brand-secondary-100 
+                  text-brand-primary-700 border border-brand-primary-200/60
+                  rounded-lg px-2.5 py-1 shadow-sm
+                  hover:from-brand-primary-100 hover:to-brand-secondary-200
+                  transition-all duration-200
+                  group
+                "
+              >
+                <UsersIcon className="w-4 h-4 mr-1.5 text-brand-primary-600 group-hover:text-brand-primary-700" />
+                <span className="font-semibold">
+                  {exam.userNickName
+                    .replace(/_/g, " ")
+                    .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
+                </span>
+              </Badge>
             </div>
           </div>
         </div>
@@ -346,6 +539,17 @@ function EmptyStateComponent() {
 export default function JoinedExamsPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+
+  // Güncellenmiş handleJoinByLink fonksiyonu
+  const handleJoinByLink = (link: string) => {
+    const match = link.match(/\/app\/exams\/get-started\/([a-f\d]{24})/i);
+    if (match && match[1]) {
+      router.push(`/app/exams/get-started/${match[1]}`);
+    } else {
+      toast.error("Invalid quiz link");
+    }
+  };
 
   // API query
   const {
@@ -360,9 +564,6 @@ export default function JoinedExamsPage() {
   const [filter, setFilter] = useState<FilterOption>("All");
   const [sortField, setSortField] = useState<SortField>("startDate");
   const [sortAsc, setSortAsc] = useState(false);
-
-  // ---- YENİ: Join quiz state ----
-  const [joinCode, setJoinCode] = useState("");
 
   // Filtre ve arama fonksiyonu
   function filterExams(exams: JoinedExamResponse[]) {
@@ -390,37 +591,47 @@ export default function JoinedExamsPage() {
   if (!isLoading && data?.length === 0 && !isError) {
     return (
       <>
-        <DashboardHeader />
+        <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-2xl font-bold text-brand-primary-900">Joined Quizzes</h3>
           </div>
           <div className="flex justify-center items-center min-h-[600px] h-[80vh]">
-            <div className="flex flex-col gap-8 items-center text-center">
+            <div className="flex flex-col gap-8 items-center text-center max-w-lg">
               <Image
                 src={EmptyState}
                 height={280}
                 width={360}
                 alt="You haven't joined any quizzes yet"
-                className="h-auto max-w-full drop-shadow-lg"
+                className="h-auto max-w-full drop-shadow-lg transition-transform duration-300 hover:scale-105"
+                priority
               />
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <h2 className="text-3xl font-semibold text-brand-primary-950">
                   You haven't joined any quizzes yet
                 </h2>
                 <p className="text-greyscale-light-600 text-lg">
-                  Explore a quiz or create your own!
+                  Ready to test your knowledge? Join an exciting quiz or create your own challenge!
                 </p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                 <Button
                   variant="default"
                   size="lg"
-                  onClick={() => router.push("/app")}
-                  className="gap-2 px-6 py-4 text-lg"
+                  onClick={() => router.push("/app/join-exam")}
+                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg hover:bg-brand-primary-800 transition-all duration-200"
                 >
-                  Go to Homepage
+                  Join a quiz
                   <ArrowUpRightIcon className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push("/app/create-exam")}
+                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg border-brand-primary-200 hover:bg-brand-primary-50 transition-all duration-200"
+                >
+                  Create your own
+                  <PlusIcon className="w-5 h-5" />
                 </Button>
               </div>
             </div>
@@ -446,11 +657,38 @@ export default function JoinedExamsPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
               <div className="space-y-1.5">
                 <CardTitle className="text-2xl font-bold text-brand-primary-900">
-                  Joined quizzes
+                  Joined Quizzes
                 </CardTitle>
                 <CardDescription className="text-greyscale-light-600">
                   All quizzes you participated in. Check your score or share them easily!
                 </CardDescription>
+              </div>
+
+              {/* Yeni: Link ile katılma input'u */}
+              <div className="flex items-center gap-2 w-full sm:w-96">
+                <Input
+                  placeholder="Paste quiz link here..."
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleJoinByLink(joinCode);
+                      setJoinCode("");
+                    }
+                  }}
+                  className="w-full transition-all focus:ring-2 focus:ring-brand-primary-200"
+                />
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    handleJoinByLink(joinCode);
+                    setJoinCode("");
+                  }}
+                  disabled={!joinCode}
+                  className="shrink-0"
+                >
+                  Join
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -468,9 +706,9 @@ export default function JoinedExamsPage() {
                       Ended:
                         "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
                       Draft:
-                        "bg-brand-secondary-50 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-brand-secondary-100 hover:text-brand-secondary-700",
+                        "bg-greyscale-light-100 text-greyscale-light-600 border border-greyscale-light-400 hover:bg-greyscale-light-200 hover:text-greyscale-light-700",
                       Upcoming:
-                        "bg-yellow-50 text-yellow-600 border border-yellow-600 hover:bg-yellow-100 hover:text-yellow-700",
+                        "bg-blue-50 text-blue-900 border border-blue-600 hover:bg-blue-100 hover:text-blue-700",
                       All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
                     };
 
@@ -480,9 +718,9 @@ export default function JoinedExamsPage() {
                       Ended:
                         "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
                       Draft:
-                        "bg-brand-secondary-200 text-brand-secondary-600 border border-brand-secondary-600 hover:bg-transparent border-2",
+                        "bg-greyscale-light-200 text-greyscale-light-700 border border-greyscale-light-500 hover:bg-transparent border-2",
                       Upcoming:
-                        "bg-yellow-200 text-yellow-600 border border-yellow-600 hover:bg-transparent border-2",
+                        "bg-blue-200 text-blue-900 border border-blue-600 hover:bg-transparent border-2",
                       All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
                     };
 

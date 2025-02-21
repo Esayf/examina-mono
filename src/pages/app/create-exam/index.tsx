@@ -105,7 +105,7 @@ function CreateExam() {
 
       <DashboardHeader withoutNav={false} withoutTabs={true} />
 
-      <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
+      <div className="lg:px-8 h-full flex flex-col overflow-hidden">
         <div className="w-full mx-auto flex flex-col pb-4 pt-2 flex-1 overflow-hidden">
           <FormProvider {...methods}>
             {currentStep === 0 && <Step1 onNext={handleNext} />}

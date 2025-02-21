@@ -31,12 +31,14 @@ interface AttendanceChartsProps {
   participants: Participant[];
   startDate: Date;
   endDate: Date;
+  passingScore: number;
 }
 
 export default function AttendanceCharts({
   participants,
   startDate,
   endDate,
+  passingScore,
 }: AttendanceChartsProps) {
   // Tarih adımları
   const resolution = 10;
@@ -124,7 +126,7 @@ export default function AttendanceCharts({
         text-brand-primary-900
         flex
         flex-col
-        md:flex-row
+        lg:flex-row
         gap-10
       "
       style={{

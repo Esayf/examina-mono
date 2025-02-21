@@ -12,10 +12,8 @@ export const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
   onClose,
   onRoleSelect,
 }) => {
-  // isOpen false olduğunda DOM'a hiçbir şey ekleme
   if (!isOpen) return null;
 
-  // Modal içeriğini body'e "portallar"
   return ReactDOM.createPortal(
     <>
       {/* Arka plan (overlay) */}
@@ -23,9 +21,9 @@ export const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
         className="
           fixed 
           inset-0 
-          bg-black 
-          bg-opacity-40 
-          z-40
+          z-40 
+          bg-black/40
+          backdrop-blur-sm
         "
         onClick={onClose}
       />
@@ -44,52 +42,93 @@ export const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
       >
         <div
           className="
-            bg-white 
-            rounded-lg 
-            shadow-lg 
-            p-6 
-            w-full 
+            w-full
             max-w-md
+            bg-white
+            rounded-2xl
+            shadow-lg
+            p-6
+            md:p-8
+            relative
           "
           onClick={(e) => e.stopPropagation()}
-          // stopPropagation: Modal üstüne tıklayınca kapanmaması için
         >
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Choz your role!</h2>
-          <p className="mb-6 text-gray-600">Are you a creator or a joiner?</p>
-          <div className="flex justify-end gap-3">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
+            Choz your role!
+          </h2>
+
+          <p className="mb-6 text-gray-600 text-center">Are you a creator or a joiner?</p>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <button
               onClick={() => onRoleSelect("joiner")}
               className="
-                px-4 
-                py-2 
-                rounded-md 
+                w-full
+                sm:w-auto
+                px-5 
+                py-3 
+                rounded-full 
                 bg-gray-200 
                 text-gray-800 
+                font-medium
                 hover:bg-gray-300 
+                active:scale-95
                 transition
               "
             >
               Joiner
             </button>
+
             <button
               onClick={() => onRoleSelect("creator")}
               className="
-                px-4 
-                py-2 
-                rounded-md 
+                w-full
+                sm:w-auto
+                px-5 
+                py-3 
+                rounded-full 
                 bg-blue-600 
                 text-white 
-                hover:bg-blue-700 
+                font-medium
+                hover:bg-blue-700
+                active:scale-95
                 transition
               "
             >
               Creator
             </button>
           </div>
+
+          {/* Kapatma ikonu */}
+          <button
+            onClick={onClose}
+            className="
+              absolute
+              top-3
+              right-3
+              p-2
+              rounded-full
+              hover:bg-gray-100
+              text-gray-500
+              transition
+            "
+            aria-label="Close modal"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
     </>,
-    document.body // Portal hedefi: body
+    document.body
   );
 };
 
