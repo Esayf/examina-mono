@@ -382,9 +382,9 @@ function Row({ exam }: RowProps) {
     },
   });
   const startDate = exam.startDate ? new Date(exam.startDate) : null;
-  const quizLink = `${
-    typeof window !== "undefined" ? window.location.origin : ""
-  }/app/exams/get-started/${exam._id}`;
+
+  const quizLink = (typeof window !== "undefined" ? window.location.origin : "")
+  + (exam.pincode ? `/join/${exam.pincode}` : `/app/exams/get-started/${exam._id}`);
 
   return (
     <div

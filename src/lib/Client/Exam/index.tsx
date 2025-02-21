@@ -57,6 +57,7 @@ export interface CreatedExamResponse {
   endDate: Date;
   totalParticipants: number;
   status: "upcoming" | "active" | "ended";
+  pincode?: string;
 }
 
 export function getAllCreatedExams(params?: GetExamsParams): Promise<CreatedExamResponse[]> {
@@ -87,7 +88,8 @@ export interface JoinedExamResponse {
   userDurationAsSeconds: number | null;
   userScore: number | null;
   userNickName: string;
-  completedAt: Date | null;
+  isCompleted: boolean;
+  pincode?: string;
 }
 
 export function getAllJoinedExams(params?: GetExamsParams): Promise<JoinedExamResponse[]> {
@@ -132,6 +134,7 @@ export interface DraftExam extends Omit<Exam, "status"> {
   }[];
   status: "draft";
   totalRewardPoolAmount: number;
+  pincode?: string;
 }
 
 function getDraftExam(examID: string): Promise<DraftExam> {
@@ -436,6 +439,21 @@ function getScore(examID: string): Promise<Score[]> {
   });
 }
 
+export interface PinCode {
+  examId: string;
+}
+
+function getExamByPinCode(pinCode: string): Promise<PinCode> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase.get(`/pincode/${pinCode}`).then((response) => {
+      resolve(response.data);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
 export {
   getExamList,
   createExam,
@@ -452,4 +470,5 @@ export {
   submitQuiz,
   sendEmail,
   getExamStatistics,
+  getExamByPinCode,
 };
