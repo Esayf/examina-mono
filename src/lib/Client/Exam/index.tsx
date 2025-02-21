@@ -87,6 +87,7 @@ export interface JoinedExamResponse {
   userDurationAsSeconds: number | null;
   userScore: number | null;
   userNickName: string;
+  completedAt: Date | null;
 }
 
 export function getAllJoinedExams(params?: GetExamsParams): Promise<JoinedExamResponse[]> {

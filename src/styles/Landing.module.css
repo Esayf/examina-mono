@@ -1406,6 +1406,7 @@
 
   /* Gölge ve transform için smooth geçiş */
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* Hover efekti için pseudo-element */
@@ -1416,9 +1417,9 @@
   left: 50%;
   width: 0;
   height: 0;
-  background: var(--color-brand-tertiary-900);
+  background-color: var(--color-brand-secondary-400);
   border-radius: 50%;
-  border: 2px solid var(--color-brand-tertiary-900);
+  border: 2px solid var(--color-brand-primary-950);
   transform: translate(-50%, -50%);
   opacity: 0;
   z-index: -1;
@@ -1427,33 +1428,16 @@
 
 .sub_section_container:hover {
   transform: scale(1.02);
-  color: var(--color-brand-primary-300);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 2px var(--color-brand-secondary-500),
-    0 0 30px rgba(var(--color-brand-secondary-500), 0.5);
+  color: var(--color-brand-primary-900);
   cursor: pointer;
+  background-color: var(--color-brand-secondary-100);
 }
 
 /* Hover'da daire efekti */
 .sub_section_container:hover::before {
   width: 300%;
   height: 300%;
-  opacity: 0.8;
-}
-
-/* Metin için parlama efekti */
-@keyframes textGlow {
-  0%,
-  100% {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px var(--color-brand-secondary-500);
-  }
-}
-
-.sub_section_container:hover h1,
-.sub_section_container:hover p {
-  animation: textGlow 2s infinite;
+  opacity: 0.6;
 }
 
 /* Büyük ekranlar için ayarlar */

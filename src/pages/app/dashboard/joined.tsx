@@ -381,6 +381,27 @@ function JoinedRow({ exam }: RowProps) {
   const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
 
+  // Status belirleme
+  const now = new Date();
+  const startDate = exam.examStartDate ? new Date(exam.examStartDate) : null;
+  const MAX_DURATION_MINUTES = 52_560_000;
+  const duration = Math.min(exam.examDuration || 0, MAX_DURATION_MINUTES);
+  const endDate =
+    startDate && duration ? new Date(startDate.getTime() + duration * 60 * 1000) : null;
+
+  let status = "Draft";
+  if (startDate) {
+    if (exam.completedAt) {
+      status = "Ended";
+    } else if (startDate > now) {
+      status = "Upcoming";
+    } else if (endDate && endDate <= now) {
+      status = "Ended";
+    } else if (startDate <= now && (!endDate || endDate > now)) {
+      status = "Active";
+    }
+  }
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPulse(false);
@@ -410,18 +431,24 @@ function JoinedRow({ exam }: RowProps) {
 
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="flex-1 space-y-2 min-w-0">
-          {/* Başlık hover efekti */}
+          {/* Başlık + Status */}
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-lg font-semibold text-brand-primary-900 truncate transition-colors group-hover:text-brand-primary-700">
               {exam.title}
             </h3>
             <Badge
               variant={
-                exam.status === "active" ? "active" : exam.status === "ended" ? "ended" : "upcoming"
+                status === "Draft"
+                  ? "draft"
+                  : status === "Active"
+                  ? "active"
+                  : status === "Ended"
+                  ? "ended"
+                  : "upcoming"
               }
-              className="shrink-0 transition-transform duration-300 group-hover:scale-105"
+              className="shrink-0"
             >
-              {exam.status}
+              {status}
             </Badge>
           </div>
 

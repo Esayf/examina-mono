@@ -140,8 +140,8 @@ export default function ChooseRole() {
               />
 
               <RoleCard
-                title="I want to challenge my friends!"
-                description="Start your exam journey in just a minute, completely free!"
+                title="I want to challenge myself!"
+                description="Start your quiz journey in just a minute, completely free!"
                 onClick={handleJoinExam}
                 variant="primary"
                 icon={
