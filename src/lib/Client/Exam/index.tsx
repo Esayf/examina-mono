@@ -29,10 +29,10 @@ export interface Exam {
 }
 
 export interface GetExamsParams {
-  role: 'created' | 'joined';
-  filter?: 'all' | 'upcoming' | 'active' | 'ended';
-  sortBy?: 'title' | 'startDate' | 'duration' | 'createdAt' | 'score' | 'endDate' | 'status';
-  sortOrder?: 'asc' | 'desc';
+  role: "created" | "joined";
+  filter?: "all" | "upcoming" | "active" | "ended";
+  sortBy?: "title" | "startDate" | "duration" | "createdAt" | "score" | "endDate" | "status";
+  sortOrder?: "asc" | "desc";
 }
 
 function getExamList(params: GetExamsParams): Promise<Exam[]> {
@@ -42,6 +42,61 @@ function getExamList(params: GetExamsParams): Promise<Exam[]> {
       .get("/exams/myExams", params)
       .then((response) => {
         resolve(response.data.map((exam: any) => ({ ...exam, status: "published" })));
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+export interface CreatedExamResponse {
+  _id: string;
+  title: string;
+  description: string;
+  startDate: Date;
+  duration: number;
+  endDate: Date;
+  totalParticipants: number;
+  status: "upcoming" | "active" | "ended";
+}
+
+export function getAllCreatedExams(params?: GetExamsParams): Promise<CreatedExamResponse[]> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .get("/exams/myExams/created", params)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+export interface JoinedExamResponse {
+  _id: string;
+  title: string;
+  description: string;
+  examStartDate: Date;
+  examEndDate: Date;
+  examDuration: number;
+  examFinishedAt: Date;
+  status: "active" | "ended";
+  userStartedAt: Date;
+  userFinishedAt: Date | null;
+  userDurationAsSeconds: number | null;
+  userScore: number | null;
+  userNickName: string;
+  completedAt: Date | null;
+}
+
+export function getAllJoinedExams(params?: GetExamsParams): Promise<JoinedExamResponse[]> {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase
+      .get("/exams/myExams/joined", params)
+      .then((response) => {
+        resolve(response.data);
       })
       .catch((error) => {
         reject(error);
@@ -110,6 +165,7 @@ export type Winner = {
 };
 
 export interface Participant {
+  isCompleted: boolean;
   userId: string;
   nickname: string; // TODO: Will be nicknames after random nickname implementation. For now username it is.
   walletAddress: string;
@@ -358,7 +414,7 @@ export interface Score {
   exam: {
     title: string;
     _id: string;
-  }
+  };
   user: {
     userName: string;
     walletAddress: string;
@@ -366,7 +422,7 @@ export interface Score {
   };
 }
 
-function getScore(examID: string):Promise<Score[]> {
+function getScore(examID: string): Promise<Score[]> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
     requestBase

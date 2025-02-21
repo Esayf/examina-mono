@@ -7,6 +7,12 @@ body {
   margin: 0;
   padding: 0;
   overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @layer base {
@@ -433,6 +439,14 @@ body {
     --max-width-220: 55rem;
     --max-width-460: 115rem;
     --max-width-480: 120rem;
+    --max-width-500: 125rem;
+    --max-width-520: 130rem;
+    --max-width-540: 135rem;
+    --max-width-560: 140rem;
+    --max-width-580: 145rem;
+    --max-width-600: 150rem;
+    --max-width-620: 155rem;
+    --max-width-640: 160rem;
 
     /* Height Variables */
     --height-1: 0.25rem; /* 4px */
@@ -603,16 +617,28 @@ body {
   /* Radio Group styles */
   .RadioGroupRoot {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 16px;
+    flex-direction: column;
+    gap: 12px;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
   }
 
   .RadioGruopContainer {
     background-color: white;
-    padding: 16px;
-    border-radius: 24px;
+    padding: 12px;
+    border-radius: 16px;
+    width: 100%;
     border: 1px solid var(--color-greyscale-light-200);
+
+    @media (min-width: 768px) {
+      padding: 16px;
+      border-radius: 24px;
+      width: auto;
+    }
   }
 
   .RadioGroupContainer:hover {
@@ -632,11 +658,17 @@ body {
 
   .RadioGroupItem {
     background-color: white;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border-radius: 100%;
     border: 1px solid var(--color-greyscale-light-300);
-    margin-right: 10px;
+    margin-right: 8px;
+
+    @media (min-width: 768px) {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
   }
 
   .RadioGroupItem:hover {
@@ -664,9 +696,14 @@ body {
 
   .RadioText {
     font-weight: 400;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 14px;
+    line-height: 20px;
     color: var(--color-greyscale-light-600);
+
+    @media (min-width: 768px) {
+      font-size: 16px;
+      line-height: 24px;
+    }
   }
 
   .RadioText:hover {
@@ -1256,7 +1293,6 @@ body {
   text-align: center;
   font-weight: 700; /* font-bold */
   margin-bottom: 1.5rem; /* mb-6 */
-
   /* Create a text gradient using background + clip */
   background: linear-gradient(to right, var(--brand-primary-950), var(--brand-primary-900));
   -webkit-background-clip: text;

@@ -43,7 +43,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
       className: "chozToastSuccess",
     });
     dispatch(setSession(res.session));
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   // Modal Aç / Kapat
@@ -136,7 +136,7 @@ export const Header = ({ size, state }: HeaderProps): JSX.Element => {
             fixed
             inset-0
             z-20
-            bg-brand-secondary-300/80
+            bg-orange-200/50
             backdrop-blur-md
             flex
             items-center

@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Head from "next/head";
+import { useState, useEffect, useRef } from "react";
+import { FaVolumeUp, FaVolumeMute, FaStepBackward, FaStepForward } from "react-icons/fa";
 
 // Components
 import { Header } from "@/components/landing-page/header";
@@ -13,6 +15,9 @@ import { HowItWorksSection } from "@/components/landing-page/section-2";
 import { TextMessageSection } from "@/components/landing-page/text-message-section";
 import TechSection from "@/components/landing-page/section-4";
 import SubCtaSection from "@/components/landing-page/sub-cta-section";
+import SocialLinks from "@/components/landing-page/social-links";
+import TeamSection from "@/components/landing-page/team-section";
+import { MusicControls } from "@/components/create-exam/step1";
 
 // Images
 import Choz from "@/images/landing-header/logo-type.svg";
@@ -25,9 +30,12 @@ import Favicon from "public/favicon.ico";
 import { authenticate } from "@/hooks/auth";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
-import SocialLinks from "@/components/landing-page/social-links";
-import TeamSection from "@/components/landing-page/team-section";
+import { SpeakerXMarkIcon } from "@heroicons/react/24/outline";
+import { SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { Button } from "@/components/ui/button";
+import { ForwardIcon } from "@heroicons/react/24/outline";
 
+// Feature & Tech Arrays
 const featureArr = [
   {
     featureTitle: "Secure 🔒",
@@ -79,6 +87,51 @@ const techArr = [
   },
 ];
 
+// Müzik parçaları array'i
+const musicTracks = [
+  {
+    id: 1,
+    name: "ZKPurity - Zero-Knowledge proofs protect every note",
+  },
+  {
+    id: 2,
+    name: "SnarkFlow - Cryptographic harmony in every beat",
+  },
+  {
+    id: 3,
+    name: "O1Labs - Orchestrating decentralized rhythms",
+  },
+  {
+    id: 4,
+    name: "Pickles - Recursive proofs in melodic layers",
+  },
+  {
+    id: 5,
+    name: "Kimchi - Spicy zk-SNARK seasoning",
+  },
+  {
+    id: 6,
+    name: "MinaVox - 22kb blockchain symphony",
+  },
+  {
+    id: 7,
+    name: "Snarketplace - Decentralized rhythm exchange",
+  },
+  {
+    id: 8,
+    name: "zkAppCoda - Smart contract finale",
+  },
+  {
+    id: 9,
+    name: "Coda - Original protocol rhythm",
+  },
+  {
+    id: 10,
+    name: "Berkeley - Academic blockchain sonata",
+  },
+];
+
+// --- Structured Data ---
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -92,12 +145,32 @@ const structuredData = {
     price: "0",
     priceCurrency: "USD",
   },
-  featureList: [
-    "Secure blockchain-based quizzes",
-    "Zero-knowledge proof verification",
-    "Reward distribution system",
-    "Private and decentralized",
-    "Web3 integration",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Secure blockchain-based quizzes",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Zero-knowledge proof verification",
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "Reward distribution system",
+    },
+    {
+      "@type": "ListItem",
+      position: 4,
+      name: "Private and decentralized",
+    },
+    {
+      "@type": "ListItem",
+      position: 5,
+      name: "Web3 integration",
+    },
   ],
 };
 
@@ -107,6 +180,7 @@ export default function Home() {
   const store = useAppStore();
   const session = useAppSelector((state) => state.session);
 
+  // Kimlik Doğrulama
   const handleAuthentication = async () => {
     const res = await authenticate(session);
     if (!res) {
@@ -115,12 +189,29 @@ export default function Home() {
     }
     toast.success("Welcome back!");
     dispatch(setSession(res.session));
-    window.location.href = "/app/dashboard/created";
+    router.push("/app/dashboard/choose-role");
   };
 
   const pageTitle = "Blockchain-Powered Quiz Platform for Rewards and Engagement | Choz";
   const pageDescription =
     "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol.";
+
+  // MusicControls bileşeninde:
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Parça bittiğinde bir sonrakine geç
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTrackEnd = () => {
+      setCurrentTrack((prev) => (prev + 1) % musicTracks.length);
+    };
+
+    audio.addEventListener("ended", handleTrackEnd);
+    return () => audio.removeEventListener("ended", handleTrackEnd);
+  }, []);
 
   return (
     <>
@@ -129,10 +220,8 @@ export default function Home() {
         <meta name="description" content={pageDescription} />
         <meta
           name="keywords"
-          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform, secure testing, blockchain quiz platform, zero-knowledge proof quizzes, decentralized quiz platform, secure quizzes blockchain, quiz rewards system, Web3 quiz platform, private quiz platform, Mina Protocol quizzes, blockchain-powered assessment, zero-knowledge exam system, decentralized learning tools, secure online quizzes, gamified blockchain quizzes, anonymous quiz platform, Web3 education tools, zkProof quiz platform, online quiz rewards, privacy-first quiz system, next-generation quiz platform, Choz blockchain quiz, gamification education platform, interactive learning tools, competitive quiz platform, blockchain rewards education, secure exam hosting, Web3 gamified education, decentralized competitive quizzes, exam privacy protection, smart contract education, blockchain-powered teaching tools"
+          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform..."
         />
-
-        {/* Temel SEO Meta Tagleri */}
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="robots" content="index, follow" />
@@ -140,7 +229,7 @@ export default function Home() {
         <meta name="copyright" content="Choz" />
         <meta name="application-name" content="Choz" />
 
-        {/* Open Graph / Facebook */}
+        {/* Open Graph */}
         <meta property="og:site_name" content="Choz" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://choz.io" />
@@ -161,7 +250,7 @@ export default function Home() {
         <meta name="twitter:image" content="https://choz.io/ogimage.png" />
         <meta name="twitter:image:alt" content="Choz Platform Overview" />
 
-        {/* PWA ve Mobil Optimizasyon */}
+        {/* PWA ve Mobil */}
         <meta name="theme-color" content="#FFFFFF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Choz" />
@@ -170,7 +259,7 @@ export default function Home() {
         <link rel="icon" href={Favicon.src} type="image/x-icon" />
         <link rel="apple-touch-icon" href={AppleTouchIcon.src} />
 
-        {/* Canonical ve Dil Etiketleri */}
+        {/* Canonical */}
         <link rel="canonical" href="https://choz.io" />
         <link rel="alternate" href="https://choz.io" hrefLang="x-default" />
         <link rel="alternate" href="https://choz.io" hrefLang="en" />
@@ -180,28 +269,39 @@ export default function Home() {
       </Head>
 
       <main className="min-h-screen overflow-hidden">
+        {/* Ana Container */}
         <div className={styles.container}>
           <div className={styles.background_pattern}>
             {/* Header */}
             <Header size="xl" state="not-connected" />
+
+            {/* Music Controls */}
+            <MusicControls />
+
             {/* Hero Section */}
             <HeroSection />
           </div>
         </div>
+
         {/* How It Works Section */}
         <HowItWorksSection />
+
         {/* Text Message Section */}
         <TextMessageSection />
+
         {/* Team Section */}
         <TeamSection />
+
         {/* Technologies Section */}
         <TechSection
           techArr={techArr.map((tech) => ({ ...tech, techExplanation: tech.techDesc }))}
         />
+
         {/* Sub CTA Section */}
         <SubCtaSection handleAuthentication={handleAuthentication} />
+
         {/* Supporters Section */}
-        <section className={`${styles.supporters_container}`} aria-label="Supporters">
+        <section className={styles.supporters_container} aria-label="Supporters">
           <h2>proudly built on.</h2>
           <Link
             href="https://minaprotocol.com/"
@@ -215,26 +315,33 @@ export default function Home() {
               src={Mina}
               alt="Mina Protocol - Blockchain Technology Partner"
               className="w-full h-full object-cover items-center"
-              priority={true}
             />
           </Link>
         </section>
 
         {/* Footer */}
-        <footer className={styles.footer_container} role="contentinfo">
-          <div className={styles.footer_logo_container}>
-            <Link href="/" aria-label="Return to Choz Homepage">
-              <Image src={Choz} alt="Choz - Next Generation Quiz Platform" priority={true} />
-            </Link>
-          </div>
-
-          {/* Social Links */}
-          <SocialLinks />
-          <p className={styles.copyright + " whitespace-nowrap"}>
-            © {new Date().getFullYear()} Choz - All rights reserved
-          </p>
-        </footer>
+        <LandingFooter />
       </main>
     </>
+  );
+}
+
+/** Basit Footer Bileşeni */
+function LandingFooter() {
+  return (
+    <footer className={styles.footer_container} role="contentinfo">
+      <div className={styles.footer_logo_container}>
+        <Link href="/" aria-label="Return to Choz Homepage">
+          <Image src={Choz} alt="Choz - Next Generation Quiz Platform" priority={false} />
+        </Link>
+      </div>
+
+      {/* Sosyal Medya Linkleri */}
+      <SocialLinks />
+
+      <p className={styles.copyright + " whitespace-nowrap"}>
+        © {new Date().getFullYear()} Choz - All rights reserved
+      </p>
+    </footer>
   );
 }

@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/formatter";
 import { cn } from "@/lib/utils";
-import { GetExamsParams, getExamList, getScore } from "@/lib/Client/Exam";
+import {
+  GetExamsParams,
+  JoinedExamResponse,
+  getAllJoinedExams,
+  getExamList,
+  getScore,
+} from "@/lib/Client/Exam";
 
 // Reusable UI Components
 import { CopyLink } from "@/components/ui/copylink";
@@ -23,6 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+const FILTER_OPTIONS = ["All", "Active", "Ended"] as const;
 
 // Shadcn UI dialog
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -35,15 +42,26 @@ import {
   ArrowDownIcon,
   ChevronUpDownIcon,
   ShareIcon,
+  ArrowDownTrayIcon,
+  CalendarIcon,
+  ClockIcon,
+  CheckIcon,
+  UsersIcon,
+  ArrowDownCircleIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
 // QR code
 import { QRCodeCanvas } from "qrcode.react";
+import { Input } from "@/components/ui/input";
+import DurationFormatter from "@/components/ui/time/duration-formatter";
+import { toast } from "react-hot-toast";
 
-/* 
+/* ---------------------------------------------------------
    1) Katıldığı quiz verisini çekecek API fonksiyonu.
-   - score & showLeaderboard gibi alanlar backend'den döndüğünü varsayıyoruz.
+   (Örnek: /api/exams/joined)
+   ----------------------------------------------------------
 */
 async function getJoinedExams() {
   const res = await fetch("/api/exams/joined");
@@ -52,12 +70,19 @@ async function getJoinedExams() {
 }
 
 // Filtre seçenekleri
-const FILTER_OPTIONS = ["All", "Active", "Ended"] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
-type SortField = "title" | "startDate" | "endDate" | "duration" | "status" | "score";
+type SortField =
+  | "title"
+  | "startDate"
+  | "endDate"
+  | "duration"
+  | "status"
+  | "completedAt"
+  | "user_nickname";
 
 /****************************************
- * Sıralama ikonu
+/****************************************
+ * Sıralama ikonu (küçük helper)
  ****************************************/
 function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: boolean) {
   if (currentField === sortField) {
@@ -79,115 +104,265 @@ interface ShareModalProps {
   quizLink: string;
 }
 
+function getShareMessage(quizLink: string) {
+  return `Hey! I just created a #Choz quiz—want to challenge yourself?
+
+Click here to join:
+${quizLink}
+
+Let's see how you do! 🚀
+#ChozQuizzes`;
+}
+
 function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
-  // Paylaşım seçenekleri
+  const shareText = getShareMessage(quizLink);
+  const [emails, setEmails] = useState<string[]>([]);
+  const [currentInput, setCurrentInput] = useState("");
+  const [isEmailListCopied, setIsEmailListCopied] = useState(false);
+
+  const handleAddEmail = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const emailsToAdd = currentInput
+        .split(/[,;\s]+/)
+        .map((email) => email.trim())
+        .filter((email) => email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        .filter((email) => !emails.includes(email));
+
+      if (emailsToAdd.length) {
+        setEmails((prev) => [...prev, ...emailsToAdd]);
+        setCurrentInput("");
+      }
+    }
+  };
+
+  const handleRemoveEmail = (emailToRemove: string) => {
+    setEmails(emails.filter((email) => email !== emailToRemove));
+  };
+
+  const handleEmailListCopy = () => {
+    if (emails.length === 0) return;
+
+    navigator.clipboard
+      .writeText(emails.join(", "))
+      .then(() => {
+        toast.success("Email list copied to clipboard");
+        setIsEmailListCopied(true);
+        setTimeout(() => setIsEmailListCopied(false), 2000);
+      })
+      .catch(() => toast.error("Failed to copy email list"));
+  };
+
+  const handleEmailSend = () => {
+    if (emails.length === 0) return;
+
+    const subject = encodeURIComponent("Check out this quiz!");
+    const body = encodeURIComponent(shareText);
+    window.open(`mailto:?bcc=${emails.join(",")}&subject=${subject}&body=${body}`);
+    toast.success("Email client opened with recipient list");
+  };
+
   const shareOptions = [
     {
       name: "Telegram",
       icon: <FaTelegramPlane />,
-      onClick: () =>
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(quizLink)}`, "_blank"),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://t.me/share/url?text=${text}`, "_blank");
+      },
     },
     {
       name: "Twitter",
       icon: <FaTwitter />,
-      onClick: () =>
-        window.open(
-          `https://twitter.com/intent/tweet?url=${encodeURIComponent(quizLink)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+      },
     },
     {
       name: "Facebook",
       icon: <FaFacebookF />,
-      onClick: () =>
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(quizLink)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            quizLink
+          )}&quote=${text}`,
           "_blank"
-        ),
+        );
+      },
     },
     {
       name: "E-mail",
       icon: <FaEnvelope />,
-      onClick: () =>
-        window.open(`mailto:?subject=Quiz&body=${encodeURIComponent(quizLink)}`, "_blank"),
+      onClick: () => {
+        const subject = encodeURIComponent("Check out this quiz!");
+        const body = encodeURIComponent(shareText);
+        window.open(`mailto:?subject=${subject}&body=${body}`);
+      },
     },
     {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
-      onClick: () =>
-        window.open(
-          `https://wa.me/?text=${encodeURIComponent(`Check this quiz out! ${quizLink}`)}`,
-          "_blank"
-        ),
+      onClick: () => {
+        const text = encodeURIComponent(shareText);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+      },
     },
   ];
 
-  // QR kodu indirme
+  // QR code download
   const downloadQRCode = () => {
     const canvas = document.getElementById("quizQrCode") as HTMLCanvasElement | null;
-    if (!canvas) return;
-    const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    const link = document.createElement("a");
-    link.href = pngUrl;
-    link.download = "quiz-qrcode.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!canvas) {
+      toast.error("QR code could not be generated");
+      return;
+    }
+    try {
+      const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      const link = document.createElement("a");
+      link.href = pngUrl;
+      link.download = "quiz-qrcode.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("QR code downloaded successfully");
+    } catch (error) {
+      toast.error("Failed to download QR code");
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto p-4 relative bg-base-white">
+      <DialogContent className="max-w-2xl mx-auto p-6 relative bg-base-white max-h-[90vh] overflow-y-auto shadow-xl rounded-2xl w-[95%] sm:w-full">
         {/* Kapatma butonu */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-greyscale-light-600 hover:bg-brand-primary-900 w-4 h-4 border-2 border-brand-primary-900 rounded-full p-4"
+          className="absolute top-6 right-6 text-greyscale-light-600 hover:text-brand-primary-900 p-2 rounded-full border-2 border-greyscale-light-200 hover:border-brand-primary-900 hover:bg-brand-secondary-200 transition-colors duration-200"
         >
-          <XMarkIcon className="w-6 h-6" />
+          <XMarkIcon className="w-5 h-5" />
         </button>
 
-        <DialogHeader>
-          <DialogTitle className="text-md font-bold text-brand-primary-900">
-            Share with:
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-2xl font-bold text-brand-primary-900">
+            Choose your share options
           </DialogTitle>
         </DialogHeader>
 
-        {/* Sosyal medya ikonları */}
-        <div className="flex justify-center items-center gap-5 mt-4 mb-6">
-          {shareOptions.map(({ name, icon, onClick }) => (
-            <button
-              key={name}
-              onClick={onClick}
-              className="
-                flex flex-col items-center
-                text-brand-primary-950
-                hover:text-brand-primary-900
-                focus:outline-none
-                transition-transform duration-150
-                hover:scale-105 active:scale-95
-              "
-            >
-              <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-1">
-                <span className="text-xl">{icon}</span>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+          {/* Sol taraf - Sosyal medya ve link paylaşımı */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">Quick Share</h3>
+              <div className="flex flex-wrap gap-6 items-center justify-center">
+                {shareOptions.map(({ name, icon, onClick }) => (
+                  <button
+                    key={name}
+                    onClick={onClick}
+                    className="flex flex-col items-center text-brand-primary-950 hover:text-brand-primary-600 focus:outline-none transition-all duration-150 hover:scale-105 active:scale-95 group"
+                  >
+                    <div className="w-14 h-14 flex items-center justify-center bg-gray-100 rounded-xl mb-2 group-hover:bg-brand-primary-50 transition-colors">
+                      <span className="text-2xl text-brand-primary-800 group-hover:text-brand-primary-600">
+                        {icon}
+                      </span>
+                    </div>
+                    <span className="text-xs font-medium text-center">{name}</span>
+                  </button>
+                ))}
               </div>
-              <span className="text-xs font-medium">{name}</span>
-            </button>
-          ))}
-        </div>
+            </div>
 
-        {/* veya linki paylaş */}
-        <p className="text-center text-sm text-gray-500 mb-2">Or share with link</p>
-        <div className="mb-6">
-          <CopyLink link={quizLink} label="Quiz link" />
-        </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">Share with link</h3>
+              <CopyLink link={quizLink} label="Quiz link" />
+            </div>
+          </div>
 
-        {/* QR kod + download butonu */}
-        <div className="flex flex-col items-center gap-3">
-          <QRCodeCanvas id="quizQrCode" value={quizLink} size={150} bgColor="#FFFFFF" level="M" />
-          <Button variant="outline" onClick={downloadQRCode}>
-            Download QR
-          </Button>
+          {/* Sağ taraf - Email ve QR */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">
+                Share with email list
+              </h3>
+              <div className="space-y-3">
+                {emails.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
+                    {emails.map((email) => (
+                      <Badge
+                        key={email}
+                        variant="secondary"
+                        className="pl-3 pr-2 py-1.5 flex items-center gap-2 group hover:bg-greyscale-light-200"
+                      >
+                        {email}
+                        <button
+                          onClick={() => handleRemoveEmail(email)}
+                          className="hover:bg-greyscale-light-300 rounded-full p-1 transition-colors"
+                        >
+                          <XMarkIcon className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-3">
+                  <Input
+                    id="emailGroupTrigger"
+                    placeholder="Enter email addresses (auto-complete with comma, space or semicolon)"
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    onKeyDown={handleAddEmail}
+                    className="flex-1"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleEmailListCopy}
+                      disabled={emails.length === 0}
+                      className="flex-1"
+                    >
+                      {isEmailListCopied ? <CheckIcon className="w-4 h-4" /> : "Copy"}
+                    </Button>
+                    <Button
+                      variant="default"
+                      onClick={handleEmailSend}
+                      disabled={emails.length === 0}
+                      className="flex-1"
+                    >
+                      Send
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-greyscale-light-500">
+                  Emails will be sent as BCC to protect privacy
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-brand-primary-900">QR Code</h3>
+              <div className="flex flex-col items-center gap-4 p-4 bg-greyscale-light-50 rounded-xl border border-greyscale-light-200">
+                <QRCodeCanvas
+                  id="quizQrCode"
+                  value={quizLink}
+                  size={180}
+                  bgColor="#FFFFFF"
+                  className="rounded-lg bg-white p-2"
+                  level="M"
+                />
+                <Button
+                  variant="outline"
+                  icon={true}
+                  iconPosition="left"
+                  onClick={downloadQRCode}
+                  className="w-full"
+                >
+                  <ArrowDownCircleIcon className="w-6 h-6" />
+                  Download QR
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -197,71 +372,55 @@ function ShareModal({ open, onClose, quizLink }: ShareModalProps) {
 /****************************************
  * JoinedExam satırı (Row) bileşeni
  ****************************************/
-interface JoinedExam {
-  _id: string;
-  title: string;
-  startDate: string;
-  duration: number;
-  isCompleted?: boolean;
-  score?: number; // Kullanıcının bu sınavdaki puanı
-  showLeaderboard?: boolean; // Bu sınav için bir leaderboard varsa
-}
-
 interface RowProps {
-  exam: JoinedExam;
+  exam: JoinedExamResponse;
 }
 
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
-  const {
-    data: score,
-    isLoading: scoreLoading,
-    isError: scoreError,
-  } = useQuery({
-    queryKey: ["score", exam._id],
-    queryFn: () => getScore(exam._id),
-    enabled: !!exam._id,
-    select: (data) => data[0].score,
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 300
-  });
 
-  useEffect(() => {
-    if (scoreLoading || scoreError) return;
-    exam.score = score;
-  }, [score, scoreLoading, scoreError]);
-
-  // Status hesaplama
+  // Status belirleme
   const now = new Date();
-  const startDate = new Date(exam.startDate);
-  const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
+  const startDate = exam.examStartDate ? new Date(exam.examStartDate) : null;
+  const MAX_DURATION_MINUTES = 52_560_000;
+  const duration = Math.min(exam.examDuration || 0, MAX_DURATION_MINUTES);
+  const endDate =
+    startDate && duration ? new Date(startDate.getTime() + duration * 60 * 1000) : null;
 
-  let status = "Upcoming";
-  if (startDate > now) {
-    status = "Upcoming";
-  } else if (startDate <= now && endDate > now && !exam.isCompleted) {
-    status = "Active";
-  } else if ((endDate && endDate <= now) || exam.isCompleted) {
-    status = "Ended";
+  let status = "Draft";
+  if (startDate) {
+    if (exam.completedAt) {
+      status = "Ended";
+    } else if (startDate > now) {
+      status = "Upcoming";
+    } else if (endDate && endDate <= now) {
+      status = "Ended";
+    } else if (startDate <= now && (!endDate || endDate > now)) {
+      status = "Active";
+    }
   }
 
-  // Quiz link
-  const quizLink = `${typeof window !== "undefined" ? window.location.origin : ""}/app/exams/${
-    exam._id
-  }`;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPulse(false);
+    }, 3000);
 
-  // Leaderboard'a gitme fonksiyonu (örnek)
-  const handleLeaderboard = () => {
-    router.push(`/app/exams/${exam._id}/leaderboard`);
-  };
+    return () => clearTimeout(timer);
+  }, []);
+
+  const quizLink = `${
+    typeof window !== "undefined" ? window.location.origin : ""
+  }/app/exams/get-started/${exam._id}`;
 
   return (
     <div
       className={cn(
-        "flex flex-col",
-        "transition-colors duration-200 ease-in-out hover:bg-brand-primary-50 hover:text-brand-primary-600"
+        "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
+        "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
+      onClick={() => router.push(`/app/exams/details/${exam._id}`)}
     >
       {/* Share Modal */}
       <ShareModal
@@ -270,95 +429,105 @@ function JoinedRow({ exam }: RowProps) {
         quizLink={quizLink}
       />
 
-      <div className="text-greyscale-light-700">
-        <div
-          className="
-            flex font-medium border-t border-greyscale-light-200 bg-white
-            hover:bg-brand-primary-50 hover:text-brand-primary-600
-            transition-colors duration-200 ease-in-out
-          "
-        >
-          {/* Title */}
-          <div className="flex-1 p-5 min-w-[154px] max-h-[72px] max-w-[220px] border-r border-greyscale-light-100">
-            <p
-              className="
-                text-inherit text-base font-medium leading-6 
-                overflow-hidden text-ellipsis whitespace-nowrap
-              "
-              title={exam.title}
-            >
-              {exam.title.length > 15 ? `${exam.title.substring(0, 15)}...` : exam.title}
-            </p>
-          </div>
-
-          {/* Start Date */}
-          <div className="hidden sm:flex flex-1 p-5 min-w-[180px] max-w-[240px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {formatDate(startDate)}
-            </p>
-          </div>
-
-          {/* End Date */}
-          <div className="hidden lg:flex flex-1 p-5 min-w-[180px] max-w-[240px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {endDate ? formatDate(endDate) : "N/A"}
-            </p>
-          </div>
-
-          {/* Duration */}
-          <div className="hidden sm:flex flex-1 p-5 min-w-[120px] max-w-[160px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {exam.duration} min.
-            </p>
-          </div>
-
-          {/* Score */}
-          <div className="hidden md:flex flex-1 p-5 min-w-[80px] max-w-[100px] border-r border-greyscale-light-100">
-            <p className="text-inherit text-base font-normal leading-6 whitespace-nowrap">
-              {`${score ?? "N/A"} pts`}
-            </p>
-          </div>
-
-          {/* Status */}
-          <div className="flex-1 p-5 min-w-[80px] max-w-[160px]">
+      <div className="flex flex-col sm:flex-row items-start gap-4">
+        <div className="flex-1 space-y-2 min-w-0">
+          {/* Başlık + Status */}
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-brand-primary-900 truncate transition-colors group-hover:text-brand-primary-700">
+              {exam.title}
+            </h3>
             <Badge
-              variant={status === "Active" ? "active" : status === "Ended" ? "ended" : "upcoming"}
+              variant={
+                status === "Draft"
+                  ? "draft"
+                  : status === "Active"
+                  ? "active"
+                  : status === "Ended"
+                  ? "ended"
+                  : "upcoming"
+              }
+              className="shrink-0"
             >
               {status}
             </Badge>
           </div>
 
-          {/* Actions: Share / Leaderboard */}
-          <div
-            className="
-              flex-1 p-5 min-w-[150px] min-h-[72px]
-              flex items-center justify-end gap-2
-            "
-          >
-            {/* Share quiz */}
-            <Button
-              variant="outline"
-              iconPosition="right"
-              icon
-              className="max-h-10 text-sm font-normal p-3"
-              onClick={() => setIsShareModalOpen(true)}
-            >
-              Share quiz
-              <ShareIcon className="w-4 h-4 mr-1" />
-            </Button>
-
-            {/* Sınav Ended ise ve leaderboard varsa */}
-            {status === "Ended" && exam.showLeaderboard && (
-              <Button
+          {/* İkonlara hover efekti */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <CalendarIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Start:</span>
+              <span className="truncate">{formatDate(new Date(exam.examStartDate))}</span>
+            </div>
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <ClockIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Duration:</span>
+              <DurationFormatter duration={exam.examDuration} base="minutes" />
+            </div>
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <span className="font-medium">Your nickname:</span>
+              <Badge
                 variant="outline"
-                className="max-h-10 text-sm font-normal p-3"
-                onClick={handleLeaderboard}
+                className="
+                  bg-gradient-to-br from-brand-primary-50 to-brand-secondary-100 
+                  text-brand-primary-700 border border-brand-primary-200/60
+                  rounded-lg px-2.5 py-1 shadow-sm
+                  hover:from-brand-primary-100 hover:to-brand-secondary-200
+                  transition-all duration-200
+                  group
+                "
               >
-                View Leaderboard
-                <ArrowUpRightIcon className="w-4 h-4 ml-1" />
-              </Button>
-            )}
+                <UsersIcon className="w-4 h-4 mr-1.5 text-brand-primary-600 group-hover:text-brand-primary-700" />
+                <span className="font-semibold">
+                  {exam.userNickName
+                    .replace(/_/g, " ")
+                    .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
+                </span>
+              </Badge>
+            </div>
           </div>
+        </div>
+
+        {/* Share butonuna pulse efekti */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-between sm:w-auto">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-brand-primary-50 text-brand-primary-700 relative group"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsShareModalOpen(true);
+              }}
+              title="Share"
+            >
+              <ShareIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+              {showPulse && (
+                <span className="absolute inset-0 rounded-full animate-ping bg-brand-primary-100 opacity-75 group-hover:opacity-100" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Quiz listesi içindeki boş durum bileşeni
+function EmptyStateComponent() {
+  return (
+    <div className="col-span-full flex justify-center items-center p-8 text-center">
+      <div className="flex flex-col items-center gap-4">
+        <Image
+          src={EmptyState}
+          height={200}
+          width={200}
+          alt="No results found"
+          className="h-auto max-w-full opacity-75"
+        />
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold text-brand-primary-900">No quizzes found</h3>
+          <p className="text-greyscale-light-600">Try adjusting your search or filter settings</p>
         </div>
       </div>
     </div>
@@ -370,48 +539,100 @@ function JoinedRow({ exam }: RowProps) {
  ****************************************/
 export default function JoinedExamsPage() {
   const router = useRouter();
-  // const { data, isLoading, isError } = useQuery({
-  //   queryKey: ["joinedExams"],
-  //   queryFn: getJoinedExams,
-  // });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [joinCode, setJoinCode] = useState("");
 
-  const getExamListParams: GetExamsParams = { role: "joined" };
+  // Güncellenmiş handleJoinByLink fonksiyonu
+  const handleJoinByLink = (link: string) => {
+    const match = link.match(/\/app\/exams\/get-started\/([a-f\d]{24})/i);
+    if (match && match[1]) {
+      router.push(`/app/exams/get-started/${match[1]}`);
+    } else {
+      toast.error("Invalid quiz link");
+    }
+  };
+
+  // API query
   const {
-    data,
+    data = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["exams", getExamListParams],
-    queryFn: () => getExamList(getExamListParams),
+    queryKey: ["joinedExams"],
+    queryFn: () => getAllJoinedExams(),
   });
-
-  // Filtre
+  // Filtre / Sıralama
   const [filter, setFilter] = useState<FilterOption>("All");
-  // Sıralama
   const [sortField, setSortField] = useState<SortField>("startDate");
   const [sortAsc, setSortAsc] = useState(false);
 
-  // Boş durum senaryosu
+  // Filtre ve arama fonksiyonu
+  function filterExams(exams: JoinedExamResponse[]) {
+    // 1) Status filtresi
+    const filteredByStatus = exams.filter((exam) => {
+      if (filter === "All") return true;
+      return exam.status.toLowerCase() === filter.toLowerCase();
+    });
+
+    // 2) Arama filtresi
+    if (searchTerm.trim().length > 0) {
+      return filteredByStatus.filter((exam) => {
+        const title = exam.title?.toLowerCase() || "";
+        return title.includes(searchTerm.toLowerCase());
+      });
+    }
+
+    return filteredByStatus;
+  }
+
+  // Filtrele ve sırala
+  const filteredExams = filterExams(data);
+
+  // Sınav yoksa (Empty state)
   if (!isLoading && data?.length === 0 && !isError) {
     return (
       <>
-        <DashboardHeader />
+        <DashboardHeader withoutTabs={false} withoutNav={true} />
         <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Joined Quizzes</h3>
+            <h3 className="text-2xl font-bold text-brand-primary-900">Joined Quizzes</h3>
           </div>
           <div className="flex justify-center items-center min-h-[600px] h-[80vh]">
-            <div className="flex flex-col gap-[2.625rem]">
-              <Image src={EmptyState} height={220} width={280} alt="No joined quizzes" />
-              <div className="text-center">
-                <p className="text-brand-primary-950 text-2xl font-regular leading-9">
-                  You have not joined any quizzes yet.
+            <div className="flex flex-col gap-8 items-center text-center max-w-lg">
+              <Image
+                src={EmptyState}
+                height={280}
+                width={360}
+                alt="You haven't joined any quizzes yet"
+                className="h-auto max-w-full drop-shadow-lg transition-transform duration-300 hover:scale-105"
+                priority
+              />
+              <div className="space-y-4">
+                <h2 className="text-3xl font-semibold text-brand-primary-950">
+                  You haven't joined any quizzes yet
+                </h2>
+                <p className="text-greyscale-light-600 text-lg">
+                  Ready to test your knowledge? Join an exciting quiz or create your own challenge!
                 </p>
               </div>
-              <div className="flex justify-center">
-                <Button variant="default" onClick={() => router.push("/app")}>
-                  Go back
-                  <ArrowUpRightIcon className="size-6 ml-1" />
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={() => router.push("/app/join-exam")}
+                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg hover:bg-brand-primary-800 transition-all duration-200"
+                >
+                  Join a quiz
+                  <ArrowUpRightIcon className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push("/app/create-exam")}
+                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg border-brand-primary-200 hover:bg-brand-primary-50 transition-all duration-200"
+                >
+                  Create your own
+                  <PlusIcon className="w-5 h-5" />
                 </Button>
               </div>
             </div>
@@ -421,291 +642,148 @@ export default function JoinedExamsPage() {
     );
   }
 
-  // Status hesaplama fonksiyonu
-  function getStatus(exam: JoinedExam): string {
-    const now = new Date();
-    const startDate = new Date(exam.startDate);
-    const endDate = new Date(startDate.getTime() + exam.duration * 60_000);
-
-    if (startDate <= now && endDate > now && !exam.isCompleted) return "Active";
-    if ((endDate && endDate <= now) || exam.isCompleted) return "Ended";
-    return "Upcoming";
+  if (isLoading) {
+    return <p>Loading joined quizzes...</p>;
   }
-
-  // Filtreleme
-  function filterExams(exams: JoinedExam[]) {
-    return exams.filter((exam) => {
-      const status = getStatus(exam);
-      if (filter === "All") return true;
-      return status === filter;
-    });
+  if (isError) {
+    return <p>Error fetching joined quizzes.</p>;
   }
-
-  // Sıralama
-  function sortExams(exams: JoinedExam[]) {
-    return [...exams].sort((a, b) => {
-      let valA: number | string;
-      let valB: number | string;
-
-      const statusA = getStatus(a);
-      const statusB = getStatus(b);
-
-      switch (sortField) {
-        case "title":
-          valA = a.title?.toLowerCase() || "";
-          valB = b.title?.toLowerCase() || "";
-          break;
-        case "startDate":
-          valA = new Date(a.startDate).getTime();
-          valB = new Date(b.startDate).getTime();
-          break;
-        case "endDate":
-          valA = new Date(a.startDate).getTime() + a.duration * 60_000;
-          valB = new Date(b.startDate).getTime() + b.duration * 60_000;
-          break;
-        case "duration":
-          valA = a.duration;
-          valB = b.duration;
-          break;
-        case "status":
-          valA = statusA;
-          valB = statusB;
-          break;
-        case "score":
-          valA = a.score || 0;
-          valB = b.score || 0;
-          break;
-        default:
-          valA = 0;
-          valB = 0;
-      }
-      if (valA < valB) return sortAsc ? -1 : 1;
-      if (valA > valB) return sortAsc ? 1 : -1;
-      return 0;
-    });
-  }
-
-  // Filtrelenmiş ve sıralanmış dizi
-  const filtered = filterExams(data || []);
-  const finalExams = sortExams(filtered);
-  const isFilteredEmpty = finalExams.length === 0;
 
   return (
-    <>
-      <div className="relative min-h-screen h-dvh flex flex-col z-0">
-        <DashboardHeader withoutTabs={false} withoutNav={true} />
-        <div className="px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-          <div className="w-full flex flex-col flex-1 overflow-hidden">
-            <Card className="bg-base-white rounded-2xl md:rounded-3xl border border-brand-primary-900 flex-1 flex flex-col">
-              <CardHeader>
-                <CardHeaderContent>
-                  <CardTitle>Joined quizzes</CardTitle>
-                  <CardDescription>
-                    All quizzes you participated in. Check your score or share them easily!
-                  </CardDescription>
-                </CardHeaderContent>
-              </CardHeader>
+    <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
+      <DashboardHeader withoutTabs={false} withoutNav={true} />
+      <div className="px-4 lg:px-8 py-4 lg:pb-4 lg:pt-2 h-full flex flex-col rounded-b-3xl">
+        <Card className="bg-base-white rounded-3xl border border-greyscale-light-200 flex-1 flex flex-col">
+          <CardHeader>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
+              <div className="space-y-1.5">
+                <CardTitle className="text-2xl font-bold text-brand-primary-900">
+                  Joined Quizzes
+                </CardTitle>
+                <CardDescription className="text-greyscale-light-600">
+                  All quizzes you participated in. Check your score or share them easily!
+                </CardDescription>
+              </div>
 
-              <CardContent className="px-0 pt-0">
-                {/* Filtre butonları */}
-                <div className="flex gap-2 px-5 py-2 border-b border-greyscale-light-200">
-                  {FILTER_OPTIONS.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => setFilter(opt)}
-                      className={cn(
-                        "px-3 py-1 text-sm rounded-full border transition-colors duration-200 ease-in-out",
-                        filter === opt
-                          ? "bg-brand-primary-50 text-brand-primary-950 border-brand-primary-600"
-                          : "bg-white text-greyscale-light-900 border-greyscale-light-300 hover:bg-greyscale-light-50"
-                      )}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Tablo başlıkları (sticky) */}
-                <div
-                  className="
-                    sticky top-0 z-10
-                    flex min-w-full
-                    bg-white/80
-                    backdrop-blur-sm
-                    border-b border-greyscale-light-200
-                    shadow-sm
-                  "
+              {/* Yeni: Link ile katılma input'u */}
+              <div className="flex items-center gap-2 w-full sm:w-96">
+                <Input
+                  placeholder="Paste quiz link here..."
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleJoinByLink(joinCode);
+                      setJoinCode("");
+                    }
+                  }}
+                  className="w-full transition-all focus:ring-2 focus:ring-brand-primary-200"
+                />
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    handleJoinByLink(joinCode);
+                    setJoinCode("");
+                  }}
+                  disabled={!joinCode}
+                  className="shrink-0"
                 >
-                  {/* Title */}
-                  <div
-                    className="
-                      flex-1 p-5
-                      min-w-[154px] max-w-[220px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
-                    "
-                    onClick={() => {
-                      if (sortField === "title") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("title");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Title
-                      {renderSortIcon("title", sortField, sortAsc)}
-                    </p>
-                  </div>
+                  Join
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
 
-                  {/* Start Date */}
-                  <div
-                    className="
-                      hidden sm:flex flex-1 p-5
-                      min-w-[180px] max-w-[240px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
-                    "
-                    onClick={() => {
-                      if (sortField === "startDate") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("startDate");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Start Date
-                      {renderSortIcon("startDate", sortField, sortAsc)}
-                    </p>
-                  </div>
+          <CardContent className="px-0 pt-0">
+            {/* Filtre ve arama bölümü sticky yapılıyor */}
+            <div className="sticky top-0 z-10 backdrop-blur-sm bg-white/90 border-b border-greyscale-light-200">
+              <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:justify-between px-4 py-3">
+                {/* Filtre butonları */}
+                <div className="flex overflow-x-auto gap-2 hide-scrollbar">
+                  {FILTER_OPTIONS.map((option) => {
+                    const colors = {
+                      Active:
+                        "bg-ui-success-50 text-ui-success-600 border border-ui-success-600 hover:bg-ui-success-100 hover:text-ui-success-700",
+                      Ended:
+                        "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
+                      Draft:
+                        "bg-greyscale-light-100 text-greyscale-light-600 border border-greyscale-light-400 hover:bg-greyscale-light-200 hover:text-greyscale-light-700",
+                      Upcoming:
+                        "bg-blue-50 text-blue-900 border border-blue-600 hover:bg-blue-100 hover:text-blue-700",
+                      All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
+                    };
 
-                  {/* End Date */}
-                  <div
-                    className="
-                      hidden lg:flex flex-1 p-5
-                      min-w-[180px] max-w-[240px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
-                    "
-                    onClick={() => {
-                      if (sortField === "endDate") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("endDate");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      End Date
-                      {renderSortIcon("endDate", sortField, sortAsc)}
-                    </p>
-                  </div>
+                    const activeColors = {
+                      Active:
+                        "bg-ui-success-200 text-ui-success-600 border border-ui-success-600 hover:bg-transparent border-2",
+                      Ended:
+                        "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
+                      Draft:
+                        "bg-greyscale-light-200 text-greyscale-light-700 border border-greyscale-light-500 hover:bg-transparent border-2",
+                      Upcoming:
+                        "bg-blue-200 text-blue-900 border border-blue-600 hover:bg-transparent border-2",
+                      All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
+                    };
 
-                  {/* Duration */}
-                  <div
-                    className="
-                      hidden sm:flex flex-1 p-5
-                      min-w-[120px] max-w-[160px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
-                    "
-                    onClick={() => {
-                      if (sortField === "duration") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("duration");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Duration
-                      {renderSortIcon("duration", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Score */}
-                  <div
-                    className="
-                      hidden md:flex flex-1 p-5
-                      min-w-[80px] max-w-[100px]
-                      border-r border-greyscale-light-200
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
-                    "
-                    onClick={() => {
-                      if (sortField === "score") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("score");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Score
-                      {renderSortIcon("score", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Status */}
-                  <div
-                    className="
-                      flex-1 p-5
-                      min-w-[80px] max-w-[160px]
-                      cursor-pointer select-none
-                      transition-colors duration-200 ease-in-out
-                      hover:bg-greyscale-light-50
-                    "
-                    onClick={() => {
-                      if (sortField === "status") setSortAsc(!sortAsc);
-                      else {
-                        setSortField("status");
-                        setSortAsc(true);
-                      }
-                    }}
-                  >
-                    <p className="text-brand-primary-950 text-base font-medium leading-4 whitespace-nowrap">
-                      Status
-                      {renderSortIcon("status", sortField, sortAsc)}
-                    </p>
-                  </div>
-
-                  {/* Share sütunu boş başlık */}
-                  <div className="flex-1 p-5 min-w-[100px] flex justify-end" />
+                    const activeColor = activeColors[option];
+                    const color = colors[option];
+                    return (
+                      <Button
+                        key={option}
+                        variant={filter === option ? "default" : "outline"}
+                        className={cn(
+                          "text-sm shadow-sm w-auto h-[2rem] px-3 py-2 border border-brand-primary-900",
+                          filter === option ? `${activeColor}` : `${color}`
+                        )}
+                        onClick={() => setFilter(option)}
+                      >
+                        {option}
+                      </Button>
+                    );
+                  })}
                 </div>
 
-                {/* Listedeki sınavlar */}
-                <div className="overflow-y-auto max-h-[560px]">
-                  {isFilteredEmpty ? (
-                    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-8">
-                      <Image
-                        src={EmptyState}
-                        height={220}
-                        width={280}
-                        alt="No joined quizzes for this filter"
-                      />
-                      <p className="text-md text-brand-primary-950 max-h-[581px] mt-1">
-                        No quizzes found for <strong>{filter}</strong> filter 😕
-                      </p>
-                    </div>
-                  ) : (
-                    finalExams.map((exam: JoinedExam) => <JoinedRow key={exam._id} exam={exam} />)
-                  )}
+                {/* Arama input'una focus efekti */}
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Search by title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-40 sm:w-64 transition-all duration-300 focus:w-72 focus:ring-2 focus:ring-brand-primary-200"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+            </div>
+
+            {/* Liste yükleme animasyonu */}
+            <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
+              {isLoading ? (
+                // Loading skeleton
+                Array(6)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="animate-pulse bg-greyscale-light-100 rounded-2xl h-40"
+                    />
+                  ))
+              ) : filteredExams.length === 0 ? (
+                <EmptyStateComponent />
+              ) : (
+                filteredExams.map((exam, index) => (
+                  <div
+                    key={exam._id}
+                    className="motion-safe:animate-fadeIn"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <JoinedRow exam={exam} />
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

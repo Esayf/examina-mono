@@ -393,7 +393,7 @@ export function HeroSection({
     toast.success("Welcome back!", { duration: 5000 });
     dispatch(setSession(res.session));
     // Yönlendirme
-    window.location.href = "/app/dashboard/created";
+    window.location.href = "/app/dashboard/choose-role";
   };
 
   return (
@@ -416,15 +416,17 @@ export function HeroSection({
         )}
       </AnimatePresence>
 
-      <div className={styles.hero_container}>
-        <div className={styles.hero_content_container}>
-          <h5 className={styles.hero_summary}>Create or join—either way, you win! 😎</h5>
+      <div className={`${styles.hero_container} px-4 sm:px-6 lg:px-8`}>
+        <div className={`${styles.hero_content_container} max-w-7xl mx-auto`}>
+          <h5 className={`${styles.hero_summary} text-sm sm:text-base md:text-lg`}>
+            The future of quiz creation is almost here with ChozAI's AI technology 🚀
+          </h5>
 
-          <div className="relative min-h-[180px] flex items-center justify-center text-center overflow-hidden whitespace-normal leading-normal px-4">
+          <div className="relative min-h-[120px] sm:min-h-[150px] md:min-h-[180px] flex items-center justify-center text-center overflow-hidden whitespace-normal leading-normal px-2 sm:px-4">
             <AnimatePresence mode="wait">
               <motion.h1
                 key={titleKey}
-                className={`${styles.hero_title} ${
+                className={`${styles.hero_title} text-2xl sm:text-3xl md:text-4xl lg:text-5xl ${
                   finalChoice ? "text-brand-primary-800" : "text-current"
                 }`}
                 variants={finalVariants}
@@ -437,34 +439,34 @@ export function HeroSection({
             </AnimatePresence>
           </div>
 
-          <h3 className={styles.hero_desc}>
+          <h3 className={`${styles.hero_desc} text-sm sm:text-base md:text-lg max-w-3xl mx-auto`}>
             Empower your quizzes with rewards, boost engagement, transform learning or whatever you
             want.
           </h3>
 
           {hasTopButton && (
-            <div className="flex flex-col gap-4 mt-4 md:flex-row">
+            <div className="flex flex-col gap-4 mt-6 sm:mt-8 md:flex-row justify-center">
               <Button
                 variant="secondary"
                 size="lg"
-                className={getButtonClass()}
+                className={`${getButtonClass()} w-full sm:w-auto`}
                 onClick={handleButtonClick}
                 disabled={isShuffling}
               >
                 {getButtonText()}
-                {finalChoice && <ShareIcon className="inline-block w-5 h-5 ml-2" />}
+                {finalChoice && <ShareIcon className="inline-block w-4 h-4 sm:w-5 sm:h-5 ml-2" />}
               </Button>
 
               <Button
                 variant="tertiary"
                 size="lg"
-                className="hover:bg-brand-tertiary-500 transition-transform duration-300 hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto hover:bg-brand-tertiary-500 transition-transform duration-300 hover:scale-105 active:scale-95"
                 icon={false}
                 onClick={handleAuthentication}
                 disabled={false}
               >
                 Create your first quiz
-                <ArrowUpRightIcon className="w-5 h-5 ml-2" />
+                <ArrowUpRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Button>
             </div>
           )}

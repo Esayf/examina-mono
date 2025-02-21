@@ -101,8 +101,8 @@ function ExamForm({ exam }: ExamFormProps) {
         <title>Create new quiz | Choz </title>
       </Head>
       <DashboardHeader withoutNav={false} withoutTabs={true} />
-      <div className="sm:px-4 lg:px-8 h-full flex flex-col overflow-hidden">
-        <div className="max-w-[76rem] w-full mx-auto flex flex-col pb-12 pt-2 flex-1 overflow-hidden">
+      <div className="sm:px-4 lg:px-8 h-full w-full flex flex-col overflow-hidden">
+        <div className="w-full mx-auto flex flex-col pb-12 pt-2 flex-1 overflow-hidden">
           <FormProvider {...methods}>
             {currentStep === 0 && <Step1 onNext={handleNext} />}
             {currentStep === 1 && (

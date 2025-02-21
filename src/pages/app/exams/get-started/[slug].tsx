@@ -24,7 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-
+import DurationFormatter from "@/components/ui/time/duration-formatter";
 function ExamDetail() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -42,11 +42,11 @@ function ExamDetail() {
     enabled: !!examID && isConnected,
   });
 
-  // “kalan süre”’yi her saniye hesaplayan effect
+  // "kalan süre"yi her saniye hesaplayan effect
   useEffect(() => {
     if (!data || "message" in data || !data.exam?.startDate) return;
 
-    // Her seferinde “şimdi - examStartDate” farkını yeniden hesaplamak için bir fonksiyon
+    // Her seferinde "şimdi - examStartDate" farkını yeniden hesaplamak için bir fonksiyon
     const calcTime = () => {
       const distance = new Date(data.exam.startDate).getTime() - new Date().getTime();
       setTimer(distance);
@@ -211,7 +211,7 @@ function ExamDetail() {
                   <div>
                     <p className="text-sm text-brand-primary-950">Duration</p>
                     <p className="text-base font-medium text-brand-primary-950">
-                      {data?.exam?.duration ?? 120} minutes
+                      <DurationFormatter duration={data?.exam?.duration ?? 120} base="minutes" />
                     </p>
                   </div>
                 </div>
@@ -240,7 +240,8 @@ function ExamDetail() {
                   max-h-[240px]
                   overflow-y-auto
                   whitespace-normal
-                  break-normal
+                  break-words
+                  word-break-all
                 "
               >
                 <ReactMarkdown
@@ -262,30 +263,32 @@ function ExamDetail() {
           {/* Action buttons */}
           <div className="flex flex-col gap-4">
             {session.session?.walletAddress ? (
-              <Button
-                variant="default"
-                size="default"
-                icon
-                iconPosition="right"
-                className="self-center"
-                disabled={!canStartExam && isConnected}
-                onClick={() => {
-                  toast.loading("Starting exam...");
-                  startExam(examID)
-                    .then(() => {
-                      toast.remove();
-                      toast.success("You are ready to start the exam. Good luck!");
-                      router.push(`/app/exams/${data?.exam._id}`);
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                      toast.remove();
-                      toast.error("Failed to start exam!");
-                    });
-                }}
-              >
-                Join quiz <ArrowUpRightIcon className="size-4" />
-              </Button>
+              <>
+                <Button
+                  variant="default"
+                  size="default"
+                  icon
+                  iconPosition="right"
+                  className="self-center"
+                  disabled={!canStartExam && isConnected}
+                  onClick={() => {
+                    toast.loading("Starting exam...");
+                    startExam(examID)
+                      .then(() => {
+                        toast.remove();
+                        toast.success("You are ready to start the exam. Good luck!");
+                        router.push(`/app/exams/${data?.exam._id}`);
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                        toast.remove();
+                        toast.error("Failed to start exam!");
+                      });
+                  }}
+                >
+                  Join quiz <ArrowUpRightIcon className="size-4" />
+                </Button>
+              </>
             ) : (
               <Button
                 icon
@@ -309,7 +312,7 @@ function ExamDetail() {
             <p className="mt-4 text-center text-md">
               {session.session?.walletAddress ? (
                 <>
-                  Your current wallet address is:{" "}
+                  Your connected wallet address is:{" "}
                   <a
                     href={`https://minascan.io/mainnet/account/${session.session?.walletAddress}`}
                     target="_blank"

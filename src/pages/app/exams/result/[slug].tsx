@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -34,7 +34,7 @@ function ExamResult() {
     mutationFn: sendEmail,
     onSuccess: () => {
       toast.success("Email sent successfully! Email will arrive once the quiz is finished.");
-      router.replace("/app/dashboard/created");
+      router.push("/app/dashboard/created");
     },
     onError: (error: any) => {
       toast.error("Failed to send email");
@@ -61,7 +61,7 @@ function ExamResult() {
                   🥳 Already done! 🥳
                 </p>
                 <p>
-                  We’ll email your result once the quiz time ends. If you skip this, no worries—you
+                  We'll email your result once the quiz time ends. If you skip this, no worries. You
                   can still get it using your quiz link later. 💜
                 </p>
               </p>
@@ -95,7 +95,7 @@ function ExamResult() {
                 </Button>
               </div>
               <Link
-                href="/app/dashboard/created"
+                href="/app/dashboard/joined"
                 className="text-sm text-brand-primary-900 mx-auto font-bold hover:text-brand-primary-700 rounded-full px-2 py-1 underline"
               >
                 skip this step

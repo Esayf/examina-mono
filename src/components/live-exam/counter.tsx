@@ -76,7 +76,8 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
 
   // Milisaniyeyi saniyeye çevir
   const totalSeconds = Math.floor(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
   const isLastMinute = totalSeconds <= 60 && totalSeconds > 0;
@@ -84,7 +85,7 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
   return (
     <div
       className={`
-        flex items-center gap-2 py-1 px-2 w-[164px] justify-center max-h-[52px] border rounded-full mr-2
+        flex items-center gap-2 py-1 px-2 w-[180px] justify-center max-h-[52px] border rounded-full mr-2
         ${
           isLastMinute
             ? "bg-ui-error-100 text-lg text-ui-error-600 animate-pulse border-ui-error-600"
@@ -93,9 +94,13 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
       `}
     >
       <p className="font-semibold text-xl py-1 px-2">
-        {totalSeconds <= 0 ? "0:00" : `${minutes}:${seconds.toString().padStart(2, "0")}`}
+        {totalSeconds <= 0
+          ? "0:00"
+          : hours > 0
+          ? `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+          : `${minutes}:${seconds.toString().padStart(2, "0")}`}
       </p>
-      {isLastMinute}
+      {isLastMinute && <p className="text-ui-error-600 text-sm">Time's up!</p>}
     </div>
   );
 };

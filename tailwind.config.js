@@ -17,11 +17,22 @@ module.exports = {
           "80%": { transform: "scale(1.1)", opacity: "1" },
           "100%": { transform: "scale(1)" },
         },
+        fadeInUp: {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         fadeIn: "fadeIn 0.4s ease-in-out forwards",
         ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
         popIn: "popIn 0.3s ease-out",
+        fadeInUp: "fadeInUp 0.5s ease-in-out",
       },
     },
   },
@@ -257,6 +268,17 @@ module.exports = {
         48: "var(--spacing-48)",
         56: "var(--spacing-56)",
         64: "var(--spacing-64)",
+      },
+
+      maxWidth: {
+        "max-w-500": "var(--max-width-500)",
+        "max-w-520": "var(--max-width-520)",
+        "max-w-540": "var(--max-width-540)",
+        "max-w-560": "var(--max-width-560)",
+        "max-w-580": "var(--max-width-580)",
+        "max-w-600": "var(--max-width-600)",
+        "max-w-620": "var(--max-width-620)",
+        "max-w-640": "var(--max-width-640)",
       },
 
       margin: {

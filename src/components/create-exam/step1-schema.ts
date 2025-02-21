@@ -26,6 +26,7 @@ export const step1ValidationSchema = z.object({
       questionType: z.enum(["mc", "tf"], {
         errorMap: () => ({ message: "Invalid question type." }),
       }),
+      points: z.enum(["very_hard", "hard", "medium", "easy", "no_points"]).optional(),
     })
   ),
 });

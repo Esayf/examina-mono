@@ -1,66 +1,86 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { on } from "events";
 
 interface EraseButtonProps {
   index: number;
-  onRemove: (e: React.MouseEvent<HTMLElement>) => void; // Güncellenmiş tip tanımı
-  size?: "icon" | "icon-sm"; // Buton boyutu (varsayılan: icon)
-  duration?: number; // Uzun tıklama süresi (milisaniye) (varsayılan: 1000ms)
-  className?: string; // Ekstra CSS sınıfı (opsiyonel)
+  onRemove: (e: React.PointerEvent<HTMLElement>) => void;
+  size?: "icon" | "icon-sm";
+  duration?: number;
+  className?: string;
+  isDisabled?: boolean;
+  isLoading?: boolean;
+  onConfirm: () => void;
+  confirmMessage: string;
 }
 
 const EraseButton: React.FC<EraseButtonProps> = ({
   index,
   onRemove,
   size = "icon-sm",
-  duration = 600, // Süreyi 600ms olarak sabitledik
+  duration = 600,
   className = "",
+  isDisabled = false,
+  isLoading = false,
+  onConfirm = () => {},
+  confirmMessage = "Are you sure you want to delete this item?",
 }) => {
   const [progress, setProgress] = useState(0);
   const [pressing, setPressing] = useState(false);
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState<DOMRect | null>(null);
 
-  const handlePressStart = () => {
+  // Timer'ı ref olarak tutuyoruz: re-render'larda bozulma riskini azaltır
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handlePressStart = (e: React.PointerEvent<HTMLButtonElement>) => {
+    // Basılı tutma engellenecek mi?
+    if (isDisabled || isLoading) return;
+
     setPressing(true);
     setProgress(0);
     setShowTooltip(false);
 
-    const totalTime = 600;
-    const interval = 40;
+    const totalTime = duration; // 600ms veya props'tan
+    const interval = 40; // Adım sıklığı
     const step = (100 / totalTime) * interval;
 
-    const intervalId = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setProgress((prev) => {
-        if (prev + step >= 100) {
-          clearInterval(intervalId);
+        const next = prev + step;
+        if (next >= 100) {
+          clearInterval(intervalRef.current!);
           return 100;
         }
-        return prev + step;
+        return next;
       });
     }, interval);
-
-    setTimer(intervalId as unknown as NodeJS.Timeout);
   };
 
   const handlePressEnd = (e: React.PointerEvent<HTMLButtonElement>) => {
+    // Timer iptal
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    if (pressing && progress >= 100) {
+      // Uzun basma tamamlandı => Silme eylemi
+      onRemove(e);
+    }
+
+    // Her durumda basma sıfırlanır
     setPressing(false);
     setProgress(0);
-    if (timer) clearInterval(timer);
-
-    if (progress >= 100) {
-      // Event tipini uyumlu hale getiriyoruz
-      onRemove(e as unknown as React.MouseEvent<HTMLElement>);
-    }
   };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    setShowTooltip(true);
-    setTooltipPosition(e.currentTarget.getBoundingClientRect());
+    // ToolTip'in pozisyonunu alıyoruz
+    if (!isDisabled && !isLoading) {
+      setShowTooltip(true);
+      setTooltipPosition(e.currentTarget.getBoundingClientRect());
+    }
   };
 
   const handleMouseLeave = () => {
@@ -93,19 +113,23 @@ const EraseButton: React.FC<EraseButtonProps> = ({
       onMouseLeave={handleMouseLeave}
     >
       {renderTooltip()}
+
       <Button
         variant="ghost"
         size={size}
+        disabled={isDisabled || isLoading}
         onPointerDown={handlePressStart}
         onPointerUp={handlePressEnd}
         onPointerLeave={handlePressEnd}
         onClick={(e) => {
-          e.stopPropagation();
+          // tıklama, pointer basma/çekme döngüsünü bozmamak adına iptal
           e.preventDefault();
+          e.stopPropagation();
         }}
         className="relative w-8 h-8 rounded-full items-center justify-center transition-all duration-200 hover:bg-brand-secondary-200"
         style={{ width: "32px", height: "32px" }}
       >
+        {/* Progres dairesi */}
         {pressing && (
           <div className="absolute inset-0 flex justify-center items-center">
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 32 32">
@@ -137,6 +161,8 @@ const EraseButton: React.FC<EraseButtonProps> = ({
             </svg>
           </div>
         )}
+
+        {/* Çöp kovası ikonu */}
         <TrashIcon className="w-4 h-4" />
       </Button>
     </div>

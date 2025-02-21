@@ -7,6 +7,7 @@ import { MarkdownEditor } from "./markdown";
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
 import DashboardHeader from "@/components/ui/dashboard-header";
+import { useFormContext } from "react-hook-form";
 
 import {
   Card,
@@ -23,6 +24,10 @@ import {
   XMarkIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  ArrowLeftIcon,
+  ForwardIcon,
 } from "@heroicons/react/24/outline";
 import { QuestionListItem } from "./question-list-item";
 import { Input } from "@/components/ui/input";
@@ -306,6 +311,149 @@ interface Step1Props {
   onNext: () => void;
 }
 
+// Müzik parçaları array'i
+const musicTracks = [
+  {
+    id: 1,
+    path: "/music/background-music-13.mp3",
+    name: "Truth Whispers in the Silence",
+  },
+  {
+    id: 2,
+    path: "/music/background-music-9.mp3",
+    name: "The Spark of Creation",
+  },
+  {
+    id: 3,
+    path: "/music/background-music-8.mp3",
+    name: "Where Dreams Take Flight",
+  },
+  {
+    id: 4,
+    path: "/music/background-music-10.mp3",
+    name: "Echoes of Inspiration",
+  },
+  {
+    id: 5,
+    path: "/music/background-music-12.mp3",
+    name: "The Path Unfolds",
+  },
+];
+
+// MusicControls bileşenini export edilebilir yap
+export const MusicControls = () => {
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [volume, setVolume] = useState(0.5);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Ses seviyesi değiştiğinde sadece volume'u güncelle
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Müzik değiştiğinde yeni müziği yükle
+  useEffect(() => {
+    const currentTime = audioRef.current?.currentTime || 0;
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    audioRef.current = new Audio(musicTracks[currentTrackIndex].path);
+    audioRef.current.volume = volume;
+    audioRef.current.loop = false;
+
+    const handleEnded = () => {
+      setCurrentTrackIndex((prev) => (prev + 1) % musicTracks.length);
+    };
+
+    audioRef.current.addEventListener("ended", handleEnded);
+
+    if (isMusicPlaying) {
+      audioRef.current.play();
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("ended", handleEnded);
+        audioRef.current.pause();
+      }
+    };
+  }, [currentTrackIndex]);
+
+  // Play/Pause kontrolü
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.play();
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isMusicPlaying]);
+
+  const handlePrevTrack = () => {
+    setIsMusicPlaying(true);
+    setCurrentTrackIndex((prev) => (prev - 1 + musicTracks.length) % musicTracks.length);
+  };
+
+  const handleNextTrack = () => {
+    setIsMusicPlaying(true);
+    setCurrentTrackIndex((prev) => (prev + 1) % musicTracks.length);
+  };
+
+  return (
+    <div className=" z-50 bg-white/90 backdrop-blur-sm p-4 rounded-t-3xl justify-end border-b border-gray-200 items-center gap-4 transition-all duration-300 hover:bg-white group hidden md:flex">
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="icon-sm" onClick={handlePrevTrack}>
+          <ForwardIcon className="h-4 w-4 rotate-180" />
+        </Button>
+
+        <Button
+          variant={isMusicPlaying ? "default" : "outline"}
+          size="icon-sm"
+          onClick={() => setIsMusicPlaying(!isMusicPlaying)}
+        >
+          {isMusicPlaying ? (
+            <SpeakerWaveIcon className="h-5 w-5" />
+          ) : (
+            <SpeakerXMarkIcon className="h-5 w-5" />
+          )}
+        </Button>
+
+        <Button variant="outline" size="icon-sm" onClick={handleNextTrack}>
+          <ForwardIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="flex flex-col min-w-[200px]">
+        <span className="text-sm font-medium text-gray-900">
+          {musicTracks[currentTrackIndex].name}
+        </span>
+        <span className="text-xs text-gray-500">
+          Track {currentTrackIndex + 1}/{musicTracks.length}
+        </span>
+      </div>
+
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value={volume}
+        onChange={(e) => {
+          const newVolume = parseFloat(e.target.value);
+          setVolume(newVolume);
+        }}
+        className="w-24 accent-brand-primary-700"
+      />
+    </div>
+  );
+};
+
 /** -------------------------
  * Step1 Component
  * --------------------------
@@ -428,8 +576,30 @@ export const Step1 = ({ onNext }: Step1Props) => {
   // Aktif soru
   const activeQuestion = fields[activeQuestionIndex];
 
+  // Step1 bileşeni içinde, remove fonksiyonunun üstüne ekleyin:
+  const duplicate = (index: number) => {
+    // Seçili soruyu kopyala
+    const questionToDuplicate = questions[index];
+
+    // Yeni bir kopya oluştur (deep clone)
+    const duplicatedQuestion = JSON.parse(JSON.stringify(questionToDuplicate));
+
+    // Kopyayı hemen sonraki indexe ekle
+    insert(index + 1, duplicatedQuestion);
+
+    // Yeni eklenen soruyu aktif yap
+    setActiveQuestionIndex(index + 1);
+
+    // Highlight efekti
+    setRecentlyAddedIndex(index + 1);
+
+    // Başarılı mesajı
+    toast.success("Question duplicated successfully!");
+  };
+
   return (
     <Card className="flex-1 flex flex-col overflow-y-auto bg-brand-secondary-50">
+      <MusicControls /> {/* Yeni müzik kontrolleri */}
       {/* ------------ CARD HEADER ------------ */}
       <CardHeader>
         {/* Sol buton (dummy) */}
@@ -462,15 +632,14 @@ export const Step1 = ({ onNext }: Step1Props) => {
           </div>
         </div>
 
-        {/* Sağdaki butonlar: Kaydet / Devam */}
-        <div className="flex items-center gap-2 flex-row">
+        {/* ESKİ MÜZİK BUTONUNU KALDIR */}
+        <div className="flex items-center gap-2">
           <SaveAsDraftButton />
           <Button size="icon" onClick={handleNext} pill>
             <ArrowRightIcon className="size-6" />
           </Button>
         </div>
       </CardHeader>
-
       {/* ------------ CARD CONTENT ------------ */}
       <CardContent className="flex overflow-y-auto flex-1 gap-5 flex-col lg:flex-row relative p-5">
         {/* Soru Listesi (Sol tarafta) */}
@@ -485,7 +654,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
               onDragEnd={handleDragEnd}
             >
               <SortableContext items={fields} strategy={verticalListSortingStrategy}>
-                <div className="flex-1 flex flex-col gap-2 mt-4 overflow-y-auto">
+                <div className="flex-1 flex flex-row lg:flex-col gap-1 mt-4 overflow-y-auto">
                   {fields.map((field, index) => (
                     // Her soru için unique key kullan
                     <div
@@ -501,6 +670,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
                         index={index}
                         isActive={activeQuestionIndex === index}
                         onRemove={fields.length > 1 ? remove : undefined}
+                        onDuplicate={() => duplicate(index)}
                         isIncomplete={errors.questions && !!errors.questions[index]}
                         questionText={questions[index]?.question || `NO CONTENT`}
                         className="flex-1 transition-transform duration-200 hover:-translate-y-0.5 animate-in slide-in-from-bottom-3"
@@ -583,104 +753,76 @@ export const Step1 = ({ onNext }: Step1Props) => {
           </div>
         </div>
 
-        <Card className="flex flex-col gap-5 bg-white rounded-3xl border border-greyscale-light-200">
+        <Card className="flex flex-col bg-white rounded-3xl border border-greyscale-light-200">
           <CardHeader className="px-4 py-3 bg-white border-b-2">
             <CardTitle className="text-lg">Question settings</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* questionType seçimi */}
-            <FormField
-              control={control}
-              name={`questions.${activeQuestionIndex}.questionType`}
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex flex-col">
-                    <FormLabel className="min-w-[10rem] items-center text-base font-medium text-brand-primary-950">
-                      Question type:
-                    </FormLabel>
-                    <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger className="w-full sm:min-w-[12rem]">
-                          <SelectValue placeholder="Select a question type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="mc">Multiple choice</SelectItem>
-                          <SelectItem value="tf">True/False</SelectItem>
-                          <SelectItem value="ord">Ordering (soon)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col gap-3">
+              {/* questionType seçimi */}
+              <FormField
+                control={control}
+                name={`questions.${activeQuestionIndex}.questionType`}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex flex-col">
+                      <FormLabel className="min-w-[10rem] flex items-center gap-2 text-base font-semibold text-brand-primary-900">
+                        Question type
+                      </FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger className="w-full sm:min-w-[12rem]">
+                            <SelectValue placeholder="Select a question type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="mc">Multiple choice</SelectItem>
+                            <SelectItem value="tf">True/False</SelectItem>
+                            <SelectItem value="ord" disabled>
+                              Ordering (soon)
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Puan seçimi (disabled)
-          <FormField
-            control={control}
-            name={`questions.${activeQuestionIndex}.points`}
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col">
-                  <FormLabel className="min-w-[10rem] items-center text-base font-medium text-brand-primary-950">
-                    Points:
-                  </FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value || "1"} disabled>
-                      <SelectTrigger className="w-full sm:min-w-[12rem]">
-                        <SelectValue placeholder="Points" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">Very hard (3x)</SelectItem>
-                        <SelectItem value="2">Hard (2x)</SelectItem>
-                        <SelectItem value="3">Medium (1x)</SelectItem>
-                        <SelectItem value="4">Easy (0.5x)</SelectItem>
-                        <SelectItem value="5">No points ☹️</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-
-            {/* Süreseçimi (disabled)
-          <FormField
-            control={control}
-            name={`questions.${activeQuestionIndex}.points`}
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col">
-                  <FormLabel className="min-w-[10rem] items-center text-base font-medium text-brand-primary-950">
-                    Points:
-                  </FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value || "1"} disabled>
-                      <SelectTrigger className="w-full sm:min-w-[12rem]">
-                        <SelectValue placeholder="Points" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="5 seconds">5 seconds</SelectItem>
-                        <SelectItem value="10 seconds">10 seconds</SelectItem>
-                        <SelectItem value="15 seconds">15 seconds</SelectItem>
-                        <SelectItem value="20 seconds">20 seconds</SelectItem>
-                        <SelectItem value="25 seconds">25 seconds</SelectItem>
-                        <SelectItem value="30 seconds">30 seconds</SelectItem>
-                        <SelectItem value="45 seconds">45 seconds</SelectItem>
-                        <SelectItem value="1 minute">1 minute</SelectItem>
-                        <SelectItem value="2 minutes">2 minutes</SelectItem>
-                        <SelectItem value="3 minutes">3 minutes</SelectItem>
-                        <SelectItem value="4 minutes">4 minutes</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+              {/* Points seçimi için FormField'ı şu şekilde güncelleyin */}
+              <FormField
+                disabled={true}
+                control={control}
+                name={`questions.${activeQuestionIndex}.points`}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex flex-col">
+                      <FormLabel className="min-w-[10rem] items-center text-base font-medium text-greyscale-light-500 flex gap-2">
+                        Difficulty
+                        <span className="text-xs bg-greyscale-light-100 text-greyscale-light-500 px-2 py-0.5 rounded-full">
+                          Coming soon
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} value={field.value} disabled>
+                          <SelectTrigger className="w-full sm:min-w-[12rem] cursor-not-allowed opacity-50">
+                            <SelectValue placeholder="Select a point" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="very_hard">Very hard (3x)</SelectItem>
+                            <SelectItem value="hard">Hard (2x)</SelectItem>
+                            <SelectItem value="medium">Medium (1x)</SelectItem>
+                            <SelectItem value="easy">Easy (0.5x)</SelectItem>
+                            <SelectItem value="no_points">No points ☹️</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </CardContent>
         </Card>
       </CardContent>
@@ -692,8 +834,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
 const SortableQuestionListItem = ({
   id,
   index,
+  onDuplicate,
   ...props
-}: Parameters<typeof QuestionListItem>[0] & { id: string }) => {
+}: Parameters<typeof QuestionListItem>[0] & {
+  id: string;
+  onDuplicate?: (index: number) => void;
+}) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
@@ -739,6 +885,7 @@ const SortableQuestionListItem = ({
             </svg>
           </div>
         }
+        onDuplicate={onDuplicate}
       />
     </div>
   );

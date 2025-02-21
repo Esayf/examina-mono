@@ -34,6 +34,12 @@ interface DialogTitleProps {
   className?: string;
 }
 
+/** Açıklama alanı */
+interface DialogDescriptionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
 /************************************************
  * ANA DIALOG
  ************************************************/
@@ -81,10 +87,7 @@ export function DialogContent({ children, className }: DialogContentProps) {
     <div
       className={`
         relative
-        rounded-3xl
         p-6
-        shadow-lg
-        border border-greyscale-light-300
         w-full
         h-full
 
@@ -107,6 +110,13 @@ export function DialogHeader({ children }: DialogHeaderProps) {
 
 export function DialogTitle({ children, className }: DialogTitleProps) {
   return <h1 className={className}>{children}</h1>;
+}
+
+/************************************************
+ * DIALOG DESCRIPTION
+ ************************************************/
+export function DialogDescription({ children, className }: DialogDescriptionProps) {
+  return <p className={className}>{children}</p>;
 }
 
 /************************************************

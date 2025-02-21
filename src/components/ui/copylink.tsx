@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
+import { Input } from "./input";
 
 interface CopyLinkProps {
   link: string; // Kopyalanacak link
@@ -27,12 +28,12 @@ export function CopyLink({ link, label = "Your Quiz Link" }: CopyLinkProps) {
 
       <div className="relative flex items-center gap-2">
         {/* Göstermek için bir input (readOnly) */}
-        <input
+        <Input
           type="text"
           value={link}
           readOnly
           className="
-            w-full px-3 py-2 rounded-md border border-gray-300
+            w-full px-3 py-2 rounded-2xl border border-gray-300
             bg-gray-50 text-brand-primary-950
             focus:outline-none focus:border-brand-primary-800 focus:bg-brand-secondary-50
           "

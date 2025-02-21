@@ -245,7 +245,7 @@
 /* 768px altına inince mobil düzen */
 @media (max-width: 768px) {
   .hero_content_container {
-    margin-top: 2rem; /* Mobilde daha az boşluk */
+    margin-top: 5rem; /* Mobilde daha az boşluk */
     gap: 1rem;
     padding: 0 1rem; /* İçerik dar ekranlarda kenarlara yapışmasın */
   }
@@ -263,9 +263,29 @@
   margin-bottom: 0.5rem;
   color: var(--color-brand-primary-950);
   background-color: var(--color-brand-secondary-100);
-  border: 1px solid var(--color-brand-secondary-300);
+  border: 1px solid var(--color-brand-primary-500);
   border-radius: 9999px;
   z-index: 1;
+
+  /* Daha yumuşak parlaklık efekti */
+  box-shadow: 0 0 10px var(--color-brand-primary-500);
+  transition: all 0.3s ease;
+  animation: softGlow 4s ease-in-out infinite;
+}
+
+@keyframes softGlow {
+  0% {
+    box-shadow: 0 0 10px var(--color-brand-primary-500);
+  }
+  33% {
+    box-shadow: 0 0 15px var(--color-brand-secondary-500);
+  }
+  66% {
+    box-shadow: 0 0 12px var(--color-brand-tertiary-500);
+  }
+  100% {
+    box-shadow: 0 0 10px var(--color-brand-primary-500);
+  }
 }
 
 /* Mobilde gizle */
@@ -295,7 +315,7 @@
 /* Tablet ve mobil için daha küçük font */
 @media (max-width: 768px) {
   .hero_title {
-    font-size: 3.25rem;
+    font-size: 3rem;
     line-height: 1.2;
   }
 }
@@ -594,17 +614,49 @@
   }
 }
 
-/* How It Works Section */
+/* Card Container - Responsive Grid */
 .card_container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
   width: 100%;
-  justify-content: center;
-  gap: 2rem;
-  padding: 3rem 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
   z-index: 1;
 }
 
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+  .card_container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card_container {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .usage_card {
+    width: 100%;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .card_container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
+/* How It Works Section */
 .usage_card {
   z-index: 1;
   flex: 1 1 300px;
@@ -614,7 +666,7 @@
   flex-direction: column;
   gap: 1rem;
   background-color: var(--color-brand-secondary-100);
-  border: 1px solid var(--color-greyscale-light-200);
+  border: 1px solid var(--color-brand-tertiary-900);
   border-radius: 24px;
   box-shadow: 0px 4px 16px -8px rgba(0, 0, 59, 0.15);
   transition: transform 0.3s ease;
@@ -629,15 +681,15 @@
 .usage_card_title_step {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-brand-primary-950);
-  border: 2px solid var(--color-brand-primary-950);
+  color: var(--color-brand-primary-300);
+  border: 2px solid var(--color-brand-tertiary-900);
   z-index: 1;
   position: absolute;
   top: -20px;
   left: -20px;
   width: 80px;
   height: 80px;
-  background: var(--color-brand-primary-500);
+  background: var(--color-brand-tertiary-900);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -664,7 +716,7 @@
 .usage_card_image_container {
   display: flex;
   justify-content: center; /* Yatayda ortala */
-  align-items: center; /* Dikeyde ortala (yükseklik belli değilse fazla etkisi olmaz) */
+  align-items: center; /* Dikeyde ortala (yükseklik belli değilse fazla etki olmaz) */
   margin-bottom: 1rem; /* Metinle arasında biraz boşluk bırak */
 }
 
@@ -682,7 +734,7 @@
 
   /* Şekil ve kenarlık stilleri */
   border-radius: 16px;
-  border: 2px solid var(--color-greyscale-light-950);
+  border: 1px solid var(--color-brand-secondary-200);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px rgba(0, 0, 0, 0.05);
 
   /* Görselin kesilmeyi nasıl yöneteceğini belirler */
@@ -1043,14 +1095,26 @@
   z-index: 100;
 }
 
-/* Asıl grid container */
 .team_grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+  display: grid;
+  /* Varsayılan olarak 2 sütun */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
   justify-content: center;
-  align-items: flex-start;
+  align-items: flex-center;
   z-index: 100;
+}
+
+/* Ekran 768px ve üzerine çıktığında 3 sütuna geç */
+@media (max-width: 768px) {
+  .team_grid {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 100;
+  }
 }
 
 /* Kartlar */
@@ -1107,22 +1171,6 @@
 .team_card:hover .team_photo {
   transform: translateX(-50%) scale(1.1);
 }
-
-/* Kartın iç metinleri */
-.team_card h3 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-primary-900);
-}
-
-.team_card p {
-  margin: 0.25rem 0;
-  line-height: 1.4;
-  font-weight: 375;
-  color: var(--color-primary-950);
-}
 /* 
   Ana container:
   - Mobilde (varsayılan) tek sütun
@@ -1144,62 +1192,43 @@
   position: relative;
   width: 100%;
   gap: 2rem;
-  /* Yukarı-aşağı boşluğu arttırabilirsiniz, ör: 4rem 0 */
   padding: 4rem 40px;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   overflow: hidden;
-
-  /* Kartları ortalamak için flex */
   display: flex;
-  flex-direction: row; /* Başlık üstte, grid altta */
+  flex-direction: column; /* Dikey düzen */
   align-items: center;
-  justify-content: center; /* Yukarıdan başlaması için */
-}
-
-/* Tablet (768px üzeri) => 2 sütun */
-@media (min-width: 768px) {
-  .tech_card_container {
-    padding: 3rem 2rem;
-    flex-direction: row;
-  }
-}
-
-/* Masaüstü (1024px üzeri) => 3 sütun */
-@media (min-width: 1024px) {
-  .tech_card_container {
-    grid-template-columns: repeat(3, minmax(600px, 1fr));
-    padding: 4rem 3rem;
-  }
 }
 
 .tech_card_grid {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column; /* Dikey düzen - her satırda 1 kart */
+  gap: 1rem;
+  width: 100%;
+  max-width: 1280px; /* İsteğe bağlı maksimum genişlik */
 }
 
 /* Kart */
 .tech_card {
+  width: 100%; /* Tam genişlik */
   position: relative;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(
+    145deg,
+    var(--color-brand-secondary-100),
+    var(--color-brand-secondary-200)
+  );
   backdrop-filter: blur(10px);
   border-radius: 16px;
   gap: 1rem;
-  padding: 1rem;
+  padding: 2rem; /* Biraz daha fazla padding */
   background-color: var(--color-brand-secondary-200);
   border: 2px solid var(--color-brand-primary-900);
-  transition: all 0.3s ease;
+  transition: transform 0.6s ease, filter 0.6s ease, background-color 0.6s ease;
 }
 
-.tech_card:hover {
-  transform: scale(1.05) rotate(1deg) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
+/* Dekoratif arka plan dalgası */
 .tech_card_decor {
   position: absolute;
   top: -10px;
@@ -1211,24 +1240,33 @@
 }
 
 .decor_wave {
-  color: #4f46e5;
+  color: var(--color-brand-primary-800);
   animation: waveFloat 8s ease-in-out infinite;
 }
 
-.tech_card_content {
-  padding: 1.5rem;
-  position: relative;
+.tech_card:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  background-color: var(--color-brand-primary-950);
+  color: var(--color-brand-secondary-300);
+  border-color: var(--color-brand-primary-900);
 }
 
+/* İkon animasyonu */
 .icon_rotate {
   animation: iconBounce 3s ease-in-out infinite;
 }
 
+/* Başlık altı çizgi animasyonu */
 .title_underline {
   display: block;
   width: 40%;
   height: 2px;
-  background: linear-gradient(90deg, #4f46e5 0%, #ec4899 100%);
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-primary-800) 0%,
+    var(--color-brand-secondary-800) 100%
+  );
   margin-top: 0.5rem;
   transition: width 0.3s ease;
 }
@@ -1237,6 +1275,7 @@
   width: 80%;
 }
 
+/* Ok ikonu animasyonu */
 .arrow_icon {
   width: 1.5rem;
   height: 1.5rem;
@@ -1360,101 +1399,91 @@
   font-weight: 700;
   background-color: var(--color-brand-primary-950);
   color: var(--color-brand-secondary-300);
-  border-radius: 9999px; /* Tam yuvarlak köşe */
+  border-radius: 9999px;
   text-align: center;
   z-index: 1;
+  overflow: hidden;
 
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  /* Gölge ve transform için smooth geçiş */
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
 
-  transition: transform 0.6s ease, filter 0.6s ease, background-color 0.6s ease, color 0.6s ease,
-    box-shadow 0.6s ease;
+/* Hover efekti için pseudo-element */
+.sub_section_container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: var(--color-brand-secondary-400);
+  border-radius: 50%;
+  border: 2px solid var(--color-brand-primary-950);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  z-index: -1;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sub_section_container:hover {
-  background-color: var(--color-brand-primary-950);
-  color: var(--color-brand-secondary-400);
+  transform: scale(1.02);
+  color: var(--color-brand-primary-900);
   cursor: pointer;
-
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
-
-  transform: scale(1.1);
-  filter: brightness(1.2);
+  background-color: var(--color-brand-secondary-100);
 }
 
-/* --------------------------------------------
-       ARKA PLAN ANİMASYONU (DEGRADE + TRANSFORM)
-     -------------------------------------------- */
-.sub_section_text_container_bg {
-  position: absolute;
-  inset: 0; /* top, right, bottom, left = 0 */
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-
-  background: linear-gradient(
-    135deg,
-    var(--color-brand-secondary-200) 0%,
-    var(--color-brand-primary-900) 100%
-  );
-  transform: scale(1);
-  opacity: 1;
-
-  transition: transform 0.6s ease, opacity 0.6s ease;
+/* Hover'da daire efekti */
+.sub_section_container:hover::before {
+  width: 300%;
+  height: 300%;
+  opacity: 0.6;
 }
 
-.sub_section_container:hover .sub_section_text_container_bg {
-  transform: scale(1.08);
-  opacity: 0.85;
-}
-
-/* --------------------------------------------
-       BAŞLIK
-     -------------------------------------------- */
-.sub_section_text_container h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  color: inherit; /* Bulunduğu kapsayıcıdan renk alsın */
-}
-
-/* --------------------------------------------
-       MEDIA QUERIES
-     -------------------------------------------- */
-
-@media (max-width: 576px) {
+/* Büyük ekranlar için ayarlar */
+@media (min-width: 1440px) {
   .sub_section_container {
-    margin: 2rem 1rem;
-    padding: 2rem 1rem;
-    font-size: 2rem;
-    border-radius: 16px;
-    outline: none;
-    box-shadow: none;
-  }
-
-  .sub_section_container:hover {
-    outline: none;
-    box-shadow: none;
-  }
-
-  .sub_section_text_container h1 {
-    font-size: 1.8rem;
-  }
-
-  .sub_section_container:hover .sub_section_text_container_bg {
-    transform: none;
-    opacity: 1;
+    margin: 8rem 6rem;
+    padding: 10rem 8rem;
+    font-size: 4.5rem;
   }
 }
 
+/* Tablet ve küçük masaüstü */
+@media (max-width: 1024px) {
+  .sub_section_container {
+    margin: 5rem 3rem;
+    padding: 7rem 4rem;
+    font-size: 3.5rem;
+  }
+}
+
+/* Tablet */
 @media (max-width: 768px) {
   .sub_section_container {
     margin: 3rem 2rem;
     padding: 4rem 2rem;
     font-size: 2.4rem;
-    border-radius: 24px;
+    border-radius: 48px;
   }
+}
 
-  .sub_section_text_container h1 {
+/* Büyük mobil */
+@media (max-width: 576px) {
+  .sub_section_container {
+    margin: 2rem 1rem;
+    padding: 2rem 1rem;
     font-size: 2rem;
+    border-radius: 32px;
+  }
+}
+
+/* Küçük mobil */
+@media (max-width: 375px) {
+  .sub_section_container {
+    margin: 1.5rem 0.75rem;
+    padding: 1.5rem 0.75rem;
+    font-size: 1.75rem;
   }
 }
 
@@ -1524,7 +1553,7 @@
 }
 
 .footer_social_container img:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
   filter: brightness(1.2);
 }
 
@@ -1789,6 +1818,15 @@
   }
 }
 
+/* ... existing code ... */
+.music-toggle {
+  transition: all 0.3s ease;
+}
+
+.music-toggle:hover {
+  transform: scale(1.1);
+}
+
 /* Takım Grid'i için tablet/mobil ayarı */
 @media (max-width: 1024px) {
   .team_grid {
@@ -1831,4 +1869,43 @@
 /* Metin değişimleriyle senkronize renk geçişi için */
 .typewriter_text[data-active="true"] {
   animation: textColors 8s infinite;
+}
+
+/* Tablet için düzenleme */
+@media (max-width: 1024px) {
+  .tech_card_grid {
+    flex-direction: row; /* Yatay düzen */
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tech_card {
+    width: calc(50% - 1rem); /* 2 sütun */
+    min-width: 300px;
+  }
+}
+
+/* Mobil için düzenleme */
+@media (max-width: 768px) {
+  .tech_card_container {
+    padding: 2rem 1rem;
+  }
+
+  .tech_card_grid {
+    gap: 1rem;
+  }
+
+  .tech_card {
+    width: 100%; /* Tek sütun */
+    padding: 1.5rem;
+  }
+
+  .tech_card_title {
+    font-size: 1.25rem;
+  }
+
+  .tech_card_desc {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
 }
