@@ -15,33 +15,6 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
   const [audioContextAllowed, setAudioContextAllowed] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Ses izni için etkileşim handler'ı
-  useEffect(() => {
-    const handleUserInteraction = () => {
-      if (!audioContextAllowed) {
-        // Ses dosyasını önceden yükle
-        const audio = new Audio("/audio/beep.mp3");
-        audio
-          .play()
-          .then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            setAudioContextAllowed(true);
-          })
-          .catch(() => console.warn("Ses izni alınamadı"));
-        audioRef.current = audio;
-      }
-    };
-
-    document.addEventListener("click", handleUserInteraction);
-    document.addEventListener("touchstart", handleUserInteraction);
-
-    return () => {
-      document.removeEventListener("click", handleUserInteraction);
-      document.removeEventListener("touchstart", handleUserInteraction);
-    };
-  }, []);
-
   useEffect(() => {
     // 1) Bitiş zamanını hesapla
     const start = new Date(startDate).getTime();
@@ -53,9 +26,6 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
       const diff = endTime - now;
 
       if (diff <= 0) {
-        if (audioContextAllowed && audioRef.current) {
-          audioRef.current.play().catch(() => console.warn("Ses çalınamadı"));
-        }
         onTimeout();
         setRemainingMs(0);
         clearInterval(timerId);
