@@ -118,7 +118,7 @@ export default function ChooseRole() {
             <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
               <RoleCard
                 title="I want to create a quiz!"
-                description="Design your perfect quiz with our intuitive creation tools."
+                description="Design your perfect quiz quickly and easily. And share it!"
                 onClick={handleCreateQuiz}
                 variant="tertiary"
                 icon={
@@ -140,8 +140,8 @@ export default function ChooseRole() {
               />
 
               <RoleCard
-                title="I want to challenge myself!"
-                description="Start your quiz journey in just a minute, completely free!"
+                title="I want to join a quiz!"
+                description="Join a quiz with a pincode. And start your quiz journey!"
                 onClick={handleJoinExam}
                 variant="primary"
                 icon={

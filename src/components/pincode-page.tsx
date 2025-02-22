@@ -15,21 +15,19 @@ export default function PincodePage() {
 
   useEffect(() => {
     if (!router.query.pincode) return;
-    setPincode((router.query.pincode as string)
-    .toUpperCase());
+    setPincode((router.query.pincode as string).toUpperCase());
   }, [router.query.pincode]);
 
   const redirectToExam = async (pincode: string) => {
-    const response = await getExamByPinCode(pincode)
-    .catch((error) => { 
-      toast.error(error.response.data.message); 
+    const response = await getExamByPinCode(pincode).catch((error) => {
+      toast.error(error.response.data.message);
       router.push("/join");
-      return null; 
+      return null;
     });
-    
+
     if (!response) return;
     router.push(`/app/exams/get-started/${response.examId}`);
-  }
+  };
 
   useEffect(() => {
     if (!router.query.pincode) return;
@@ -40,7 +38,7 @@ export default function PincodePage() {
   const handleJoinQuiz = async (e: React.FormEvent) => {
     e.preventDefault();
     if (pincode.length !== 6) return;
-    
+
     redirectToExam(pincode);
   };
 
@@ -52,16 +50,15 @@ export default function PincodePage() {
         className="absolute inset-0 w-full h-full object-cover z-[-1]"
       />
       <main className="flex flex-col items-center justify-center min-h-screen bg-transparent p-6 sm:p-8">
-        <div className="max-w-4xl w-full bg-base-white rounded-3xl px-16 py-24 border border-greyscale-light-200">
-          
-          <h1 className="text-5xl font-bold text-center mb-4">
-            Join a quiz
+        <div className="max-w-4xl w-full bg-brand-secondary-50 rounded-3xl px-4 sm:px-8 md:px-16 py-12 sm:py-16 md:py-24 border border-greyscale-light-300">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-6 sm:mb-8 md:mb-10">
+            🚀 Quiz time! 🚀
           </h1>
 
-          <h5 className="text-center mb-6">
-            Enter the 6-digit pin code to join the quiz
+          <h5 className="text-center mb-4 sm:mb-6">
+            Enter the 6-digit code for an exciting quiz adventure!
           </h5>
-          
+
           <div className="flex flex-col gap-4">
             <form onSubmit={handleJoinQuiz}>
               <PincodeInput value={pincode} onChange={setPincode} />
@@ -69,7 +66,7 @@ export default function PincodePage() {
               <div className="text-sm text-gray-500 text-center mt-2">
                 Only uppercase letters (A-Z) and numbers (0-9) allowed
               </div>
-              <div className="mt-8 flex justify-center">
+              <div className="mt-6 sm:mt-8 flex justify-center">
                 <Button
                   type="submit"
                   variant="outline"
@@ -79,8 +76,8 @@ export default function PincodePage() {
                   group transition-all duration-300 
                   hover:scale-105 active:scale-100
                   hover:shadow-lg active:shadow-md
-                  px-6 py-3 text-lg font-medium
-                  rounded-2xl"
+                  px-4 sm:px-6 py-2 sm:py-3 text-base sm:text-lg font-medium
+                  rounded-xl sm:rounded-2xl"
                 >
                   Join quiz
                   <RocketLaunchIcon className="size-6 transition-transform duration-300 group-hover:-translate-y-1" />

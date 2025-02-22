@@ -192,7 +192,9 @@ export const Step2 = ({ onBack, onPublish }: Step2Props) => {
                   description="Choose a date and time for the quiz to begin."
                   className="flex-1 gap-2"
                   calendarProps={{
-                    disabled: { before: new Date(Date.now() + 10 * 60 * 1000) },
+                    disabled: {
+                      before: new Date(new Date(Date.now() + 10 * 60 * 1000).setSeconds(0)),
+                    },
                   }}
                 />
                 <DurationPicker

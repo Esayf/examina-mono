@@ -510,13 +510,8 @@ export default function JoinedExamsPage() {
   const [joinCode, setJoinCode] = useState("");
 
   // Güncellenmiş handleJoinByLink fonksiyonu
-  const handleJoinByLink = (link: string) => {
-    const match = link.match(/\/app\/exams\/get-started\/([a-f\d]{24})/i);
-    if (match && match[1]) {
-      router.push(`/app/exams/get-started/${match[1]}`);
-    } else {
-      toast.error("Invalid quiz link");
-    }
+  const handleJoinByPinCode = (pincode: string) => {
+    router.push(`/join/${pincode}`);
   };
 
   // API query
@@ -635,13 +630,12 @@ export default function JoinedExamsPage() {
               {/* Yeni: Link ile katılma input'u */}
               <div className="flex items-center gap-2 w-full sm:w-96">
                 <Input
-                  placeholder="Paste quiz link here..."
+                  placeholder="Enter pin code here..."
                   value={joinCode}
                   onChange={(e) => setJoinCode(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      handleJoinByLink(joinCode);
-                      setJoinCode("");
+                      handleJoinByPinCode(joinCode);
                     }
                   }}
                   className="w-full transition-all focus:ring-2 focus:ring-brand-primary-200"
@@ -649,8 +643,7 @@ export default function JoinedExamsPage() {
                 <Button
                   variant="default"
                   onClick={() => {
-                    handleJoinByLink(joinCode);
-                    setJoinCode("");
+                    handleJoinByPinCode(joinCode);
                   }}
                   disabled={!joinCode}
                   className="shrink-0"

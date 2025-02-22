@@ -8,6 +8,7 @@ import {
   ClockIcon,
   ClipboardDocumentIcon,
   Squares2X2Icon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -200,6 +201,26 @@ function ExamDetail() {
                     <p className="text-sm text-brand-primary-950">Total Questions</p>
                     <p className="text-base font-medium text-brand-primary-950">
                       {data?.exam?.questionCount ?? 0}
+                    </p>
+                  </div>
+                </div>
+                {/* Start Date */}
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 p-2 bg-brand-secondary-50 text-brand-secondary-950 rounded-md">
+                    <CalendarIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-brand-primary-950">Start Date</p>
+                    <p className="text-base font-medium text-brand-primary-950">
+                      {data?.exam?.startDate
+                        ? new Date(data.exam.startDate).toLocaleDateString(undefined, {
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            year: "numeric",
+                          })
+                        : "-"}
                     </p>
                   </div>
                 </div>
