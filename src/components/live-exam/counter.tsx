@@ -26,9 +26,6 @@ export const Counter = ({ startDate, duration, mutate, onTimeout }: CounterProps
       const diff = endTime - now;
 
       if (diff <= 0) {
-        if (audioContextAllowed && audioRef.current) {
-          audioRef.current.play().catch(() => console.warn("Ses çalınamadı"));
-        }
         onTimeout();
         setRemainingMs(0);
         clearInterval(timerId);
