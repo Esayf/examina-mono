@@ -85,8 +85,8 @@ const ExamDetails = () => {
 
       const matchesStatus =
         statusFilter === "all" ||
-        (statusFilter === "completed" && participant.isCompleted === true) ||
-        (statusFilter === "in_progress" && participant.isCompleted === false);
+        (statusFilter === "completed" && participant.finishTime) ||
+        (statusFilter === "in_progress" && !participant.finishTime);
 
       return matchesSearch && matchesStatus;
     });
@@ -508,13 +508,13 @@ const ExamDetails = () => {
                             </td>
                             <td className="px-6 py-4">
                               <Badge
-                                variant={participant.isCompleted ? "default" : "secondary"}
+                                variant={participant.finishTime ? "default" : "secondary"}
                                 className={cn(
                                   "text-sm px-4 py-1.5 rounded-full",
-                                  participant.isCompleted ? "bg-green-100 text-green-800" : ""
+                                  participant.finishTime ? "bg-green-100 text-green-800" : ""
                                 )}
                               >
-                                {participant.isCompleted ? "Completed" : "Not completed"}
+                                {participant.finishTime ? "Completed" : "Not completed"}
                               </Badge>
                             </td>
                           </tr>
