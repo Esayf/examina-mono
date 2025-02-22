@@ -22,7 +22,7 @@ export const PincodeInput = ({ value, onChange }: PincodeInputProps) => {
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key.toLowerCase() === "v") return;
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v") return;
 
     let key = /^[A-Za-z0-9]$/.test(e.key) ? "alphanumeric" : e.key;
     const newPin = value.split("");
