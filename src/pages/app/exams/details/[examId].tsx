@@ -336,7 +336,7 @@ const ExamDetails = () => {
                 <AttendanceCharts
                   participants={participants}
                   startDate={startDate}
-                  endDate={endDate}
+                  endDate={new Date(Math.min(endDate.getTime(), new Date().getTime()))}
                   passingScore={passingScore}
                 />
               </div>
