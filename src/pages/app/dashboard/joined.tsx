@@ -389,16 +389,16 @@ function JoinedRow({ exam }: RowProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const quizLink = (typeof window !== "undefined" ? window.location.origin : "")
-  + (exam.pincode ? `/join/${exam.pincode}` : `/app/exams/get-started/${exam._id}`);
+  const quizLink =
+    (typeof window !== "undefined" ? window.location.origin : "") +
+    (exam.pincode ? `/join/${exam.pincode}` : `/app/exams/get-started/${exam._id}`);
 
   return (
     <div
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
-        "cursor-pointer hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
+        "hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
-      onClick={() => router.push(`/app/exams/details/${exam._id}`)}
     >
       {/* Share Modal */}
       <ShareModal
@@ -414,12 +414,7 @@ function JoinedRow({ exam }: RowProps) {
             <h3 className="text-lg font-semibold text-brand-primary-900 truncate transition-colors group-hover:text-brand-primary-700">
               {exam.title}
             </h3>
-            <Badge
-              variant={
-                exam.status
-              }
-              className="shrink-0"
-            >
+            <Badge variant={exam.status} className="shrink-0">
               {exam.status.charAt(0).toUpperCase() + exam.status.slice(1)}
             </Badge>
           </div>
