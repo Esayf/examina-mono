@@ -460,9 +460,8 @@ export default function LiveQuiz() {
               {/* Soru Metni ve Seçenekler */}
               <div className="flex flex-col xl:flex-row gap-4">
                 {/* Soru Metni */}
-                <div className="flex-1 flex gap-2 flex-col overflow-wrap break-words h-[calc(100dvh-30rem)] md:h-[calc(100dvh-19rem)] mb-4">
-                  <QuestionDetail content={currentQuestion?.text || ""} />
-                </div>
+
+                <QuestionDetail content={currentQuestion?.text || ""} />
 
                 {/* Seçenekler */}
                 <div className="flex-1">
