@@ -57,12 +57,8 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Input } from "@/components/ui/input";
 import DurationFormatter from "@/components/ui/time/duration-formatter";
 import { toast } from "react-hot-toast";
+import { AnswerKeyModal } from "@/components/exam/answer-key-modal";
 
-/* ---------------------------------------------------------
-   1) Katıldığı quiz verisini çekecek API fonksiyonu.
-   (Örnek: /api/exams/joined)
-   ----------------------------------------------------------
-*/
 async function getJoinedExams() {
   const res = await fetch("/api/exams/joined");
   if (!res.ok) throw new Error("Failed to fetch joined exams");
@@ -378,6 +374,7 @@ interface RowProps {
 
 function JoinedRow({ exam }: RowProps) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isAnswerKeyModalOpen, setIsAnswerKeyModalOpen] = useState(false);
   const [showPulse, setShowPulse] = useState(true);
   const router = useRouter();
 
@@ -397,14 +394,27 @@ function JoinedRow({ exam }: RowProps) {
     <div
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
+        exam.status === "ended" ? "cursor-pointer" : "cursor-default",
         "hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
+      onClick={() => {
+        if (exam.status === "ended") {
+          setIsAnswerKeyModalOpen(true);
+        }
+      }}
     >
       {/* Share Modal */}
       <ShareModal
         open={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         quizLink={quizLink}
+      />
+
+      {/* Answer Key Modal */}
+      <AnswerKeyModal
+        open={isAnswerKeyModalOpen}
+        onClose={() => setIsAnswerKeyModalOpen(false)}
+        exam={exam}
       />
 
       <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -455,7 +465,7 @@ function JoinedRow({ exam }: RowProps) {
           </div>
         </div>
 
-        {/* Share butonuna pulse efekti */}
+        {/* Share button - stop propagation to prevent modal opening */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-between sm:w-auto">
             <Button

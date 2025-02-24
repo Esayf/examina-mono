@@ -181,7 +181,7 @@ export const PublishButton = ({ onPublishStart }: PublishButtonProps) => {
           startDate: step2Values.startDate,
           duration: step2Values.duration,
           questions: step1Values.questions.map((question, i) => ({
-            type: question.questionType,
+            questionType: question.questionType,
             number: i + 1,
             text: question.question,
             description: question.question,
