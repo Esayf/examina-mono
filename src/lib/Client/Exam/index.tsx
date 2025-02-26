@@ -156,6 +156,8 @@ interface ErrorResponse {
 }
 
 export interface ExamStatistics extends Exam {
+  visibility: string;
+  rewardAmount: any;
   winnerlist?: Winner[];
   participants?: Participant[];
   leaderboard?: Leaderboard;
@@ -446,11 +448,14 @@ export interface PinCode {
 function getExamByPinCode(pinCode: string): Promise<PinCode> {
   return new Promise((resolve, reject) => {
     const requestBase = new RequestBase();
-    requestBase.get(`/pincode/${pinCode}`).then((response) => {
-      resolve(response.data);
-    }).catch((error) => {
-      reject(error);
-    });
+    requestBase
+      .get(`/pincode/${pinCode}`)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 }
 

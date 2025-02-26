@@ -383,8 +383,9 @@ function Row({ exam }: RowProps) {
   });
   const startDate = exam.startDate ? new Date(exam.startDate) : null;
 
-  const quizLink = (typeof window !== "undefined" ? window.location.origin : "")
-  + (exam.pincode ? `/join/${exam.pincode}` : `/app/exams/get-started/${exam._id}`);
+  const quizLink =
+    (typeof window !== "undefined" ? window.location.origin : "") +
+    (exam.pincode ? `/join/${exam.pincode}` : `/app/exams/get-started/${exam._id}`);
 
   return (
     <div
@@ -684,28 +685,31 @@ export default function Application() {
     { label: "Status", field: "status" },
   ];
 
-  const EmptyStateComponent = () => (
-    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-4">
-      <Image
-        src={EmptyState}
-        height={180}
-        width={240}
-        alt="No quizzes found"
-        className="hover:scale-105 transition-transform duration-300"
-      />
-      <p className="text-md text-brand-primary-950 mt-1 text-center">
-        No quizzes found.
-        <Button
-          variant="default"
-          className="mt-4 hover:bg-brand-primary-800 flex gap-2"
-          onClick={() => router.push("/app/create-exam/")}
-        >
-          <PlusIcon className="w-5 h-5" />
-          Create new quiz
-        </Button>
-      </p>
-    </div>
-  );
+  function EmptyStateComponent() {
+    const router = useRouter();
+    return (
+      <div className="flex flex-col items-center justify-center py-10 gap-4 mt-4 col-span-full">
+        <Image
+          src={EmptyState}
+          height={180}
+          width={240}
+          alt="No quizzes found"
+          className="hover:scale-105 transition-transform duration-300"
+        />
+        <p className="text-md text-brand-primary-950 mt-1 text-center">
+          No quizzes found.
+          <Button
+            variant="default"
+            className="mt-4 hover:bg-brand-primary-800 flex gap-2"
+            onClick={() => router.push("/app/create-exam/")}
+          >
+            <PlusIcon className="w-5 h-5" />
+            Create new quiz
+          </Button>
+        </p>
+      </div>
+    );
+  }
 
   // Filtre Butonları & Search
   const renderFilterAndSearch = () => (

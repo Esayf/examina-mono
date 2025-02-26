@@ -8,6 +8,7 @@ import { RocketLaunchIcon } from "@heroicons/react/24/outline";
 import { PincodeInput } from "@/components/ui/pincode-input";
 import { getExamByPinCode } from "@/lib/Client/Exam";
 import { toast } from "react-hot-toast";
+import DashboardHeader from "./ui/dashboard-header";
 
 export default function PincodePage() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function PincodePage() {
 
   return (
     <div className="relative min-h-screen h-dvh flex flex-col z-0 overflow-y-auto">
+      <DashboardHeader withoutNav={false} withoutTabs={true} />
       <Image
         src={BackgroundPattern}
         alt="Background pattern"

@@ -49,6 +49,7 @@ import {
   UsersIcon,
   ArrowDownCircleIcon,
   PlusIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
@@ -57,6 +58,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Input } from "@/components/ui/input";
 import DurationFormatter from "@/components/ui/time/duration-formatter";
 import { toast } from "react-hot-toast";
+import { Spinner } from "@/components/ui/spinner";
 
 /* ---------------------------------------------------------
    1) Katıldığı quiz verisini çekecek API fonksiyonu.
@@ -71,29 +73,6 @@ async function getJoinedExams() {
 
 // Filtre seçenekleri
 type FilterOption = (typeof FILTER_OPTIONS)[number];
-type SortField =
-  | "title"
-  | "startDate"
-  | "endDate"
-  | "duration"
-  | "status"
-  | "completedAt"
-  | "user_nickname";
-
-/****************************************
-/****************************************
- * Sıralama ikonu (küçük helper)
- ****************************************/
-function renderSortIcon(currentField: SortField, sortField: SortField, sortAsc: boolean) {
-  if (currentField === sortField) {
-    return sortAsc ? (
-      <ArrowUpIcon className="w-4 h-4 inline ml-1" />
-    ) : (
-      <ArrowDownIcon className="w-4 h-4 inline ml-1" />
-    );
-  }
-  return <ChevronUpDownIcon className="w-4 h-4 inline ml-1 text-gray-400" />;
-}
 
 /****************************************
  * Paylaşım (Share) Modal
@@ -419,7 +398,7 @@ function JoinedRow({ exam }: RowProps) {
             </Badge>
           </div>
 
-          {/* İkonlara hover efekti */}
+          {/* İkonlar */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
             <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
               <CalendarIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
@@ -452,12 +431,52 @@ function JoinedRow({ exam }: RowProps) {
                 </span>
               </Badge>
             </div>
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <CheckIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Your score:</span>
+              <Badge
+                variant="outline"
+                className="
+                  bg-gradient-to-br from-brand-primary-50 to-brand-secondary-100 
+                  text-brand-primary-700 border border-brand-primary-200/60
+                  rounded-lg px-2.5 py-1 shadow-sm
+                  hover:from-brand-primary-100 hover:to-brand-secondary-200
+                  transition-all duration-200
+                  group
+                "
+              >
+                <span className="font-semibold">
+                  {exam.status === "ended"
+                    ? exam.userScore !== null && exam.userScore !== undefined
+                      ? exam.userScore
+                      : "Not Completed"
+                    : "???"}
+                </span>
+              </Badge>
+            </div>
           </div>
         </div>
 
-        {/* Share butonuna pulse efekti */}
+        {/* Share buton */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-between sm:w-auto">
+            {/* New Answer Key Button */}
+            {exam.status === "ended" && exam.userScore !== null && exam.userScore !== undefined && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-brand-primary-50 text-brand-primary-700 relative group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/app/exams/answer-key/${exam._id}`);
+                }}
+                title="Answer Key"
+              >
+                <DocumentTextIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+              </Button>
+            )}
+
+            {/* Existing Share Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -480,22 +499,26 @@ function JoinedRow({ exam }: RowProps) {
   );
 }
 
-// Quiz listesi içindeki boş durum bileşeni
+/****************************************
+ * Boş (Empty) Durum Bileşeni
+ * (İkinci snippet'teki stili koruyacak şekilde)
+ ****************************************/
 function EmptyStateComponent() {
+  const router = useRouter();
   return (
-    <div className="col-span-full flex justify-center items-center p-8 text-center">
-      <div className="flex flex-col items-center gap-4">
-        <Image
-          src={EmptyState}
-          height={200}
-          width={200}
-          alt="No results found"
-          className="h-auto max-w-full opacity-75"
-        />
-        <div className="space-y-2">
-          <h3 className="text-xl font-semibold text-brand-primary-900">No quizzes found</h3>
-          <p className="text-greyscale-light-600">Try adjusting your search or filter settings</p>
-        </div>
+    <div className="flex flex-col items-center justify-center py-10 gap-4 mt-4 col-span-full">
+      <Image
+        src={EmptyState}
+        height={180}
+        width={240}
+        alt="No quizzes found"
+        className="hover:scale-105 transition-transform duration-300"
+      />
+      <p className="text-md text-brand-primary-950 mt-1 text-center">No quizzes found.</p>
+      <div className="flex gap-2">
+        <Button variant="outline" className="mt-2 flex gap-2" onClick={() => router.push("/join/")}>
+          Join a quiz
+        </Button>
       </div>
     </div>
   );
@@ -509,12 +532,12 @@ export default function JoinedExamsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [joinCode, setJoinCode] = useState("");
 
-  // Güncellenmiş handleJoinByLink fonksiyonu
+  // Pin code ile quiz'e katılma
   const handleJoinByPinCode = (pincode: string) => {
     router.push(`/join/${pincode}`);
   };
 
-  // API query
+  // useQuery: Katıldığı sınavlar
   const {
     data = [],
     isLoading,
@@ -523,92 +546,59 @@ export default function JoinedExamsPage() {
     queryKey: ["joinedExams"],
     queryFn: () => getAllJoinedExams(),
   });
-  // Filtre / Sıralama
-  const [filter, setFilter] = useState<FilterOption>("All");
-  const [sortField, setSortField] = useState<SortField>("startDate");
-  const [sortAsc, setSortAsc] = useState(false);
 
-  // Filtre ve arama fonksiyonu
+  // Filtre
+  const [filter, setFilter] = useState<FilterOption>("All");
+
+  // Simplify filterExams function to remove sorting
   function filterExams(exams: JoinedExamResponse[]) {
-    // 1) Status filtresi
+    // 1) Status filter
     const filteredByStatus = exams.filter((exam) => {
       if (filter === "All") return true;
       return exam.status.toLowerCase() === filter.toLowerCase();
     });
 
-    // 2) Arama filtresi
-    if (searchTerm.trim().length > 0) {
-      return filteredByStatus.filter((exam) => {
-        const title = exam.title?.toLowerCase() || "";
-        return title.includes(searchTerm.toLowerCase());
-      });
-    }
-
-    return filteredByStatus;
+    // 2) Search filter
+    return searchTerm.trim().length > 0
+      ? filteredByStatus.filter((exam) => {
+          const title = exam.title?.toLowerCase() || "";
+          return title.includes(searchTerm.toLowerCase());
+        })
+      : filteredByStatus;
   }
 
-  // Filtrele ve sırala
   const filteredExams = filterExams(data);
 
-  // Sınav yoksa (Empty state)
-  if (!isLoading && data?.length === 0 && !isError) {
+  // ----- Loading -----
+  if (isLoading) {
     return (
-      <>
+      <div className="relative min-h-screen h-dvh flex flex-col z-0">
         <DashboardHeader withoutTabs={false} withoutNav={true} />
-        <div className="max-w-[76rem] h-full mx-auto my-auto py-8">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-bold text-brand-primary-900">Joined Quizzes</h3>
-          </div>
-          <div className="flex justify-center items-center min-h-[600px] h-[80vh]">
-            <div className="flex flex-col gap-8 items-center text-center max-w-lg">
-              <Image
-                src={EmptyState}
-                height={280}
-                width={360}
-                alt="You haven't joined any quizzes yet"
-                className="h-auto max-w-full drop-shadow-lg transition-transform duration-300 hover:scale-105"
-                priority
-              />
-              <div className="space-y-4">
-                <h2 className="text-3xl font-semibold text-brand-primary-950">
-                  You haven't joined any quizzes yet
-                </h2>
-                <p className="text-greyscale-light-600 text-lg">
-                  Ready to test your knowledge? Join an exciting quiz or create your own challenge!
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <Button
-                  variant="default"
-                  size="lg"
-                  onClick={() => router.push("/app/join-exam")}
-                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg hover:bg-brand-primary-800 transition-all duration-200"
-                >
-                  Join a quiz
-                  <ArrowUpRightIcon className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => router.push("/app/create-exam")}
-                  className="w-full sm:w-auto gap-2 px-6 py-4 text-lg border-brand-primary-200 hover:bg-brand-primary-50 transition-all duration-200"
-                >
-                  Create your own
-                  <PlusIcon className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center justify-center h-full flex-col gap-2">
+          <Spinner className="w-12 h-12 text-brand-primary-600" />
+          <p className="text-brand-primary-900">Quizzes loading...</p>
         </div>
-      </>
+      </div>
     );
   }
 
-  if (isLoading) {
-    return <p>Loading joined quizzes...</p>;
-  }
+  // ----- Error -----
   if (isError) {
-    return <p>Error fetching joined quizzes.</p>;
+    return (
+      <div className="relative min-h-screen h-dvh flex flex-col z-0">
+        <DashboardHeader withoutTabs={false} withoutNav={true} />
+        <Card className="m-8 p-6 text-center w-full max-w-xl mx-auto">
+          <h3 className="text-red-600 text-lg font-semibold mb-4">Error loading quizzes</h3>
+          <Button
+            variant="outline"
+            onClick={() => window.location.reload()}
+            className="hover:bg-brand-primary-50"
+          >
+            Try Again
+          </Button>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -620,19 +610,19 @@ export default function JoinedExamsPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
               <div className="space-y-1.5">
                 <CardTitle className="text-2xl font-bold text-brand-primary-900">
-                  Joined Quizzes
+                  Joined quizzes
                 </CardTitle>
                 <CardDescription className="text-greyscale-light-600">
                   All quizzes you participated in. Check your score or share them easily!
                 </CardDescription>
               </div>
-
-              {/* Yeni: Link ile katılma input'u */}
               <div className="flex items-center gap-2 w-full sm:w-96">
                 <Input
-                  placeholder="Enter pin code here..."
+                  placeholder="Enter PIN code here..."
                   value={joinCode}
-                  onChange={(e) => setJoinCode(e.target.value)}
+                  maxLength={6}
+                  autoFocus={true}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleJoinByPinCode(joinCode);
@@ -642,9 +632,7 @@ export default function JoinedExamsPage() {
                 />
                 <Button
                   variant="default"
-                  onClick={() => {
-                    handleJoinByPinCode(joinCode);
-                  }}
+                  onClick={() => handleJoinByPinCode(joinCode)}
                   disabled={!joinCode}
                   className="shrink-0"
                 >
@@ -655,55 +643,29 @@ export default function JoinedExamsPage() {
           </CardHeader>
 
           <CardContent className="px-0 pt-0">
-            {/* Filtre ve arama bölümü sticky yapılıyor */}
+            {/* Filtre ve arama */}
             <div className="sticky top-0 z-10 backdrop-blur-sm bg-white/90 border-b border-greyscale-light-200">
               <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:justify-between px-4 py-3">
                 {/* Filtre butonları */}
                 <div className="flex overflow-x-auto gap-2 hide-scrollbar">
-                  {FILTER_OPTIONS.map((option) => {
-                    const colors = {
-                      Active:
-                        "bg-ui-success-50 text-ui-success-600 border border-ui-success-600 hover:bg-ui-success-100 hover:text-ui-success-700",
-                      Ended:
-                        "bg-ui-error-50 text-ui-error-600 border border-ui-error-600 hover:bg-ui-error-100 hover:text-ui-error-700",
-                      Draft:
-                        "bg-greyscale-light-100 text-greyscale-light-600 border border-greyscale-light-400 hover:bg-greyscale-light-200 hover:text-greyscale-light-700",
-                      Upcoming:
-                        "bg-blue-50 text-blue-900 border border-blue-600 hover:bg-blue-100 hover:text-blue-700",
-                      All: "bg-brand-primary-50 text-brand-primary-600 border border-brand-primary-600 hover:bg-brand-primary-100 hover:text-brand-primary-700",
-                    };
-
-                    const activeColors = {
-                      Active:
-                        "bg-ui-success-200 text-ui-success-600 border border-ui-success-600 hover:bg-transparent border-2",
-                      Ended:
-                        "bg-ui-error-200 text-ui-error-600 border border-ui-error-600 hover:bg-transparent border-2",
-                      Draft:
-                        "bg-greyscale-light-200 text-greyscale-light-700 border border-greyscale-light-500 hover:bg-transparent border-2",
-                      Upcoming:
-                        "bg-blue-200 text-blue-900 border border-blue-600 hover:bg-transparent border-2",
-                      All: "bg-brand-primary-200 text-brand-primary-600 border border-brand-primary-600 hover:bg-transparent border-2",
-                    };
-
-                    const activeColor = activeColors[option];
-                    const color = colors[option];
-                    return (
-                      <Button
-                        key={option}
-                        variant={filter === option ? "default" : "outline"}
-                        className={cn(
-                          "text-sm shadow-sm w-auto h-[2rem] px-3 py-2 border border-brand-primary-900",
-                          filter === option ? `${activeColor}` : `${color}`
-                        )}
-                        onClick={() => setFilter(option)}
-                      >
-                        {option}
-                      </Button>
-                    );
-                  })}
+                  {FILTER_OPTIONS.map((option) => (
+                    <Badge
+                      key={option}
+                      variant={filter === option ? "default" : "outline"}
+                      className={cn(
+                        "cursor-pointer transition-colors",
+                        filter === option
+                          ? "bg-brand-primary-100 text-brand-primary-700 border-brand-primary-300"
+                          : "hover:bg-brand-primary-50"
+                      )}
+                      onClick={() => setFilter(option)}
+                    >
+                      {option}
+                    </Badge>
+                  ))}
                 </div>
 
-                {/* Arama input'una focus efekti */}
+                {/* Arama input */}
                 <div className="flex items-center gap-2">
                   <Input
                     placeholder="Search by title..."
@@ -715,22 +677,12 @@ export default function JoinedExamsPage() {
               </div>
             </div>
 
-            {/* Liste yükleme animasyonu */}
-            <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
-              {isLoading ? (
-                // Loading skeleton
-                Array(6)
-                  .fill(0)
-                  .map((_, i) => (
-                    <div
-                      key={i}
-                      className="animate-pulse bg-greyscale-light-100 rounded-2xl h-40"
-                    />
-                  ))
-              ) : filteredExams.length === 0 ? (
-                <EmptyStateComponent />
-              ) : (
-                filteredExams.map((exam, index) => (
+            {/* Quiz listesi */}
+            {filteredExams.length === 0 ? (
+              <EmptyStateComponent />
+            ) : (
+              <div className="overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[72vh] p-4 rounded-b-3xl">
+                {filteredExams.map((exam, index) => (
                   <div
                     key={exam._id}
                     className="motion-safe:animate-fadeIn"
@@ -738,9 +690,9 @@ export default function JoinedExamsPage() {
                   >
                     <JoinedRow exam={exam} />
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

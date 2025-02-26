@@ -113,10 +113,9 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 /** Soru Metnini (Markdown) gösteren bileşen */
 function QuestionDetail({ content }: { content: string }) {
   return (
-    <div className="border border-greyscale-light-200 bg-base-white w-full rounded-3xl p-8 md:p-12 flex-1 overflow-y-auto items-center justify-center">
-      <div className="mdxeditor prose min-w-full min-h-[calc(100dvh-600px)]">
-        <ReactMarkdown
-          className="mdxeditor prose max-w-[580px]
+    <div className="mdxeditor prose min-w-full min-h-[calc(100dvh-600px)]">
+      <ReactMarkdown
+        className="mdxeditor prose max-w-[580px]
             [&_h1]:text-4xl [&_h1]:text-center [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:bg-brand-primary-900 [&_h1]:from-brand-primary-950 [&_h1]:to-brand-primary-900 
             [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:drop-shadow-md
             [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mb-4 [&_h2]:text-brand-primary-600 [&_h2]:pl-4
@@ -139,13 +138,14 @@ function QuestionDetail({ content }: { content: string }) {
             [&_img]:rounded-2xl [&_img]:max-w-full [&_img]:my-6 [&_img]:mx-auto [&_img]:block [&_img]:shadow-lg 
             [&_img]:border-4 [&_img]:border-white
             [&_hr]:my-8 [&_hr]:border-t-4 [&_hr]:border-dashed [&_hr]:border-brand-primary/30"
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw, rehypeSanitize]}
-        >
-          {content || ""}
-        </ReactMarkdown>
-      </div>
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+      >
+        {content || ""}
+      </ReactMarkdown>
     </div>
+    // <div className="border border-greyscale-light-200 bg-base-white w-full rounded-3xl p-8 md:p-12 flex-1 overflow-y-auto items-center justify-center">
+    // </div>
   );
 }
 

@@ -74,9 +74,9 @@ export default function AttendanceCharts({
         ];
 
   // Pastel / doodle tonları
-  const pastelPink = "#F6BDC0";
-  const pastelGreen = "#A9DEDA";
-  const pastelGray = "#C1BEC0"; // No Participants durumda
+  const pastelPink = "var(--color-ui-success-500)";
+  const pastelGreen = "var(--color-ui-error-500)";
+  const pastelGray = "var(--color-greyscale-light-600)"; // No Participants durumda
   const PIE_COLORS = totalParticipants === 0 ? [pastelGray] : [pastelPink, pastelGreen];
 
   // Pie dilim etiketine emoji + değer koyalım
@@ -107,8 +107,8 @@ export default function AttendanceCharts({
   };
 
   // AreaChart için iki gradyan
-  const attendedColor = "#F9A5B2"; // pembemsi
-  const finishedColor = "#E4F1EA"; // açık yeşil
+  const attendedColor = "var(--color-brand-primary-500)"; // pembemsi
+  const finishedColor = "var(--color-ui-success-500)"; // yeşil
 
   return (
     <div
@@ -135,8 +135,8 @@ export default function AttendanceCharts({
     >
       {/* -------- PIE CHART -------- */}
       <div className="flex-1 flex flex-col items-center justify-center">
-        <h2 className="text-lg md:text-2xl font-bold mb-1 text-[#F06543]">Completion</h2>
-        <p className="text-sm md:text-sm mb-4 text-center text-[#7F95D1]">
+        <h2 className="text-base md:text-xl font-bold mb-1 text-[#F06543]">Completion</h2>
+        <p className="text-sm md:text-sm mb-4 text-center text-brand-primary-800">
           How many people finished, who's still going?
         </p>
 
@@ -189,7 +189,7 @@ export default function AttendanceCharts({
 
         {totalParticipants > 0 && (
           <div className="mt-3 text-center text-sm font-medium text-[#2C3639]">
-            <span className="text-[#E6779E]">
+            <span className="text-ui-success-400">
               {finishedParticipants}/{totalParticipants}
             </span>{" "}
             completed (% {Math.round((finishedParticipants / totalParticipants) * 100)})
@@ -203,9 +203,9 @@ export default function AttendanceCharts({
       </div>
 
       {/* -------- AREA CHART -------- */}
-      <div className="flex-1 flex flex-col items-center justify-start">
-        <h2 className="text-lg md:text-2xl font-bold mb-1 text-[#F06543]">Attendance</h2>
-        <p className="text-sm md:text-sm mb-4 text-center text-[#7F95D1]">
+      <div className="flex-1 flex-col items-center justify-start hidden md:flex">
+        <h2 className="text-base md:text-xl font-bold mb-1 text-[#F06543]">Attendance</h2>
+        <p className="text-sm md:text-sm mb-4 text-center text-brand-primary-800">
           Participation and completion status over time
         </p>
 
