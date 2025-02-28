@@ -49,6 +49,8 @@ import {
   UsersIcon,
   ArrowDownCircleIcon,
   PlusIcon,
+  KeyIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { FaTwitter, FaTelegramPlane, FaEnvelope, FaWhatsapp, FaFacebookF } from "react-icons/fa";
 
@@ -394,14 +396,9 @@ function JoinedRow({ exam }: RowProps) {
     <div
       className={cn(
         "group bg-white rounded-2xl p-5 shadow-sm transition-all duration-200 border border-greyscale-light-200 mb-4",
-        exam.status === "ended" ? "cursor-pointer" : "cursor-default",
+        "cursor-default",
         "hover:shadow-lg hover:bg-brand-secondary-50 hover:border-brand-primary-700"
       )}
-      onClick={() => {
-        if (exam.status === "ended") {
-          setIsAnswerKeyModalOpen(true);
-        }
-      }}
     >
       {/* Share Modal */}
       <ShareModal
@@ -442,6 +439,11 @@ function JoinedRow({ exam }: RowProps) {
               <DurationFormatter duration={exam.examDuration} base="minutes" />
             </div>
             <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
+              <DocumentTextIcon className="w-4 h-4 text-brand-primary-600 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Questions:</span>
+              <span className="truncate">{exam.questions?.length || 0}</span>
+            </div>
+            <div className="flex items-center gap-1 transition-colors hover:text-brand-primary-700">
               <span className="font-medium">Your nickname:</span>
               <Badge
                 variant="outline"
@@ -465,13 +467,31 @@ function JoinedRow({ exam }: RowProps) {
           </div>
         </div>
 
-        {/* Share button - stop propagation to prevent modal opening */}
+        {/* Share button and Answer Key button */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-between sm:w-auto">
+          <div className="flex items-center gap-2 border-t sm:border-l sm:border-t-0 border-greyscale-light-200 pt-2 sm:pt-0 sm:pl-2 w-full justify-end sm:w-auto">
+            {/* Answer Key button - only show for ended exams */}
+            {exam.status === "ended" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-brand-secondary-200 text-brand-primary-700 relative group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAnswerKeyModalOpen(true);
+                }}
+                title="View Answer Key"
+              >
+                <KeyIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+                {showPulse && (
+                  <span className="absolute inset-0 rounded-full animate-ping bg-purple-100 opacity-75 group-hover:opacity-100" />
+                )}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-brand-primary-50 text-brand-primary-700 relative group"
+              className="h-8 w-8 hover:bg-brand-secondary-200 text-brand-primary-700 relative group"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsShareModalOpen(true);
@@ -480,7 +500,7 @@ function JoinedRow({ exam }: RowProps) {
             >
               <ShareIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
               {showPulse && (
-                <span className="absolute inset-0 rounded-full animate-ping bg-brand-primary-100 opacity-75 group-hover:opacity-100" />
+                <span className="absolute inset-0 rounded-full animate-ping bg-purple-100 opacity-75 group-hover:opacity-100" />
               )}
             </Button>
           </div>
