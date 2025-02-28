@@ -11,7 +11,7 @@ class Question {
   public description: string;
   public options: Option[];
   public correctAnswer: number;
-  public type: "mc" | "tf";
+  public questionType: "mc" | "tf";
 
   public constructor(id?: number) {
     this.number = id ? id : 0;
@@ -40,7 +40,7 @@ class Question {
       },
     ];
     this.correctAnswer = 1;
-    this.type = "mc";
+    this.questionType = "mc";
   }
 }
 
