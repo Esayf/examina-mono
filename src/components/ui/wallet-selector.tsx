@@ -8,7 +8,7 @@ import Auro from "@/images/logo/auro-logo.svg";
 import Pallad from "@/images/logo/pallad-logo.svg";
 
 import toast from "react-hot-toast";
-import { authenticate } from "@/hooks/auth";
+import { authenticate, authenticateWithTwitter } from "@/hooks/auth";
 import { setSession } from "@/features/client/session";
 import { useAppDispatch, useAppSelector } from "@/app/hooks"; // Önemli: Buradan dispatch'i çekiyoruz
 
@@ -27,6 +27,9 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const session = useAppSelector((state) => state.session);
+
+  // New loading state for Twitter authentication
+  const [twitterLoading, setTwitterLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -60,6 +63,21 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
     onClose();
     // Başarılı ise dashboard'a yönlendirebilirsiniz
     window.location.href = "/app/dashboard/choose-role";
+  };
+
+  // Twitter SSO handler
+  const handleTwitterAuth = async () => {
+    setTwitterLoading(true);
+    try {
+      // This will redirect to Twitter for authentication
+      await authenticateWithTwitter();
+      // Note: The rest of the authentication flow will be handled by the callback URL
+    } catch (error) {
+      console.error("Failed to authenticate with Twitter", error);
+      toast.error("Failed to authenticate with Twitter!");
+    } finally {
+      setTwitterLoading(false);
+    }
   };
 
   return (
@@ -191,24 +209,21 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
             </button>
 
             <button
-              disabled
               className="
                 w-full
                 flex items-center gap-3
                 bg-brand-secondary-50
-                hover:bg-brand-secondary-100
+                hover:bg-brand-secondary-200
                 px-4 py-3
                 border
                 border-brand-primary-900
                 rounded-full
                 transition
-                disabled:bg-greyscale-light-100
-                disabled:border-greyscale-light-200
-                disabled:text-greyscale-light-300
               "
-              onClick={() => alert("WalletConnect flow...")}
+              onClick={handleTwitterAuth}
+              disabled={twitterLoading}
             >
-              <span>X (Formerly Twitter) (Soon)</span>
+              <span>{twitterLoading ? "Connecting..." : "X (Formerly Twitter)"}</span>
             </button>
           </div>
         </div>

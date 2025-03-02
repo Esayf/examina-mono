@@ -142,7 +142,7 @@ function ExamDetail() {
     data?.exam?.startDate &&
     new Date(data?.exam?.startDate) < new Date() &&
     new Date(data?.exam?.startDate).getTime() + (data?.exam?.duration ?? 0) * 60 * 1000 >
-      Date.now();
+    Date.now();
 
   return (
     <div className="flex justify-center items-center h-dvh">
@@ -214,12 +214,12 @@ function ExamDetail() {
                     <p className="text-base font-medium text-brand-primary-950">
                       {data?.exam?.startDate
                         ? new Date(data.exam.startDate).toLocaleDateString(undefined, {
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            year: "numeric",
-                          })
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          year: "numeric",
+                        })
                         : "-"}
                     </p>
                   </div>

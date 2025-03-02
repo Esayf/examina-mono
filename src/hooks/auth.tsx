@@ -1,6 +1,9 @@
 // API imports
 import { getMessage, login, signMessage } from "@/lib/Client/Auth";
 
+// Twitter authentication imports
+import { twitterLogin } from "@/lib/Client/Auth/socials";
+
 export interface ContractStatus {
   status: "worker" | "account" | "compile" | "done";
   error?: {
@@ -126,6 +129,25 @@ export async function authenticateWallet(address: string) {
     return session;
   } catch (e) {
     console.error("Failed to authenticate wallet", e);
+    return null;
+  }
+}
+
+export async function authenticateWithTwitter() {
+  try {
+    // Redirect to Twitter authorization page
+    const authUrl = await twitterLogin();
+    if (!authUrl) {
+      throw new Error("Failed to get Twitter auth URL");
+    }
+
+    // Redirect to Twitter auth page
+    window.location.href = authUrl;
+
+    // The rest of the flow will be handled by the callback URL
+    return null;
+  } catch (e) {
+    console.error("Failed to authenticate with Twitter", e);
     return null;
   }
 }
