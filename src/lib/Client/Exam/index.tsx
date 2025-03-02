@@ -201,6 +201,17 @@ function getScore(examID: string) {
   });
 }
 
+function isEligibleToJoin(examID: string) {
+  return new Promise((resolve, reject) => {
+    const requestBase = new RequestBase();
+    requestBase.get(`/exams/isEligibleToJoin/${examID}`).then((response) => {
+      resolve(response.data);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
 export {
   getExamList,
   createExam,
@@ -211,4 +222,5 @@ export {
   startExam,
   submitQuiz,
   sendEmail,
+  isEligibleToJoin
 };

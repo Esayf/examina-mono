@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ClockIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import BackgroundPattern from "@/images/backgrounds/backgroundpattern.svg";
+import { verifyNFTOwnership } from "@/lib/minatokens/SearchClient";
 
 function Footer() {
   return (
@@ -91,7 +92,7 @@ function ExamDetail() {
     } else if (seconds > 0) {
       return `Starts in ${seconds} seconds`;
     } else {
-      if(data && "exam" in data && Math.abs(timer) >= (data.exam?.duration ?? 0) * 60 * 1000) {
+      if (data && "exam" in data && Math.abs(timer) >= (data.exam?.duration ?? 0) * 60 * 1000) {
         return "Oopps! 🥴 Quiz has ended. You can't join this quiz.";
       }
       return `Exam has started ${Math.abs(minutes) > 0 ? Math.abs(minutes) + " minutes" : Math.abs(seconds) + " seconds"} ago`;
@@ -109,7 +110,7 @@ function ExamDetail() {
     if (data.exam?.isCompleted === true && data.participatedUser) {
       router.push("/app/exams/result/" + data.exam._id);
     }
-    if(data.participatedUser && data.participatedUser.isFinished) {
+    if (data.participatedUser && data.participatedUser.isFinished) {
       router.push("/app/exams/result/" + data.exam._id);
 
     }
@@ -162,7 +163,7 @@ function ExamDetail() {
       <Card className="max-w-[36rem] w-full px-10 pb-16 pt-12 bg-base-white z-10">
         <CardContent className="gap-9 flex flex-col">
           <div className={cn("flex flex-col items-center", !data && "filter blur-sm")}>
-  {/*           <p className="text-sm font-semibold text-brand-primary-950">
+            {/*           <p className="text-sm font-semibold text-brand-primary-950">
               <b>{data?.exam.creator}</b>{" "}
               <span className="text-brand-primary-950 font-light">invited you to join this quiz</span>
             </p> */}
@@ -264,7 +265,7 @@ function ExamDetail() {
               ) : (
                 <>
                   You must have an wallet account before using it. Not there yet?{" "}
-                  <a className="font-bold" href="https://wallet.aurora.dev/" target="_blank">
+                  <a className="font-bold" href="https://www.aurowallet.com/download/" target="_blank">
                     Create now!
                   </a>
                 </>
@@ -273,7 +274,7 @@ function ExamDetail() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }
 

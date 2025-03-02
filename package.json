@@ -10,6 +10,7 @@
     "ts-watch": "tsc --noEmit --incremental --watch"
   },
   "dependencies": {
+    "@algolia/client-search": "^5.18.0",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@mdxeditor/editor": "^3.11.5",
@@ -41,7 +42,7 @@
     "eslint-config-next": "14.0.3",
     "fs": "^0.0.1-security",
     "moment": "^2.30.1",
-    "next": "14.0.3",
+    "next": "^14.2.21",
     "node-fetch": "^3.3.2",
     "pinata-web3": "^0.4.1",
     "react-calendar": "^4.8.0",
