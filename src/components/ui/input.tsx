@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import React, { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 import { MarkdownEditor } from "@/components/create-exam/markdown";
 // ↑ Bu import yolunu kendi proje yapınıza göre ayarlayın
@@ -12,11 +12,11 @@ export interface BaseInputProps {
   className?: string;
 }
 
-// Hem <input> hem de <textarea> prop’larını tek bir tipte topluyoruz
+// Hem <input> hem de <textarea> prop'larını tek bir tipte topluyoruz
 export type InputProps = BaseInputProps &
   (React.InputHTMLAttributes<HTMLInputElement> | React.TextareaHTMLAttributes<HTMLTextAreaElement>);
 
-const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
+const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   ({ className, startElement, endElement, as = "input", rows, ...props }, ref) => {
     /** Ortak base CSS sınıfları, hem input hem de textarea için benzer görünüm */
     const baseClass = cn(
@@ -59,7 +59,7 @@ const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProp
                   /**
                    * MarkdownEditor size doğrudan bir string döndürür.
                    * Onu normal <textarea> onChange gibi sarmak isterseniz,
-                   * onChange({ target: { value: md } }) benzeri bir “sentetik” event oluşturabilirsiniz.
+                   * onChange({ target: { value: md } }) benzeri bir "sentetik" event oluşturabilirsiniz.
                    */
                   if (onChange) {
                     // Sentetik Event
