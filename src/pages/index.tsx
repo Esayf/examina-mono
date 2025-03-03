@@ -14,6 +14,7 @@ import { HeroSection } from "@/components/landing-page/hero-section";
 import { HowItWorksSection } from "@/components/landing-page/section-2";
 import { TextMessageSection } from "@/components/landing-page/text-message-section";
 import TechSection from "@/components/landing-page/section-4";
+import UseCasesSection from "@/components/landing-page/section-5";
 import SubCtaSection from "@/components/landing-page/sub-cta-section";
 import SocialLinks from "@/components/landing-page/social-links";
 import TeamSection from "@/components/landing-page/team-section";
@@ -39,7 +40,7 @@ import { ForwardIcon } from "@heroicons/react/24/outline";
 const featureArr = [
   {
     featureTitle: "Secure 🔒",
-    featureDesc: "Blockchain security powered by Mina Protocol.",
+    featureDesc: "Blockchain security with cryptographic proofs.",
   },
   {
     featureTitle: "Fast 🚀",
@@ -72,7 +73,7 @@ const techArr = [
       "https://choz.medium.com/unveiling-examinas-zero-knowledge-magic-a-journey-into-trust-and-anonymity-cd56c7330998",
   },
   {
-    techTitle: "Mina zkProgram",
+    techTitle: "zkProgram",
     techDesc:
       "Our score verifier uses a Recursive Proof Of Score zkProgram. That enables us to prove quiz results without revealing your score and answers.",
     techLink:
@@ -111,7 +112,7 @@ const musicTracks = [
   },
   {
     id: 6,
-    name: "MinaVox - 22kb blockchain symphony",
+    name: "ZKVox - 22kb blockchain symphony",
   },
   {
     id: 7,
@@ -194,7 +195,7 @@ export default function Home() {
 
   const pageTitle = "Blockchain-Powered Quiz Platform for Rewards and Engagement | Choz";
   const pageDescription =
-    "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes powered by Mina Protocol.";
+    "Revolutionize assessments with Choz: the blockchain-powered quiz platform using zero-knowledge proofs for secure, private, and rewarding experiences. Create, share, and engage with decentralized quizzes.";
 
   // MusicControls bileşeninde:
   const [currentTrack, setCurrentTrack] = useState(0);
@@ -220,7 +221,7 @@ export default function Home() {
         <meta name="description" content={pageDescription} />
         <meta
           name="keywords"
-          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Mina Protocol, Web3 quiz platform..."
+          content="blockchain quiz, zero knowledge proof, reward distribution, decentralized assessment, Web3 quiz platform..."
         />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -289,31 +290,34 @@ export default function Home() {
         {/* Text Message Section */}
         <TextMessageSection />
 
-        {/* Team Section */}
-        <TeamSection />
+        {/* Use Cases Section */}
+        <UseCasesSection />
 
         {/* Technologies Section */}
         <TechSection
           techArr={techArr.map((tech) => ({ ...tech, techExplanation: tech.techDesc }))}
         />
 
+        {/* Team Section */}
+        <TeamSection />
+
         {/* Sub CTA Section */}
         <SubCtaSection handleAuthentication={handleAuthentication} />
 
         {/* Supporters Section */}
         <section className={styles.supporters_container} aria-label="Supporters">
-          <h2>proudly built on.</h2>
+          <h2>builted on:</h2>
           <Link
-            href="https://minaprotocol.com/"
+            href="#"
             target="_blank"
             rel="noopener noreferrer"
             className="supporter-link"
-            aria-label="Visit Mina Protocol - Our Blockchain Technology Partner"
+            aria-label="Our Partners"
           >
-            <span className="sr-only">Learn more about our partnership with Mina Protocol</span>
+            <span className="sr-only">Our Partners</span>
             <Image
               src={Mina}
-              alt="Mina Protocol - Blockchain Technology Partner"
+              alt="Our Partners"
               className="w-full h-full object-cover items-center"
             />
           </Link>

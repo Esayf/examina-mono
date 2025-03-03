@@ -22,6 +22,8 @@ import {
   ChartBarIcon,
   UsersIcon,
   CalendarIcon,
+  ClipboardIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
@@ -36,8 +38,40 @@ import { Input } from "@/components/ui/input";
 import { SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
 
-function walletRender(walletAddress: string): string {
-  return `${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}`;
+function WalletDisplay({ walletAddress }: { walletAddress: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(walletAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="font-medium text-gray-900">{walletAddress}</span>
+      <button
+        onClick={copyToClipboard}
+        className="group relative p-2 rounded-lg hover:bg-brand-primary-50 transition-all duration-200
+                   focus:outline-none focus:ring-2 focus:ring-brand-primary-500 focus:ring-offset-2"
+        title="Copy wallet address"
+      >
+        <div className="flex items-center">
+          {copied ? (
+            <ClipboardDocumentCheckIcon className="h-5 w-5 text-green-500 transition-transform scale-110" />
+          ) : (
+            <ClipboardIcon
+              className="h-5 w-5 text-gray-500 group-hover:text-brand-primary-600 
+                                    transition-colors duration-200"
+            />
+          )}
+        </div>
+
+        {/* Animated checkmark background */}
+        {copied && <div className="absolute inset-0 rounded-lg bg-green-100 animate-ping-slow" />}
+      </button>
+    </div>
+  );
 }
 
 function isExamStatistics(obj: any): obj is ExamStatistics {
@@ -227,6 +261,13 @@ const ExamDetails = () => {
 
   const shareUrl = `${window.location.origin}/exam/${examId}`;
 
+  const handleSendReward = (walletAddress: string) => {
+    showToast({
+      title: "Sending reward",
+      description: `Preparing to send reward to ${walletAddress}`,
+    });
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-br from-brand-secondary-50 to-brand-secondary-100">
       <DashboardHeader withoutNav={false} withoutTabs={true} />
@@ -400,6 +441,9 @@ const ExamDetails = () => {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
                           Time
                         </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -407,7 +451,7 @@ const ExamDetails = () => {
                         <tr key={entry.userId} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 font-medium">#{index + 1}</td>
                           <td className="px-6 py-4 font-medium text-gray-900">
-                            {walletRender(entry.walletAddress)}
+                            <WalletDisplay walletAddress={entry.walletAddress} />
                           </td>
                           <td
                             className={cn(
@@ -419,6 +463,16 @@ const ExamDetails = () => {
                           </td>
                           <td className="px-6 py-4 text-gray-500">
                             {formatTime(new Date(entry.finishTime))}
+                          </td>
+                          <td className="px-6 py-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSendReward(entry.walletAddress)}
+                              className="text-brand-primary-600 hover:text-brand-primary-800"
+                            >
+                              Send Reward
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -501,7 +555,7 @@ const ExamDetails = () => {
                             className="hover:bg-gray-50 transition-colors"
                           >
                             <td className="px-6 py-4 font-medium text-gray-900">
-                              {walletRender(participant.walletAddress)}
+                              <WalletDisplay walletAddress={participant.walletAddress} />
                             </td>
                             <td className="px-6 py-4 text-gray-500">
                               {formatTime(new Date(participant.startTime))}

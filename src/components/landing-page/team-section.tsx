@@ -9,25 +9,14 @@ import Yavuz from "@/../src/images/landing_team/yavuz-selim-tuncer.png";
 import Ege from "@/../src/images/landing_team/ege-palaz.png";
 import Deniz from "@/../src/images/landing_team/deniz-altun.png";
 
-// Arkaplan görselleri (opsiyonel):
-import BG from "@/../src/images/backgrounds/bg1.svg";
-// import SUBCTA from "@/../src/images/backgrounds/bg2.svg"; // Kullanacaksanız ekleyebilirsiniz.
-
 // CSS Module dosyası (örneğin: team.module.css)
 import styles from "@/styles/team.module.css";
 
 const TeamSection: FC = () => {
   return (
     <section className={styles.team_section_container}>
-      {/* Arka plan görseli */}
-      <div className={styles.background_image_wrapper}>
-        <Image src={BG} alt="Hero Background" fill className={styles.background_image} priority />
-      </div>
-
       {/* Asıl içerik */}
       <section className={styles.team_section}>
-        <h2 className={styles.section_title}>Choz team 💪</h2>
-
         <div className={styles.team_grid}>
           {/* Üye 1*/}
           <a

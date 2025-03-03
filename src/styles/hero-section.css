@@ -1,0 +1,432 @@
+.heroContainer {
+  position: relative;
+  width: 100%;
+  min-height: 96vh;
+  padding: 80px 20px;
+  overflow: hidden;
+  background-image: url("/images/backgrounds/bg-5.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.backgroundImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+/* Central text content */
+.heroContent {
+  z-index: 10;
+  text-align: center;
+  max-width: 700px;
+  margin: 20px 0;
+}
+
+.heroTitle {
+  font-size: 4rem;
+  color: var(--color-brand-tertiary-300);
+  margin-bottom: 24px;
+}
+
+.hero_bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.highlight {
+  color: #ffed4a;
+  font-weight: bold;
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  color: var(--color-brand-primary-950);
+  margin-bottom: 48px;
+}
+
+/* Each floating item is absolutely positioned and animated */
+.floatingItem {
+  position: absolute;
+  will-change: transform;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 60px; /* Default size for SVG containers */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floatingItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Animation keyframes */
+/* Up-down movement */
+@keyframes floatUpDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Side-to-side movement */
+@keyframes floatSide {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(15px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Diagonal/circular movement */
+@keyframes floatDiagonal {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(10px, -10px);
+  }
+  50% {
+    transform: translate(15px, -15px);
+  }
+  75% {
+    transform: translate(10px, -10px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Rotation animation */
+@keyframes floatRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Feature card styling */
+.featureWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.featureIcon {
+  display: none; /* Hide icon circle */
+}
+
+.featureBubble {
+  color: var(--color-brand-primary-950); /* Beyaz metin rengi */
+  border-radius: 24px; /* Daha yuvarlak balonlar */
+  padding: 0.8rem 1.4rem; /* İçerik için yeterli boşluk */
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Belirgin gölge */
+  white-space: nowrap;
+  transition: all 0.3s ease; /* Hover efekti için geçiş */
+  text-align: center;
+  border: 2px solid transparent; /* Transparent border that will be colored per bubble */
+}
+
+/* Her balon için farklı renkler */
+.bubble1 {
+  background-color: #ff7e5f; /* Daha soft turuncu-kırmızı */
+  border-color: #ffc4b0; /* Daha açık turuncu border */
+}
+
+.bubble2 {
+  background-color: #c39bd3; /* Daha soft mor */
+  border-color: #e8daef; /* Daha açık mor border */
+}
+
+.bubble3 {
+  background-color: #7fb3d5; /* Daha soft mavi */
+  border-color: #d4e6f1; /* Daha açık mavi border */
+}
+
+.bubble4 {
+  background-color: #76d7c4; /* Daha soft turkuaz */
+  border-color: #d1f2eb; /* Daha açık turkuaz border */
+}
+
+.bubble5 {
+  background-color: #aed581; /* Daha soft yeşil */
+  border-color: #dcedc8; /* Daha açık yeşil border */
+}
+
+.bubble6 {
+  background-color: #f8c471; /* Daha soft amber */
+  border-color: #fdebd0; /* Daha açık amber border */
+}
+
+.bubble7 {
+  background-color: #f1948a; /* Daha soft fuşya */
+  border-color: #fadbd8; /* Daha açık fuşya border */
+}
+
+.bubble8 {
+  background-color: #f9e79f; /* Daha soft sarı */
+  border-color: #fcf3cf; /* Daha açık sarı border */
+}
+
+.featureBubble:hover {
+  transform: translateY(-5px) scale(1.05); /* Hover'da hafif büyüme ve yükselme */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); /* Daha derin gölge */
+  filter: brightness(1.1); /* Hover'da rengi biraz parlat */
+}
+
+.largeBadge .featureBubble {
+  font-size: 1.2rem; /* Slightly larger font */
+  padding: 1rem 1.8rem; /* More padding for larger badges */
+  font-weight: 500; /* Semi-bold text */
+}
+
+/* Remove hover effect for featureIcon */
+.featureWrapper:hover .featureIcon {
+  transform: none;
+  transition: none;
+}
+
+/* Floating item positions and animations */
+.item1 {
+  top: 12%;
+  left: 20%;
+  animation: floatUpDown 4s ease-in-out infinite;
+  background: transparent; /* Remove background color */
+}
+
+.item2 {
+  top: 25%;
+  right: 15%;
+  animation: floatSide 3.5s ease-in-out infinite;
+  background: transparent;
+}
+
+.item3 {
+  top: 40%;
+  left: 10%;
+  animation: floatRotate 5s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #2196f3; */
+}
+
+.item4 {
+  bottom: 25%;
+  right: 20%;
+  animation: floatDiagonal 6s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #009688; */
+}
+
+.item5 {
+  top: 15%;
+  left: 60%;
+  animation: floatSide 4.5s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #4caf50; */
+}
+
+.item6 {
+  bottom: 10%;
+  left: 45%;
+  animation: floatUpDown 5.5s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #ffeb3b; */
+}
+
+.item7 {
+  top: 50%;
+  left: 70%;
+  animation: floatUpDown 4.5s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #ff9800; */
+}
+
+.item8 {
+  top: 65%;
+  left: 25%;
+  animation: floatSide 3s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #795548; */
+}
+
+.item9 {
+  top: 55%;
+  right: 25%;
+  animation: floatRotate 3.5s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #607d8b; */
+}
+
+.item10 {
+  top: 45%;
+  left: 55%;
+  animation: floatDiagonal 4s ease-in-out infinite;
+  background: transparent; /* Remove background-color: #673ab7; */
+}
+
+/* Hover effect - scale up and increase shadow */
+.floatingItem:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .item4,
+  .item5,
+  .item6,
+  .item7,
+  .item8,
+  .item9 {
+    display: none;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .heroContainer {
+    padding: 60px 16px;
+    min-height: 80vh;
+  }
+
+  .heroSubtitle {
+    font-size: 1.2rem;
+    margin-bottom: 32px;
+  }
+
+  .featureBubble {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .largeBadge .featureBubble {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .floatingItem {
+    width: 50px; /* Smaller SVGs on tablets */
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroContainer {
+    min-height: 70vh;
+    padding: 40px 12px;
+  }
+
+  .heroTitle {
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .item1,
+  .item2,
+  .item3,
+  .item10 {
+    display: none; /* Hide more floating items on very small screens */
+  }
+
+  .ctaButton {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  .featureBubble {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+  }
+
+  .floatingItem {
+    width: 40px; /* Even smaller SVGs on mobile */
+    height: 40px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .heroContainer {
+    min-height: 90vh;
+  }
+
+  .heroContent {
+    max-width: 900px;
+  }
+
+  .heroTitle {
+    font-size: 5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.8rem;
+  }
+
+  .featureBubble {
+    font-size: 1.1rem;
+    padding: 1rem 1.6rem;
+  }
+
+  .largeBadge .featureBubble {
+    font-size: 1.3rem;
+    padding: 1.2rem 2rem;
+  }
+
+  .floatingItem {
+    width: 70px; /* Larger SVGs on big screens */
+    height: 70px;
+  }
+}
+
+/* CTA Button */
+.ctaContainer {
+  margin-top: 28px;
+  z-index: 10;
+}
+
+.ctaButton {
+  background-color: var(--color-brand-secondary-400);
+  color: #111111;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctaButton:hover {
+  background-color: var(--color-brand-tertiary-500);
+  transform: translateY(-2px);
+}

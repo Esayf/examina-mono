@@ -3,7 +3,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import BackgroundPattern from "@/images/backgrounds/bg-5.svg";
+import BackgroundPattern from "@/images/backgrounds/hero-section.svg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { RocketLaunchIcon } from "@heroicons/react/24/outline";

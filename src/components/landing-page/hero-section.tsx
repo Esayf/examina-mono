@@ -4,13 +4,13 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setSession } from "@/features/client/session";
 import { authenticate } from "@/hooks/auth";
 
-import { useEffect, useState, MouseEvent } from "react";
+import { useEffect, useState, MouseEvent, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { AnimatePresence, motion, animate, stagger, useAnimate } from "framer-motion";
 
 import styles from "../../styles/Landing.module.css";
-import BGR from "@/images/backgrounds/bg-5.svg";
+import BGR from "@/images/backgrounds/hero-section.svg";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRightIcon,
@@ -34,8 +34,8 @@ const heroTitles = [
   // Mevlana'dan Esintiler
   "#Choz to see the candle in every heart's darkness",
   "#Choz to dance beyond the illusion of separation",
-  "#Choz to be a mirror polishing its own reflections",
-  "#Choz to love without demanding to be understood",
+  "#Choz to be a mirror polishing reflections",
+  "#Choz to love without demanding understanding",
   "#Choz to find the sunrise in every ending",
 
   // Budist Öğretiler
@@ -74,14 +74,14 @@ const heroTitles = [
   "#Choz to leave every place softer than you found it",
 
   // Temel İnsani Değerler
-  "#Choz to choose kindness when it's easier not to",
+  "#Choz to choose kindness when it's harder",
   "#Choz to find strength in quiet integrity",
-  "#Choz to leave every place better than you found it",
+  "#Choz to leave places better than you found them",
 
   // Karar Ahlakı
   "#Choz to weigh consequences before acting",
   "#Choz to see the human behind every choice",
-  "#Choz to plant trees whose shade you'll never enjoy",
+  "#Choz to plant trees whose shade you'll never see",
 
   // Günlük Erdemler
   "#Choz to practice courage in small truths",
@@ -89,8 +89,8 @@ const heroTitles = [
   "#Choz to find nobility in ordinary acts",
 
   // Sosyal Sorumluluk
-  "#Choz to be the reason someone believes in good",
-  "#Choz to carry others' burdens without being asked",
+  "#Choz to be why someone believes in good",
+  "#Choz to carry burdens without being asked",
   "#Choz to speak up when silence costs too much",
 
   // İçsel Yolculuk
@@ -100,11 +100,11 @@ const heroTitles = [
 
   // Varoluşsal Sorular
   "#Choz to build bridges when walls are expected",
-  "#Choz to find light without extinguishing others'",
+  "#Choz to find light without dimming others'",
   "#Choz to question what's 'normal' courageously",
 
   // Stoacı Yaklaşımlar
-  "#Choz to focus on what's within your circle of control",
+  "#Choz to focus on what you can control",
   "#Choz to meet chaos with composed purpose",
   "#Choz to find freedom in voluntary constraints",
 
@@ -116,12 +116,40 @@ const heroTitles = [
   // Modern İkilemler
   "#Choz to disconnect to reconnect authentically",
   "#Choz to consume less but experience more",
-  "#Choz to value being present over being perfect",
+  "#Choz to value presence over perfection",
 
   // Nesiller Arası Bilgelik
   "#Choz to honor elders by asking better questions",
   "#Choz to plant seeds for forests you'll never see",
   "#Choz to break cycles that no longer serve life",
+
+  // Motivational Wisdom
+  "#Choz to embrace failure as your teacher",
+  "#Choz to take small steps when the path seems long",
+  "#Choz to celebrate progress, not just perfection",
+  "#Choz to find strength in vulnerable moments",
+  "#Choz to write your story with bold strokes",
+
+  // Daily Inspiration
+  "#Choz to begin again with renewed purpose",
+  "#Choz to turn obstacles into stepping stones",
+  "#Choz to find joy in the journey, not the destination",
+  "#Choz to light a candle instead of cursing darkness",
+  "#Choz to be the energy you want to attract",
+
+  // Personal Growth
+  "#Choz to grow through what you go through",
+  "#Choz to trust the timing of your life",
+  "#Choz to become comfortable with discomfort",
+  "#Choz to replace 'what if' with 'let's try'",
+  "#Choz to water your garden before judging others'",
+
+  // Resilience
+  "#Choz to bend without breaking in life's storms",
+  "#Choz to rise after every fall with new wisdom",
+  "#Choz to find your voice when silence feels safer",
+  "#Choz to rebuild with stronger foundations",
+  "#Choz to transform pain into purpose",
 ];
 
 /* -----------------------------------------------
@@ -139,7 +167,7 @@ https://choz.io
 }
 
 /* -----------------------------------------------
-   3) ShareModal Bileşeni
+   3) ShareModal Bileşeni - Refactored
 ----------------------------------------------- */
 function ShareModal({
   isOpen,
@@ -153,7 +181,31 @@ function ShareModal({
   if (!isOpen) return null;
   const shareMessage = getShareMessage(quote);
 
-  // -- Paylaşım Fonksiyonları --
+  // Consolidated share functions with a common handler
+  const handleShare = async (action: "copy" | "twitter" | "whatsapp" | "telegram") => {
+    const text = encodeURIComponent(shareMessage);
+
+    switch (action) {
+      case "copy":
+        try {
+          await navigator.clipboard.writeText(shareMessage);
+          toast.success("Copied to clipboard!");
+        } catch {
+          toast.error("Failed to copy!");
+        }
+        break;
+      case "twitter":
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+        break;
+      case "whatsapp":
+        window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+        break;
+      case "telegram":
+        window.open(`https://t.me/share/url?url=&text=${text}`, "_blank");
+        break;
+    }
+  };
+
   const handleShareDiscord = async () => {
     try {
       await navigator.clipboard.writeText(shareMessage);
@@ -162,26 +214,24 @@ function ShareModal({
       toast.error("Failed to copy!");
     }
   };
-  const handleShareTwitter = () => {
-    const text = encodeURIComponent(shareMessage);
-    window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
-  };
-  const handleShareWhatsApp = () => {
-    const text = encodeURIComponent(shareMessage);
-    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
-  };
-  const handleShareTelegram = () => {
-    const text = encodeURIComponent(shareMessage);
-    window.open(`https://t.me/share/url?url=&text=${text}`, "_blank");
-  };
-  const handleCopyMessage = async () => {
-    try {
-      await navigator.clipboard.writeText(shareMessage);
-      toast.success("Copied to clipboard!");
-    } catch {
-      toast.error("Failed to copy!");
-    }
-  };
+
+  // Social media button component to reduce repetition
+  const SocialButton = ({
+    onClick,
+    icon: Icon,
+    label,
+  }: {
+    onClick: () => void;
+    icon: React.ComponentType<any>;
+    label: string;
+  }) => (
+    <button onClick={onClick} className="icon-button">
+      <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
+        <Icon className="text-xl" />
+      </div>
+      <span className="text-xs font-medium">{label}</span>
+    </button>
+  );
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40">
@@ -208,38 +258,27 @@ function ShareModal({
 
         {/* Paylaşım ikonları */}
         <div className="flex justify-center items-center flex-wrap gap-5 mb-6">
-          <button onClick={handleShareDiscord} className="icon-button">
-            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
-              <FaDiscord className="text-xl" />
-            </div>
-            <span className="text-xs font-medium">Discord</span>
-          </button>
-
-          <button onClick={handleShareTwitter} className="icon-button">
-            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
-              <FaTwitter className="text-xl" />
-            </div>
-            <span className="text-xs font-medium">Twitter</span>
-          </button>
-
-          <button onClick={handleShareWhatsApp} className="icon-button">
-            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
-              <FaWhatsapp className="text-xl" />
-            </div>
-            <span className="text-xs font-medium">WhatsApp</span>
-          </button>
-
-          <button onClick={handleShareTelegram} className="icon-button">
-            <div className="w-16 h-16 flex items-center justify-center bg-greyscale-light-100 rounded-full mb-1">
-              <FaTelegramPlane className="text-xl" />
-            </div>
-            <span className="text-xs font-medium">Telegram</span>
-          </button>
+          <SocialButton onClick={handleShareDiscord} icon={FaDiscord} label="Discord" />
+          <SocialButton onClick={() => handleShare("twitter")} icon={FaTwitter} label="Twitter" />
+          <SocialButton
+            onClick={() => handleShare("whatsapp")}
+            icon={FaWhatsapp}
+            label="WhatsApp"
+          />
+          <SocialButton
+            onClick={() => handleShare("telegram")}
+            icon={FaTelegramPlane}
+            label="Telegram"
+          />
         </div>
 
         {/* Copy Message butonu */}
         <div className="mb-6 flex justify-center">
-          <Button variant="outline" onClick={handleCopyMessage} className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => handleShare("copy")}
+            className="flex items-center gap-2"
+          >
             Copy Message
             <DocumentDuplicateIcon className="w-5 h-5" />
           </Button>
@@ -250,7 +289,7 @@ function ShareModal({
 }
 
 /* -----------------------------------------------
-   4) HeroSection Bileşeni (limit kalktı!)
+   4) HeroSection Bileşeni - Refactored
 ----------------------------------------------- */
 interface HeroSectionProps {
   hasTopButton?: boolean;
@@ -261,22 +300,18 @@ export function HeroSection({
   hasTopButton = true,
   hasBackgroundPattern = true,
 }: HeroSectionProps) {
-  // Örnek session
+  // Redux state
   const session = useAppSelector((state) => state.session);
   const dispatch = useAppDispatch();
 
-  // Rastgele cümle durumu
+  // State management
   const [randomHeroTitle, setRandomHeroTitle] = useState("");
   const [titleKey, setTitleKey] = useState(0);
-
-  // Shuffle animasyonu
   const [isShuffling, setIsShuffling] = useState(false);
   const [finalChoice, setFinalChoice] = useState(false);
-
-  // Share Modal durumu
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  // Framer Motion varyantları
+  // Animation variants
   const finalVariants = {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
@@ -294,52 +329,45 @@ export function HeroSection({
     },
   };
 
-  /* -----------------------------------------
-     4.1. İlk mount'ta varsayılan title
-  ----------------------------------------- */
+  // Initialize with default title
   useEffect(() => {
-    // İstediğiniz herhangi bir varsayılan cümle
     setRandomHeroTitle("#Choz to turn quizzes into rewarding experiences");
   }, []);
 
-  /* -----------------------------------------
-     4.2. Rastgele cümle seçmek
-  ----------------------------------------- */
-  const shuffleTitle = () => {
+  // Helper functions
+  const shuffleTitle = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * heroTitles.length);
     setRandomHeroTitle(heroTitles[randomIndex]);
     setTitleKey((prev) => prev + 1);
-  };
+  }, []);
 
-  /* -----------------------------------------
-     4.3. Shuffle tıklanınca
-  ----------------------------------------- */
-  const handleShuffleDailyInspiration = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setFinalChoice(false);
-    setIsShuffling(true);
+  const handleShuffleDailyInspiration = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      setFinalChoice(false);
+      setIsShuffling(true);
 
-    // Hızlı göz kırpma efekti (50ms'de bir değişim)
-    const intervalId = setInterval(shuffleTitle, 50);
+      // Shuffle animation
+      const intervalId = setInterval(shuffleTitle, 50);
 
-    // 3sn sonra yavaşlayarak durma efekti
-    setTimeout(() => clearInterval(intervalId), 2500); // Hızlı değişim süresi
+      // Stop shuffling after 2.5 seconds
+      setTimeout(() => clearInterval(intervalId), 2500);
 
-    // Toplam 3sn sonra final seçimi
-    setTimeout(() => {
-      shuffleTitle();
-      setIsShuffling(false);
-      setFinalChoice(true);
-      toast.success("Perfect choice! Ready to share?", {
-        icon: "🎉",
-        duration: 2000,
-      });
-    }, 3000);
-  };
+      // Show final choice after 3 seconds
+      setTimeout(() => {
+        shuffleTitle();
+        setIsShuffling(false);
+        setFinalChoice(true);
+        toast.success("Perfect choice! Ready to share?", {
+          icon: "🎉",
+          duration: 2000,
+        });
+      }, 3000);
+    },
+    [shuffleTitle]
+  );
 
-  /* -----------------------------------------
-     4.4. Buton text vs
-  ----------------------------------------- */
+  // Button text and styling
   const getButtonText = () => {
     if (isShuffling) return "Shuffling...";
     if (finalChoice) return "Share your #Choz";
@@ -347,42 +375,25 @@ export function HeroSection({
   };
 
   const getButtonClass = () => {
-    if (finalChoice) {
-      return `
-        bg-brand-secondary-100
-        hover:bg-brand-secondary-100
-        text-brand-primary-900
-        transition-transform
-        duration-300
-        hover:scale-105
-        active:scale-95
-      `;
-    }
-    return `
-      hover:bg-brand-secondary-100
-      transition-transform
-      duration-300
-      hover:scale-105
-      active:scale-95
-    `;
+    const baseClasses = "transition-transform duration-300 hover:scale-105 active:scale-95";
+
+    return finalChoice
+      ? `bg-brand-secondary-100 hover:bg-brand-secondary-100 text-brand-primary-900 ${baseClasses}`
+      : `hover:bg-brand-secondary-100 ${baseClasses}`;
   };
 
-  /* -----------------------------------------
-     4.5. Butona tıklayınca:
-        - Henüz finalChoice yoksa => Shuffle
-        - finalChoice varsa => Share modal
-  ----------------------------------------- */
-  const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (finalChoice) {
-      setIsShareModalOpen(true);
-    } else {
-      handleShuffleDailyInspiration(e);
-    }
-  };
+  // Button click handlers
+  const handleButtonClick = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      if (finalChoice) {
+        setIsShareModalOpen(true);
+      } else {
+        handleShuffleDailyInspiration(e);
+      }
+    },
+    [finalChoice, handleShuffleDailyInspiration]
+  );
 
-  /* -----------------------------------------
-     Örnek: kimlik doğrulama (isteğe bağlı)
-  ----------------------------------------- */
   const handleAuthentication = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     const res = await authenticate(session);
@@ -392,13 +403,13 @@ export function HeroSection({
     }
     toast.success("Welcome back!", { duration: 5000 });
     dispatch(setSession(res.session));
-    // Yönlendirme
+    // Redirect
     window.location.href = "/app/dashboard/choose-role";
   };
 
   return (
     <section className={styles.hero_section}>
-      {/* Arka plan */}
+      {/* Background */}
       {hasBackgroundPattern && (
         <div className={styles.hero_bg}>
           <Image src={BGR} alt="Hero Background" fill className="w-full h-full object-cover" />
@@ -440,8 +451,8 @@ export function HeroSection({
           </div>
 
           <h3 className={`${styles.hero_desc} text-sm sm:text-base md:text-lg max-w-3xl mx-auto`}>
-            Empower your quizzes with rewards, boost engagement, transform learning or whatever you
-            want.
+            Create engaging quizzes, reward participants, and transform learning experiences with
+            our powerful platform.
           </h3>
 
           {hasTopButton && (

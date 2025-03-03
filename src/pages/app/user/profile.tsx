@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, ClockIcon, CheckIcon, UsersIcon } from "@heroicons/react/24/outline";
-import BackgroundPattern from "@/images/backgrounds/bg-5.svg";
+import BackgroundPattern from "@/images/backgrounds/hero-section.svg";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { getUserProfile } from "@/components/profile/user"; // Bu API fonksiyonunu oluşturmanız gerekecek
